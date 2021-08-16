@@ -1,0 +1,21 @@
+resources:
+  containers:
+  - container: wpilib2021
+    image: wpilib/roborio-cross-ubuntu:2021-18.04
+
+jobs:
+ - job: Linux_Arm
+   pool:
+     vmImage: 'Ubuntu 16.04'
+
+   container: wpilib2021
+
+   steps:
+    - task: Gradle@2
+      inputs:
+        workingDirectory: './Competition'
+        gradleWrapperFile: './Competition/gradlew'
+        gradleOptions: '-Xmx3072m'
+        publishJUnitResults: false
+        testResultsFiles: '**/TEST-*.xml'
+        tasks: 'build'
