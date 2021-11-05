@@ -32,24 +32,30 @@ namespace OIConstants {
 }
 
 namespace DriveConstants {
-    constexpr static int DRIVE_CANS[4] = {0, 2, 4, 6};
-    constexpr static int AZIMUTH_CANS[4] = {1, 3, 5, 7};
+    constexpr static int DRIVE_CANS[4] = {1, 3, 5, 7};
+    constexpr static int AZIMUTH_CANS[4] = {2, 4, 6, 8};
     constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1};
     constexpr static int MODULE_DIFF_YS[4] = {1, -1, 1, -1};
-    constexpr static auto SWERVE_MODULE_DIFF_X = 0.29051_m;
-    constexpr static auto SWERVE_MODULE_DIFF_Y = 0.29051_m;
 
     constexpr static double kDeadbandX = 0.05;
     constexpr static double kDeadbandY = 0.05;
 }
 
-namespace FalconSwerveConstants {
+namespace SwerveConstants {
+    constexpr static auto SWERVE_MODULE_DIFF_X = 0.29051_m;
+    constexpr static auto SWERVE_MODULE_DIFF_Y = 0.29051_m;
+
     constexpr static double AZIMUTH_COUNTS_PER_REV = 2048;
     constexpr static double DRIVE_COUNTS_PER_REV = 2048;
     constexpr static double DRIVE_GEAR_RATIO = 12.8;
     constexpr static double WHEEL_CIRCUMFERENCE_M = 4 * M_PI;
     constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.2};
     constexpr static units::meters_per_second_t DRIVE_MAX_SPEED_MPS = units::meters_per_second_t{14};
+
+    constexpr static double MOTION_ACCELERATION = 10000;
+    constexpr static double MOTION_CRUISE_VELOCITY = 800;
+    constexpr static double KP = 10;
+    constexpr static double KD = 100;
 }
 
 #endif

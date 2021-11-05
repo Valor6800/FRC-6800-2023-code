@@ -13,8 +13,8 @@ Drivetrain::Drivetrain() : ValorSubsystem(),
                            driverController(NULL),
                            navX(frc::SerialPort::Port::kMXP),
                            hasGyroOffset(false),
-                           kinematics(frc::Translation2d{}),
-                           odometry(kinematics, frc::Rotation2d{}) {
+                           kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
+                           odometry(kinematics, frc::Rotation2d{units::radian_t{0}}) {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
 }
@@ -28,27 +28,38 @@ Drivetrain::~Drivetrain()
     }
 }
 
+void Drivetrain::configSwerveModule(int i)
+{
+    azimuthMotors[i] = new WPI_TalonFX(DriveConstants::AZIMUTH_CANS[i]);
+    azimuthMotors[i]->ConfigFactoryDefault();
+    // azimuthMotors[i]->SetInverted(true);
+    azimuthMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
+    azimuthMotors[i]->ConfigAllowableClosedloopError(0, 0);
+    azimuthMotors[i]->Config_IntegralZone(0, 0);
+    azimuthMotors[i]->Config_kF(0, 0);
+    azimuthMotors[i]->Config_kD(0, SwerveConstants::KD);
+    azimuthMotors[i]->Config_kI(0, 0);
+    azimuthMotors[i]->Config_kP(0, SwerveConstants::KP);
+    // azimuthMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative);
+    azimuthMotors[i]->ConfigMotionAcceleration(SwerveConstants::MOTION_ACCELERATION);
+    azimuthMotors[i]->ConfigMotionCruiseVelocity(SwerveConstants::MOTION_CRUISE_VELOCITY);
+    
+    driveMotors[i] = new WPI_TalonFX(DriveConstants::DRIVE_CANS[i]);
+    driveMotors[i]->ConfigFactoryDefault();
+    // driveMotors[i]->SetInverted(true);
+    driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
+    driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
+
+    swerveModules[i] = new ValorSwerve(azimuthMotors[i], driveMotors[i], motorLocations[i]);
+}
+
 void Drivetrain::init() {
     initTable("Drivetrain");
+    navX.Calibrate();
 
     for (int i = 0; i < 4; i++) {
-        azimuthMotors[i] = new WPI_TalonFX(DriveConstants::AZIMUTH_CANS[i]);
-        azimuthMotors[i]->ConfigFactoryDefault();
-        // azimuthMotors[i]->SetInverted(true);
-        azimuthMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
-        
-        driveMotors[i] = new WPI_TalonFX(DriveConstants::DRIVE_CANS[i]);
-        driveMotors[i]->ConfigFactoryDefault();
-        // driveMotors[i]->SetInverted(true);
-        driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
-
-        motorLocations[i] = frc::Translation2d{DriveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[i],
-                                               DriveConstants::SWERVE_MODULE_DIFF_Y * DriveConstants::MODULE_DIFF_YS[i]};
-        swerveModules[i] = new ValorSwerve(azimuthMotors[i], driveMotors[i], motorLocations[i]);
+        configSwerveModule(i);
     }
-
-    kinematics = frc::SwerveDriveKinematics<4>{motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]};
-    odometry = frc::SwerveDriveOdometry<4>{kinematics, navX.GetRotation2d().RotateBy(gyroOffset)};
 }
 
 void Drivetrain::setController(frc::XboxController* controller) {
@@ -80,6 +91,17 @@ void Drivetrain::assessInputs() {
 
 void Drivetrain::analyzeDashboard()
 {
+    table->PutNumber("Robot X", getPose_m().X().to<double>());
+    table->PutNumber("Robot Y", getPose_m().Y().to<double>());
+
+    table->PutNumber("Gyro rate", getGyroRate());
+    table->PutNumber("Gyro angle", getGyroAngle());
+
+    for (int i = 0; i < 4; i++) {
+        table->PutNumber("Wheel " + std::to_string(i) + " angle", swerveModules[i]->getAzimuthRotation2d().Degrees().to<double>());
+        table->PutNumber("Wheel " + std::to_string(i) + " X", swerveModules[i]->getWheelLocation_m().X().to<double>());
+        table->PutNumber("Wheel " + std::to_string(i) + " Y", swerveModules[i]->getWheelLocation_m().Y().to<double>());
+    }
 }
 
 void Drivetrain::assignOutputs()
@@ -104,8 +126,13 @@ void Drivetrain::assignOutputs()
 
 void Drivetrain::resetState()
 {
-    //@TODO zero gyro
     //@TODO zero azimuth encoders
+
+    //Zero gyro
+    resetGyro();
+    double adjustment = (int)getGyroAngle() % 360;
+    navX.SetAngleAdjustment(adjustment);
+
     drive(0, 0, 0, true);
 }
 
@@ -199,13 +226,13 @@ wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::meters_
                                                     getHeading()) :
         frc::ChassisSpeeds{vx_mps,vy_mps,omega_radps};
     auto states = kinematics.ToSwerveModuleStates(chassisSpeeds);
-    kinematics.NormalizeWheelSpeeds(&states, FalconSwerveConstants::DRIVE_MAX_SPEED_MPS);
+    kinematics.NormalizeWheelSpeeds(&states, SwerveConstants::DRIVE_MAX_SPEED_MPS);
     return states;
 }
 
 void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates)
 {
-    kinematics.NormalizeWheelSpeeds(&desiredStates, FalconSwerveConstants::DRIVE_MAX_SPEED_MPS);
+    kinematics.NormalizeWheelSpeeds(&desiredStates, SwerveConstants::DRIVE_MAX_SPEED_MPS);
     for (int i = 0; i < 4; i++) {
         swerveModules[i]->setDesiredState(desiredStates[i], true);
     }

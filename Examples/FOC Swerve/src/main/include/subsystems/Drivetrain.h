@@ -148,19 +148,29 @@ class Drivetrain : public ValorSubsystem {
                                                               units::radians_per_second_t,
                                                               bool);
 
+        void configSwerveModule(int);
+
         frc::XboxController* driverController;
 
         std::vector<ValorSwerve*> swerveModules;
         std::vector<WPI_TalonFX*> azimuthMotors;
         std::vector<WPI_TalonFX*> driveMotors;
-        std::vector<frc::Translation2d> motorLocations;
+        std::vector<frc::Translation2d> motorLocations{frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[0],
+                                                                          SwerveConstants::SWERVE_MODULE_DIFF_Y * DriveConstants::MODULE_DIFF_YS[0]},
+                                                       frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[1],
+                                                                          SwerveConstants::SWERVE_MODULE_DIFF_Y * DriveConstants::MODULE_DIFF_YS[1]},
+                                                       frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[2],
+                                                                          SwerveConstants::SWERVE_MODULE_DIFF_Y * DriveConstants::MODULE_DIFF_YS[2]},
+                                                       frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[3],
+                                                                          SwerveConstants::SWERVE_MODULE_DIFF_Y * DriveConstants::MODULE_DIFF_YS[3]}};
+
+
+        AHRS navX;
+        bool hasGyroOffset;
+        frc::Rotation2d gyroOffset;
 
         frc::SwerveDriveKinematics<4> kinematics;
         frc::SwerveDriveOdometry<4> odometry;
-
-        AHRS navX;
-        frc::Rotation2d gyroOffset;
-        bool hasGyroOffset;
 };
 
 #endif

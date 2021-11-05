@@ -19,7 +19,7 @@ ValorSwerve::ValorSwerve(WPI_TalonFX* _azimuthFalcon,
 
 double ValorSwerve::getMaxSpeed_mps()
 {
-    return FalconSwerveConstants::DRIVE_MAX_SPEED_MPS.to<double>();
+    return SwerveConstants::DRIVE_MAX_SPEED_MPS.to<double>();
 }
 
 frc::Translation2d ValorSwerve::getWheelLocation_m()
@@ -38,7 +38,7 @@ void ValorSwerve::setDesiredState(frc::SwerveModuleState desiredState, bool isDr
 {
 
     // Deadband
-    if (desiredState.speed < FalconSwerveConstants::DRIVE_DEADBAND_MPS) {
+    if (desiredState.speed < SwerveConstants::DRIVE_DEADBAND_MPS) {
         desiredState = frc::SwerveModuleState{units::meters_per_second_t{0.0}, previousAngle};
     }
     
@@ -109,37 +109,37 @@ int ValorSwerve::getAzimuthAbsoluteEncoderCounts()
 frc::Rotation2d ValorSwerve::getAzimuthRotation2d()
 {
     double azimuthCounts = azimuthFalcon->GetSelectedSensorPosition();
-    double radians = 2.0 * M_PI * azimuthCounts / FalconSwerveConstants::AZIMUTH_COUNTS_PER_REV;
+    double radians = 2.0 * M_PI * azimuthCounts / SwerveConstants::AZIMUTH_COUNTS_PER_REV;
     return frc::Rotation2d{units::radian_t{radians}};
 }
 
 void ValorSwerve::setAzimuthRotation2d(frc::Rotation2d angle)
 {
     double countsBefore = azimuthFalcon->GetSelectedSensorPosition();
-    double countsFromAngle = angle.Radians().to<double>() / (2.0 * M_PI) * FalconSwerveConstants::AZIMUTH_COUNTS_PER_REV;
-    double countsDelta = fmod(countsFromAngle - countsBefore, FalconSwerveConstants::AZIMUTH_COUNTS_PER_REV);
+    double countsFromAngle = angle.Radians().to<double>() / (2.0 * M_PI) * SwerveConstants::AZIMUTH_COUNTS_PER_REV;
+    double countsDelta = fmod(countsFromAngle - countsBefore, SwerveConstants::AZIMUTH_COUNTS_PER_REV);
     azimuthFalcon->Set(ControlMode::MotionMagic, countsBefore + countsDelta);
 }
 
 double ValorSwerve::getDriveSpeed_mps()
 {
     double encoderCountsPer100ms = driveFalcon->GetSelectedSensorVelocity();
-    double motorRotationsPer100ms = encoderCountsPer100ms / FalconSwerveConstants::DRIVE_COUNTS_PER_REV;
-    double wheelRotationsPer100ms = motorRotationsPer100ms * FalconSwerveConstants::DRIVE_GEAR_RATIO;
-    double metersPer100ms = wheelRotationsPer100ms * FalconSwerveConstants::WHEEL_CIRCUMFERENCE_M;
+    double motorRotationsPer100ms = encoderCountsPer100ms / SwerveConstants::DRIVE_COUNTS_PER_REV;
+    double wheelRotationsPer100ms = motorRotationsPer100ms * SwerveConstants::DRIVE_GEAR_RATIO;
+    double metersPer100ms = wheelRotationsPer100ms * SwerveConstants::WHEEL_CIRCUMFERENCE_M;
     return metersPer100ms * K100MSPERSECOND;
 }
 
 void ValorSwerve::setDriveOpenLoop_mps(double mps)
 {
-    driveFalcon->Set(ControlMode::PercentOutput, mps / FalconSwerveConstants::DRIVE_MAX_SPEED_MPS.to<double>());
+    driveFalcon->Set(ControlMode::PercentOutput, mps / SwerveConstants::DRIVE_MAX_SPEED_MPS.to<double>());
 }
 
 void ValorSwerve::setDriveClosedLoop_mps(double mps)
 {
-    double wheelRotationsPerSecond = mps / FalconSwerveConstants::WHEEL_CIRCUMFERENCE_M;
-    double motorRotationsPerSecond = wheelRotationsPerSecond / FalconSwerveConstants::DRIVE_GEAR_RATIO;
-    double encoderCountsPerSecond = motorRotationsPerSecond * FalconSwerveConstants::DRIVE_COUNTS_PER_REV;
+    double wheelRotationsPerSecond = mps / SwerveConstants::WHEEL_CIRCUMFERENCE_M;
+    double motorRotationsPerSecond = wheelRotationsPerSecond / SwerveConstants::DRIVE_GEAR_RATIO;
+    double encoderCountsPerSecond = motorRotationsPerSecond * SwerveConstants::DRIVE_COUNTS_PER_REV;
     driveFalcon->Set(ControlMode::Velocity, encoderCountsPerSecond / K100MSPERSECOND);
 }
 
