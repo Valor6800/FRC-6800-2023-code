@@ -48,6 +48,6 @@ void ValorSubsystem::resetState() {
     // reset state
 }
 
-void ValorSubsystem::initTable(char* name) {
+void ValorSubsystem::initTable(const char* name) {
     table = nt::NetworkTableInstance::GetDefault().GetTable(name);
 }

@@ -47,7 +47,7 @@ class ValorSubsystem : public frc2::Subsystem {
     
     protected:
 
-        void initTable(char* name);
+        void initTable(const char* name);
 
         std::shared_ptr<nt::NetworkTable> table;
 };
