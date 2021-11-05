@@ -22,10 +22,6 @@ class ValorSubsystem : public frc2::Subsystem {
         
         // should initialize subsystem's devices
         virtual void init();
-        
-        // Rules:
-        //   * Never read 'state', can only write 'state'
-        virtual void setDefaultState();
 
         // Rules:
         //   * Only intended to sync state to the dasboard

@@ -7,9 +7,19 @@
 
 #define K100MSPERSECOND 10
 
+ValorSwerve::ValorSwerve(WPI_TalonFX* _azimuthFalcon,
+                         WPI_TalonFX* _driveFalcon,
+                         frc::Translation2d _wheelLocation) :
+    azimuthFalcon(_azimuthFalcon),
+    driveFalcon(_driveFalcon),
+    wheelLocation_m(_wheelLocation)
+{
+    
+}
+
 double ValorSwerve::getMaxSpeed_mps()
 {
-    return FalconSwerveConstants::DRIVE_MAX_SPEED_MPS;
+    return FalconSwerveConstants::DRIVE_MAX_SPEED_MPS.to<double>();
 }
 
 frc::Translation2d ValorSwerve::getWheelLocation_m()
@@ -122,7 +132,7 @@ double ValorSwerve::getDriveSpeed_mps()
 
 void ValorSwerve::setDriveOpenLoop_mps(double mps)
 {
-    driveFalcon->Set(ControlMode::PercentOutput, mps / FalconSwerveConstants::DRIVE_MAX_SPEED_MPS);
+    driveFalcon->Set(ControlMode::PercentOutput, mps / FalconSwerveConstants::DRIVE_MAX_SPEED_MPS.to<double>());
 }
 
 void ValorSwerve::setDriveClosedLoop_mps(double mps)

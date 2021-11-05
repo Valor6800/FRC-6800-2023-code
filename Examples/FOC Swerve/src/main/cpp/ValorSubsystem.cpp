@@ -10,7 +10,7 @@
 ValorSubsystem::ValorSubsystem() {
     robotMode = RobotMode::DISABLED;
     init();
-    setDefaultState();
+    resetState();
 }
 
 void ValorSubsystem::Periodic() {
@@ -30,10 +30,6 @@ ValorSubsystem& ValorSubsystem::GetInstance() {
 
 void ValorSubsystem::init() {
     // init subsystem
-}
-
-void ValorSubsystem::setDefaultState() {
-    // Assign default states
 }
 
 void ValorSubsystem::analyzeDashboard() {

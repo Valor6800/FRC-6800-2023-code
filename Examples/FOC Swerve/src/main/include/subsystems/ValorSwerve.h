@@ -7,7 +7,9 @@
 class ValorSwerve {
 public:
 
-    ValorSwerve();
+    ValorSwerve(WPI_TalonFX* _azimuthFalcon,
+                WPI_TalonFX* _driveFalcon,
+                frc::Translation2d _wheelLocation);
 
     /**
      * Get the maximum attainable speed of the drive
