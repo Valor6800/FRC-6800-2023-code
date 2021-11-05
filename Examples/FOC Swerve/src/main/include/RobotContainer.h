@@ -12,6 +12,7 @@
 #include <vector>
 #include "ValorAuto.h"
 #include "Constants.h"
+#include "subsystems/Drivetrain.h"
 #include <frc/XboxController.h>
 
 #ifndef ROBOT_CONTAINER_H
@@ -24,6 +25,8 @@ class RobotContainer {
 
         frc::XboxController m_GamepadDriver{OIConstants::GAMEPAD_BASE_LOCATION};
         frc::XboxController m_GamepadOperator{OIConstants::GAMEPAD_OPERATOR_LOCATION};
+
+        Drivetrain m_drivetrain;
 
     private:
         ValorAuto m_auto;
