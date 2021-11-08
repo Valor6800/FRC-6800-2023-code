@@ -97,8 +97,9 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot X", getPose_m().X().to<double>());
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
 
-    table->PutNumber("Gyro rate", getGyroRate());
+    table->PutNumber("Gyro heading", getHeading().Degrees().to<double>());
     table->PutNumber("Gyro angle", getGyroAngle());
+    table->PutNumber("Gyro fused", navX.GetFusedHeading());
 
     for (int i = 0; i < 4; i++) {
         table->PutNumber("Wheel " + std::to_string(i) + " angle", swerveModules[i]->getAzimuthRotation2d().Degrees().to<double>());
@@ -130,13 +131,8 @@ void Drivetrain::assignOutputs()
 
 void Drivetrain::resetState()
 {
-    //@TODO zero azimuth encoders
-
-    //Zero gyro
     resetGyro();
-    double adjustment = (int)getGyroAngle() % 360;
-    navX.SetAngleAdjustment(adjustment);
-
+    resetOdometry(frc::Pose2d{0_m,0_m,0_rad});
     drive(0, 0, 0, true);
 }
 
@@ -158,7 +154,8 @@ frc::Rotation2d Drivetrain::getHeading()
 double Drivetrain::getGyroAngle()
 {
     //@TODO may need to apply gyro offset
-    return navX.GetAngle();
+    // Invert gyro - needs to be rotate counter-clockwise makes angle increase
+    return 360.0 - navX.GetAngle();
 }
 
 double Drivetrain::getGyroRate()
