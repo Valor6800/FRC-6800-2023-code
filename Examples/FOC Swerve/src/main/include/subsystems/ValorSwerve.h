@@ -9,6 +9,7 @@ public:
 
     ValorSwerve(WPI_TalonFX* _azimuthFalcon,
                 WPI_TalonFX* _driveFalcon,
+                TalonSRX* _magEncoder,
                 frc::Translation2d _wheelLocation);
 
     /**
@@ -69,9 +70,9 @@ public:
 
     WPI_TalonFX* getDriveFalcon();
 
-private:
-
     int getAzimuthAbsoluteEncoderCounts();
+
+private:
 
     double getDriveSpeed_mps();
 
@@ -83,6 +84,7 @@ private:
 
     WPI_TalonFX* azimuthFalcon;
     WPI_TalonFX* driveFalcon;
+    TalonSRX* magEncoder;
 
     frc::Translation2d wheelLocation_m;
     frc::Rotation2d previousAngle;

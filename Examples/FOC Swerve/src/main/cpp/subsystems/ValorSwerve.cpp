@@ -9,9 +9,11 @@
 
 ValorSwerve::ValorSwerve(WPI_TalonFX* _azimuthFalcon,
                          WPI_TalonFX* _driveFalcon,
+                         TalonSRX* _magEncoder,
                          frc::Translation2d _wheelLocation) :
     azimuthFalcon(_azimuthFalcon),
     driveFalcon(_driveFalcon),
+    magEncoder(_magEncoder),
     wheelLocation_m(_wheelLocation)
 {
     
@@ -102,8 +104,7 @@ WPI_TalonFX* ValorSwerve::getDriveFalcon()
 
 int ValorSwerve::getAzimuthAbsoluteEncoderCounts()
 {
-    return 0;
-    //@TODO implement this
+    return magEncoder->GetSelectedSensorPosition() * 0.5;
 }
 
 frc::Rotation2d ValorSwerve::getAzimuthRotation2d()

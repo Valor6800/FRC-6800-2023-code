@@ -34,6 +34,7 @@ namespace OIConstants {
 namespace DriveConstants {
     constexpr static int DRIVE_CANS[4] = {1, 3, 5, 7};
     constexpr static int AZIMUTH_CANS[4] = {2, 4, 6, 8};
+    constexpr static int MAG_ENCODER_CANS[4] = {9, 10, 11, 12};
     constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1};
     constexpr static int MODULE_DIFF_YS[4] = {1, -1, 1, -1};
 

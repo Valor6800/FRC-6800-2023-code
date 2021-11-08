@@ -155,6 +155,7 @@ class Drivetrain : public ValorSubsystem {
         std::vector<ValorSwerve*> swerveModules;
         std::vector<WPI_TalonFX*> azimuthMotors;
         std::vector<WPI_TalonFX*> driveMotors;
+        std::vector<TalonSRX*> magEncoders;
         std::vector<frc::Translation2d> motorLocations{frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[0],
                                                                           SwerveConstants::SWERVE_MODULE_DIFF_Y * DriveConstants::MODULE_DIFF_YS[0]},
                                                        frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[1],

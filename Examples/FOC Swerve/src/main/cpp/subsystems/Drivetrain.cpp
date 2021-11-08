@@ -25,6 +25,7 @@ Drivetrain::~Drivetrain()
         delete azimuthMotors[i];
         delete driveMotors[i];
         delete swerveModules[i];
+        delete magEncoders[i];
     }
 }
 
@@ -40,7 +41,6 @@ void Drivetrain::configSwerveModule(int i)
     azimuthMotors[i]->Config_kD(0, SwerveConstants::KD);
     azimuthMotors[i]->Config_kI(0, 0);
     azimuthMotors[i]->Config_kP(0, SwerveConstants::KP);
-    // azimuthMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative);
     azimuthMotors[i]->ConfigMotionAcceleration(SwerveConstants::MOTION_ACCELERATION);
     azimuthMotors[i]->ConfigMotionCruiseVelocity(SwerveConstants::MOTION_CRUISE_VELOCITY);
     
@@ -50,7 +50,10 @@ void Drivetrain::configSwerveModule(int i)
     driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
 
-    swerveModules[i] = new ValorSwerve(azimuthMotors[i], driveMotors[i], motorLocations[i]);
+    magEncoders.push_back(new TalonSRX(DriveConstants::MAG_ENCODER_CANS[i]));
+    magEncoders[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 10);
+
+    swerveModules.push_back(new ValorSwerve(azimuthMotors[i], driveMotors[i], magEncoders[i], motorLocations[i]));
 }
 
 void Drivetrain::init() {
@@ -101,6 +104,7 @@ void Drivetrain::analyzeDashboard()
         table->PutNumber("Wheel " + std::to_string(i) + " angle", swerveModules[i]->getAzimuthRotation2d().Degrees().to<double>());
         table->PutNumber("Wheel " + std::to_string(i) + " X", swerveModules[i]->getWheelLocation_m().X().to<double>());
         table->PutNumber("Wheel " + std::to_string(i) + " Y", swerveModules[i]->getWheelLocation_m().Y().to<double>());
+        table->PutNumber("Wheel " + std::to_string(i) + " azimuth", swerveModules[i]->getAzimuthAbsoluteEncoderCounts());
     }
 }
 
