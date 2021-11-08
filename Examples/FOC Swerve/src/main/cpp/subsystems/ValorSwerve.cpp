@@ -110,14 +110,14 @@ int ValorSwerve::getAzimuthAbsoluteEncoderCounts()
 frc::Rotation2d ValorSwerve::getAzimuthRotation2d()
 {
     double azimuthCounts = azimuthFalcon->GetSelectedSensorPosition();
-    double radians = 2.0 * M_PI * azimuthCounts / SwerveConstants::AZIMUTH_COUNTS_PER_REV;
+    double radians = 2.0 * M_PI * azimuthCounts / SwerveConstants::AZIMUTH_COUNTS_PER_REV * SwerveConstants::AZIMUTH_GEAR_RATIO;
     return frc::Rotation2d{units::radian_t{radians}};
 }
 
 void ValorSwerve::setAzimuthRotation2d(frc::Rotation2d angle)
 {
     double countsBefore = azimuthFalcon->GetSelectedSensorPosition();
-    double countsFromAngle = angle.Radians().to<double>() / (2.0 * M_PI) * SwerveConstants::AZIMUTH_COUNTS_PER_REV;
+    double countsFromAngle = angle.Radians().to<double>() / (2.0 * M_PI * SwerveConstants::AZIMUTH_GEAR_RATIO) * SwerveConstants::AZIMUTH_COUNTS_PER_REV;
     double countsDelta = fmod(countsFromAngle - countsBefore, SwerveConstants::AZIMUTH_COUNTS_PER_REV);
     azimuthFalcon->Set(ControlMode::MotionMagic, countsBefore + countsDelta);
 }
