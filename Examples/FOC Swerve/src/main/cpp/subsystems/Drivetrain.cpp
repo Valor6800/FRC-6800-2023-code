@@ -31,22 +31,22 @@ Drivetrain::~Drivetrain()
 
 void Drivetrain::configSwerveModule(int i)
 {
-    azimuthMotors[i] = new WPI_TalonFX(DriveConstants::AZIMUTH_CANS[i]);
+    azimuthMotors.push_back(new WPI_TalonFX(DriveConstants::AZIMUTH_CANS[i]));
     azimuthMotors[i]->ConfigFactoryDefault();
-    // azimuthMotors[i]->SetInverted(true);
+    azimuthMotors[i]->SetInverted(true);
     azimuthMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     azimuthMotors[i]->ConfigAllowableClosedloopError(0, 0);
     azimuthMotors[i]->Config_IntegralZone(0, 0);
     azimuthMotors[i]->Config_kF(0, 0);
     azimuthMotors[i]->Config_kD(0, SwerveConstants::KD);
-    azimuthMotors[i]->Config_kI(0, 0);
+    azimuthMotors[i]->Config_kI(0, SwerveConstants::KI);
     azimuthMotors[i]->Config_kP(0, SwerveConstants::KP);
     azimuthMotors[i]->ConfigMotionAcceleration(SwerveConstants::MOTION_ACCELERATION);
     azimuthMotors[i]->ConfigMotionCruiseVelocity(SwerveConstants::MOTION_CRUISE_VELOCITY);
     
-    driveMotors[i] = new WPI_TalonFX(DriveConstants::DRIVE_CANS[i]);
+    driveMotors.push_back(new WPI_TalonFX(DriveConstants::DRIVE_CANS[i]));
     driveMotors[i]->ConfigFactoryDefault();
-    // driveMotors[i]->SetInverted(true);
+    driveMotors[i]->SetInverted(true);
     driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
 
@@ -193,7 +193,7 @@ void Drivetrain::resetDriveEncoders()
 
 void Drivetrain::resetGyro()
 {
-    navX.Reset();
+    navX.ZeroYaw();
 }
 
 void Drivetrain::drive(double vx_mps, double vy_mps, double omega_radps, bool isFOC)

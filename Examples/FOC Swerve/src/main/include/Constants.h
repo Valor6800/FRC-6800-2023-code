@@ -48,15 +48,24 @@ namespace SwerveConstants {
 
     constexpr static double AZIMUTH_COUNTS_PER_REV = 2048;
     constexpr static double DRIVE_COUNTS_PER_REV = 2048;
-    constexpr static double DRIVE_GEAR_RATIO = 12.8;
-    constexpr static double WHEEL_CIRCUMFERENCE_M = 4 * M_PI;
+
+    constexpr static double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);
+    constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0);
+
+    constexpr static double WHEEL_DIAMETER_M = 0.1016;
+    constexpr static double WHEEL_CIRCUMFERENCE_M = WHEEL_DIAMETER_M * M_PI;
+
+    constexpr static double MOTOR_FREE_SPEED = 6380.0;
+
     constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.2};
-    constexpr static units::meters_per_second_t DRIVE_MAX_SPEED_MPS = units::meters_per_second_t{14};
+
+    constexpr static units::meters_per_second_t DRIVE_MAX_SPEED_MPS = units::meters_per_second_t{MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI};
 
     constexpr static double MOTION_ACCELERATION = 10000;
     constexpr static double MOTION_CRUISE_VELOCITY = 800;
-    constexpr static double KP = 10;
-    constexpr static double KD = 100;
+    constexpr static double KP = 0.2;
+    constexpr static double KI = 0.0;
+    constexpr static double KD = 0.1;
 }
 
 #endif
