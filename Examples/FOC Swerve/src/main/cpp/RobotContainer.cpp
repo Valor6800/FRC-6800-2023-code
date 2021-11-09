@@ -12,6 +12,7 @@ RobotContainer::RobotContainer() : m_auto() {
 }
 
 void RobotContainer::ConfigureButtonBindings() {
+    m_drivetrain.setController(&m_GamepadDriver);
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {

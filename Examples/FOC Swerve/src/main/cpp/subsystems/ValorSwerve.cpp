@@ -21,7 +21,7 @@ ValorSwerve::ValorSwerve(WPI_TalonFX* _azimuthFalcon,
 
 double ValorSwerve::getMaxSpeed_mps()
 {
-    return SwerveConstants::DRIVE_MAX_SPEED_MPS.to<double>();
+    return SwerveConstants::DRIVE_MAX_SPEED_MPS;
 }
 
 frc::Translation2d ValorSwerve::getWheelLocation_m()
@@ -118,7 +118,7 @@ void ValorSwerve::setAzimuthRotation2d(frc::Rotation2d angle)
 {
     double countsBefore = azimuthFalcon->GetSelectedSensorPosition();
     double countsFromAngle = angle.Radians().to<double>() / (2.0 * M_PI * SwerveConstants::AZIMUTH_GEAR_RATIO) * SwerveConstants::AZIMUTH_COUNTS_PER_REV;
-    double countsDelta = fmod(countsFromAngle - countsBefore, SwerveConstants::AZIMUTH_COUNTS_PER_REV);
+    double countsDelta = fmod(countsFromAngle - countsBefore, SwerveConstants::AZIMUTH_COUNTS_PER_REV / SwerveConstants::AZIMUTH_GEAR_RATIO);
     azimuthFalcon->Set(ControlMode::MotionMagic, countsBefore + countsDelta);
 }
 
@@ -133,7 +133,7 @@ double ValorSwerve::getDriveSpeed_mps()
 
 void ValorSwerve::setDriveOpenLoop_mps(double mps)
 {
-    driveFalcon->Set(ControlMode::PercentOutput, mps / SwerveConstants::DRIVE_MAX_SPEED_MPS.to<double>());
+    driveFalcon->Set(ControlMode::PercentOutput, mps / SwerveConstants::DRIVE_MAX_SPEED_MPS);
 }
 
 void ValorSwerve::setDriveClosedLoop_mps(double mps)

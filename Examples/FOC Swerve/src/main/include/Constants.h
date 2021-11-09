@@ -35,8 +35,8 @@ namespace DriveConstants {
     constexpr static int DRIVE_CANS[4] = {1, 3, 5, 7};
     constexpr static int AZIMUTH_CANS[4] = {2, 4, 6, 8};
     constexpr static int MAG_ENCODER_PORTS[4] = {1, 2, 3, 4};
-    constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1};
-    constexpr static int MODULE_DIFF_YS[4] = {1, -1, 1, -1};
+    constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1}; //{1, 1, -1, -1};
+    constexpr static int MODULE_DIFF_YS[4] = {-1, 1, -1, 1}; //{1, -1, 1, -1};
 
     constexpr static double kDeadbandX = 0.05;
     constexpr static double kDeadbandY = 0.05;
@@ -57,15 +57,23 @@ namespace SwerveConstants {
 
     constexpr static double MOTOR_FREE_SPEED = 6380.0;
 
-    constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.2};
+    constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.05};
 
-    constexpr static units::meters_per_second_t DRIVE_MAX_SPEED_MPS = units::meters_per_second_t{MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI};
+    constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI / 2.0; // divided by 2 for testing
+
+    constexpr static double ROTATION_MAX_SPEED_RPS = 2 * 2 * M_PI;
 
     constexpr static double MOTION_ACCELERATION = 10000;
     constexpr static double MOTION_CRUISE_VELOCITY = 800;
+    
     constexpr static double KP = 0.2;
     constexpr static double KI = 0.0;
     constexpr static double KD = 0.1;
+}
+
+namespace MathConstants{
+    constexpr static double toRadians = M_PI / 180.0;
+    constexpr static double toDegrees = 180.0 / M_PI;
 }
 
 #endif

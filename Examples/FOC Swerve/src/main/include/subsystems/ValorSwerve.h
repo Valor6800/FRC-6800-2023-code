@@ -5,7 +5,8 @@
 #include <ctre/Phoenix.h>
 #include <frc/DutyCycleEncoder.h>
 
-class ValorSwerve {
+class ValorSwerve
+{
 public:
 
     ValorSwerve(WPI_TalonFX* _azimuthFalcon,
@@ -42,7 +43,8 @@ public:
      * Command the swerve module motors to the desired state using closed-loop drive speed control
      * @param desiredState the desired swerve module speed and angle
      */
-    void setDesiredState(frc::SwerveModuleState desiredState) {
+    void setDesiredState(frc::SwerveModuleState desiredState)
+    {
         setDesiredState(desiredState, false);
     }
 
@@ -67,14 +69,13 @@ public:
 
     void setAzimuthRotation2d(frc::Rotation2d angle);
 
-    WPI_TalonFX* getAzimuthFalcon();
+    WPI_TalonFX *getAzimuthFalcon();
 
-    WPI_TalonFX* getDriveFalcon();
+    WPI_TalonFX *getDriveFalcon();
 
     int getAzimuthAbsoluteEncoderCounts();
 
 private:
-
     double getDriveSpeed_mps();
 
     void setDriveOpenLoop_mps(double mps);
@@ -89,5 +90,4 @@ private:
 
     frc::Translation2d wheelLocation_m;
     frc::Rotation2d previousAngle;
-
 };
