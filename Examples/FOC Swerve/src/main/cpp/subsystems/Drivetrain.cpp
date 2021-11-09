@@ -92,6 +92,13 @@ void Drivetrain::assessInputs()
     state.leftStickY = driverController->GetY(frc::GenericHID::kLeftHand);
     state.rightStickX = driverController->GetX(frc::GenericHID::kRightHand);
     state.rightStickY = driverController->GetY(frc::GenericHID::kRightHand);
+
+    state.bButtonPressed = driverController->GetBButton();
+    state.aButtonPressed = driverController->GetAButton();
+    state.xButtonPressed = driverController->GetXButton();
+    state.yButtonPressed = driverController->GetYButton();
+
+    state.rbButtonPressed = driverController->GetBumper(frc::GenericHID::kRightHand);
 }
 
 void Drivetrain::analyzeDashboard()
@@ -104,8 +111,6 @@ void Drivetrain::analyzeDashboard()
     for (int i = 0; i < 4; i++)
     {
         table->PutNumber("Wheel " + std::to_string(i) + " angle", swerveModules[i]->getAzimuthRotation2d().Degrees().to<double>());
-        table->PutNumber("Wheel " + std::to_string(i) + " X", swerveModules[i]->getWheelLocation_m().X().to<double>());
-        table->PutNumber("Wheel " + std::to_string(i) + " Y", swerveModules[i]->getWheelLocation_m().Y().to<double>());
         table->PutNumber("Wheel " + std::to_string(i) + " azimuth", swerveModules[i]->getAzimuthAbsoluteEncoderCounts());
     }
 
@@ -117,7 +122,7 @@ void Drivetrain::analyzeDashboard()
         }
     }
 
-    if (driverController->GetBButtonPressed())
+    if (driverController->GetStartButtonPressed())
     {
         resetState();
     }
@@ -149,6 +154,17 @@ void Drivetrain::assignOutputs()
     units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::radians_per_second_t rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_MAX_SPEED_RPS};
+
+    double heading = getHeading().Degrees().to<double>();
+    if (state.bButtonPressed) {
+        rotRPS = units::radians_per_second_t{(90.0 - heading) * DriveConstants::TURN_KP};
+    } else if (state.aButtonPressed) {
+        rotRPS = units::radians_per_second_t{(180.0 - heading) * DriveConstants::TURN_KP};
+    } else if (state.xButtonPressed) {
+        rotRPS = units::radians_per_second_t{(270.0 - heading) * DriveConstants::TURN_KP};
+    } else if (state.yButtonPressed) {
+        rotRPS = units::radians_per_second_t{(0.0 - heading) * DriveConstants::TURN_KP};
+    }
 
     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }

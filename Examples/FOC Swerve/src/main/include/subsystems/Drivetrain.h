@@ -42,8 +42,15 @@ public:
         double leftStickY;
         double rightStickX;
         double rightStickY;
+
         bool backButtonPressed;
+        bool startButtonPressed;
+
         bool bButtonPressed;
+        bool aButtonPressed;
+        bool xButtonPressed;
+        bool yButtonPressed;
+
     } state;
 
     /**
