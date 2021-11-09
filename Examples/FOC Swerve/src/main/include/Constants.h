@@ -31,6 +31,13 @@ namespace OIConstants {
     constexpr static int GAMEPAD_OPERATOR_LOCATION = 0;
 }
 
+namespace LimelightConstants {
+    constexpr static int LED_MODE_ON = 3;
+    constexpr static int LED_MODE_OFF = 1;
+    constexpr static int TRACK_MODE_ON = 0;
+    constexpr static int TRACK_MODE_OFF = 1;
+}
+
 namespace DriveConstants {
     constexpr static int DRIVE_CANS[4] = {1, 3, 5, 7};
     constexpr static int AZIMUTH_CANS[4] = {2, 4, 6, 8};
@@ -41,7 +48,8 @@ namespace DriveConstants {
     constexpr static double kDeadbandX = 0.05;
     constexpr static double kDeadbandY = 0.05;
 
-    constexpr static double TURN_KP = 2.0 * M_PI / 180.0 ;
+    constexpr static double TURN_KP = 2.0 * M_PI / 180.0;
+    constexpr static double LIMELIGHT_KP = 2.0 * M_PI / 180.0;
 }
 
 namespace SwerveConstants {

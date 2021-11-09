@@ -61,6 +61,7 @@ void Drivetrain::configSwerveModule(int i)
 
 void Drivetrain::init()
 {
+    limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Drivetrain");
     navX.Calibrate();
 
@@ -98,7 +99,7 @@ void Drivetrain::assessInputs()
     state.xButtonPressed = driverController->GetXButton();
     state.yButtonPressed = driverController->GetYButton();
 
-    state.rbButtonPressed = driverController->GetBumper(frc::GenericHID::kRightHand);
+    state.tracking = driverController->GetBumper(frc::GenericHID::kRightHand);
 }
 
 void Drivetrain::analyzeDashboard()
@@ -166,11 +167,30 @@ void Drivetrain::assignOutputs()
         rotRPS = units::radians_per_second_t{(0.0 - heading) * DriveConstants::TURN_KP};
     }
 
+    // Limelight Tracking
+    int led_mode = limeTable->GetNumber("ledMode", LimelightConstants::LED_MODE_OFF);
+    if (state.tracking) {
+        if (led_mode != LimelightConstants::LED_MODE_ON) {
+            limeTable->PutNumber("ledMode", LimelightConstants::LED_MODE_ON);
+            limeTable->PutNumber("camMode", LimelightConstants::TRACK_MODE_ON);
+        }
+        rotRPS = units::radians_per_second_t{limeTable->GetNumber("tx", 0.0) * DriveConstants::LIMELIGHT_KP};
+
+    // Manual Control
+    } else {
+        if (led_mode != LimelightConstants::LED_MODE_OFF) {
+            limeTable->PutNumber("ledMode", LimelightConstants::LED_MODE_OFF);
+            limeTable->PutNumber("camMode", LimelightConstants::TRACK_MODE_OFF);
+        }
+    }
+
     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
 
 void Drivetrain::resetState()
 {
+    state.tracking = false;
+
     resetGyro();
     resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
     drive(units::meters_per_second_t{0}, units::meters_per_second_t{0}, units::radians_per_second_t{0}, true);

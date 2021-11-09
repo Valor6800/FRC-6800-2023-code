@@ -51,6 +51,8 @@ public:
         bool xButtonPressed;
         bool yButtonPressed;
 
+        bool tracking;
+
     } state;
 
     /**
@@ -171,6 +173,8 @@ private:
 
     frc::SwerveDriveKinematics<4> kinematics;
     frc::SwerveDriveOdometry<4> odometry;
+    
+     std::shared_ptr<nt::NetworkTable> limeTable;
 };
 
 #endif
