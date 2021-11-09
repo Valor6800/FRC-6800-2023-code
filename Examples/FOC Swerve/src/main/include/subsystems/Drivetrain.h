@@ -16,6 +16,7 @@
 #include <frc/XboxController.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
+#include <frc/DutyCycleEncoder.h>
 
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
@@ -155,7 +156,7 @@ class Drivetrain : public ValorSubsystem {
         std::vector<ValorSwerve*> swerveModules;
         std::vector<WPI_TalonFX*> azimuthMotors;
         std::vector<WPI_TalonFX*> driveMotors;
-        std::vector<TalonSRX*> magEncoders;
+        std::vector<frc::DutyCycleEncoder*> magEncoders;
         std::vector<frc::Translation2d> motorLocations{frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[0],
                                                                           SwerveConstants::SWERVE_MODULE_DIFF_Y * DriveConstants::MODULE_DIFF_YS[0]},
                                                        frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[1],

@@ -3,13 +3,14 @@
 #include <frc/geometry/Translation2d.h>
 #include <frc/kinematics/SwerveModuleState.h>
 #include <ctre/Phoenix.h>
+#include <frc/DutyCycleEncoder.h>
 
 class ValorSwerve {
 public:
 
     ValorSwerve(WPI_TalonFX* _azimuthFalcon,
                 WPI_TalonFX* _driveFalcon,
-                TalonSRX* _magEncoder,
+                frc::DutyCycleEncoder* _magEncoder,
                 frc::Translation2d _wheelLocation);
 
     /**
@@ -84,7 +85,7 @@ private:
 
     WPI_TalonFX* azimuthFalcon;
     WPI_TalonFX* driveFalcon;
-    TalonSRX* magEncoder;
+    frc::DutyCycleEncoder* magEncoder;
 
     frc::Translation2d wheelLocation_m;
     frc::Rotation2d previousAngle;

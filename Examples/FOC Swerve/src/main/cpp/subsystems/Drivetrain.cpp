@@ -9,6 +9,7 @@
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/ChassisSpeeds.h>
 
+
 Drivetrain::Drivetrain() : ValorSubsystem(),
                            driverController(NULL),
                            navX(frc::SerialPort::Port::kMXP),
@@ -50,8 +51,8 @@ void Drivetrain::configSwerveModule(int i)
     driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
 
-    magEncoders.push_back(new TalonSRX(DriveConstants::MAG_ENCODER_CANS[i]));
-    magEncoders[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Absolute, 0, 10);
+    magEncoders.push_back(new frc::DutyCycleEncoder(DriveConstants::MAG_ENCODER_PORTS[i]));
+    magEncoders[i]->SetDistancePerRotation(4096.0);
 
     swerveModules.push_back(new ValorSwerve(azimuthMotors[i], driveMotors[i], magEncoders[i], motorLocations[i]));
 }
