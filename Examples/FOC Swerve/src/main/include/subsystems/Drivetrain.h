@@ -51,6 +51,9 @@ public:
         bool xButtonPressed;
         bool yButtonPressed;
 
+        bool dPadUpPressed;
+        bool dPadDownPressed;
+
         bool tracking;
 
     } state;
@@ -131,6 +134,9 @@ public:
          * The angle is expected to increase as the gyro turns clockwise
          */
     frc::Rotation2d getHeading();
+
+     //returns angle within the range [-180, 180]
+    double angleWrap(double degrees);
 
     /**
          * Returns the position of the robot on the field in meters

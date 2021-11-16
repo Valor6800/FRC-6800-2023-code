@@ -48,8 +48,8 @@ namespace DriveConstants {
     constexpr static double kDeadbandX = 0.05;
     constexpr static double kDeadbandY = 0.05;
 
-    constexpr static double TURN_KP = 2.0 * M_PI / 180.0;
-    constexpr static double LIMELIGHT_KP = 2.0 * M_PI / 180.0;
+    constexpr static double TURN_KP = 2.5 * M_PI / 180.0;
+    constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
 }
 
 namespace SwerveConstants {

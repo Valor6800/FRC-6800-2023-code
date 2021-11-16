@@ -16,7 +16,7 @@ ValorSwerve::ValorSwerve(WPI_TalonFX* _azimuthFalcon,
     magEncoder(_magEncoder),
     wheelLocation_m(_wheelLocation)
 {
-    
+    loadAndSetAzimuthZeroReference();
 }
 
 double ValorSwerve::getMaxSpeed_mps()
@@ -69,7 +69,12 @@ void ValorSwerve::storeAzimuthZeroReference()
     int index = getWheelIndex();
     int position = getAzimuthAbsoluteEncoderCounts();
     std::ofstream ofs;
-    ofs.open("SwerveModule.wheel." + std::to_string(index) + ".txt", std::ofstream::out);
+    std::stringstream stream;
+    stream << frc::filesystem::GetDeployDirectory;
+    stream << "/SwerveModule.wheel.";
+    stream << std::to_string(index);
+    stream << ".txt";
+    ofs.open(stream.str(), std::ofstream::out);
     ofs << std::to_string(position);
     ofs.close();
 }
@@ -89,7 +94,7 @@ void ValorSwerve::loadAndSetAzimuthZeroReference()
     int azimuthSetpoint = azimuthAbsoluteCounts - reference;
     azimuthFalcon->SetSelectedSensorPosition(azimuthSetpoint, 0, 10);
 
-    azimuthFalcon->Set(ControlMode::MotionMagic, azimuthSetpoint);
+    azimuthFalcon->Set(ControlMode::MotionMagic, 0); //was initially azimuthSetpoint
 }
 
 WPI_TalonFX* ValorSwerve::getAzimuthFalcon()

@@ -81,6 +81,21 @@ std::vector<ValorSwerve *> Drivetrain::getSwerveModules()
     return swerveModules;
 }
 
+double Drivetrain::angleWrap(double degrees)
+{
+    double zeroTo360 = degrees + 180;
+    double start = fmod(zeroTo360, 360); //will work for positive angles
+
+    //angle is (-360, 0), add 360 to make (0, 360)
+    if (start < 0)
+    {
+        start += 360;
+    }
+
+    //bring it back to (-180, 180)
+    return start - 180;
+}
+
 void Drivetrain::assessInputs()
 {
     if (!driverController)
@@ -98,6 +113,8 @@ void Drivetrain::assessInputs()
     state.aButtonPressed = driverController->GetAButton();
     state.xButtonPressed = driverController->GetXButton();
     state.yButtonPressed = driverController->GetYButton();
+
+    //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
     state.tracking = driverController->GetBumper(frc::GenericHID::kRightHand);
 }
@@ -157,14 +174,14 @@ void Drivetrain::assignOutputs()
     units::radians_per_second_t rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_MAX_SPEED_RPS};
 
     double heading = getHeading().Degrees().to<double>();
-    if (state.bButtonPressed) {
-        rotRPS = units::radians_per_second_t{(90.0 - heading) * DriveConstants::TURN_KP};
+    if (state.xButtonPressed) {
+        rotRPS = units::radians_per_second_t{angleWrap(90.0 - heading) * DriveConstants::TURN_KP};
     } else if (state.aButtonPressed) {
-        rotRPS = units::radians_per_second_t{(180.0 - heading) * DriveConstants::TURN_KP};
-    } else if (state.xButtonPressed) {
-        rotRPS = units::radians_per_second_t{(270.0 - heading) * DriveConstants::TURN_KP};
+        rotRPS = units::radians_per_second_t{angleWrap(-180.0 - heading) * DriveConstants::TURN_KP};
+    } else if (state.bButtonPressed) {
+        rotRPS = units::radians_per_second_t{angleWrap(-90.0 - heading) * DriveConstants::TURN_KP};
     } else if (state.yButtonPressed) {
-        rotRPS = units::radians_per_second_t{(0.0 - heading) * DriveConstants::TURN_KP};
+        rotRPS = units::radians_per_second_t{angleWrap(0.0 - heading) * DriveConstants::TURN_KP};
     }
 
     // Limelight Tracking
@@ -174,7 +191,7 @@ void Drivetrain::assignOutputs()
             limeTable->PutNumber("ledMode", LimelightConstants::LED_MODE_ON);
             limeTable->PutNumber("camMode", LimelightConstants::TRACK_MODE_ON);
         }
-        rotRPS = units::radians_per_second_t{limeTable->GetNumber("tx", 0.0) * DriveConstants::LIMELIGHT_KP};
+        rotRPS = units::radians_per_second_t{-limeTable->GetNumber("tx", 0.0) * DriveConstants::LIMELIGHT_KP};
 
     // Manual Control
     } else {
