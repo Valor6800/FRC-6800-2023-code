@@ -29,7 +29,7 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
  */
 void Robot::DisabledInit() {
     m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::DISABLED;
-    m_container.m_drivetrain.resetState();
+    //m_container.m_drivetrain.resetState();
 }
 
 void Robot::DisabledPeriodic() {}

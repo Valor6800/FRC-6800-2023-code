@@ -130,6 +130,7 @@ void Drivetrain::analyzeDashboard()
     {
         table->PutNumber("Wheel " + std::to_string(i) + " angle", swerveModules[i]->getAzimuthRotation2d().Degrees().to<double>());
         table->PutNumber("Wheel " + std::to_string(i) + " azimuth", swerveModules[i]->getAzimuthAbsoluteEncoderCounts());
+        table->PutNumber("Wheel " + std::to_string(i) + " relative", swerveModules[i]->getAzimuthRelativeEncoderCounts());
     }
 
     if (driverController->GetBackButtonPressed())
@@ -201,16 +202,19 @@ void Drivetrain::assignOutputs()
         }
     }
 
-    drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+   // drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
 
 void Drivetrain::resetState()
 {
     state.tracking = false;
 
-    resetGyro();
+    //resetGyro();
     resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
-    drive(units::meters_per_second_t{0}, units::meters_per_second_t{0}, units::radians_per_second_t{0}, true);
+    for (int i = 0; i < swerveModules.size(); i++) {
+        swerveModules[i]->loadAndSetAzimuthZeroReference();
+    }
+    //drive(units::meters_per_second_t{0}, units::meters_per_second_t{0}, units::radians_per_second_t{0}, true);
 }
 
 frc::SwerveDriveKinematics<4> Drivetrain::getKinematics()

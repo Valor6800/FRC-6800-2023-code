@@ -16,7 +16,7 @@ ValorSwerve::ValorSwerve(WPI_TalonFX* _azimuthFalcon,
     magEncoder(_magEncoder),
     wheelLocation_m(_wheelLocation)
 {
-    loadAndSetAzimuthZeroReference();
+
 }
 
 double ValorSwerve::getMaxSpeed_mps()
@@ -70,10 +70,13 @@ void ValorSwerve::storeAzimuthZeroReference()
     int position = getAzimuthAbsoluteEncoderCounts();
     std::ofstream ofs;
     std::stringstream stream;
-    stream << frc::filesystem::GetDeployDirectory;
-    stream << "/SwerveModule.wheel.";
+    //wpi::SmallVectorImpl<char> result;
+    //frc::filesystem::GetDeployDirectory(&result);
+    //stream << result;
+    stream << "/home/lvuser/SwerveModule.wheel.";
     stream << std::to_string(index);
     stream << ".txt";
+    std::cout << stream.str() << std::endl;
     ofs.open(stream.str(), std::ofstream::out);
     ofs << std::to_string(position);
     ofs.close();
@@ -82,17 +85,19 @@ void ValorSwerve::storeAzimuthZeroReference()
 void ValorSwerve::loadAndSetAzimuthZeroReference()
 {
     int index = getWheelIndex();
-    std::ifstream infile("SwerveModule.wheel." + std::to_string(index) + ".txt");
+    std::ifstream infile("/home/lvuser/SwerveModule.wheel." + std::to_string(index) + ".txt");
     if (!infile.good())
         return;
 
     std::string line;
     std::getline(infile, line);
     int reference = atoi(line.c_str());
+    std::cout << "wheel " << index << ": "<< reference << std::endl;
 
     int azimuthAbsoluteCounts = getAzimuthAbsoluteEncoderCounts();
     int azimuthSetpoint = azimuthAbsoluteCounts - reference;
-    azimuthFalcon->SetSelectedSensorPosition(azimuthSetpoint, 0, 10);
+    std::cout << "Wheel " << index << " setpoint:" << azimuthSetpoint << std::endl;
+    azimuthFalcon->SetSelectedSensorPosition(-azimuthSetpoint, 0, 10);
 
     azimuthFalcon->Set(ControlMode::MotionMagic, 0); //was initially azimuthSetpoint
 }
@@ -109,7 +114,12 @@ WPI_TalonFX* ValorSwerve::getDriveFalcon()
 
 int ValorSwerve::getAzimuthAbsoluteEncoderCounts()
 {
-    return magEncoder->GetDistance() * 0.5;
+    return magEncoder->GetDistance() * 0.5 / SwerveConstants::AZIMUTH_GEAR_RATIO;
+}
+
+int ValorSwerve::getAzimuthRelativeEncoderCounts()
+{
+    return azimuthFalcon->GetSelectedSensorPosition();
 }
 
 frc::Rotation2d ValorSwerve::getAzimuthRotation2d()

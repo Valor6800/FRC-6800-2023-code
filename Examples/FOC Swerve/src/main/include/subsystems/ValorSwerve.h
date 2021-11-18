@@ -75,6 +75,8 @@ public:
 
     int getAzimuthAbsoluteEncoderCounts();
 
+    int getAzimuthRelativeEncoderCounts();
+
 private:
     double getDriveSpeed_mps();
 

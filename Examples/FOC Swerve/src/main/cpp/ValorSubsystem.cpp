@@ -10,7 +10,7 @@
 ValorSubsystem::ValorSubsystem() {
     robotMode = RobotMode::DISABLED;
     init();
-    resetState();
+    //resetState();
 }
 
 void ValorSubsystem::Periodic() {

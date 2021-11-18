@@ -1,0 +1,111 @@
+See file:///C:/Users/bjtex/Frc/2022/FRC-6800-2022-code/Examples/Falcon%20Swerve%20Test/build/tmp/compileFrcUserProgramDebugExecutableFrcUserProgramCpp/output.txt for all output for compileFrcUserProgramDebugExecutableFrcUserProgramCpp.
+compiling SwerveModule.cpp successful.
+
+compiling Robot.cpp successful.
+In file included from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:33:0,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/RobotContainer.h:13,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/Robot.h:13,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\Robot.cpp:8:
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\df53f43e7605a2d24ca7c8dcc2507f94\wpimath-cpp-2021.3.1-headers/units/units.h:14:2: warning: #warning is a GCC extension
+ #warning "Including this header drastically increases compilation times and is bad style. Include only what you use instead."
+  ^~~~~~~
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\df53f43e7605a2d24ca7c8dcc2507f94\wpimath-cpp-2021.3.1-headers/units/units.h:14:2: warning: #warning "Including this header drastically increases compilation times and is bad style. Include only what you use instead." [-Wcpp]
+In file included from C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANSparkMax.h:37:0,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:16,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/RobotContainer.h:13,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/Robot.h:13,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\Robot.cpp:8:
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: warning: attribute ignored in declaration of 'enum class rev::CANDigitalInput::LimitSwitch' [-Wattributes]
+     enum class LimitSwitch { kForward, kReverse };
+                ^~~~~~~~~~~
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: note: attribute for 'enum class rev::CANDigitalInput::LimitSwitch' must follow the 'enum class' keyword
+
+compiling RobotContainer.cpp successful.
+In file included from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:33:0,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/RobotContainer.h:13,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\RobotContainer.cpp:8:
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\df53f43e7605a2d24ca7c8dcc2507f94\wpimath-cpp-2021.3.1-headers/units/units.h:14:2: warning: #warning is a GCC extension
+ #warning "Including this header drastically increases compilation times and is bad style. Include only what you use instead."
+  ^~~~~~~
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\df53f43e7605a2d24ca7c8dcc2507f94\wpimath-cpp-2021.3.1-headers/units/units.h:14:2: warning: #warning "Including this header drastically increases compilation times and is bad style. Include only what you use instead." [-Wcpp]
+In file included from C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANSparkMax.h:37:0,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:16,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/RobotContainer.h:13,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\RobotContainer.cpp:8:
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: warning: attribute ignored in declaration of 'enum class rev::CANDigitalInput::LimitSwitch' [-Wattributes]
+     enum class LimitSwitch { kForward, kReverse };
+                ^~~~~~~~~~~
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: note: attribute for 'enum class rev::CANDigitalInput::LimitSwitch' must follow the 'enum class' keyword
+
+compiling ValorAuto.cpp successful.
+In file included from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:33:0,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/ValorAuto.h:2,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\ValorAuto.cpp:1:
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\df53f43e7605a2d24ca7c8dcc2507f94\wpimath-cpp-2021.3.1-headers/units/units.h:14:2: warning: #warning is a GCC extension
+ #warning "Including this header drastically increases compilation times and is bad style. Include only what you use instead."
+  ^~~~~~~
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\df53f43e7605a2d24ca7c8dcc2507f94\wpimath-cpp-2021.3.1-headers/units/units.h:14:2: warning: #warning "Including this header drastically increases compilation times and is bad style. Include only what you use instead." [-Wcpp]
+In file included from C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANSparkMax.h:37:0,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:16,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/ValorAuto.h:2,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\ValorAuto.cpp:1:
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: warning: attribute ignored in declaration of 'enum class rev::CANDigitalInput::LimitSwitch' [-Wattributes]
+     enum class LimitSwitch { kForward, kReverse };
+                ^~~~~~~~~~~
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: note: attribute for 'enum class rev::CANDigitalInput::LimitSwitch' must follow the 'enum class' keyword
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\ValorAuto.cpp: In member function 'frc2::Command* ValorAuto::getCurrentAuto()':
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\ValorAuto.cpp:16:9: warning: unused variable 'selectedAuto' [-Wunused-variable]
+     int selectedAuto = table->GetNumber("Current Auto", 0);
+         ^~~~~~~~~~~~
+
+compiling Drivetrain.cpp successful.
+In file included from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:33:0,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:8:
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\df53f43e7605a2d24ca7c8dcc2507f94\wpimath-cpp-2021.3.1-headers/units/units.h:14:2: warning: #warning is a GCC extension
+ #warning "Including this header drastically increases compilation times and is bad style. Include only what you use instead."
+  ^~~~~~~
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\df53f43e7605a2d24ca7c8dcc2507f94\wpimath-cpp-2021.3.1-headers/units/units.h:14:2: warning: #warning "Including this header drastically increases compilation times and is bad style. Include only what you use instead." [-Wcpp]
+In file included from C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANSparkMax.h:37:0,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:16,
+                 from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:8:
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: warning: attribute ignored in declaration of 'enum class rev::CANDigitalInput::LimitSwitch' [-Wattributes]
+     enum class LimitSwitch { kForward, kReverse };
+                ^~~~~~~~~~~
+C:\Users\bjtex\.gradle\caches\transforms-2\files-2.1\9d7a85bc44e06a5be771842108193136\SparkMax-cpp-1.5.4-headers/rev/CANDigitalInput.h:42:16: note: attribute for 'enum class rev::CANDigitalInput::LimitSwitch' must follow the 'enum class' keyword
+In file included from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:8:0:
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h: In constructor 'Drivetrain::Drivetrain()':
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:97:28: warning: 'Drivetrain::m_backLeftLocation' will be initialized after [-Wreorder]
+         frc::Translation2d m_backLeftLocation;
+                            ^~~~~~~~~~~~~~~~~~
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:96:28: warning:   'frc::Translation2d Drivetrain::m_frontRightLocation' [-Wreorder]
+         frc::Translation2d m_frontRightLocation;
+                            ^~~~~~~~~~~~~~~~~~~~
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:10:1: warning:   when initialized here [-Wreorder]
+ Drivetrain::Drivetrain() : ValorSubsystem(),
+ ^~~~~~~~~~
+In file included from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:8:0:
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:108:14: warning: 'Drivetrain::navX' will be initialized after [-Wreorder]
+         AHRS navX;
+              ^~~~
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:100:39: warning:   'frc::SwerveDriveKinematics<4> Drivetrain::m_kinematics' [-Wreorder]
+         frc::SwerveDriveKinematics<4> m_kinematics;
+                                       ^~~~~~~~~~~~
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:10:1: warning:   when initialized here [-Wreorder]
+ Drivetrain::Drivetrain() : ValorSubsystem(),
+ ^~~~~~~~~~
+In file included from C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:8:0:
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:113:18: warning: 'Drivetrain::talonSrxFR' will be initialized after [-Wreorder]
+         TalonSRX talonSrxFR;
+                  ^~~~~~~~~~
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\include/subsystems/Drivetrain.h:103:22: warning:   'SwerveModule Drivetrain::m_frontLeftModule' [-Wreorder]
+         SwerveModule m_frontLeftModule;
+                      ^~~~~~~~~~~~~~~~~
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:10:1: warning:   when initialized here [-Wreorder]
+ Drivetrain::Drivetrain() : ValorSubsystem(),
+ ^~~~~~~~~~
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp: In member function 'virtual void Drivetrain::init()':
+C:\Users\bjtex\Frc\2022\FRC-6800-2022-code\Examples\Falcon Swerve Test\src\main\cpp\subsystems\Drivetrain.cpp:72:27: warning: ISO C++ forbids converting a string constant to 'char*' [-Wwrite-strings]
+     initTable("Drivetrain");
+                           ^
+
+Finished compileFrcUserProgramDebugExecutableFrcUserProgramCpp, see full log file:///C:/Users/bjtex/Frc/2022/FRC-6800-2022-code/Examples/Falcon%20Swerve%20Test/build/tmp/compileFrcUserProgramDebugExecutableFrcUserProgramCpp/output.txt.

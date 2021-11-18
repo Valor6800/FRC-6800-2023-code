@@ -1,0 +1,9 @@
+[
+  {
+    "artifact": "frcCpp (in project Falcon Swerve Test)",
+    "target": "roborio",
+    "component": "frcUserProgram",
+    "debugfile": "frcCpp_roborio.debugconfig",
+    "language": "cpp"
+  }
+]
