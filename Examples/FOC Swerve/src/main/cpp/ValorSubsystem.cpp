@@ -7,10 +7,10 @@
 
 #include "ValorSubsystem.h"
 
-ValorSubsystem::ValorSubsystem() {
+ValorSubsystem::ValorSubsystem() 
+{
     robotMode = RobotMode::DISABLED;
     init();
-    //resetState();
 }
 
 void ValorSubsystem::Periodic() {

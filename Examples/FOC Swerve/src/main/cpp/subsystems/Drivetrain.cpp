@@ -69,6 +69,7 @@ void Drivetrain::init()
     {
         configSwerveModule(i);
     }
+    //resetState();
 }
 
 void Drivetrain::setController(frc::XboxController *controller)
@@ -202,19 +203,18 @@ void Drivetrain::assignOutputs()
         }
     }
 
-   // drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+    drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
 
 void Drivetrain::resetState()
 {
     state.tracking = false;
 
-    //resetGyro();
+    resetGyro();
     resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
     for (int i = 0; i < swerveModules.size(); i++) {
         swerveModules[i]->loadAndSetAzimuthZeroReference();
     }
-    //drive(units::meters_per_second_t{0}, units::meters_per_second_t{0}, units::radians_per_second_t{0}, true);
 }
 
 frc::SwerveDriveKinematics<4> Drivetrain::getKinematics()

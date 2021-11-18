@@ -74,7 +74,7 @@ namespace SwerveConstants {
     constexpr static double ROTATION_MAX_SPEED_RPS = 2 * 2 * M_PI;
 
     constexpr static double MOTION_ACCELERATION = 10000;
-    constexpr static double MOTION_CRUISE_VELOCITY = 800;
+    constexpr static double MOTION_CRUISE_VELOCITY = 8000;
     
     constexpr static double KP = 0.2;
     constexpr static double KI = 0.0;

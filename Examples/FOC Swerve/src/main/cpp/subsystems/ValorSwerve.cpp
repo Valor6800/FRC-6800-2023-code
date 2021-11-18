@@ -95,11 +95,11 @@ void ValorSwerve::loadAndSetAzimuthZeroReference()
     std::cout << "wheel " << index << ": "<< reference << std::endl;
 
     int azimuthAbsoluteCounts = getAzimuthAbsoluteEncoderCounts();
-    int azimuthSetpoint = azimuthAbsoluteCounts - reference;
+    int azimuthSetpoint = fmod(azimuthAbsoluteCounts - reference, 2048.0 / SwerveConstants::AZIMUTH_GEAR_RATIO);
     std::cout << "Wheel " << index << " setpoint:" << azimuthSetpoint << std::endl;
     azimuthFalcon->SetSelectedSensorPosition(-azimuthSetpoint, 0, 10);
 
-    azimuthFalcon->Set(ControlMode::MotionMagic, 0); //was initially azimuthSetpoint
+    //azimuthFalcon->Set(ControlMode::MotionMagic, 0); //was initially azimuthSetpoint
 }
 
 WPI_TalonFX* ValorSwerve::getAzimuthFalcon()
