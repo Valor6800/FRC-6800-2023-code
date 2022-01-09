@@ -28,9 +28,8 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
  * robot is disabled.
  */
 void Robot::DisabledInit() {
-    m_container.m_drivetrain.setDefaultState();
-
     m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::DISABLED;
+    m_container.m_drivetrain.resetState();
 }
 
 void Robot::DisabledPeriodic() {}
@@ -40,15 +39,13 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-    m_container.m_drivetrain.setDefaultState();
     m_autonomousCommand = m_container.GetAutonomousCommand();
 
     if (m_autonomousCommand != nullptr) {
         m_autonomousCommand->Schedule();
-    } 
-  
-    m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::AUTO;
+    }
 
+    m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::AUTO;
 }
 
 void Robot::AutonomousPeriodic() {

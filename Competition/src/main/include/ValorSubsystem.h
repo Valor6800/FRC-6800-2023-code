@@ -22,10 +22,6 @@ class ValorSubsystem : public frc2::Subsystem {
         
         // should initialize subsystem's devices
         virtual void init();
-        
-        // Rules:
-        //   * Never read 'state', can only write 'state'
-        virtual void setDefaultState();
 
         // Rules:
         //   * Only intended to sync state to the dasboard
@@ -51,7 +47,7 @@ class ValorSubsystem : public frc2::Subsystem {
     
     protected:
 
-        void initTable(char* name);
+        void initTable(const char* name);
 
         std::shared_ptr<nt::NetworkTable> table;
 };

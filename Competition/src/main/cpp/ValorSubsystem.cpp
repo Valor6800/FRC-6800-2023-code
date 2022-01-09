@@ -7,10 +7,10 @@
 
 #include "ValorSubsystem.h"
 
-ValorSubsystem::ValorSubsystem() {
+ValorSubsystem::ValorSubsystem() 
+{
     robotMode = RobotMode::DISABLED;
     init();
-    setDefaultState();
 }
 
 void ValorSubsystem::Periodic() {
@@ -32,10 +32,6 @@ void ValorSubsystem::init() {
     // init subsystem
 }
 
-void ValorSubsystem::setDefaultState() {
-    // Assign default states
-}
-
 void ValorSubsystem::analyzeDashboard() {
     // Analyze dashboard
 }
@@ -52,6 +48,6 @@ void ValorSubsystem::resetState() {
     // reset state
 }
 
-void ValorSubsystem::initTable(char* name) {
+void ValorSubsystem::initTable(const char* name) {
     table = nt::NetworkTableInstance::GetDefault().GetTable(name);
 }

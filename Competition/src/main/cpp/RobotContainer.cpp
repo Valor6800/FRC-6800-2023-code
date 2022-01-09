@@ -7,13 +7,12 @@
 
 #include "RobotContainer.h"
 
-RobotContainer::RobotContainer() :
-        m_auto(&m_drivetrain) {
+RobotContainer::RobotContainer() : m_auto() {
     ConfigureButtonBindings();
 }
 
 void RobotContainer::ConfigureButtonBindings() {
-     m_drivetrain.setController(&m_GamepadDriver);
+    m_drivetrain.setController(&m_GamepadDriver);
 }
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {

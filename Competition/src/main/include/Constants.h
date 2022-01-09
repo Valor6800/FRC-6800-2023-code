@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <frc/kinematics/DifferentialDriveKinematics.h>
+#include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
+
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
  * numerical or boolean constants.  This should not be used for any other
@@ -26,44 +29,6 @@
 namespace OIConstants {
     constexpr static int GAMEPAD_BASE_LOCATION = 1;
     constexpr static int GAMEPAD_OPERATOR_LOCATION = 0;
-
-    // Default Gateway 10.68.0.1
-    // Rio 10.68.0.2
-    // Limelight 10.68.0.11:5801
-    // mask 24
-/**
- * Limelight tuning values
- * Input TAB
- *  Exposure: 2
- *  Black level offset: 5
- *  Red Balance: 1500
- *  Blue Balance: 1920
- * Threshholding
- *  Hue: 0 - 179
- *  Saturation: 118 - 255
- *  Value: 152 - 255
- * Contour Filtering
- *  Area: 0.0534 - 100.000
- *  Fullness: 0.2 - 100.0
- *  W/H Ratio: 0.5120 - 0.8201
- *  Direction Filter: none
- *  Target Grouping: Single Target
- */
-}
-
-namespace DriveConstants {
-    constexpr static int CAN_ID_LEFT_A = 1;
-    constexpr static int CAN_ID_LEFT_B = 3;
-    constexpr static int CAN_ID_RIGHT_A = 2;
-    constexpr static int CAN_ID_RIGHT_B = 4;
-
-    constexpr static double kDeadbandX = 0.05;
-    constexpr static double kDeadbandY = 0.1;
-    constexpr static double kArcTurnMultipler = 0.5;
-    constexpr static double kNoBoost = 0.5;
-    constexpr static double kBoost = 1;
-    constexpr static double kDriveMultiplierX = 0.60;
-    constexpr static double kDriveMultiplierY = 1;
 }
 
 namespace LimelightConstants {
@@ -71,8 +36,54 @@ namespace LimelightConstants {
     constexpr static int LED_MODE_OFF = 1;
     constexpr static int TRACK_MODE_ON = 0;
     constexpr static int TRACK_MODE_OFF = 1;
+}
 
-    constexpr static double TrACKING_OFFSET = 2; 
+namespace DriveConstants {
+    constexpr static int DRIVE_CANS[4] = {1, 3, 5, 7};
+    constexpr static int AZIMUTH_CANS[4] = {2, 4, 6, 8};
+    constexpr static int MAG_ENCODER_PORTS[4] = {1, 2, 3, 4};
+    constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1}; //{1, 1, -1, -1};
+    constexpr static int MODULE_DIFF_YS[4] = {-1, 1, -1, 1}; //{1, -1, 1, -1};
+
+    constexpr static double kDeadbandX = 0.02;
+    constexpr static double kDeadbandY = 0.02;
+
+    constexpr static double TURN_KP = 2.5 * M_PI / 180.0;
+    constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
+}
+
+namespace SwerveConstants {
+    constexpr static auto SWERVE_MODULE_DIFF_X = 0.29051_m;
+    constexpr static auto SWERVE_MODULE_DIFF_Y = 0.29051_m;
+
+    constexpr static double AZIMUTH_COUNTS_PER_REV = 2048;
+    constexpr static double DRIVE_COUNTS_PER_REV = 2048;
+
+    constexpr static double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);
+    constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0);
+
+    constexpr static double WHEEL_DIAMETER_M = 0.1016;
+    constexpr static double WHEEL_CIRCUMFERENCE_M = WHEEL_DIAMETER_M * M_PI;
+
+    constexpr static double MOTOR_FREE_SPEED = 6380.0;
+
+    constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.05};
+
+    constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI / 2.0; // divided by 2 for testing
+
+    constexpr static double ROTATION_MAX_SPEED_RPS = 2 * 2 * M_PI;
+
+    constexpr static double MOTION_ACCELERATION = 10000;
+    constexpr static double MOTION_CRUISE_VELOCITY = 8000;
+    
+    constexpr static double KP = 0.2;
+    constexpr static double KI = 0.0;
+    constexpr static double KD = 0.1;
+}
+
+namespace MathConstants{
+    constexpr static double toRadians = M_PI / 180.0;
+    constexpr static double toDegrees = 180.0 / M_PI;
 }
 
 #endif
