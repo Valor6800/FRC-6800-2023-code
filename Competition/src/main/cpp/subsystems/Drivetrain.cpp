@@ -129,8 +129,9 @@ void Drivetrain::analyzeDashboard()
     for (int i = 0; i < 4; i++)
     {
         table->PutNumber("Wheel " + std::to_string(i) + " angle", swerveModules[i]->getAzimuthRotation2d().Degrees().to<double>());
-        table->PutNumber("Wheel " + std::to_string(i) + " azimuth", swerveModules[i]->getAzimuthAbsoluteEncoderCounts());
-        table->PutNumber("Wheel " + std::to_string(i) + " relative", swerveModules[i]->getAzimuthRelativeEncoderCounts());
+        table->PutNumber("Wheel " + std::to_string(i) + " mag encoder", swerveModules[i]->getMagEncoderCount());
+        table->PutNumber("Wheel " + std::to_string(i) + " mag encoder converted", swerveModules[i]->convertMagEncoderToAzimuthEncoder(swerveModules[i]->getMagEncoderCount()));
+        table->PutNumber("Wheel " + std::to_string(i) + " azimuth encoder", swerveModules[i]->getAzimuthEncoderCount());
     }
 
     if (driverController->GetBackButtonPressed())

@@ -69,8 +69,7 @@ namespace SwerveConstants {
 
     constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.05};
 
-    constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI / 2.0; // divided by 2 for testing
-
+    constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI;
     constexpr static double ROTATION_MAX_SPEED_RPS = 2 * 2 * M_PI;
 
     constexpr static double MOTION_ACCELERATION = 10000;
@@ -84,6 +83,9 @@ namespace SwerveConstants {
 namespace MathConstants{
     constexpr static double toRadians = M_PI / 180.0;
     constexpr static double toDegrees = 180.0 / M_PI;
+
+    constexpr static double ticksToRads = 2.0 * M_PI  / SwerveConstants::AZIMUTH_COUNTS_PER_REV * SwerveConstants::AZIMUTH_GEAR_RATIO;
+    constexpr static double radsToTicks = 1 / ticksToRads;
 }
 
 #endif

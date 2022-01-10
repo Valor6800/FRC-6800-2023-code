@@ -73,12 +73,28 @@ public:
 
     WPI_TalonFX *getDriveFalcon();
 
-    int getAzimuthAbsoluteEncoderCounts();
+    /**
+     * Convert mag encoder ticks to azimuth encoder ticks
+     * 
+     * @param magTicks mag encoder ticks in relation to the mag encoder
+     * @return encoder ticks in relation to the azimuth motor
+     */
+    int convertMagEncoderToAzimuthEncoder(float magTicks);
 
-    int getAzimuthRelativeEncoderCounts();
+    /**
+     * Get the encoder ticks reported by the azimuth motor
+     * @return encoder ticks reported by the azimuth motor
+     */
+    int getAzimuthEncoderCount();
+
+    /**
+     * Get the encoder ticks reported by the mag encoder
+     * @return encoder ticks reported by the mag encoder
+     */
+    int getMagEncoderCount();
 
 private:
-    double getDriveSpeed_mps();
+    units::meters_per_second_t getDriveSpeed_mps();
 
     void setDriveOpenLoop_mps(double mps);
 
