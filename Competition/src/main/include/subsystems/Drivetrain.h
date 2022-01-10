@@ -68,15 +68,6 @@ public:
     void drive(units::meters_per_second_t vx_mps, units::meters_per_second_t vy_mps, units::radians_per_second_t omega_radps, bool isFOC);
 
     /**
-         * Move the robot with given x, y and rotational velocities using closed loop velocity control
-         * @param vx_mps the desired x velocity component in meters per second
-         * @param vy_mps the desired y velocity component in meters per second
-         * @param omega_radps the desired rotational velocity component in radians per second
-         * @param isFOC true if driving field oriented
-         */
-    void move(double vx_mps, double vy_mps, double omega_radps, bool isFOC);
-
-    /**
          * Directly set the swerve modules to the specified states
          * @param desiredStates the desired swerve module states
          */
@@ -148,7 +139,7 @@ public:
          * Returns the kinematics object in use by the swerve drive
          * @return kinematics object
          */
-    frc::SwerveDriveKinematics<4> getKinematics();
+    frc::SwerveDriveKinematics<4>& getKinematics();
 
 private:
     wpi::array<frc::SwerveModuleState, 4> getModuleStates(units::meters_per_second_t,

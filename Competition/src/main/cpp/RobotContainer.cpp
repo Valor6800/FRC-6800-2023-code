@@ -7,7 +7,7 @@
 
 #include "RobotContainer.h"
 
-RobotContainer::RobotContainer() : m_auto() {
+RobotContainer::RobotContainer() : m_auto(&m_drivetrain) {
     ConfigureButtonBindings();
 }
 

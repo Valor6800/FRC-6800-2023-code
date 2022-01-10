@@ -8,22 +8,26 @@
 #include <frc/trajectory/Trajectory.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
 
-#include <frc2/command/RamseteCommand.h>
+#include <frc2/command/SwerveControllerCommand.h>
 #include <frc2/command/Command.h>
 #include <frc2/command/InstantCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/WaitCommand.h>
+
+#include "subsystems/Drivetrain.h"
 
 #ifndef VALOR_AUTO_H
 #define VALOR_AUTO_H
 
 class ValorAuto {
     public:
-        ValorAuto();
+        ValorAuto(Drivetrain *_drivetrain);
 
         frc2::Command* getCurrentAuto();
 
     private:
+
+        Drivetrain *drivetrain;
 
         std::map<std::string, frc2::SequentialCommandGroup*> autos;
 };

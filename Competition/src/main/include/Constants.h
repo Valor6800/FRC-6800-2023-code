@@ -70,7 +70,12 @@ namespace SwerveConstants {
     constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.05};
 
     constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI;
+    constexpr static double AUTO_MAX_SPEED_MPS = 10;
+    constexpr static double AUTO_MAX_ACCEL_MPSS = 10;
+
     constexpr static double ROTATION_MAX_SPEED_RPS = 2 * 2 * M_PI;
+    constexpr static double AUTO_MAX_ROTATION_RPS = 2 * 2 * M_PI;
+    constexpr static double AUTO_MAX_ROTATION_ACCEL_RPSS = 2 * 2 * M_PI;
 
     constexpr static double MOTION_ACCELERATION = 10000;
     constexpr static double MOTION_CRUISE_VELOCITY = 8000;

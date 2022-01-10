@@ -212,12 +212,12 @@ void Drivetrain::resetState()
 
     resetGyro();
     resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
-    for (int i = 0; i < swerveModules.size(); i++) {
+    for (size_t i = 0; i < swerveModules.size(); i++) {
         swerveModules[i]->loadAndSetAzimuthZeroReference();
     }
 }
 
-frc::SwerveDriveKinematics<4> Drivetrain::getKinematics()
+frc::SwerveDriveKinematics<4>& Drivetrain::getKinematics()
 {
     return kinematics;
 }
@@ -258,7 +258,7 @@ void Drivetrain::resetOdometry(frc::Pose2d pose)
 
 void Drivetrain::resetDriveEncoders()
 {
-    for (int i = 0; i < 4; i++)
+    for (size_t i = 0; i < swerveModules.size(); i++)
     {
         swerveModules[i]->resetDriveEncoder();
     }
@@ -276,21 +276,9 @@ void Drivetrain::drive(units::meters_per_second_t vx_mps, units::meters_per_seco
                                   vy_mps,
                                   omega_radps,
                                   isFOC);
-    for (int i = 0; i < 4; i++)
+    for (size_t i = 0; i < swerveModules.size(); i++)
     {
         swerveModules[i]->setDesiredState(states[i], true);
-    }
-}
-
-void Drivetrain::move(double vx_mps, double vy_mps, double omega_radps, bool isFOC)
-{
-    auto states = getModuleStates(units::meters_per_second_t{vx_mps},
-                                  units::meters_per_second_t{vy_mps},
-                                  units::radians_per_second_t{omega_radps},
-                                  isFOC);
-    for (int i = 0; i < 4; i++)
-    {
-        swerveModules[i]->setDesiredState(states[i], false);
     }
 }
 
