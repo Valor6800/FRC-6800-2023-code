@@ -68,7 +68,7 @@ namespace SwerveConstants {
 
     constexpr static double MOTOR_FREE_SPEED = 6380.0;
 
-    constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.05};
+    constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.0005};
 
     constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI;
     constexpr static double AUTO_MAX_SPEED_MPS = 10;
