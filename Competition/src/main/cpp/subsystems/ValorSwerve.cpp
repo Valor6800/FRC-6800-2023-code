@@ -97,7 +97,8 @@ void ValorSwerve::loadAndSetAzimuthZeroReference()
 
     // Mod division by 2048 (resolution of the mag encoder) to get remainder.
     // Then, convert mag encoder to azimuth ticks
-    int azimuthSetpoint = convertMagEncoderToAzimuthEncoder(fmod(delta, SwerveConstants::AZIMUTH_COUNTS_PER_REV));
+    int azimuthSetpoint = convertMagEncoderToAzimuthEncoder(fmod(delta, SwerveConstants::MAG_COUNTS_PER_REV));
+    // 1500 % 
 
     // Set the azimuth offset to the calculated setpoint (which will take over in teleop)
     azimuthFalcon->SetSelectedSensorPosition(-azimuthSetpoint, 0, 10);

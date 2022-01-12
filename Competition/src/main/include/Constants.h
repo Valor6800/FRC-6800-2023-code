@@ -58,6 +58,7 @@ namespace SwerveConstants {
 
     constexpr static double AZIMUTH_COUNTS_PER_REV = 2048;
     constexpr static double DRIVE_COUNTS_PER_REV = 2048;
+    constexpr static double MAG_COUNTS_PER_REV = 4096;
 
     constexpr static double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);
     constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0);
