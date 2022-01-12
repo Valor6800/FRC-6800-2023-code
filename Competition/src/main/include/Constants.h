@@ -81,9 +81,9 @@ namespace SwerveConstants {
     constexpr static double MOTION_ACCELERATION = 10000;
     constexpr static double MOTION_CRUISE_VELOCITY = 8000;
     
-    constexpr static double KP = 0.2;
-    constexpr static double KI = 0.0;
-    constexpr static double KD = 0.1;
+    constexpr static double KP = 1; //.2
+    constexpr static double KI = 0.0; //0
+    constexpr static double KD = 0.0; //.1
 }
 
 namespace MathConstants{
