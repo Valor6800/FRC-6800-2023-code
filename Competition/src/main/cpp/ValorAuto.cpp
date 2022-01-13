@@ -17,9 +17,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
         config);
 
     frc::ProfiledPIDController<units::radians> thetaController{
-            SwerveConstants::KP,
-            SwerveConstants::KI,
-            SwerveConstants::KD,
+            DriveConstants::KPT,
+            DriveConstants::KIT,
+            DriveConstants::KDT,
             frc::ProfiledPIDController<units::radians>::Constraints(
                 units::angular_velocity::radians_per_second_t{SwerveConstants::AUTO_MAX_ROTATION_RPS},
                 units::angular_acceleration::radians_per_second_squared_t{SwerveConstants::AUTO_MAX_ROTATION_ACCEL_RPSS})
@@ -33,8 +33,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
         exampleTrajectory,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
-        frc2::PIDController(SwerveConstants::KP, SwerveConstants::KI, SwerveConstants::KD),
-        frc2::PIDController(SwerveConstants::KP, SwerveConstants::KI, SwerveConstants::KD),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
         thetaController,
         [this] (auto states) { drivetrain->setModuleStates(states); },
         {drivetrain}

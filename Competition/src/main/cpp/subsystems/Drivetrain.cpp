@@ -43,8 +43,8 @@ void Drivetrain::configSwerveModule(int i)
     azimuthMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     azimuthMotors[i]->ConfigAllowableClosedloopError(0, 0);
     azimuthMotors[i]->Config_IntegralZone(0, 0);
-    azimuthMotors[i]->Config_kF(0, 0);
-    azimuthMotors[i]->Config_kD(0, SwerveConstants::KD);
+    azimuthMotors[i]->Config_kF(0, SwerveConstants::KF);
+    azimuthMotors[i]->Config_kD(0,SwerveConstants::KD);
     azimuthMotors[i]->Config_kI(0, SwerveConstants::KI);
     azimuthMotors[i]->Config_kP(0, SwerveConstants::KP);
     azimuthMotors[i]->ConfigMotionAcceleration(SwerveConstants::MOTION_ACCELERATION);

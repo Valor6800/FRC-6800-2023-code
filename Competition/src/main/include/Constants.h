@@ -50,6 +50,20 @@ namespace DriveConstants {
 
     constexpr static double TURN_KP = 2.5 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
+
+    constexpr static double KPX = 0.5; //.2
+    constexpr static double KIX = 0.0; //0
+    constexpr static double KDX = 0.0; //.1
+
+    constexpr static double KPY = 0.5; //.2
+    constexpr static double KIY = 0.0; //0
+    constexpr static double KDY = 0.0; //.1
+
+
+    constexpr static double KPT = 0.5; //.2
+    constexpr static double KIT = 0.0; //0
+    constexpr static double KDT = 0.0; //.1
+
 }
 
 namespace SwerveConstants {
@@ -78,10 +92,11 @@ namespace SwerveConstants {
     constexpr static double AUTO_MAX_ROTATION_RPS = 2 * 2 * M_PI;
     constexpr static double AUTO_MAX_ROTATION_ACCEL_RPSS = 2 * 2 * M_PI;
 
-    constexpr static double MOTION_ACCELERATION = 10000;
-    constexpr static double MOTION_CRUISE_VELOCITY = 8000;
+    constexpr static double MOTION_ACCELERATION = 20000;
+    constexpr static double MOTION_CRUISE_VELOCITY = 20000;
     
-    constexpr static double KP = 1; //.2
+    constexpr static double KF = 0.0494; //.2
+    constexpr static double KP = 0.4; //.2
     constexpr static double KI = 0.0; //0
     constexpr static double KD = 0.0; //.1
 }
