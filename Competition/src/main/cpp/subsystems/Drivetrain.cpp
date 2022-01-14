@@ -119,6 +119,9 @@ void Drivetrain::assessInputs()
     state.xButtonPressed = driverController->GetXButton();
     state.yButtonPressed = driverController->GetYButton();
 
+    state.leftBumperPressed = driverController->GetLeftBumperPressed();
+    state.rightBumperPressed = driverController->GetRightBumperPressed();
+
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
     state.tracking = driverController->GetRightBumper();
@@ -206,7 +209,19 @@ void Drivetrain::assignOutputs()
         }
     }
 
-    drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+    if (state.leftBumperPressed) {
+        frc::Rotation2d angle(units::angle::degree_t{0});
+        for (size_t i = 0; i < swerveModules.size(); i++) {
+            swerveModules[i]->setAzimuthRotation2d(angle);
+        }
+    } else if (state.rightBumperPressed) {
+        frc::Rotation2d angle(units::angle::degree_t{180});
+        for (size_t i = 0; i < swerveModules.size(); i++) {
+            swerveModules[i]->setAzimuthRotation2d(angle);
+        }
+    }
+
+    //drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
 
 void Drivetrain::resetState()
