@@ -95,13 +95,12 @@ namespace SwerveConstants {
     static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 1;
 
     constexpr static double MOTION_CRUISE_VELOCITY = 17000; // 21.9k is max. We chose 80%ish of that number
-    constexpr static double MOTION_ACCELERATION = MOTION_CRUISE_VELOCITY * 10; // Acceleration matching cruise velocity means 1 second to hit cruise
+    constexpr static double MOTION_ACCELERATION = MOTION_CRUISE_VELOCITY * 15; // Acceleration matching cruise velocity means 1 second to hit cruise
     constexpr static double KF = 0.05; // Calculated via kF math in the Phoenix documentation
     
-    constexpr static double KF = 0.0494;
-    constexpr static double KP = 0.0; //.2
+    constexpr static double KP = 0.2; //.2
     constexpr static double KI = 0.0; //0
-    constexpr static double KD = 0.0; //.1
+    constexpr static double KD = 0.1; //.1
 }
 
 namespace MathConstants{
