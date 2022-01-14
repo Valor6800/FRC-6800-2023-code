@@ -9,6 +9,7 @@
 
 #include <frc/kinematics/DifferentialDriveKinematics.h>
 #include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
+#include <cmath>
 
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
@@ -67,15 +68,16 @@ namespace DriveConstants {
 }
 
 namespace SwerveConstants {
-    constexpr static auto SWERVE_MODULE_DIFF_X = 0.29051_m;
-    constexpr static auto SWERVE_MODULE_DIFF_Y = 0.29051_m;
+    constexpr static double module_diff = 0.29051;
+    constexpr static auto SWERVE_MODULE_DIFF_X = units::meter_t(module_diff);
+    constexpr static auto SWERVE_MODULE_DIFF_Y = units::meter_t(module_diff);
 
     constexpr static double AZIMUTH_COUNTS_PER_REV = 2048;
     constexpr static double DRIVE_COUNTS_PER_REV = 2048;
     constexpr static double MAG_COUNTS_PER_REV = 4096;
 
-    constexpr static double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0);
-    constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0);
+    constexpr static double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0); // 1/8.14
+    constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0); // 0.078125
 
     constexpr static double WHEEL_DIAMETER_M = 0.1016;
     constexpr static double WHEEL_CIRCUMFERENCE_M = WHEEL_DIAMETER_M * M_PI;
@@ -85,18 +87,19 @@ namespace SwerveConstants {
     constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.0005};
 
     constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI;
-    constexpr static double AUTO_MAX_SPEED_MPS = 10;
-    constexpr static double AUTO_MAX_ACCEL_MPSS = 10;
+    constexpr static double AUTO_MAX_SPEED_MPS = DRIVE_MAX_SPEED_MPS;
+    constexpr static double AUTO_MAX_ACCEL_MPSS = AUTO_MAX_SPEED_MPS * 1;
 
-    constexpr static double ROTATION_MAX_SPEED_RPS = 2 * 2 * M_PI;
-    constexpr static double AUTO_MAX_ROTATION_RPS = 2 * 2 * M_PI;
-    constexpr static double AUTO_MAX_ROTATION_ACCEL_RPSS = 2 * 2 * M_PI;
+    static double ROTATION_MAX_SPEED_RPS = DRIVE_MAX_SPEED_MPS / std::hypot(module_diff / 2, module_diff / 2);
+    static double AUTO_MAX_ROTATION_RPS = ROTATION_MAX_SPEED_RPS;
+    static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 1;
 
-    constexpr static double MOTION_ACCELERATION = 20000;
-    constexpr static double MOTION_CRUISE_VELOCITY = 20000;
+    constexpr static double MOTION_CRUISE_VELOCITY = 17000; // 21.9k is max. We chose 80%ish of that number
+    constexpr static double MOTION_ACCELERATION = MOTION_CRUISE_VELOCITY * 10; // Acceleration matching cruise velocity means 1 second to hit cruise
+    constexpr static double KF = 0.05; // Calculated via kF math in the Phoenix documentation
     
-    constexpr static double KF = 0.0494; //.2
-    constexpr static double KP = 0.4; //.2
+    constexpr static double KF = 0.0494;
+    constexpr static double KP = 0.0; //.2
     constexpr static double KI = 0.0; //0
     constexpr static double KD = 0.0; //.1
 }

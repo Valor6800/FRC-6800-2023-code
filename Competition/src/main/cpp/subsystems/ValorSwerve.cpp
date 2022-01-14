@@ -142,8 +142,12 @@ frc::Rotation2d ValorSwerve::getAzimuthRotation2d()
 // The angle coming in is an optimized angle. No further calcs should be done on 'angle'
 void ValorSwerve::setAzimuthRotation2d(frc::Rotation2d angle)
 {
-    double desiredAngle = angle.Radians().to<double>() * MathConstants::radsToTicks;
-    azimuthFalcon->Set(ControlMode::MotionMagic, desiredAngle);
+    double countsBefore = getAzimuthEncoderCount();
+    double revolutionsWheel = angle.Radians().to<double>() / (2.0 * M_PI);
+    double revolutionsFalon = revolutionsWheel / SwerveConstants::AZIMUTH_GEAR_RATIO;
+    double countsFromAngle = revolutionsFalon * SwerveConstants::AZIMUTH_COUNTS_PER_REV;
+    //double countsDelta = fmod(countsFromAngle - countsBefore, SwerveConstants::AZIMUTH_COUNTS_PER_REV / SwerveConstants::AZIMUTH_GEAR_RATIO);
+    azimuthFalcon->Set(ControlMode::MotionMagic, countsBefore + countsFromAngle);
 }
 
 units::meters_per_second_t ValorSwerve::getDriveSpeed_mps()
