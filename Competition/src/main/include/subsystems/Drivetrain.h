@@ -56,6 +56,8 @@ public:
 
         bool tracking;
 
+        bool saveToFileDebouncer;
+
     } state;
 
     /**

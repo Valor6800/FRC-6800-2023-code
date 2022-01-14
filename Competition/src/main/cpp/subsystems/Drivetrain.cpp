@@ -72,7 +72,8 @@ void Drivetrain::init()
     {
         configSwerveModule(i);
     }
-    //resetState();
+    table->PutBoolean("Save Swerve Mag Encoder", false);
+    state.saveToFileDebouncer = false;
 }
 
 void Drivetrain::setController(frc::XboxController *controller)
@@ -138,17 +139,15 @@ void Drivetrain::analyzeDashboard()
         table->PutNumber("Wheel " + std::to_string(i) + " azimuth encoder", swerveModules[i]->getAzimuthEncoderCount());
     }
 
-    if (driverController->GetBackButtonPressed())
-    {
+    // Only save to file once. Wait until switch is toggled to run again
+    if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
         for (ValorSwerve *module : swerveModules)
         {
             module->storeAzimuthZeroReference();
         }
-    }
-
-    if (driverController->GetStartButtonPressed())
-    {
-        resetState();
+        state.saveToFileDebouncer = true;
+    } else if (!table->GetBoolean("Save Swerve Mag Encoder",false)) {
+        state.saveToFileDebouncer = false;
     }
 
     odometry.Update(getHeading(),
