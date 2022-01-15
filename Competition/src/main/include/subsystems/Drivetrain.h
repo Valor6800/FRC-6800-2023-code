@@ -83,6 +83,8 @@ public:
          */
     void resetGyro();
 
+     void setMotorMode(bool);
+
     /**
          * Reset the drive encoders to currently read a position of 0
          */

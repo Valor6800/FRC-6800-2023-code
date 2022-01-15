@@ -52,16 +52,16 @@ namespace DriveConstants {
     constexpr static double TURN_KP = 3.8 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
 
-    constexpr static double KPX = 0.0; //.2
+    constexpr static double KPX = .5; //.2
     constexpr static double KIX = 0.0; //0
     constexpr static double KDX = 0.0; //.1
 
-    constexpr static double KPY = 0.0; //.2
+    constexpr static double KPY = .5; //.2
     constexpr static double KIY = 0.0; //0
     constexpr static double KDY = 0.0; //.1
 
 
-    constexpr static double KPT = 0.0; //.2
+    constexpr static double KPT = -.25; //.2
     constexpr static double KIT = 0.0; //0
     constexpr static double KDT = 0.0; //.1
 

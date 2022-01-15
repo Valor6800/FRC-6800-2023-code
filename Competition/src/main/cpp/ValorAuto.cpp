@@ -13,7 +13,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
     auto exampleTrajectory = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
         {},
-        frc::Pose2d(3_m, 0_m, frc::Rotation2d(0_deg)),
+        frc::Pose2d(0_m, 3_m, frc::Rotation2d(0_deg)),
         config);
 
     frc::ProfiledPIDController<units::radians> thetaController{

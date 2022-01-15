@@ -133,6 +133,9 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
+    frc::Pose2d currentPose = odometry.GetPose();
+    
+
     table->PutNumber("Robot X", getPose_m().X().to<double>());
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
 
@@ -170,6 +173,18 @@ void Drivetrain::analyzeDashboard()
         resetState();
     }
 }
+
+void Drivetrain::setMotorMode(bool enabled){
+    for (int i = 0; i < 4; i++){
+        if (enabled){
+            azimuthMotors[i]->SetNeutralMode(NeutralMode::Brake);
+        }
+        else{
+            azimuthMotors[i]->SetNeutralMode(NeutralMode::Coast);
+        }
+    } 
+}
+
 
 void Drivetrain::assignOutputs()
 {
