@@ -40,7 +40,7 @@ void Drivetrain::configSwerveModule(int i)
 {
     azimuthMotors.push_back(new WPI_TalonFX(DriveConstants::AZIMUTH_CANS[i]));
     azimuthMotors[i]->ConfigFactoryDefault();
-    azimuthMotors[i]->SetInverted(true);
+    azimuthMotors[i]->SetInverted(false);
     azimuthMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     azimuthMotors[i]->ConfigAllowableClosedloopError(0, 0);
     azimuthMotors[i]->Config_IntegralZone(0, 0);
@@ -54,7 +54,7 @@ void Drivetrain::configSwerveModule(int i)
 
     driveMotors.push_back(new WPI_TalonFX(DriveConstants::DRIVE_CANS[i]));
     driveMotors[i]->ConfigFactoryDefault();
-    driveMotors[i]->SetInverted(true);
+    driveMotors[i]->SetInverted(false);
     driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     driveMotors[i]->SetNeutralMode(NeutralMode::Coast);
 
@@ -188,18 +188,18 @@ void Drivetrain::assignOutputs()
 {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    double xSpeed = std::abs(state.leftStickY) > DriveConstants::kDeadbandY ? std::fabs(state.leftStickY) * state.leftStickY : 0 ;
+    double xSpeed = std::abs(state.leftStickY) > DriveConstants::kDeadbandY ? fabs(state.leftStickY) * -state.leftStickY : 0 ;
 
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    double ySpeed = std::abs(state.leftStickX) > DriveConstants::kDeadbandX ? -fabs(state.leftStickX) * state.leftStickX : 0;
+    double ySpeed = std::abs(state.leftStickX) > DriveConstants::kDeadbandX ? fabs(state.leftStickX) * -state.leftStickX : 0;
 
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left (remember, CCW is positive in
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
-    double rot = std::abs(state.rightStickX) > DriveConstants::kDeadbandX ? -fabs(state.rightStickX) * state.rightStickX : 0;
+    double rot = std::abs(state.rightStickX) > DriveConstants::kDeadbandX ? fabs(state.rightStickX) * -state.rightStickX : 0;
 
     units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
@@ -273,7 +273,7 @@ frc::Pose2d Drivetrain::getPose_m()
 //3-5 degrees of drifet after spinning around 10 times
 frc::Rotation2d Drivetrain::getHeading(bool offset)
 {
-    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(-(navX.GetFusedHeading()) * MathConstants::toRadians));
+    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading()) * MathConstants::toRadians);
     if (offset)
     {
         return hasGyroOffset ? rot.RotateBy(gyroOffset) : rot;

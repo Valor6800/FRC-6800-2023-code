@@ -10,6 +10,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
 
     config.SetKinematics(drivetrain->getKinematics());
 
+    frc::TrajectoryConfig reverseConfig(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS},
+                                    units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS});
+
+    reverseConfig.SetKinematics(drivetrain->getKinematics());
+    reverseConfig.SetReversed(true);
+
     frc::ProfiledPIDController<units::radians> thetaController{
             DriveConstants::KPT,
             DriveConstants::KIT,
@@ -39,19 +45,19 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
         frc::Pose2d(2_m, 2_m, frc::Rotation2d(0_deg)),
         {},
         frc::Pose2d(0_m, 2_m, frc::Rotation2d(0_deg)),
-        config);
+        reverseConfig);
 
     auto move4 = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 2_m, frc::Rotation2d(0_deg)),
         {},
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
-        config);
+        reverseConfig);
 
     auto moveTest = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
         {},
-        frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg)),
-        config);
+        frc::Pose2d(-2_m, 0_m, frc::Rotation2d(0_deg)),
+        reverseConfig);
 
     
     frc2::SwerveControllerCommand<4> cmd_move_move1(
@@ -110,15 +116,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
     );
 
     frc2::SequentialCommandGroup *move = new frc2::SequentialCommandGroup();
-    // move->AddCommands
-    // (cmd_move_move1,
-    // frc2::WaitCommand((units::second_t)1), 
-    // cmd_move_move2, 
-    // frc2::WaitCommand((units::second_t)1), 
-    // cmd_move_move3, 
-    // frc2::WaitCommand((units::second_t)1), 
-    // cmd_move_move4);
-    move->AddCommands(cmd_move_moveTest);
+    move->AddCommands
+    (cmd_move_move1,
+    cmd_move_move2, 
+    cmd_move_move3, 
+    cmd_move_move4);
+    //move->AddCommands(cmd_move_moveTest);
 
     autos["Move"] = move;
 }

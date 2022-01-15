@@ -101,7 +101,7 @@ void ValorSwerve::loadAndSetAzimuthZeroReference()
     // 1500 % 
 
     // Set the azimuth offset to the calculated setpoint (which will take over in teleop)
-    azimuthFalcon->SetSelectedSensorPosition(-azimuthSetpoint, 0, 10);
+    azimuthFalcon->SetSelectedSensorPosition(azimuthSetpoint, 0, 10);
 }
 
 WPI_TalonFX* ValorSwerve::getAzimuthFalcon()
