@@ -124,8 +124,6 @@ void Drivetrain::assessInputs()
     state.leftBumperPressed = driverController->GetLeftBumperPressed();
     state.rightBumperPressed = driverController->GetRightBumperPressed();
 
-    state.backButtonPressed = driverController->GetBackButtonPressed();
-
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
     state.tracking = driverController->GetRightBumper();
@@ -133,13 +131,13 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
-    frc::Pose2d currentPose = odometry.GetPose();
-    
+    state.backButtonPressed = driverController->GetBackButtonPressed();
 
     table->PutNumber("Robot X", getPose_m().X().to<double>());
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
+    table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
 
-    table->PutNumber("Gyro fused", getHeading().Degrees().to<double>());
+    table->PutNumber("Gyro fused", getHeading(true).Degrees().to<double>());
     table->PutNumber("left stick y", state.leftStickY);
     table->PutNumber("left stick x", state.leftStickX);
     table->PutNumber("right stick x", state.rightStickX);
@@ -163,7 +161,7 @@ void Drivetrain::analyzeDashboard()
         state.saveToFileDebouncer = false;
     }
 
-    odometry.Update(getHeading(),
+    odometry.Update(getHeading(true),
                     swerveModules[0]->getState(),
                     swerveModules[1]->getState(),
                     swerveModules[2]->getState(),
@@ -207,15 +205,15 @@ void Drivetrain::assignOutputs()
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::radians_per_second_t rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_MAX_SPEED_RPS};
 
-    double heading = getHeading().Degrees().to<double>();
-    if (state.xButtonPressed) {
-        rotRPS = units::radians_per_second_t{angleWrap(90.0 - heading) * DriveConstants::TURN_KP};
+    double heading = getHeading(true).Degrees().to<double>();
+    if (state.bButtonPressed) {
+        rotRPS = units::radians_per_second_t{angleWrap(heading - 90) * DriveConstants::TURN_KP};
     } else if (state.aButtonPressed) {
-        rotRPS = units::radians_per_second_t{angleWrap(-180.0 - heading) * DriveConstants::TURN_KP};
-    } else if (state.bButtonPressed) {
-        rotRPS = units::radians_per_second_t{angleWrap(-90.0 - heading) * DriveConstants::TURN_KP};
+        rotRPS = units::radians_per_second_t{angleWrap(heading - 180) * DriveConstants::TURN_KP};
+    } else if (state.xButtonPressed) {
+        rotRPS = units::radians_per_second_t{angleWrap(heading - 270) * DriveConstants::TURN_KP};
     } else if (state.yButtonPressed) {
-        rotRPS = units::radians_per_second_t{angleWrap(0.0 - heading) * DriveConstants::TURN_KP};
+        rotRPS = units::radians_per_second_t{angleWrap(heading) * DriveConstants::TURN_KP};
     }
 
     // Limelight Tracking
@@ -273,10 +271,14 @@ frc::Pose2d Drivetrain::getPose_m()
 
 //.3 degrees of drift after 1 minute of sitting still
 //3-5 degrees of drifet after spinning around 10 times
-frc::Rotation2d Drivetrain::getHeading()
+frc::Rotation2d Drivetrain::getHeading(bool offset)
 {
-    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading() * MathConstants::toRadians));
-    return hasGyroOffset ? rot.RotateBy(gyroOffset) : rot;
+    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(-(navX.GetFusedHeading()) * MathConstants::toRadians));
+    if (offset)
+    {
+        return hasGyroOffset ? rot.RotateBy(gyroOffset) : rot;
+    }
+    return rot;
 }
 
 double Drivetrain::getGyroRate()
@@ -299,7 +301,7 @@ void Drivetrain::setGyroOffset(frc::Rotation2d offset)
 
 void Drivetrain::resetOdometry(frc::Pose2d pose)
 {
-    odometry.ResetPosition(pose, navX.GetRotation2d().RotateBy(gyroOffset));
+    odometry.ResetPosition(pose, getHeading(true));
 }
 
 void Drivetrain::resetDriveEncoders()
@@ -313,7 +315,7 @@ void Drivetrain::resetDriveEncoders()
 void Drivetrain::resetGyro()
 {
     //navX.ZeroYaw(); can't reset fused heading
-    setGyroOffset(frc::Rotation2d(units::radian_t(-navX.GetFusedHeading() * MathConstants::toRadians)));
+    setGyroOffset(-getHeading(false));
     std::cout << "reset" << std::endl;
 }
 
@@ -337,7 +339,7 @@ wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::meters_
     frc::ChassisSpeeds chassisSpeeds = isFOC ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx_mps,
                                                                                            vy_mps,
                                                                                            omega_radps,
-                                                                                           -getHeading())
+                                                                                           getHeading(true))
                                              : frc::ChassisSpeeds{vx_mps, vy_mps, omega_radps};
     auto states = kinematics.ToSwerveModuleStates(chassisSpeeds);
     kinematics.DesaturateWheelSpeeds(&states, units::meters_per_second_t{SwerveConstants::DRIVE_MAX_SPEED_MPS});

@@ -61,9 +61,9 @@ namespace DriveConstants {
     constexpr static double KDY = 0.0; //.1
 
 
-    constexpr static double KPT = -.25; //.2
+    constexpr static double KPT = .67; //.2
     constexpr static double KIT = 0.0; //0
-    constexpr static double KDT = 0.0; //.1
+    constexpr static double KDT = .25; //.1
 
 }
 
@@ -91,8 +91,8 @@ namespace SwerveConstants {
     constexpr static double AUTO_MAX_ACCEL_MPSS = AUTO_MAX_SPEED_MPS * 1;
 
     static double ROTATION_MAX_SPEED_RPS = DRIVE_MAX_SPEED_MPS / std::hypot(module_diff / 2, module_diff / 2);
-    static double AUTO_MAX_ROTATION_RPS = ROTATION_MAX_SPEED_RPS;
-    static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 1;
+    static double AUTO_MAX_ROTATION_RPS = 4 * M_PI;
+    static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 2;
 
     constexpr static double MOTION_CRUISE_VELOCITY = 17000; // 21.9k is max. We chose 80%ish of that number
     constexpr static double MOTION_ACCELERATION = MOTION_CRUISE_VELOCITY * 15; // Acceleration matching cruise velocity means 1 second to hit cruise

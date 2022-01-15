@@ -131,7 +131,7 @@ public:
          *   past from 360 to 0 on the second time around.
          * The angle is expected to increase as the gyro turns clockwise
          */
-    frc::Rotation2d getHeading();
+    frc::Rotation2d getHeading(bool);
 
      //returns angle within the range [-180, 180]
     double angleWrap(double degrees);
