@@ -46,22 +46,22 @@ namespace DriveConstants {
     constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1}; //{1, 1, -1, -1};
     constexpr static int MODULE_DIFF_YS[4] = {-1, 1, -1, 1}; //{1, -1, 1, -1};
 
-    constexpr static double kDeadbandX = 0.02;
-    constexpr static double kDeadbandY = 0.02;
+    constexpr static double kDeadbandX = 0.01;
+    constexpr static double kDeadbandY = 0.01;
 
-    constexpr static double TURN_KP = 2.5 * M_PI / 180.0;
+    constexpr static double TURN_KP = 3.8 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
 
-    constexpr static double KPX = 0.5; //.2
+    constexpr static double KPX = 0.0; //.2
     constexpr static double KIX = 0.0; //0
     constexpr static double KDX = 0.0; //.1
 
-    constexpr static double KPY = 0.5; //.2
+    constexpr static double KPY = 0.0; //.2
     constexpr static double KIY = 0.0; //0
     constexpr static double KDY = 0.0; //.1
 
 
-    constexpr static double KPT = 0.5; //.2
+    constexpr static double KPT = 0.0; //.2
     constexpr static double KIT = 0.0; //0
     constexpr static double KDT = 0.0; //.1
 

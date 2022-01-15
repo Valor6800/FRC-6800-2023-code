@@ -12,6 +12,7 @@
 #include "subsystems/Drivetrain.h"
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/ChassisSpeeds.h>
+#include <iostream>
 
 Drivetrain::Drivetrain() : ValorSubsystem(),
                            driverController(NULL),
@@ -55,7 +56,7 @@ void Drivetrain::configSwerveModule(int i)
     driveMotors[i]->ConfigFactoryDefault();
     driveMotors[i]->SetInverted(true);
     driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
-    driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
+    driveMotors[i]->SetNeutralMode(NeutralMode::Coast);
 
     magEncoders.push_back(new frc::DutyCycleEncoder(DriveConstants::MAG_ENCODER_PORTS[i]));
     magEncoders[i]->SetDistancePerRotation(4096.0);
@@ -123,6 +124,8 @@ void Drivetrain::assessInputs()
     state.leftBumperPressed = driverController->GetLeftBumperPressed();
     state.rightBumperPressed = driverController->GetRightBumperPressed();
 
+    state.backButtonPressed = driverController->GetBackButtonPressed();
+
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
     state.tracking = driverController->GetRightBumper();
@@ -134,6 +137,9 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
 
     table->PutNumber("Gyro fused", getHeading().Degrees().to<double>());
+    table->PutNumber("left stick y", state.leftStickY);
+    table->PutNumber("left stick x", state.leftStickX);
+    table->PutNumber("right stick x", state.rightStickX);
 
     for (int i = 0; i < 4; i++)
     {
@@ -159,6 +165,10 @@ void Drivetrain::analyzeDashboard()
                     swerveModules[1]->getState(),
                     swerveModules[2]->getState(),
                     swerveModules[3]->getState());
+    
+    if(state.backButtonPressed){
+        resetState();
+    }
 }
 
 void Drivetrain::assignOutputs()
@@ -222,7 +232,7 @@ void Drivetrain::assignOutputs()
         }
     }
 
-    //drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+    drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
 
 void Drivetrain::resetState()
@@ -246,6 +256,8 @@ frc::Pose2d Drivetrain::getPose_m()
     return odometry.GetPose();
 }
 
+//.3 degrees of drift after 1 minute of sitting still
+//3-5 degrees of drifet after spinning around 10 times
 frc::Rotation2d Drivetrain::getHeading()
 {
     frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading() * MathConstants::toRadians));
@@ -287,6 +299,7 @@ void Drivetrain::resetGyro()
 {
     //navX.ZeroYaw(); can't reset fused heading
     setGyroOffset(frc::Rotation2d(units::radian_t(-navX.GetFusedHeading() * MathConstants::toRadians)));
+    std::cout << "reset" << std::endl;
 }
 
 void Drivetrain::drive(units::meters_per_second_t vx_mps, units::meters_per_second_t vy_mps, units::radians_per_second_t omega_radps, bool isFOC)
