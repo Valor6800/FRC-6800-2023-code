@@ -40,7 +40,7 @@ void Robot::DisabledPeriodic() {}
  */
 void Robot::AutonomousInit() {
     m_container.m_drivetrain.resetState();
-    //m_container.m_drivetrain.setMotorMode(true);
+    m_container.m_drivetrain.setMotorMode(true);
 
     m_autonomousCommand = m_container.GetAutonomousCommand();
 

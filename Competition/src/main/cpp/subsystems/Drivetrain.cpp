@@ -175,10 +175,10 @@ void Drivetrain::analyzeDashboard()
 void Drivetrain::setMotorMode(bool enabled){
     for (int i = 0; i < 4; i++){
         if (enabled){
-            azimuthMotors[i]->SetNeutralMode(NeutralMode::Brake);
+            driveMotors[i]->SetNeutralMode(NeutralMode::Brake);
         }
         else{
-            azimuthMotors[i]->SetNeutralMode(NeutralMode::Coast);
+            driveMotors[i]->SetNeutralMode(NeutralMode::Coast);
         }
     } 
 }

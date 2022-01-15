@@ -32,33 +32,20 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
     auto move1 = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
         {},
-        frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg)),
+        frc::Pose2d(1.234_m, 0_m, frc::Rotation2d(0_deg)),
         config);
 
     auto move2 = frc::TrajectoryGenerator::GenerateTrajectory(
-        frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg)),
-        {},
-        frc::Pose2d(2_m, 2_m, frc::Rotation2d(0_deg)),
-        config);
+        frc::Pose2d(1.234_m, 0_m, frc::Rotation2d(0_deg)),
+        {frc::Translation2d{.867_m, -1.25_m}},
+        frc::Pose2d(0_m, -2.516_m, frc::Rotation2d(-122.24_deg)),
+        reverseConfig);
 
     auto move3 = frc::TrajectoryGenerator::GenerateTrajectory(
-        frc::Pose2d(2_m, 2_m, frc::Rotation2d(0_deg)),
-        {},
-        frc::Pose2d(0_m, 2_m, frc::Rotation2d(0_deg)),
+        frc::Pose2d(0_m, -2.516_m, frc::Rotation2d(-122.24_deg)),
+        {frc::Translation2d{-.2_m, -4_m}},
+        frc::Pose2d(.2_m, -6_m, frc::Rotation2d(-65_deg)),
         reverseConfig);
-
-    auto move4 = frc::TrajectoryGenerator::GenerateTrajectory(
-        frc::Pose2d(0_m, 2_m, frc::Rotation2d(0_deg)),
-        {},
-        frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
-        reverseConfig);
-
-    auto moveTest = frc::TrajectoryGenerator::GenerateTrajectory(
-        frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
-        {},
-        frc::Pose2d(-2_m, 0_m, frc::Rotation2d(0_deg)),
-        reverseConfig);
-
     
     frc2::SwerveControllerCommand<4> cmd_move_move1(
         move1,
@@ -93,35 +80,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
         {drivetrain}
     );
 
-    frc2::SwerveControllerCommand<4> cmd_move_move4(
-        move4,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
-
-    frc2::SwerveControllerCommand<4> cmd_move_moveTest(
-        moveTest,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
-
     frc2::SequentialCommandGroup *move = new frc2::SequentialCommandGroup();
     move->AddCommands
     (cmd_move_move1,
-    cmd_move_move2, 
-    cmd_move_move3, 
-    cmd_move_move4);
-    //move->AddCommands(cmd_move_moveTest);
+    cmd_move_move2,
+    cmd_move_move3); 
 
     autos["Move"] = move;
 }

@@ -52,18 +52,18 @@ namespace DriveConstants {
     constexpr static double TURN_KP = 3.8 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
 
-    constexpr static double KPX = .5; //.2
+    constexpr static double KPX = 1.5; //.2
     constexpr static double KIX = 0.0; //0
     constexpr static double KDX = 0.0; //.1
 
-    constexpr static double KPY = .5; //.2
+    constexpr static double KPY = 1.5; //.2
     constexpr static double KIY = 0.0; //0
     constexpr static double KDY = 0.0; //.1
 
 
-    constexpr static double KPT = .67; //.2
+    constexpr static double KPT = 4.5; //.2
     constexpr static double KIT = 0.0; //0
-    constexpr static double KDT = .25; //.1
+    constexpr static double KDT = 0.0; //.1
 
 }
 
@@ -92,10 +92,10 @@ namespace SwerveConstants {
 
     static double ROTATION_MAX_SPEED_RPS = DRIVE_MAX_SPEED_MPS / std::hypot(module_diff / 2, module_diff / 2);
     static double AUTO_MAX_ROTATION_RPS = 4 * M_PI;
-    static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 2;
+    static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 1;
 
     constexpr static double MOTION_CRUISE_VELOCITY = 17000; // 21.9k is max. We chose 80%ish of that number
-    constexpr static double MOTION_ACCELERATION = MOTION_CRUISE_VELOCITY * 15; // Acceleration matching cruise velocity means 1 second to hit cruise
+    constexpr static double MOTION_ACCELERATION = MOTION_CRUISE_VELOCITY * 20; // Acceleration matching cruise velocity means 1 second to hit cruise
     constexpr static double KF = 0.05; // Calculated via kF math in the Phoenix documentation
     
     constexpr static double KP = 0.2; //.2
