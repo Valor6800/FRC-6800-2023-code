@@ -84,7 +84,7 @@ void Lift::assignOutputs() {
     if (state.liftStateRotate == LiftRotateState::Disabled){
         RotateMotor.Set(0);
     } else if (state.liftStateRotate == LiftRotateState::Rotate){
-        RotateMotor.set(LiftConstants::DEFAULT_ROTATE_SPD);
+        RotateMotor.set(state.operator_leftStickY);
     } 
     
 }

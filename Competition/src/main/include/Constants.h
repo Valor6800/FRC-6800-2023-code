@@ -124,7 +124,6 @@ namespace LiftConstants{
     constexpr static double DEFAULT_AUX_RETRAT_SPD = -0.2;
 
 
-    constexpr static double DEFAULT_ROTATE_SPD = 0.25;
 
 
 }
