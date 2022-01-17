@@ -1,8 +1,8 @@
 #include "ValorAuto.h"
+#include <iostream>
 
 ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
-{
-
+{    
     // See: https://github.com/wpilibsuite/allwpilib/blob/v2022.1.1/wpilibcExamples/src/main/cpp/examples/SwerveControllerCommand/cpp/RobotContainer.cpp
 
     frc::TrajectoryConfig config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS},
@@ -80,18 +80,22 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
         {drivetrain}
     );
 
-    frc2::SequentialCommandGroup *move = new frc2::SequentialCommandGroup();
-    move->AddCommands
+    frc2::SequentialCommandGroup *shoot4 = new frc2::SequentialCommandGroup();
+    shoot4->AddCommands
     (cmd_move_move1,
     cmd_move_move2,
     cmd_move_move3); 
 
-    autos["Move"] = move;
+    frc2::SequentialCommandGroup *leaveTarmac = new frc2::SequentialCommandGroup();
+    leaveTarmac->AddCommands
+    (cmd_move_move1);
+
+    m_chooser.SetDefaultOption("basic movement auto", leaveTarmac);
+    m_chooser.AddOption("4 ball auto", shoot4);
+    frc::SmartDashboard::PutData(&m_chooser);
+    std::cout << "test" << std::endl;
 }
 
 frc2::Command* ValorAuto::getCurrentAuto() {
-    std::string auto_name = "Move";
-    // @TODO read auto name from driver station
-    auto selected_trajectories = autos[auto_name];
-    return selected_trajectories;
+    return m_chooser.GetSelected();
 }

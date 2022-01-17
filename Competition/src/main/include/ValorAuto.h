@@ -7,6 +7,8 @@
 #include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
 #include <frc/trajectory/Trajectory.h>
 #include <frc/trajectory/TrajectoryGenerator.h>
+#include <frc/smartdashboard/SendableChooser.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 #include <frc2/command/SwerveControllerCommand.h>
 #include <frc2/command/Command.h>
@@ -26,10 +28,9 @@ class ValorAuto {
         frc2::Command* getCurrentAuto();
 
     private:
-
         Drivetrain *drivetrain;
-
-        std::map<std::string, frc2::SequentialCommandGroup*> autos;
+        
+        frc::SendableChooser<frc2::Command*> m_chooser;
 };
 
 #endif
