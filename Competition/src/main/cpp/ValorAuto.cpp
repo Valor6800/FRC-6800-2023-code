@@ -1,5 +1,4 @@
 #include "ValorAuto.h"
-#include <iostream>
 
 ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
 {    
@@ -93,7 +92,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
     m_chooser.SetDefaultOption("basic movement auto", leaveTarmac);
     m_chooser.AddOption("4 ball auto", shoot4);
     frc::SmartDashboard::PutData(&m_chooser);
-    std::cout << "test" << std::endl;
 }
 
 frc2::Command* ValorAuto::getCurrentAuto() {
