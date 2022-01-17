@@ -111,4 +111,21 @@ namespace MathConstants{
     constexpr static double radsToTicks = 1 / ticksToRads;
 }
 
+namespace LiftConstants{
+    constexpr static int MAIN_CAN_ID = 16;
+    constexpr static int MAIN_FOLLOW_CAN_ID = 17;
+    constexpr static int AUX_CAN_ID = 18;
+    constexpr static int ROTATE_CAN_ID = 19;
+
+    constexpr static double DEFAULT_EXTEND_SPD = 0.2;
+    constexpr static double DEFAULT_RETRACT_SPD = -0.2;
+
+    constexpr static double DEFAULT_AUX_EXTEND_SPD = 0.2;
+    constexpr static double DEFAULT_AUX_RETRAT_SPD = -0.2;
+
+
+
+
+}
+
 #endif
