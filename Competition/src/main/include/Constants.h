@@ -103,6 +103,37 @@ namespace SwerveConstants {
     constexpr static double KD = 0.1; //.1
 }
 
+namespace ShooterConstants{
+    constexpr static int CAN_ID_FLYWHEEL_FOLLOW = 13;
+    constexpr static int CAN_ID_FLYWHEEL_LEAD = 14;
+    constexpr static int CAN_ID_TURRET = 12;
+    constexpr static int CAN_ID_HOOD = 12;    
+    
+    constexpr static double shooterKP = 0.001;
+    constexpr static double shooterKI = 0.00001;
+    constexpr static double shooterKD = 0;
+    constexpr static double shooterKIZ = 0;
+    constexpr static double shooterKFF = 0.00023;
+    constexpr static double shooterMax = 1;
+    constexpr static double MaxRPM = 5700;
+
+
+    constexpr static double kDeadband = .05;
+
+    constexpr static double pDeadband = .1;
+    constexpr static double TURRET_SPEED_MULTIPLIER = 0.5;
+    constexpr static double pSoftDeadband = 0.06;
+
+    constexpr static double homePosition = 0;
+    constexpr static double homeFrontPosition = 153;
+
+    // Encoder ticks off of center
+    // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
+    constexpr static double limitLeft = homePosition + 200; // 20;
+    constexpr static double limitRight = homePosition - 15; // -15;
+
+}
+
 namespace MathConstants{
     constexpr static double toRadians = M_PI / 180.0;
     constexpr static double toDegrees = 180.0 / M_PI;
