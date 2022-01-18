@@ -169,10 +169,6 @@ namespace ShooterConstants{
     constexpr static double falconMaxRPM = 6380;
     constexpr static double falconGearRatio = 1;
 
-
-
-
-
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
     constexpr static double limitLeft = homePosition + 200; // 20;
