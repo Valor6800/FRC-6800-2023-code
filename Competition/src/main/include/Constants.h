@@ -190,6 +190,15 @@ namespace ShooterConstants{
     constexpr static double ticsPerRev = 2048;
 }
 
+namespace FeederConstants{
+    constexpr static int MOTOR_INTAKE_CAN_ID = 9;
+    constexpr static int MOTOR_STAGE1_CAN_ID = 10;
+    constexpr static int MOTOR_STAGE2_CAN_ID = 11;
+
+    constexpr static int BANNER_LOWER_DIO_PORT = 5;
+    constexpr static int BANNER_UPPER_DIO_PORT = 6;
+}
+
 namespace MathConstants{
     constexpr static double toRadians = M_PI / 180.0;
     constexpr static double toDegrees = 180.0 / M_PI;
