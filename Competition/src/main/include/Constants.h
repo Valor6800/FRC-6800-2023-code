@@ -30,6 +30,11 @@
 namespace OIConstants {
     constexpr static int GAMEPAD_BASE_LOCATION = 1;
     constexpr static int GAMEPAD_OPERATOR_LOCATION = 0;
+
+    constexpr static int dpadUp = 0;
+    constexpr static int dpadRight = 90;
+    constexpr static int dpadDown = 180;
+    constexpr static int dpadLeft = 270;
 }
 
 namespace LimelightConstants {
@@ -121,10 +126,9 @@ namespace LiftConstants{
     constexpr static double DEFAULT_RETRACT_SPD = -0.2;
 
     constexpr static double DEFAULT_AUX_EXTEND_SPD = 0.2;
-    constexpr static double DEFAULT_AUX_RETRAT_SPD = -0.2;
+    constexpr static double DEFAULT_AUX_RETRACT_SPD = -0.2;
 
-
-
+    constexpr static double DEFAULT_ROTATE_SPD = 0.2;
 
 }
 
