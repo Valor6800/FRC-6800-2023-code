@@ -122,6 +122,8 @@ void Feeder::assignOutputs()
         motor_stage1.Set(0);
         motor_stage2.Set(0);
     }
+
+    // @TODO use the variables to set the speeds
 }
 
 void Feeder::resetState()
