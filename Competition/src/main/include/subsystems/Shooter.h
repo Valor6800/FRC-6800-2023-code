@@ -37,47 +37,42 @@ public:
     void init();
     void setController(frc::XboxController *controller);
 
-    void setDefaultState();
     void assessInputs();
     void analyzeDashboard();
     void assignOutputs();
-
 
     void resetState();
     void resetEncoder();
 
     enum TurretState{
-         DISABLED_TURRET,
-         MANUAL_TURRET,
-         HOME,
-         DEFAULT,
-         PRIMED
+         TURRET_DISABLE,
+         TURRET_MANUAL,
+         TURRET_HOME,
+         TURRET_DEFAULT,
+         TURRET_PRIME
     };
 
     enum HoodState{
-         DISABLED_HOOD,
-         PRIMED
+         HOOD_DISABLE,
+         HOOD_PRIME
      };
 
      enum FlywheelState{
-          DISABLED_FLYWHEEL,
-          DEFAULT,
-          PRIMED
+          FLYWHEEL_DISABLE,
+          FLYWHEEL_DEFAULT,
+          FLYWHEEL_PRIME
      };
 
     struct x
     {
-          bool shooterState;
           FlywheelState flywheelState;
           HoodState hoodState;
           TurretState turretState;
-
 
           double leftStickX;
      
           bool backButton;
           bool startButton;
-
 
 
           double error;
@@ -89,11 +84,7 @@ public:
           double turretSetpoint;
           int flywheelTarget;
           double hoodTarget;
-
-
     } state;
-
-
 
 private:
      void limelightTrack(bool track);
