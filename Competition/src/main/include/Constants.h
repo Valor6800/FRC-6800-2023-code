@@ -109,14 +109,29 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 12;    
     
-    constexpr static double shooterKP = 0.001;
-    constexpr static double shooterKI = 0.00001;
-    constexpr static double shooterKD = 0;
-    constexpr static double shooterKIZ = 0;
-    constexpr static double shooterKFF = 0.00023;
-    constexpr static double shooterMax = 1;
+    constexpr static double flywheelKP = 0.001;
+    constexpr static double flywheelKI = 0.00001;
+    constexpr static double flywheelKD = 0;
+    constexpr static double flywheelKIZ = 0;
+    constexpr static double flywheelKFF = 0.00023;
+    constexpr static double flywheelMax = 1;
     constexpr static double MaxRPM = 5700;
 
+    constexpr static double flywheelMaxV = 2000;
+    constexpr static double flywheelMinV = 0;
+    constexpr static double flywheelMaxAccel = 1500;
+    constexpr static double flywheelAllowedError = 0;
+
+    constexpr static double turretKP = 0.001;
+    constexpr static double turretKI = 0.00001;
+    constexpr static double turretKD = 0;
+    constexpr static double turretKIZ = 0;
+    constexpr static double turretKFF = 0.00023;
+
+    constexpr static double turretMaxV = 2000;
+    constexpr static double turretMinV = 0;
+    constexpr static double turretMaxAccel = 1500;
+    constexpr static double turretAllowedError = 0;
 
     constexpr static double kDeadband = .05;
 
@@ -131,6 +146,15 @@ namespace ShooterConstants{
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
     constexpr static double limitLeft = homePosition + 200; // 20;
     constexpr static double limitRight = homePosition - 15; // -15;
+
+    constexpr static double limitTop = homePosition + 50;
+    constexpr static double limitBottom = homePosition - 5;
+
+    constexpr static double hubX = 0;
+    constexpr static double hubY = 0;
+
+    constexpr static double ticsPerRev = 4096;
+    constexpr static double gearRatio = 1;
 
 }
 

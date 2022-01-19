@@ -10,6 +10,7 @@
 #include "ValorSubsystem.h"
 #include "Constants.h"
 #include "ValorSwerve.h"
+#include "Drivetrain.h"
 #include <vector>
 
 #include <rev/CANSparkMax.h>
@@ -32,7 +33,7 @@
 class Shooter : public ValorSubsystem
 {
 public:
-    Shooter();
+    Shooter(Drivetrain * dt);
 
     void init();
     void setController(frc::XboxController *controller);
@@ -42,27 +43,29 @@ public:
     void analyzeDashboard();
     void assignOutputs();
 
-
     void resetState();
     void resetEncoder();
+
+    double getTargetTics(double, double, double, double, double, double, double);
+    double convertTargetTics(double, double, double);
 
     enum TurretState{
          DISABLED_TURRET,
          MANUAL_TURRET,
-         HOME,
-         DEFAULT,
-         PRIMED
+         HOME_TURRET,
+         DEFAULT_TURRET,
+         PRIMED_TURRET
     };
 
     enum HoodState{
          DISABLED_HOOD,
-         PRIMED
+         PRIMED_HOOD
      };
 
      enum FlywheelState{
           DISABLED_FLYWHEEL,
-          DEFAULT,
-          PRIMED
+          DEFAULT_FLYWHEEL,
+          PRIMED_FLYWHEEL
      };
 
     struct x
@@ -85,8 +88,8 @@ public:
           double flywheelOffesetPow;
           double limelightDistance;
 
-          double turretTarget;
-          double turretSetpoint;
+          double turretVelocityTarget;
+          double turretPositionSetpoint;
           int flywheelTarget;
           double hoodTarget;
 
@@ -103,15 +106,19 @@ private:
 
      rev::CANSparkMax turret;
      rev::SparkMaxRelativeEncoder turretEncoder = turret.GetEncoder();
+     rev::SparkMaxPIDController turretPidController = turret.GetPIDController();
+
 
      rev::CANSparkMax hood;
      rev::SparkMaxRelativeEncoder hoodEncoder = hood.GetEncoder();
 
-     rev::SparkMaxPIDController pidController = flywheel_lead.GetPIDController();
+     rev::SparkMaxPIDController flywheelPidController = flywheel_lead.GetPIDController();
      rev::SparkMaxRelativeEncoder flywheelEncoder = flywheel_lead.GetEncoder();
 
      frc::XboxController *operatorController;
      std::shared_ptr<nt::NetworkTable> limeTable;
+
+     Drivetrain *odom;
 };
 
 #endif
