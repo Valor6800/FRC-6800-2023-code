@@ -1,3 +1,8 @@
+#ifndef VALOR_SWERVE_H
+#define VALOR_SWERVE_H
+
+#pragma once
+
 #include <frc/Filesystem.h>
 #include <frc/geometry/Rotation2d.h>
 #include <frc/geometry/Translation2d.h>
@@ -109,3 +114,5 @@ private:
     frc::Translation2d wheelLocation_m;
     frc::Rotation2d previousAngle;
 };
+
+#endif

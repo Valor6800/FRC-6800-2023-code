@@ -14,26 +14,26 @@
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <iostream>
 
-Shooter::Shooter(Drivetrain *dt) : ValorSubsystem(),
-                     flywheel_follow{ShooterConstants::CAN_ID_FLYWHEEL_FOLLOW, rev::CANSparkMax::MotorType::kBrushless},
+Shooter::Shooter() : ValorSubsystem(),
                      flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD, rev::CANSparkMax::MotorType::kBrushless},
+                     flywheel_follow{ShooterConstants::CAN_ID_FLYWHEEL_FOLLOW, rev::CANSparkMax::MotorType::kBrushless},
                      turret{ShooterConstants::CAN_ID_TURRET, rev::CANSparkMax::MotorType::kBrushless},
                      hood{ShooterConstants::CAN_ID_HOOD, rev::CANSparkMax::MotorType::kBrushless},
-                     operatorController(NULL),
-                     odom{new Drivetrain()}
-                 
+                     operatorController(NULL)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
 }
 
+void Shooter::setDrivetrain(Drivetrain *dt){
+    odom = dt;
+}
 
 void Shooter::init()
 {
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Shooter");
     table->PutBoolean("Home Turret", false);
-    
     
     flywheel_follow.RestoreFactoryDefaults();
     flywheel_lead.RestoreFactoryDefaults();
@@ -49,7 +49,6 @@ void Shooter::init()
 
     flywheel_lead.Follow(rev::CANSparkMax::kFollowerDisabled, false);
     flywheel_follow.Follow(flywheel_lead, true);
-
 
     turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
     turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::limitLeft);
@@ -92,11 +91,13 @@ void Shooter::init()
 
 void Shooter::resetState(){
     resetEncoder();
+    state.turretState = TurretState::TURRET_DEFAULT;
+    state.hoodState = HoodState::HOOD_DISABLE;
+    state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
 }
 
 void Shooter::resetEncoder(){
     turretEncoder.SetPosition(0);
-    flywheelEncoder.SetPosition(0);
     hoodEncoder.SetPosition(0);
 }
 
@@ -115,40 +116,36 @@ void Shooter::assessInputs()
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
-        state.turretState = TurretState::MANUAL_TURRET;
+        state.turretState = TurretState::TURRET_MANUAL;
     }
     else if(state.startButton){
-       state.turretState = TurretState::PRIMED_TURRET;
+       state.turretState = TurretState::TURRET_PRIME;
     }
     else if(state.backButton){
-        state.turretState = TurretState::DEFAULT_TURRET;
+        state.turretState = TurretState::TURRET_DEFAULT;
     }
-
 
     //Hood
     if(state.startButton){
-        state.hoodState = HoodState::PRIMED_HOOD;
+        state.hoodState = HoodState::HOOD_PRIME;
     }
     else if(state.backButton){
-        state.hoodState = HoodState::DISABLED_HOOD;
+        state.hoodState = HoodState::HOOD_DISABLE;
     }
 
     //Flywheel
     if(state.startButton){
-        state.flywheelState = FlywheelState::PRIMED_FLYWHEEL;
+        state.flywheelState = FlywheelState::FLYWHEEL_PRIME;
     }
     else if (state.backButton){
-        state.flywheelState = FlywheelState::DEFAULT_FLYWHEEL;
+        state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
     }
-
-
-
 }
 
 void Shooter::analyzeDashboard()
 {
     if(table->GetBoolean("Home Turret", false)){
-        state.turretState = TurretState::HOME_TURRET;
+        state.turretState = TurretState::TURRET_HOME;
     }
 }
 
@@ -159,12 +156,12 @@ void Shooter::assignOutputs()
     bool useSmartMotion = false;
 
     //DISABLED
-    if(state.turretState == TurretState::DISABLED_TURRET){
+    if(state.turretState == TurretState::TURRET_DISABLE){
         state.turretVelocityTarget = 0;
     }
 
     //MANUAL
-    else if (state.turretState == TurretState::MANUAL_TURRET) {
+    else if (state.turretState == TurretState::TURRET_MANUAL) {
         int sign = state.leftStickX >= 0 ? 1 : -1;
         state.turretVelocityTarget = sign * std::pow(state.leftStickX, 2) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
 
@@ -181,19 +178,19 @@ void Shooter::assignOutputs()
     }
 
     //HOME
-    else if(state.turretState == TurretState::HOME_TURRET){
+    else if(state.turretState == TurretState::TURRET_HOME){
         state.turretPositionSetpoint = ShooterConstants::homeFrontPosition;
         useSmartMotion = true;
     }
 
     //PRIMED
-    else if (state.turretState == TurretState::PRIMED_TURRET){
+    else if (state.turretState == TurretState::TURRET_PRIME){
         //limelight
         useSmartMotion = true;
     }
 
     //DEFAULT
-    else if (state.turretState == TurretState::DEFAULT_TURRET){
+    else if (state.turretState == TurretState::TURRET_DEFAULT){
         //Odometry tracking
         frc::Pose2d currentPose = odom->getPose_m();
         state.turretPositionSetpoint = getTargetTics(currentPose.X().to<double>(), currentPose.Y().to<double>(), currentPose.Rotation().Radians().to<double>(),
@@ -209,41 +206,38 @@ void Shooter::assignOutputs()
         turretPidController.SetReference(state.turretVelocityTarget, rev::ControlType::kSmartVelocity);
     }
     
-    if(state.flywheelState == FlywheelState::DISABLED_FLYWHEEL){
+    if(state.flywheelState == FlywheelState::FLYWHEEL_DISABLE){
         state.flywheelTarget = 0;
     }
-    else if(state.flywheelTarget == FlywheelState::PRIMED_FLYWHEEL){
+    else if(state.flywheelTarget == FlywheelState::FLYWHEEL_PRIME){
         //math conditions, leaving 1 for now
         state.flywheelTarget = 1;
     }
-    else if (state.flywheelTarget == FlywheelState::DEFAULT_FLYWHEEL){
+    else if (state.flywheelTarget == FlywheelState::FLYWHEEL_DEFAULT){
         state.flywheelTarget = 0.5;
     }
     
     flywheel_follow.Set(state.flywheelTarget);
     flywheel_lead.Set(state.flywheelTarget);
 
-    if(state.hoodState == HoodState::DISABLED_HOOD){
+    if(state.hoodState == HoodState::HOOD_DISABLE){
         state.hoodTarget = 0;
     }
-    else if(state.hoodState == HoodState::PRIMED_HOOD){
+    else if(state.hoodState == HoodState::HOOD_PRIME){
         state.hoodTarget = 0.1;
     }
 
     hood.Set(state.hoodTarget);
 }
 
-void Shooter::setDefaultState(){
-    state.shooterState = false;
-    state.turretState = TurretState::DISABLED_TURRET;
-    state.flywheelState = FlywheelState::DISABLED_FLYWHEEL;
-    state.hoodState = HoodState::DISABLED_HOOD;
-}
+double Shooter::getTargetTics(double x, 
+double y,
+double theta,
+double hubX, 
+double hubY,
+double ticsPerRev,
+double gearRatio){
 
-double Shooter::getTargetTics(double x, double y,double theta,
-                                  double hubX, double hubY,
-                                  double ticsPerRev,
-                                       double gearRatio){
     double deltaX = hubX - x;
     double deltaY = hubY - y;
 

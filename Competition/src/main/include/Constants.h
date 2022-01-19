@@ -30,6 +30,11 @@
 namespace OIConstants {
     constexpr static int GAMEPAD_BASE_LOCATION = 1;
     constexpr static int GAMEPAD_OPERATOR_LOCATION = 0;
+
+    constexpr static int dpadUp = 0;
+    constexpr static int dpadRight = 90;
+    constexpr static int dpadDown = 180;
+    constexpr static int dpadLeft = 270;
 }
 
 namespace LimelightConstants {
@@ -164,6 +169,22 @@ namespace MathConstants{
 
     constexpr static double ticksToRads = 2.0 * M_PI  / SwerveConstants::AZIMUTH_COUNTS_PER_REV * SwerveConstants::AZIMUTH_GEAR_RATIO;
     constexpr static double radsToTicks = 1 / ticksToRads;
+}
+
+namespace LiftConstants{
+    constexpr static int MAIN_CAN_ID = 16;
+    constexpr static int MAIN_FOLLOW_CAN_ID = 17;
+    constexpr static int AUX_CAN_ID = 18;
+    constexpr static int ROTATE_CAN_ID = 19;
+
+    constexpr static double DEFAULT_EXTEND_SPD = 0.2;
+    constexpr static double DEFAULT_RETRACT_SPD = -0.2;
+
+    constexpr static double DEFAULT_AUX_EXTEND_SPD = 0.2;
+    constexpr static double DEFAULT_AUX_RETRACT_SPD = -0.2;
+
+    constexpr static double DEFAULT_ROTATE_SPD = 0.2;
+
 }
 
 #endif

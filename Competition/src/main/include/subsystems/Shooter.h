@@ -33,12 +33,12 @@
 class Shooter : public ValorSubsystem
 {
 public:
-    Shooter(Drivetrain * dt);
+    Shooter();
 
     void init();
     void setController(frc::XboxController *controller);
+    void setDrivetrain(Drivetrain * dt);
 
-    void setDefaultState();
     void assessInputs();
     void analyzeDashboard();
     void assignOutputs();
@@ -46,42 +46,38 @@ public:
     void resetState();
     void resetEncoder();
 
-    double getTargetTics(double, double, double, double, double, double, double);
-    double convertTargetTics(double, double, double);
-
+     double getTargetTics(double, double, double, double, double, double, double);
+     double convertTargetTics(double, double, double);
+    
     enum TurretState{
-         DISABLED_TURRET,
-         MANUAL_TURRET,
-         HOME_TURRET,
-         DEFAULT_TURRET,
-         PRIMED_TURRET
+         TURRET_DISABLE,
+         TURRET_MANUAL,
+         TURRET_HOME,
+         TURRET_DEFAULT,
+         TURRET_PRIME
     };
 
     enum HoodState{
-         DISABLED_HOOD,
-         PRIMED_HOOD
+         HOOD_DISABLE,
+         HOOD_PRIME
      };
 
      enum FlywheelState{
-          DISABLED_FLYWHEEL,
-          DEFAULT_FLYWHEEL,
-          PRIMED_FLYWHEEL
+          FLYWHEEL_DISABLE,
+          FLYWHEEL_DEFAULT,
+          FLYWHEEL_PRIME
      };
 
     struct x
     {
-          bool shooterState;
           FlywheelState flywheelState;
           HoodState hoodState;
           TurretState turretState;
-
 
           double leftStickX;
      
           bool backButton;
           bool startButton;
-
-
 
           double error;
           double manualPow;
