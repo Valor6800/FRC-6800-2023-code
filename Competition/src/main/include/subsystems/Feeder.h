@@ -21,7 +21,6 @@ class Feeder : public ValorSubsystem
 {
 public:
     Feeder();
-    ~Feeder();
 
     void init();
     void setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD);
@@ -33,10 +32,10 @@ public:
     void resetState();
 
     enum FeederState {
-        DISABLED,
-        REVERSE,
-        INTAKE1,
-        INTAKE2
+        FEEDER_DISABLE,
+        FEEDER_REVERSE,
+        FEEDER_INTAKE1,
+        FEEDER_INTAKE2
     };
     
     struct x
