@@ -46,13 +46,11 @@ public:
     void resetState();
     void resetEncoder();
 
+
+
      double getTargetTics(double, double, double, double, double, double, double);
      double convertTargetTics(double, double, double);
 
-     //@TODO
-     //add turret tracking that tracks the corner instead of the hub
-     //so that we can yeet opponent balls into the corner
-    
     enum TurretState{
          TURRET_DISABLE,
          TURRET_MANUAL,

@@ -34,12 +34,12 @@ void Shooter::init()
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Shooter");
     table->PutBoolean("Home Turret", false);
-    table->PutNumber("Flywheel Primed Value", 1);
-    table->PutNumber("Flywheel Default Value", 0.5);
-    table->PutNumber("Hood Top Position", 200);
-    table->PutNumber("Hood Bottom Position", 0);
+    table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
+    table->PutNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
+    table->PutNumber("Hood Top Position", ShooterConstants::hoodTop);
+    table->PutNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
 
-    //do we have to do this?
+    //do we have to do this? no, delete all of it
     flywheel_follow.ConfigFactoryDefault();
     flywheel_follow.ConfigAllowableClosedloopError(0, 0);
     flywheel_follow.Config_IntegralZone(0, 0);
@@ -117,6 +117,11 @@ void Shooter::resetEncoder(){
     hoodEncoder.SetPosition(0);
 }
 
+void Shooter::limelightTrack(bool track){
+    limeTable->PutNumber("ledMode", track ? LimelightConstants::LED_MODE_ON : LimelightConstants::LED_MODE_OFF);
+    limeTable->PutNumber("camMode", track ? LimelightConstants::TRACK_MODE_ON : LimelightConstants::TRACK_MODE_OFF);
+}
+
 void Shooter::assessInputs()
 {
     if (!operatorController)
@@ -156,12 +161,7 @@ void Shooter::assessInputs()
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
     }
 
-    if (state.rightBumper){
-        state.trackCorner = true;
-    }
-    else{
-        state.trackCorner = false;
-    }
+    state.trackCorner = state.rightBumper ? true : false;
 }
 
 void Shooter::analyzeDashboard()
@@ -171,11 +171,13 @@ void Shooter::analyzeDashboard()
     }
 
     //slider
-    state.flywheelLow = table->GetNumber("Flywheel Default Value", .5);
-    state.flywheelHigh = table->GetNumber("Flywheel Primed Value", 1);
+    state.flywheelHigh = table->GetNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
+    state.flywheelLow = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
 
-    state.hoodLow = table->GetNumber("Hood low position", 0);
-    state.hoodHigh = table->GetNumber("Hood high position", 2000);
+    state.hoodLow = table->GetNumber("Hood low position", ShooterConstants::hoodBottom);
+    state.hoodHigh = table->GetNumber("Hood high position", ShooterConstants::hoodTop);
+
+    limelightTrack(state.turretState == TurretState::TURRET_PRIME);
 }
 
 void Shooter::assignOutputs()
