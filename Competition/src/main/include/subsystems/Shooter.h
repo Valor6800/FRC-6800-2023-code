@@ -48,6 +48,10 @@ public:
 
      double getTargetTics(double, double, double, double, double, double, double);
      double convertTargetTics(double, double, double);
+
+     //@TODO
+     //add turret tracking that tracks the corner instead of the hub
+     //so that we can yeet opponent balls into the corner
     
     enum TurretState{
          TURRET_DISABLE,
@@ -78,17 +82,23 @@ public:
      
           bool backButton;
           bool startButton;
+          bool rightBumper;
 
-          double error;
-          double manualPow;
-          double flywheelOffesetPow;
           double limelightDistance;
 
-          double turretVelocityTarget;
-          double turretPositionSetpoint;
-          int flywheelTarget;
-          double hoodTarget;
+          double turretOutput; //%
+          int turretTarget; //pos
 
+          int flywheelTarget; //vel
+          int hoodTarget; //pos
+
+          int flywheelLow;
+          int flywheelHigh;
+
+          int hoodLow;
+          int hoodHigh;
+
+          bool trackCorner;
 
     } state;
 
@@ -97,19 +107,16 @@ public:
 private:
      void limelightTrack(bool track);
 
-     rev::CANSparkMax flywheel_lead;
-     rev::CANSparkMax flywheel_follow;
+     WPI_TalonFX flywheel_lead;
+     WPI_TalonFX flywheel_follow;
 
      rev::CANSparkMax turret;
      rev::SparkMaxRelativeEncoder turretEncoder = turret.GetEncoder();
      rev::SparkMaxPIDController turretPidController = turret.GetPIDController();
 
-
      rev::CANSparkMax hood;
      rev::SparkMaxRelativeEncoder hoodEncoder = hood.GetEncoder();
-
-     rev::SparkMaxPIDController flywheelPidController = flywheel_lead.GetPIDController();
-     rev::SparkMaxRelativeEncoder flywheelEncoder = flywheel_lead.GetEncoder();
+     rev::SparkMaxPIDController hoodPidController = hood.GetPIDController();
 
      frc::XboxController *operatorController;
      std::shared_ptr<nt::NetworkTable> limeTable;

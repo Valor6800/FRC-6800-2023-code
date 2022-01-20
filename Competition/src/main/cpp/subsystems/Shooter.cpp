@@ -15,8 +15,8 @@
 #include <iostream>
 
 Shooter::Shooter() : ValorSubsystem(),
-                     flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD, rev::CANSparkMax::MotorType::kBrushless},
-                     flywheel_follow{ShooterConstants::CAN_ID_FLYWHEEL_FOLLOW, rev::CANSparkMax::MotorType::kBrushless},
+                     flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD},
+                     flywheel_follow{ShooterConstants::CAN_ID_FLYWHEEL_FOLLOW},
                      turret{ShooterConstants::CAN_ID_TURRET, rev::CANSparkMax::MotorType::kBrushless},
                      hood{ShooterConstants::CAN_ID_HOOD, rev::CANSparkMax::MotorType::kBrushless},
                      operatorController(NULL)
@@ -34,21 +34,48 @@ void Shooter::init()
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Shooter");
     table->PutBoolean("Home Turret", false);
-    
-    flywheel_follow.RestoreFactoryDefaults();
-    flywheel_lead.RestoreFactoryDefaults();
-    turret.RestoreFactoryDefaults();
+    table->PutNumber("Flywheel Primed Value", 1);
+    table->PutNumber("Flywheel Default Value", 0.5);
+    table->PutNumber("Hood Top Position", 200);
+    table->PutNumber("Hood Bottom Position", 0);
 
-    flywheel_follow.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
-    flywheel_lead.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+    //do we have to do this?
+    flywheel_follow.ConfigFactoryDefault();
+    flywheel_follow.ConfigAllowableClosedloopError(0, 0);
+    flywheel_follow.Config_IntegralZone(0, 0);
+    flywheel_follow.Config_kF(0, ShooterConstants::flywheelKFF);
+    flywheel_follow.Config_kD(0, ShooterConstants::flywheelKD);
+    flywheel_follow.Config_kI(0, ShooterConstants::flywheelKI);
+    flywheel_follow.Config_kP(0, ShooterConstants::flywheelKP);
+    flywheel_follow.ConfigMotionAcceleration(ShooterConstants::flywheelMaxAccel);
+    flywheel_follow.ConfigMotionCruiseVelocity(ShooterConstants::flywheelCruiseVelo);
+    flywheel_follow.SetNeutralMode(NeutralMode::Coast);
+
+    flywheel_lead.ConfigFactoryDefault();
+    flywheel_lead.ConfigAllowableClosedloopError(0, 0);
+    flywheel_lead.Config_IntegralZone(0, 0);
+    flywheel_lead.Config_kF(0, ShooterConstants::flywheelKFF);
+    flywheel_lead.Config_kD(0, ShooterConstants::flywheelKD);
+    flywheel_lead.Config_kI(0, ShooterConstants::flywheelKI);
+    flywheel_lead.Config_kP(0, ShooterConstants::flywheelKP);
+    flywheel_lead.ConfigMotionAcceleration(ShooterConstants::flywheelMaxAccel);
+    flywheel_lead.ConfigMotionCruiseVelocity(ShooterConstants::flywheelCruiseVelo);
+    flywheel_lead.SetNeutralMode(NeutralMode::Coast);
+
+    flywheel_lead.SetInverted(true);
+    flywheel_follow.SetInverted(false);
+
+    flywheel_follow.Follow(flywheel_lead);
+    
+    turret.RestoreFactoryDefaults();
+    hood.RestoreFactoryDefaults();
+
     turret.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+    hood.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
 
     turret.SetInverted(false);
 
-    flywheel_lead.SetInverted(true);
-
-    flywheel_lead.Follow(rev::CANSparkMax::kFollowerDisabled, false);
-    flywheel_follow.Follow(flywheel_lead, true);
+    hood.SetInverted(false);
 
     turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
     turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::limitLeft);
@@ -62,18 +89,6 @@ void Shooter::init()
     hood.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
     hood.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, ShooterConstants::limitBottom);
 
-    flywheelPidController.SetP(ShooterConstants::flywheelKP);
-    flywheelPidController.SetI(ShooterConstants::flywheelKI);
-    flywheelPidController.SetD(ShooterConstants::flywheelKD);
-    flywheelPidController.SetIZone(ShooterConstants::flywheelKIZ);
-    flywheelPidController.SetFF(ShooterConstants::flywheelKFF);
-    flywheelPidController.SetOutputRange(0, 1);
-
-    flywheelPidController.SetSmartMotionMaxVelocity(ShooterConstants::flywheelMaxV);
-    flywheelPidController.SetSmartMotionMinOutputVelocity(ShooterConstants::flywheelMinV);
-    flywheelPidController.SetSmartMotionMaxAccel(ShooterConstants::flywheelMaxAccel);
-    flywheelPidController.SetSmartMotionAllowedClosedLoopError(ShooterConstants::flywheelAllowedError);
-
     turretPidController.SetP(ShooterConstants::turretKP);
     turretPidController.SetI(ShooterConstants::turretKI);
     turretPidController.SetD(ShooterConstants::turretKD);
@@ -86,7 +101,7 @@ void Shooter::init()
     turretPidController.SetSmartMotionMaxAccel(ShooterConstants::turretMaxAccel);
     turretPidController.SetSmartMotionAllowedClosedLoopError(ShooterConstants::turretAllowedError);
 
-    resetState(); //reset shooter/encoder state
+    resetState();
 }
 
 void Shooter::resetState(){
@@ -94,6 +109,7 @@ void Shooter::resetState(){
     state.turretState = TurretState::TURRET_DEFAULT;
     state.hoodState = HoodState::HOOD_DISABLE;
     state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
+    state.trackCorner = false;
 }
 
 void Shooter::resetEncoder(){
@@ -108,11 +124,10 @@ void Shooter::assessInputs()
         return;
     }
 
-    // driver inputs
     state.leftStickX = operatorController->GetLeftX();
     state.startButton = operatorController->GetStartButton();
     state.backButton = operatorController->GetBackButton(); 
-    //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
+    state.rightBumper = operatorController->GetRightBumper();
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
@@ -140,6 +155,13 @@ void Shooter::assessInputs()
     else if (state.backButton){
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
     }
+
+    if (state.rightBumper){
+        state.trackCorner = true;
+    }
+    else{
+        state.trackCorner = false;
+    }
 }
 
 void Shooter::analyzeDashboard()
@@ -147,87 +169,102 @@ void Shooter::analyzeDashboard()
     if(table->GetBoolean("Home Turret", false)){
         state.turretState = TurretState::TURRET_HOME;
     }
+
+    //slider
+    state.flywheelLow = table->GetNumber("Flywheel Default Value", .5);
+    state.flywheelHigh = table->GetNumber("Flywheel Primed Value", 1);
+
+    state.hoodLow = table->GetNumber("Hood low position", 0);
+    state.hoodHigh = table->GetNumber("Hood high position", 2000);
 }
 
 void Shooter::assignOutputs()
 {   
-    state.turretVelocityTarget = 0;
-    state.turretPositionSetpoint = 0;
+    state.turretOutput = 0;
+    state.turretTarget = 0;
+
+    state.flywheelTarget = 0;
+    state.hoodTarget = 0;
+
     bool useSmartMotion = false;
 
-    //DISABLED
-    if(state.turretState == TurretState::TURRET_DISABLE){
-        state.turretVelocityTarget = 0;
-    }
-
     //MANUAL
-    else if (state.turretState == TurretState::TURRET_MANUAL) {
+    if (state.turretState == TurretState::TURRET_MANUAL) {
         int sign = state.leftStickX >= 0 ? 1 : -1;
-        state.turretVelocityTarget = sign * std::pow(state.leftStickX, 2) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
+        state.turretOutput = sign * std::pow(state.leftStickX, 2) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
 
         // Minimum power deadband
-        if (std::abs(state.turretVelocityTarget) < ShooterConstants::pDeadband) {
-            state.turretVelocityTarget = 0;
+        if (std::abs(state.turretOutput) < ShooterConstants::pDeadband) {
+            state.turretOutput = 0;
         }
         // Stop deadband
-        else if (std::abs(state.turretVelocityTarget) < ShooterConstants::pSoftDeadband) {
+        else if (std::abs(state.turretOutput) < ShooterConstants::pSoftDeadband) {
             int direction = 1;
-            if (state.turretVelocityTarget < 0) direction = -1;
-            state.turretVelocityTarget = ShooterConstants::pSoftDeadband * direction;
+            if (state.turretOutput < 0) direction = -1;
+            state.turretOutput = ShooterConstants::pSoftDeadband * direction;
         }
     }
 
     //HOME
     else if(state.turretState == TurretState::TURRET_HOME){
-        state.turretPositionSetpoint = ShooterConstants::homeFrontPosition;
+        state.turretTarget = ShooterConstants::homeFrontPosition;
         useSmartMotion = true;
     }
 
     //PRIMED
     else if (state.turretState == TurretState::TURRET_PRIME){
-        //limelight
-        useSmartMotion = true;
+        float tx = limeTable->GetNumber("tx", 0.0);
+        float tv = limeTable->GetNumber("tv" , 0.0);
+        state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
     }
 
     //DEFAULT
     else if (state.turretState == TurretState::TURRET_DEFAULT){
         //Odometry tracking
         frc::Pose2d currentPose = odom->getPose_m();
-        state.turretPositionSetpoint = getTargetTics(currentPose.X().to<double>(), currentPose.Y().to<double>(), currentPose.Rotation().Radians().to<double>(),
-                                        ShooterConstants::hubX, ShooterConstants::hubY
-                                        , ShooterConstants::ticsPerRev, ShooterConstants::gearRatio);
+        double targetX = ShooterConstants::hubX;
+        double targetY = ShooterConstants::hubY;
+        if (state.trackCorner){
+            targetX = ShooterConstants::cornerX;
+            targetY = ShooterConstants::cornerY;
+        }
+
+        state.turretTarget = getTargetTics(currentPose.X().to<double>(), currentPose.Y().to<double>(), currentPose.Rotation().Radians().to<double>(),
+                                        targetX, targetY
+                                        , ShooterConstants::ticsPerRev, ShooterConstants::falconGearRatio);
         useSmartMotion = true;
     }
 
     if (useSmartMotion){
-        turretPidController.SetReference(state.turretPositionSetpoint, rev::ControlType::kSmartMotion);
+        turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
     }
     else{
-        turretPidController.SetReference(state.turretVelocityTarget, rev::ControlType::kSmartVelocity);
+        turretPidController.SetReference(state.turretOutput, rev::ControlType::kDutyCycle);
     }
     
     if(state.flywheelState == FlywheelState::FLYWHEEL_DISABLE){
         state.flywheelTarget = 0;
     }
-    else if(state.flywheelTarget == FlywheelState::FLYWHEEL_PRIME){
-        //math conditions, leaving 1 for now
-        state.flywheelTarget = 1;
+    else if(state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
+        state.flywheelTarget = state.flywheelHigh;
     }
-    else if (state.flywheelTarget == FlywheelState::FLYWHEEL_DEFAULT){
-        state.flywheelTarget = 0.5;
+    else if (state.flywheelState == FlywheelState::FLYWHEEL_DEFAULT){
+        state.flywheelTarget = state.flywheelLow;
     }
     
-    flywheel_follow.Set(state.flywheelTarget);
-    flywheel_lead.Set(state.flywheelTarget);
+    double rpm = state.flywheelTarget * ShooterConstants::falconMaxRPM;
+    double rp100ms = rpm / 600.0;
+    double ticsp100ms = rp100ms * ShooterConstants::falconGearRatio * ShooterConstants::ticsPerRev;
+
+    flywheel_lead.Set(ControlMode::Velocity, ticsp100ms);
 
     if(state.hoodState == HoodState::HOOD_DISABLE){
-        state.hoodTarget = 0;
+        state.hoodTarget = state.hoodLow;
     }
     else if(state.hoodState == HoodState::HOOD_PRIME){
-        state.hoodTarget = 0.1;
+        state.hoodTarget = state.hoodHigh;
     }
-
-    hood.Set(state.hoodTarget);
+    hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
 }
 
 double Shooter::getTargetTics(double x, 

@@ -114,21 +114,23 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 12;    
     
-    constexpr static double flywheelKP = 0.001;
-    constexpr static double flywheelKI = 0.00001;
+    constexpr static double limelightTurnKP = 1/24.0;
+
+    constexpr static double flywheelKP = 0;
+    constexpr static double flywheelKI = 0;
     constexpr static double flywheelKD = 0;
     constexpr static double flywheelKIZ = 0;
     constexpr static double flywheelKFF = 0.00023;
     constexpr static double flywheelMax = 1;
     constexpr static double MaxRPM = 5700;
 
-    constexpr static double flywheelMaxV = 2000;
+    constexpr static double flywheelCruiseVelo = 2000;
     constexpr static double flywheelMinV = 0;
     constexpr static double flywheelMaxAccel = 1500;
     constexpr static double flywheelAllowedError = 0;
 
-    constexpr static double turretKP = 0.001;
-    constexpr static double turretKI = 0.00001;
+    constexpr static double turretKP = 0;
+    constexpr static double turretKI = 0;
     constexpr static double turretKD = 0;
     constexpr static double turretKIZ = 0;
     constexpr static double turretKFF = 0.00023;
@@ -138,6 +140,17 @@ namespace ShooterConstants{
     constexpr static double turretMaxAccel = 1500;
     constexpr static double turretAllowedError = 0;
 
+    constexpr static double hoodKP = 0;
+    constexpr static double hoodKI = 0;
+    constexpr static double hoodKD = 0;
+    constexpr static double hoodKIZ = 0;
+    constexpr static double hoodKFF = 0.00023;
+
+    constexpr static double hoodMaxV = 2000;
+    constexpr static double hoodMinV = 0;
+    constexpr static double hoodMaxAccel = 1500;
+    constexpr static double hoodAllowedError = 0;
+
     constexpr static double kDeadband = .05;
 
     constexpr static double pDeadband = .1;
@@ -146,6 +159,9 @@ namespace ShooterConstants{
 
     constexpr static double homePosition = 0;
     constexpr static double homeFrontPosition = 153;
+
+    constexpr static double falconMaxRPM = 6380;
+    constexpr static double falconGearRatio = 1;
 
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
@@ -158,9 +174,10 @@ namespace ShooterConstants{
     constexpr static double hubX = 0;
     constexpr static double hubY = 0;
 
-    constexpr static double ticsPerRev = 4096;
-    constexpr static double gearRatio = 1;
+    constexpr static double cornerX = 0;
+    constexpr static double cornerY = 0;
 
+    constexpr static double ticsPerRev = 2048;
 }
 
 namespace MathConstants{
