@@ -21,9 +21,9 @@ Shooter::Shooter() : ValorSubsystem(),
     init();
 }
 
-// void Shooter::setDrivetrain(Drivetrain *dt){
-//     odom = dt;
-// }
+void Shooter::setDrivetrain(Drivetrain *dt){
+    odom = dt;
+}
 
 void Shooter::init()
 {
@@ -213,15 +213,13 @@ void Shooter::assignOutputs()
     //DEFAULT
     else if (state.turretState == TurretState::TURRET_DEFAULT){
         //Odometry tracking
-        frc::Pose2d currentPose(0_m, 0_m, frc::Rotation2d(0_deg));//odom->getPose_m();
+        frc::Pose2d currentPose = odom->getPose_m();
         double targetX = ShooterConstants::hubX;
         double targetY = ShooterConstants::hubY;
         if (state.trackCorner){
             targetX = ShooterConstants::cornerX;
             targetY = ShooterConstants::cornerY;
         }
-
-        //imo
 
         state.turretTarget = getTargetTics(currentPose.X().to<double>(), currentPose.Y().to<double>(), currentPose.Rotation().Radians().to<double>(),
                                         targetX, targetY

@@ -7,15 +7,15 @@
 
 #include "RobotContainer.h"
 
-RobotContainer::RobotContainer() : m_auto(NULL, &m_shooter, &m_feeder) {
+RobotContainer::RobotContainer() : m_auto(&m_drivetrain, &m_shooter, &m_feeder) {
     ConfigureButtonBindings();
-    //m_shooter.setDrivetrain(NULL);
+    m_shooter.setDrivetrain(&m_drivetrain);
 }
 
 
 void RobotContainer::ConfigureButtonBindings() {
     m_feeder.setControllers(&m_GamepadOperator, &m_GamepadDriver);
-    //m_drivetrain.setController(&m_GamepadDriver);
+    m_drivetrain.setController(&m_GamepadDriver);
     m_shooter.setController(&m_GamepadOperator);
 }
 

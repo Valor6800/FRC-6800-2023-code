@@ -6,7 +6,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     feeder(_feeder)
 {    
     // See: https://github.com/wpilibsuite/allwpilib/blob/v2022.1.1/wpilibcExamples/src/main/cpp/examples/SwerveControllerCommand/cpp/RobotContainer.cpp
-/*
+
     frc::TrajectoryConfig config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS},
                                  units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS});
 
@@ -52,9 +52,6 @@ frc::Pose2d x2y0 = frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg));
         {},
         x2y0,
         config);
-
-    
-frc2::InstantCommand manualTurret = frc2::InstantCommand( [&] { shooter->state.turretState = Shooter::TurretState::TURRET_MANUAL; } );
 
 frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE2; } );
 
@@ -267,7 +264,7 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
     (cmd_move_move1,
     cmd_move_move2,
     cmd_move_move3); */
-/*
+
     frc2::SequentialCommandGroup *shoot4New = new frc2::SequentialCommandGroup();
     shoot4New->AddCommands
     (cmd_intake2,
@@ -276,11 +273,11 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
     cmd_move_movePorky,
     cmd_move_moveShoot);
 
-    frc2::SequentialCommandGroup *motorTest = new frc2::SequentialCommandGroup();
-    shoot4New->AddCommands
-    (manualTurret,
-    frc2::WaitCommand((units::second_t)1.5),
-    cmd_move_moveBugs);
+    // frc2::SequentialCommandGroup *motorTest = new frc2::SequentialCommandGroup();
+    // shoot4New->AddCommands
+    // (manualTurret,
+    // frc2::WaitCommand((units::second_t)1.5),
+    // cmd_move_moveBugs);
 
     frc2::SequentialCommandGroup *shoot5 = new frc2::SequentialCommandGroup();
     shoot5->AddCommands
@@ -317,10 +314,10 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
     m_chooser.SetDefaultOption("5 ball auto remove Taz", shoot5RemoveTaz);
     m_chooser.AddOption("Move 2 in x direction", move2x);
     m_chooser.AddOption("Move 2 in x Offset direction", move2Offset);
-    m_chooser.AddOption("motor test", motorTest);
+    //m_chooser.AddOption("motor test", motorTest);
 
     frc::SmartDashboard::PutData(&m_chooser);
-  */
+  
 }
 
 frc2::Command* ValorAuto::getCurrentAuto() {
