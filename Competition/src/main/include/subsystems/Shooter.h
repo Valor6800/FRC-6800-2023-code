@@ -87,11 +87,11 @@ public:
           double turretOutput; //%
           int turretTarget; //pos
 
-          int flywheelTarget; //vel
+          double flywheelTarget; //vel
           int hoodTarget; //pos
 
-          int flywheelLow;
-          int flywheelHigh;
+          double flywheelLow;
+          double flywheelHigh;
 
           int hoodLow;
           int hoodHigh;
@@ -108,18 +108,18 @@ private:
      WPI_TalonFX flywheel_lead;
      WPI_TalonFX flywheel_follow;
 
-     rev::CANSparkMax turret;
-     rev::SparkMaxRelativeEncoder turretEncoder = turret.GetEncoder();
-     rev::SparkMaxPIDController turretPidController = turret.GetPIDController();
+     // rev::CANSparkMax turret;
+     // rev::SparkMaxRelativeEncoder turretEncoder = turret.GetEncoder();
+     // rev::SparkMaxPIDController turretPidController = turret.GetPIDController();
 
-     rev::CANSparkMax hood;
-     rev::SparkMaxRelativeEncoder hoodEncoder = hood.GetEncoder();
-     rev::SparkMaxPIDController hoodPidController = hood.GetPIDController();
+     // rev::CANSparkMax hood;
+     // rev::SparkMaxRelativeEncoder hoodEncoder = hood.GetEncoder();
+     // rev::SparkMaxPIDController hoodPidController = hood.GetPIDController();
 
      frc::XboxController *operatorController;
-     std::shared_ptr<nt::NetworkTable> limeTable;
+     //std::shared_ptr<nt::NetworkTable> limeTable;
 
-     Drivetrain *odom;
+     //Drivetrain *odom;
 };
 
 #endif

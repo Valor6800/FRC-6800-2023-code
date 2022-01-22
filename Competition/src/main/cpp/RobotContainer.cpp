@@ -9,7 +9,7 @@
 
 RobotContainer::RobotContainer() : m_auto(NULL, &m_shooter) {
     ConfigureButtonBindings();
-    m_shooter.setDrivetrain(NULL);
+    //m_shooter.setDrivetrain(NULL);
 }
 
 

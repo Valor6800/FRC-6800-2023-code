@@ -116,11 +116,11 @@ namespace ShooterConstants{
     
     constexpr static double limelightTurnKP = 1/24.0;
 
-    constexpr static double flywheelKP = 0;
+    constexpr static double flywheelKP = 0.1;
     constexpr static double flywheelKI = 0;
-    constexpr static double flywheelKD = 0;
+    constexpr static double flywheelKD = 5;
     constexpr static double flywheelKIZ = 0;
-    constexpr static double flywheelKFF = 0.00023;
+    constexpr static double flywheelKFF = 0.05;
     constexpr static double MaxRPM = 6380;
 
     constexpr static double flywheelCruiseVelo = 20000;
@@ -128,7 +128,7 @@ namespace ShooterConstants{
     constexpr static double flywheelMaxAccel = flywheelCruiseVelo * 1;
     constexpr static double flywheelAllowedError = 0;
 
-    constexpr static double flywheelPrimedValue = 1;
+    constexpr static double flywheelPrimedValue = .6;
     constexpr static double flywheelDefaultValue = 0.5;
 
     constexpr static double turretKP = 0;
