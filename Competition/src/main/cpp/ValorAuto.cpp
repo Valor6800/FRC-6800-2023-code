@@ -1,6 +1,8 @@
 #include "ValorAuto.h"
 
-ValorAuto::ValorAuto(Drivetrain *_drivetrain) : drivetrain(_drivetrain)
+ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter) : 
+    drivetrain(_drivetrain), 
+    shooter(_shooter)
 {    
     // See: https://github.com/wpilibsuite/allwpilib/blob/v2022.1.1/wpilibcExamples/src/main/cpp/examples/SwerveControllerCommand/cpp/RobotContainer.cpp
 
@@ -51,6 +53,7 @@ frc::Pose2d x2y0 = frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg));
         config);
 
     
+frc2::InstantCommand manualTurret = frc2::InstantCommand( [&] { shooter->state.turretState = Shooter::TurretState::TURRET_MANUAL; } );
 
     auto moveBugs = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
@@ -262,12 +265,18 @@ frc::Pose2d x2y0 = frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg));
     cmd_move_move2,
     cmd_move_move3); */
 
-     frc2::SequentialCommandGroup *shoot4New = new frc2::SequentialCommandGroup();
+    frc2::SequentialCommandGroup *shoot4New = new frc2::SequentialCommandGroup();
     shoot4New->AddCommands
     (cmd_move_moveBugs,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_movePorky,
     cmd_move_moveShoot);
+
+    frc2::SequentialCommandGroup *motorTest = new frc2::SequentialCommandGroup();
+    shoot4New->AddCommands
+    (manualTurret,
+    frc2::WaitCommand((units::second_t)1.5),
+    cmd_move_moveBugs);
 
     frc2::SequentialCommandGroup *shoot5 = new frc2::SequentialCommandGroup();
     shoot5->AddCommands
@@ -299,17 +308,14 @@ frc::Pose2d x2y0 = frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg));
     move2x->AddCommands
     (cmd_move_move2); 
 
-
-
     m_chooser.SetDefaultOption("4 ball auto new", shoot4New);
     m_chooser.SetDefaultOption("5 ball auto", shoot5);
     m_chooser.SetDefaultOption("5 ball auto remove Taz", shoot5RemoveTaz);
     m_chooser.AddOption("Move 2 in x direction", move2x);
     m_chooser.AddOption("Move 2 in x Offset direction", move2Offset);
+    m_chooser.AddOption("motor test", motorTest);
 
     frc::SmartDashboard::PutData(&m_chooser);
-
-
 
 }
 

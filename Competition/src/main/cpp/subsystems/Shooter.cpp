@@ -138,7 +138,7 @@ void Shooter::assessInputs()
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
         state.turretState = TurretState::TURRET_MANUAL;
     }
-    else if(state.startButton){
+    else if(state.startButton && !state.trackCorner){
        state.turretState = TurretState::TURRET_PRIME;
     }
     else if(state.backButton){

@@ -14,5 +14,13 @@
     "**/.factorypath": true,
     "**/*~": true
   },
-  "C_Cpp.default.configurationProvider": "vscode-wpilib"
+  "C_Cpp.default.configurationProvider": "vscode-wpilib",
+  "files.associations": {
+    "*.tcc": "cpp",
+    "chrono": "cpp",
+    "complex": "cpp",
+    "memory_resource": "cpp",
+    "memory": "cpp",
+    "*.inc": "cpp"
+  }
 }
