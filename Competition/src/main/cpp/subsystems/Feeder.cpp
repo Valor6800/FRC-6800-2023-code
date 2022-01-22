@@ -28,6 +28,17 @@ Feeder::Feeder() : ValorSubsystem(),
 void Feeder::init()
 {
     initTable("Feeder");
+    motor_intake.RestoreFactoryDefaults();
+    motor_intake.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+    motor_intake.SetInverted(false);
+
+    motor_stage1.RestoreFactoryDefaults();
+    motor_stage1.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+    motor_stage1.SetInverted(false);
+
+    motor_stage2.RestoreFactoryDefaults();
+    motor_stage2.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+    motor_stage2.SetInverted(false);
 
     table->PutBoolean("Reverse Feeder?", false);
     table->PutNumber("Intake Reverse Speed", FeederConstants::DEFUALT_INTAKE_SPEED_REVERSE);

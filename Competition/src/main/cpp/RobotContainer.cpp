@@ -12,6 +12,7 @@ RobotContainer::RobotContainer() : m_auto(NULL, &m_shooter) {
     m_shooter.setDrivetrain(NULL);
 }
 
+
 void RobotContainer::ConfigureButtonBindings() {
     m_feeder.setControllers(&m_GamepadOperator, &m_GamepadDriver);
     //m_drivetrain.setController(&m_GamepadDriver);

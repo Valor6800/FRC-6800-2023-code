@@ -31,7 +31,7 @@ void Shooter::setDrivetrain(Drivetrain *dt){
 
 void Shooter::init()
 {
-    limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+   // limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Shooter");
     table->PutBoolean("Home Turret", false);
     table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
@@ -62,7 +62,7 @@ void Shooter::init()
     flywheel_lead.ConfigMotionCruiseVelocity(ShooterConstants::flywheelCruiseVelo);
     flywheel_lead.SetNeutralMode(NeutralMode::Coast);
 
-    flywheel_lead.SetInverted(true);
+    flywheel_lead.SetInverted(false);
     flywheel_follow.SetInverted(false);
 
     flywheel_follow.Follow(flywheel_lead);
