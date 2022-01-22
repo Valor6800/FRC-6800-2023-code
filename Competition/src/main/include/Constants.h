@@ -197,6 +197,13 @@ namespace FeederConstants{
 
     constexpr static int BANNER_LOWER_DIO_PORT = 5;
     constexpr static int BANNER_UPPER_DIO_PORT = 6;
+
+    constexpr static double DEFUALT_INTAKE_SPEED_FORWARD = 1.0;
+    constexpr static double DEFUALT_INTAKE_SPEED_REVERSE = -1.0;
+
+    constexpr static double DEFUALT_FEEDER_SPEED_FORWARD = 1.0;
+    constexpr static double DEFUALT_FEEDER_SPEED_REVERSE = -1.0;
+
 }
 
 namespace MathConstants{

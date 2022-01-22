@@ -52,6 +52,15 @@ public:
         bool upperBannerTripped;
         bool lowerBannerTripped;
 
+        bool reversed;
+        
+        double intakeForwardSpeed;
+        double intakeReverseSpeed;
+
+        double feederForwardSpeed;
+        double feederReverseSpeed;
+        
+
         FeederState feederState;
     } state;
 

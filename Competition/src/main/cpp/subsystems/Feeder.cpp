@@ -28,6 +28,12 @@ Feeder::Feeder() : ValorSubsystem(),
 void Feeder::init()
 {
     initTable("Feeder");
+
+    table->PutBoolean("Reverse Feeder?", false);
+    table->PutNumber("Intake Reverse Speed", FeederConstants::DEFUALT_INTAKE_SPEED_REVERSE);
+    table->PutNumber("Feeder Reverse Speed", FeederConstants::DEFUALT_FEEDER_SPEED_REVERSE);
+    table->PutNumber("Intake Forward Speed", FeederConstants::DEFUALT_INTAKE_SPEED_FORWARD);
+    table->PutNumber("Feeder Forward Speed", FeederConstants::DEFUALT_FEEDER_SPEED_FORWARD);
 }
 
 void Feeder::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
@@ -82,31 +88,33 @@ void Feeder::assessInputs()
 
 void Feeder::analyzeDashboard()
 {
-    // @TODO Reverse speed set via dashboard
-    // @TODO Intake1/Intake2 speed set via dashboard
+    state.reversed = table->PutBoolean("Reverse Feeder?", false);
+    state.intakeReverseSpeed = table->PutNumber("Intake Reverse Speed", FeederConstants::DEFUALT_INTAKE_SPEED_REVERSE);
+    state.feederReverseSpeed = table->PutNumber("Feeder Reverse Speed", FeederConstants::DEFUALT_FEEDER_SPEED_REVERSE);
+    state.intakeForwardSpeed = table->PutNumber("Intake Forward Speed", FeederConstants::DEFUALT_INTAKE_SPEED_FORWARD);
+    state.feederForwardSpeed = table->PutNumber("Feeder Forward Speed", FeederConstants::DEFUALT_FEEDER_SPEED_FORWARD);
 }
 
 void Feeder::assignOutputs()
 {
-    // @TODO set variables for the speeds instead of calling set every if statement
     if (state.feederState == FeederState::FEEDER_DISABLE) {
         motor_intake.Set(0);
         motor_stage1.Set(0);
         motor_stage2.Set(0);
     }
     else if (state.feederState == FeederState::FEEDER_INTAKE2) {
-        motor_intake.Set(1);
-        motor_stage1.Set(1);
-        motor_stage2.Set(1);
+        motor_intake.Set(state.intakeForwardSpeed);
+        motor_stage1.Set(state.feederForwardSpeed);
+        motor_stage2.Set(state.feederForwardSpeed);
     }
     else if (state.feederState == Feeder::FEEDER_REVERSE) {
-        motor_intake.Set(-1);
-        motor_stage1.Set(-1);
-        motor_stage2.Set(-1);
+        motor_intake.Set(state.intakeForwardSpeed);
+        motor_stage1.Set(state.feederReverseSpeed);
+        motor_stage2.Set(state.feederReverseSpeed);
     }
     else if (state.feederState == FeederState::FEEDER_INTAKE1) {
-        motor_intake.Set(1);
-        motor_stage1.Set(1);
+        motor_intake.Set(state.intakeForwardSpeed);
+        motor_stage1.Set(state.feederForwardSpeed);
         motor_stage2.Set(0);
     }
     else {
