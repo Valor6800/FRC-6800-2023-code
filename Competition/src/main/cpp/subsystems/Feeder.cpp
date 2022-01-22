@@ -75,10 +75,10 @@ void Feeder::assessInputs()
             state.feederState = state.upperBannerTripped ? FeederState::FEEDER_DISABLE : FeederState::FEEDER_INTAKE2;
         } 
         else if (state.upperBannerTripped) {
-            state.feederState = FeederState::FEEDER_INTAKE2;
+            state.feederState = FeederState::FEEDER_INTAKE1;
         }
         else {
-            state.feederState = FeederState::FEEDER_INTAKE1;
+            state.feederState = FeederState::FEEDER_INTAKE2;
         }
     }
     else {
@@ -108,7 +108,7 @@ void Feeder::assignOutputs()
         motor_stage2.Set(state.feederForwardSpeed);
     }
     else if (state.feederState == Feeder::FEEDER_REVERSE) {
-        motor_intake.Set(state.intakeForwardSpeed);
+        motor_intake.Set(state.intakeReverseSpeed);
         motor_stage1.Set(state.feederReverseSpeed);
         motor_stage2.Set(state.feederReverseSpeed);
     }
@@ -122,8 +122,6 @@ void Feeder::assignOutputs()
         motor_stage1.Set(0);
         motor_stage2.Set(0);
     }
-
-    // @TODO use the variables to set the speeds
 }
 
 void Feeder::resetState()
