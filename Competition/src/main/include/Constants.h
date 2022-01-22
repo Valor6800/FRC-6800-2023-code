@@ -57,16 +57,16 @@ namespace DriveConstants {
     constexpr static double TURN_KP = 3.8 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
 
-    constexpr static double KPX = 1.5; //.2
+    constexpr static double KPX = .75; //.2
     constexpr static double KIX = 0.0; //0
     constexpr static double KDX = 0.0; //.1
 
-    constexpr static double KPY = 1.5; //.2
+    constexpr static double KPY = .75; //.2
     constexpr static double KIY = 0.0; //0
     constexpr static double KDY = 0.0; //.1
 
 
-    constexpr static double KPT = 4.5; //.2
+    constexpr static double KPT = 2.5; //.2
     constexpr static double KIT = 0.0; //0
     constexpr static double KDT = 0.0; //.1
 
@@ -193,8 +193,8 @@ namespace FeederConstants{
     constexpr static int BANNER_LOWER_DIO_PORT = 5;
     constexpr static int BANNER_UPPER_DIO_PORT = 6;
 
-    constexpr static double DEFUALT_INTAKE_SPEED_FORWARD = 0.8;
-    constexpr static double DEFUALT_INTAKE_SPEED_REVERSE = -0.8;
+    constexpr static double DEFUALT_INTAKE_SPEED_FORWARD = 0.9;
+    constexpr static double DEFUALT_INTAKE_SPEED_REVERSE = -0.9;
 
     constexpr static double DEFUALT_FEEDER_SPEED_FORWARD = 1.0;
     constexpr static double DEFUALT_FEEDER_SPEED_REVERSE = -1.0;

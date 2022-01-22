@@ -31,9 +31,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi),
                                         units::radian_t(wpi::numbers::pi));
 
-frc::Pose2d bugs = frc::Pose2d(0.7_m, 1.2_m, frc::Rotation2d(0_deg));
-frc::Pose2d daffy = frc::Pose2d(3.0_m,0_m, frc::Rotation2d(-45_deg));
-frc::Pose2d porky = frc::Pose2d(6_m, 0.19_m, frc::Rotation2d(20_deg));
+frc::Pose2d bugs = frc::Pose2d(0.7_m, 1.25_m, frc::Rotation2d(0_deg));
+frc::Pose2d daffy = frc::Pose2d(3.5_m, -.25_m, frc::Rotation2d(-25_deg));
+frc::Pose2d porky = frc::Pose2d(7.0_m, 0.1_m, frc::Rotation2d(40_deg));
 frc::Pose2d shoot = frc::Pose2d(2.626_m,0_m, frc::Rotation2d(-90_deg));
 
 frc::Pose2d tazAlt = frc::Pose2d(1.2_m, 0.75_m, frc::Rotation2d(0_deg));
@@ -57,13 +57,13 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
 
     auto moveBugs = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
-        {frc::Translation2d{0_m, 1.2_m}},
+        {frc::Translation2d{0_m, 1.3_m}},
         bugs,
         config);
 
     auto movePorky = frc::TrajectoryGenerator::GenerateTrajectory(
         bugs,
-        {frc::Translation2d{2.0_m, 0.057_m}},
+        {frc::Translation2d{2.0_m, -0.3_m}},
         porky,
         config);
 
@@ -75,7 +75,7 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
 
     auto moveDaffy = frc::TrajectoryGenerator::GenerateTrajectory(
         bugs,
-        {frc::Translation2d{2_m, 0.5_m}},
+        {},
         daffy,
         config);
 
@@ -273,20 +273,15 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
     cmd_move_movePorky,
     cmd_move_moveShoot);
 
-    // frc2::SequentialCommandGroup *motorTest = new frc2::SequentialCommandGroup();
-    // shoot4New->AddCommands
-    // (manualTurret,
-    // frc2::WaitCommand((units::second_t)1.5),
-    // cmd_move_moveBugs);
-
     frc2::SequentialCommandGroup *shoot5 = new frc2::SequentialCommandGroup();
     shoot5->AddCommands
-    (cmd_move_moveBugs,
+    (cmd_intake2,
+    cmd_move_moveBugs,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_moveDaffy,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_movePorkyFromDaffy,
-    frc2::WaitCommand((units::second_t)1.5),
+    frc2::WaitCommand((units::second_t).5),
     cmd_move_moveShoot);  
 
     frc2::SequentialCommandGroup *shoot5RemoveTaz = new frc2::SequentialCommandGroup();
