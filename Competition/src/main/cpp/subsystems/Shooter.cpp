@@ -117,6 +117,11 @@ void Shooter::resetEncoder(){
     hoodEncoder.SetPosition(0);
 }
 
+void Shooter::setController(frc::XboxController *controller)
+{
+    operatorController = controller;
+}
+
 void Shooter::limelightTrack(bool track){
     limeTable->PutNumber("ledMode", track ? LimelightConstants::LED_MODE_ON : LimelightConstants::LED_MODE_OFF);
     limeTable->PutNumber("camMode", track ? LimelightConstants::TRACK_MODE_ON : LimelightConstants::TRACK_MODE_OFF);
@@ -223,7 +228,7 @@ void Shooter::assignOutputs()
     //DEFAULT
     else if (state.turretState == TurretState::TURRET_DEFAULT){
         //Odometry tracking
-        frc::Pose2d currentPose = odom->getPose_m();
+        frc::Pose2d currentPose(0_m, 0_m, frc::Rotation2d(0_deg));//odom->getPose_m();
         double targetX = ShooterConstants::hubX;
         double targetY = ShooterConstants::hubY;
         if (state.trackCorner){
