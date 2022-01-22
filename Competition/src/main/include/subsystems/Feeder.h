@@ -40,8 +40,7 @@ public:
     
     struct x
     {
-        bool driver_bButtonPressed;
-        bool driver_aButtonPressed;
+        bool driver_rightBumperPressed;
 
         bool operator_bButtonPressed;
         bool operator_aButtonPressed;

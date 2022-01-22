@@ -112,7 +112,7 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_FLYWHEEL_FOLLOW = 13;
     constexpr static int CAN_ID_FLYWHEEL_LEAD = 14;
     constexpr static int CAN_ID_TURRET = 12;
-    constexpr static int CAN_ID_HOOD = 12;    
+    constexpr static int CAN_ID_HOOD = 15;    
     
     constexpr static double limelightTurnKP = 1/24.0;
 

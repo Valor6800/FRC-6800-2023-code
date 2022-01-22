@@ -121,12 +121,9 @@ void Drivetrain::assessInputs()
     state.xButtonPressed = driverController->GetXButton();
     state.yButtonPressed = driverController->GetYButton();
 
-    state.leftBumperPressed = driverController->GetLeftBumperPressed();
-    state.rightBumperPressed = driverController->GetRightBumperPressed();
-
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
-    state.tracking = driverController->GetRightBumper();
+    state.tracking = false;//driverController->GetRightBumper();
 }
 
 void Drivetrain::analyzeDashboard()
@@ -200,6 +197,7 @@ void Drivetrain::assignOutputs()
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
     double rot = std::abs(state.rightStickX) > DriveConstants::kDeadbandX ? fabs(state.rightStickX) * -state.rightStickX : 0;
+    rot *= 0.5;
 
     units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
@@ -230,18 +228,6 @@ void Drivetrain::assignOutputs()
         if (led_mode != LimelightConstants::LED_MODE_OFF) {
             limeTable->PutNumber("ledMode", LimelightConstants::LED_MODE_OFF);
             limeTable->PutNumber("camMode", LimelightConstants::TRACK_MODE_OFF);
-        }
-    }
-
-    if (state.leftBumperPressed) {
-        frc::Rotation2d angle(units::angle::degree_t{0});
-        for (size_t i = 0; i < swerveModules.size(); i++) {
-            swerveModules[i]->setAzimuthRotation2d(angle);
-        }
-    } else if (state.rightBumperPressed) {
-        frc::Rotation2d angle(units::angle::degree_t{180});
-        for (size_t i = 0; i < swerveModules.size(); i++) {
-            swerveModules[i]->setAzimuthRotation2d(angle);
         }
     }
 

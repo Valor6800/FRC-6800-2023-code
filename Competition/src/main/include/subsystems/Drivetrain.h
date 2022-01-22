@@ -51,9 +51,6 @@ public:
         bool xButtonPressed;
         bool yButtonPressed;
 
-        bool leftBumperPressed;
-        bool rightBumperPressed;
-
         bool dPadUpPressed;
         bool dPadDownPressed;
 

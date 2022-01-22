@@ -50,36 +50,36 @@ void Feeder::assessInputs()
     }
 
     // driver inputs
-    state.driver_bButtonPressed = driverController->GetBButton();
-    state.driver_aButtonPressed = driverController->GetAButton();
 
-    state.driver_leftBumperPressed = driverController->GetLeftBumperPressed();
+    state.driver_leftBumperPressed = driverController->GetLeftBumper();
+    state.driver_rightBumperPressed = driverController->GetRightBumper();
 
     // operator inputs
     state.operator_bButtonPressed = operatorController->GetBButton();
     state.operator_aButtonPressed = operatorController->GetAButton();
 
-    state.operator_leftBumperPressed = operatorController->GetLeftBumperPressed();
+    state.operator_leftBumperPressed = operatorController->GetLeftBumper();
+    
 
-    state.lowerBannerTripped = banner_upper.Get();
-    state.upperBannerTripped = banner_upper.Get();
+    state.lowerBannerTripped = false;//banner_upper.Get();
+    state.upperBannerTripped = false;//banner_upper.Get();
 
-    if (state.driver_leftBumperPressed || state.operator_leftBumperPressed) {
+    if (state.driver_rightBumperPressed || state.operator_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_INTAKE2;
     }
-    else if (state.operator_bButtonPressed || state.driver_bButtonPressed) {
+    else if (state.operator_bButtonPressed || state.driver_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_REVERSE;
     }
-    else if (state.operator_aButtonPressed || state.driver_aButtonPressed) {
-        if (state.lowerBannerTripped) {
-            state.feederState = state.upperBannerTripped ? FeederState::FEEDER_DISABLE : FeederState::FEEDER_INTAKE2;
-        } 
-        else if (state.upperBannerTripped) {
-            state.feederState = FeederState::FEEDER_INTAKE1;
-        }
-        else {
+    else if (state.operator_aButtonPressed) {
+        // if (state.lowerBannerTripped) {
+        //     state.feederState = state.upperBannerTripped ? FeederState::FEEDER_DISABLE : FeederState::FEEDER_INTAKE2;
+        // } 
+        // else if (state.upperBannerTripped) {
+        //     state.feederState = FeederState::FEEDER_INTAKE1;
+        // }
+        // else {
             state.feederState = FeederState::FEEDER_INTAKE2;
-        }
+       // }
     }
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
@@ -88,11 +88,11 @@ void Feeder::assessInputs()
 
 void Feeder::analyzeDashboard()
 {
-    state.reversed = table->PutBoolean("Reverse Feeder?", false);
-    state.intakeReverseSpeed = table->PutNumber("Intake Reverse Speed", FeederConstants::DEFUALT_INTAKE_SPEED_REVERSE);
-    state.feederReverseSpeed = table->PutNumber("Feeder Reverse Speed", FeederConstants::DEFUALT_FEEDER_SPEED_REVERSE);
-    state.intakeForwardSpeed = table->PutNumber("Intake Forward Speed", FeederConstants::DEFUALT_INTAKE_SPEED_FORWARD);
-    state.feederForwardSpeed = table->PutNumber("Feeder Forward Speed", FeederConstants::DEFUALT_FEEDER_SPEED_FORWARD);
+    state.reversed = table->GetBoolean("Reverse Feeder?", false);
+    state.intakeReverseSpeed = table->GetNumber("Intake Reverse Speed", FeederConstants::DEFUALT_INTAKE_SPEED_REVERSE);
+    state.feederReverseSpeed = table->GetNumber("Feeder Reverse Speed", FeederConstants::DEFUALT_FEEDER_SPEED_REVERSE);
+    state.intakeForwardSpeed = table->GetNumber("Intake Forward Speed", FeederConstants::DEFUALT_INTAKE_SPEED_FORWARD);
+    state.feederForwardSpeed = table->GetNumber("Feeder Forward Speed", FeederConstants::DEFUALT_FEEDER_SPEED_FORWARD);
 }
 
 void Feeder::assignOutputs()

@@ -14,6 +14,7 @@
 #include "Constants.h"
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Shooter.h"
+#include "subsystems/Feeder.h"
 #include <frc/XboxController.h>
 
 #ifndef ROBOT_CONTAINER_H
@@ -29,6 +30,8 @@ class RobotContainer {
 
         Drivetrain m_drivetrain;
         Shooter m_shooter;
+        Feeder m_feeder;
+
 
     private:
         ValorAuto m_auto;
