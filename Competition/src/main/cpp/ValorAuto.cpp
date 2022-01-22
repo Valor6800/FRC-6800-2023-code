@@ -1,8 +1,9 @@
 #include "ValorAuto.h"
 
-ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter) : 
+ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder) : 
     drivetrain(_drivetrain), 
-    shooter(_shooter)
+    shooter(_shooter),
+    feeder(_feeder)
 {    
     // See: https://github.com/wpilibsuite/allwpilib/blob/v2022.1.1/wpilibcExamples/src/main/cpp/examples/SwerveControllerCommand/cpp/RobotContainer.cpp
 /*
@@ -54,6 +55,8 @@ frc::Pose2d x2y0 = frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg));
 
     
 frc2::InstantCommand manualTurret = frc2::InstantCommand( [&] { shooter->state.turretState = Shooter::TurretState::TURRET_MANUAL; } );
+
+frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE2; } );
 
     auto moveBugs = frc::TrajectoryGenerator::GenerateTrajectory(
         frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
@@ -267,7 +270,8 @@ frc2::InstantCommand manualTurret = frc2::InstantCommand( [&] { shooter->state.t
 /*
     frc2::SequentialCommandGroup *shoot4New = new frc2::SequentialCommandGroup();
     shoot4New->AddCommands
-    (cmd_move_moveBugs,
+    (cmd_intake2,
+    cmd_move_moveBugs,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_movePorky,
     cmd_move_moveShoot);

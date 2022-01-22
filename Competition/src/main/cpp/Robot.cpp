@@ -62,7 +62,7 @@ void Robot::AutonomousPeriodic() {
 
 void Robot::TeleopInit() {
     //m_container.m_drivetrain.resetState();
-    //m_container.m_drivetrain.setMotorMode(true);
+    //m_container.m_drivetrain.setMotorMode(false);
     m_container.m_shooter.resetState();
 
 

@@ -18,19 +18,22 @@
 
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Shooter.h"
+#include "subsystems/Feeder.h"
 
 #ifndef VALOR_AUTO_H
 #define VALOR_AUTO_H
 
 class ValorAuto {
     public:
-        ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter);
+        ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder);
 
         frc2::Command* getCurrentAuto();
 
     private:
         Drivetrain *drivetrain;
         Shooter *shooter;
+        Feeder *feeder;
+
         
         frc::SendableChooser<frc2::Command*> m_chooser;
 };

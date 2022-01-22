@@ -51,8 +51,8 @@ namespace DriveConstants {
     constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1}; //{1, 1, -1, -1};
     constexpr static int MODULE_DIFF_YS[4] = {1, -1, 1, -1}; //{-1, 1, -1, 1};
 
-    constexpr static double kDeadbandX = 0.01;
-    constexpr static double kDeadbandY = 0.01;
+    constexpr static double kDeadbandX = 0.005;
+    constexpr static double kDeadbandY = 0.005;
 
     constexpr static double TURN_KP = 3.8 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
@@ -95,7 +95,7 @@ namespace SwerveConstants {
     constexpr static double AUTO_MAX_SPEED_MPS = DRIVE_MAX_SPEED_MPS;
     constexpr static double AUTO_MAX_ACCEL_MPSS = AUTO_MAX_SPEED_MPS * 1;
 
-    static double ROTATION_MAX_SPEED_RPS = DRIVE_MAX_SPEED_MPS / std::hypot(module_diff / 2, module_diff / 2);
+    static double ROTATION_MAX_SPEED_RPS = M_PI;// DRIVE_MAX_SPEED_MPS / std::hypot(module_diff / 2, module_diff / 2);
     static double AUTO_MAX_ROTATION_RPS = 4 * M_PI;
     static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 1;
 
@@ -193,8 +193,8 @@ namespace FeederConstants{
     constexpr static int BANNER_LOWER_DIO_PORT = 5;
     constexpr static int BANNER_UPPER_DIO_PORT = 6;
 
-    constexpr static double DEFUALT_INTAKE_SPEED_FORWARD = 1.0;
-    constexpr static double DEFUALT_INTAKE_SPEED_REVERSE = -1.0;
+    constexpr static double DEFUALT_INTAKE_SPEED_FORWARD = 0.8;
+    constexpr static double DEFUALT_INTAKE_SPEED_REVERSE = -0.8;
 
     constexpr static double DEFUALT_FEEDER_SPEED_FORWARD = 1.0;
     constexpr static double DEFUALT_FEEDER_SPEED_REVERSE = -1.0;
