@@ -18,6 +18,22 @@
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include <frc/DutyCycleEncoder.h>
 
+#include <frc/geometry/Translation2d.h>
+#include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
+#include <frc/controller/SimpleMotorFeedforward.h>
+#include <frc/kinematics/DifferentialDriveKinematics.h>
+#include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
+#include <frc/trajectory/Trajectory.h>
+#include <frc/trajectory/TrajectoryGenerator.h>
+#include <frc/smartdashboard/SendableChooser.h>
+#include <frc/smartdashboard/SmartDashboard.h>
+
+#include <frc2/command/SwerveControllerCommand.h>
+#include <frc2/command/Command.h>
+#include <frc2/command/InstantCommand.h>
+#include <frc2/command/SequentialCommandGroup.h>
+#include <frc2/command/WaitCommand.h>
+
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
 
@@ -45,6 +61,7 @@ public:
 
         bool backButtonPressed;
         bool startButtonPressed;
+        bool stickPressed;
 
         bool bButtonPressed;
         bool aButtonPressed;
@@ -174,8 +191,18 @@ private:
 
     frc::SwerveDriveKinematics<4> kinematics;
     frc::SwerveDriveOdometry<4> odometry;
-    
+
      std::shared_ptr<nt::NetworkTable> limeTable;
+
+     frc::TrajectoryConfig config;
+     frc::TrajectoryConfig reverseConfig;
+
+     frc::ProfiledPIDController<units::radians> thetaController;
+
+     frc::Pose2d x0y0;
+     frc::Trajectory goZeroZero;
+
+     frc2::SwerveControllerCommand<4> *cmd_go_zero_zero;
 };
 
 #endif

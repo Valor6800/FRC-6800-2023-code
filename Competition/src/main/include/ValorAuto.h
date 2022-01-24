@@ -1,6 +1,4 @@
-#include <map>
 #include <frc/geometry/Translation2d.h>
-
 #include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/kinematics/DifferentialDriveKinematics.h>

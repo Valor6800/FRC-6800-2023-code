@@ -19,7 +19,10 @@ Drivetrain::Drivetrain() : ValorSubsystem(),
                            navX(frc::SerialPort::Port::kMXP),
                            hasGyroOffset(false),
                            kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
-                           odometry(kinematics, frc::Rotation2d{units::radian_t{0}})
+                           odometry(kinematics, frc::Rotation2d{units::radian_t{0}}),
+                           config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
+                           reverseConfig(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
+                           thetaController{DriveConstants::KPT, DriveConstants::KIT, DriveConstants::KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{SwerveConstants::AUTO_MAX_ROTATION_RPS}, units::angular_acceleration::radians_per_second_squared_t{SwerveConstants::AUTO_MAX_ROTATION_ACCEL_RPSS})}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -69,6 +72,28 @@ void Drivetrain::init()
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Drivetrain");
     navX.Calibrate();
+
+    thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi), units::radian_t(wpi::numbers::pi));
+    config.SetKinematics(getKinematics());
+    reverseConfig.SetKinematics(getKinematics());
+    reverseConfig.SetReversed(true);
+    goZeroZero = frc::TrajectoryGenerator::GenerateTrajectory(
+        getPose_m(),
+        {},
+        x0y0,
+        config);
+    x0y0 = frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg));
+
+    cmd_go_zero_zero = new frc2::SwerveControllerCommand<4>(
+        goZeroZero,
+        [&] () { return getPose_m(); },
+        getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { setModuleStates(states); },
+        {this} //used to be "drivetrain"
+    );
 
     for (int i = 0; i < 4; i++)
     {
@@ -120,6 +145,11 @@ void Drivetrain::assessInputs()
     state.aButtonPressed = driverController->GetAButton();
     state.xButtonPressed = driverController->GetXButton();
     state.yButtonPressed = driverController->GetYButton();
+
+    state.startButtonPressed = driverController->GetStartButtonPressed();
+    state.stickPressed = std::abs(state.leftStickY) > DriveConstants::kDeadbandY || 
+    std::abs(state.leftStickX) > DriveConstants::kDeadbandX ||
+    std::abs(state.rightStickX) > DriveConstants::kDeadbandX;
 
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
@@ -180,7 +210,6 @@ void Drivetrain::setMotorMode(bool enabled){
     } 
 }
 
-
 void Drivetrain::assignOutputs()
 {
     // Get the x speed. We are inverting this because Xbox controllers return
@@ -229,6 +258,13 @@ void Drivetrain::assignOutputs()
             limeTable->PutNumber("ledMode", LimelightConstants::LED_MODE_OFF);
             limeTable->PutNumber("camMode", LimelightConstants::TRACK_MODE_OFF);
         }
+    }
+
+    if (state.startButtonPressed){
+        cmd_go_zero_zero->Schedule();
+    }
+    if (state.stickPressed){
+        cmd_go_zero_zero->Cancel();
     }
 
     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
