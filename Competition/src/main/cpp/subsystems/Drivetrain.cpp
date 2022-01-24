@@ -195,7 +195,7 @@ void Drivetrain::analyzeDashboard()
                     swerveModules[3]->getState());
     
     if(state.backButtonPressed){
-        resetState();
+        resetGyro();
     }
 }
 
@@ -227,6 +227,9 @@ void Drivetrain::assignOutputs()
     // the right by default.
     double rot = std::abs(state.rightStickX) > DriveConstants::kDeadbandX ? fabs(state.rightStickX) * -state.rightStickX : 0;
     
+
+    
+
 
     units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};

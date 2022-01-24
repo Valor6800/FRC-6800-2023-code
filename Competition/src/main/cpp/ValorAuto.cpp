@@ -31,12 +31,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi),
                                         units::radian_t(wpi::numbers::pi));
 
-frc::Pose2d startPose = frc::Pose2d(8.357_m, 1.227_m, frc::Rotation2d(180_deg));
+frc::Pose2d startPose = frc::Pose2d(7.9_m, 1.44_m, frc::Rotation2d(182.1_deg));
 
-frc::Pose2d bugs = frc::Pose2d(7.559_m, .28_m, frc::Rotation2d(180_deg));
+frc::Pose2d bugs = frc::Pose2d(7.559_m, 0_m, frc::Rotation2d(180_deg));
 frc::Pose2d daffy = frc::Pose2d(5.083_m, 1.867_m, frc::Rotation2d(155_deg));
-frc::Pose2d porky = frc::Pose2d(1.092_m, 1.112_m, frc::Rotation2d(40_deg));
-frc::Pose2d shoot = frc::Pose2d(5_m, 2_m, frc::Rotation2d(-90_deg));
+frc::Pose2d porky = frc::Pose2d(1.092_m, 1.112_m, frc::Rotation2d(220_deg));
+frc::Pose2d shoot = frc::Pose2d(5_m, 2_m, frc::Rotation2d(90_deg));
 
 
 
@@ -54,13 +54,13 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
 
     auto moveBugs = frc::TrajectoryGenerator::GenerateTrajectory(
         startPose,
-        {frc::Translation2d{8.357_m, 0.3_m}},
+        {frc::Translation2d{8.357_m, 0_m}},
         bugs,
         config);
 
     auto movePorky = frc::TrajectoryGenerator::GenerateTrajectory(
         bugs,
-        {frc::Translation2d{6.357_m, 1.527_m}},
+        {frc::Translation2d{5.083_m, 1.867_m}},
         porky,
         config);
 
@@ -102,6 +102,8 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
     frc2::InstantCommand cmd_set_odometry = frc2::InstantCommand( [&] {
         drivetrain->resetOdometry(startPose);
         });
+
+   
 
     frc2::SwerveControllerCommand<4> cmd_move_moveBugs(
         moveBugs,
@@ -177,7 +179,8 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
 
     frc2::SequentialCommandGroup *shoot5 = new frc2::SequentialCommandGroup();
     shoot5->AddCommands
-    (cmd_intake2,
+    (cmd_set_odometry,
+    cmd_intake2,
     cmd_move_moveBugs,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_moveDaffy,
