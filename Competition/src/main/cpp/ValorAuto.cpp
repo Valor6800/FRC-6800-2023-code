@@ -31,39 +31,36 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi),
                                         units::radian_t(wpi::numbers::pi));
 
-frc::Pose2d bugs = frc::Pose2d(0.7_m, 1.25_m, frc::Rotation2d(0_deg));
-frc::Pose2d daffy = frc::Pose2d(3.5_m, -.25_m, frc::Rotation2d(-25_deg));
-frc::Pose2d porky = frc::Pose2d(7.0_m, 0.1_m, frc::Rotation2d(40_deg));
-frc::Pose2d shoot = frc::Pose2d(2.626_m,0_m, frc::Rotation2d(-90_deg));
+frc::Pose2d startPose = frc::Pose2d(8.357_m, 1.227_m, frc::Rotation2d(180_deg));
 
-frc::Pose2d tazAlt = frc::Pose2d(1.2_m, 0.75_m, frc::Rotation2d(0_deg));
-frc::Pose2d vAlt = frc::Pose2d(.4_m, 0_m, frc::Rotation2d(-90_deg));
-frc::Pose2d bugsAlt = frc::Pose2d(1.2_m, -0.7_m, frc::Rotation2d(-90_deg));
-frc::Pose2d daffyAlt = frc::Pose2d(0_m, -3.0_m, frc::Rotation2d(-90_deg)); //-140_deg
-frc::Pose2d porkyAlt = frc::Pose2d(.19_m, -6_m, frc::Rotation2d(-60_deg));
-frc::Pose2d shootAlt = frc::Pose2d(0_m,-2.626_m, frc::Rotation2d(-180_deg));
+frc::Pose2d bugs = frc::Pose2d(7.559_m, .28_m, frc::Rotation2d(180_deg));
+frc::Pose2d daffy = frc::Pose2d(5.083_m, 1.867_m, frc::Rotation2d(155_deg));
+frc::Pose2d porky = frc::Pose2d(1.092_m, 1.112_m, frc::Rotation2d(40_deg));
+frc::Pose2d shoot = frc::Pose2d(5_m, 2_m, frc::Rotation2d(-90_deg));
 
-frc::Pose2d x2y0 = frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg));
+
+
+frc::Pose2d x6y4 = frc::Pose2d(6_m, 4_m, frc::Rotation2d(180_deg));
 // frc::Rotation2d gyroOffsetAuto = drivetrain->getGyroOffset() + frc::Rotation2d(180_deg);
 
 
     auto move2 = frc::TrajectoryGenerator::GenerateTrajectory(
-        frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
+        startPose,
         {},
-        x2y0,
-        config);
+        x6y4,
+        reverseConfig);
 
 frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE2; } );
 
     auto moveBugs = frc::TrajectoryGenerator::GenerateTrajectory(
-        frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
-        {frc::Translation2d{0_m, 1.3_m}},
+        startPose,
+        {frc::Translation2d{8.357_m, 0.3_m}},
         bugs,
         config);
 
     auto movePorky = frc::TrajectoryGenerator::GenerateTrajectory(
         bugs,
-        {frc::Translation2d{2.0_m, -0.3_m}},
+        {frc::Translation2d{6.357_m, 1.527_m}},
         porky,
         config);
 
@@ -85,41 +82,6 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
         shoot,
         reverseConfig);
     
-    auto moveTazAlt = frc::TrajectoryGenerator::GenerateTrajectory(
-        frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
-        {},
-        tazAlt,
-        config);
-    
-    auto moveVAlt = frc::TrajectoryGenerator::GenerateTrajectory(
-        tazAlt,
-        {},
-        vAlt,
-        reverseConfig);
-
-    auto moveBugsAlt = frc::TrajectoryGenerator::GenerateTrajectory(
-        tazAlt,
-        {},
-        bugsAlt,
-        config);
-
-    auto moveDaffyAlt = frc::TrajectoryGenerator::GenerateTrajectory(
-        vAlt,
-        {frc::Translation2d{1.2_m, 0_m}, frc::Translation2d{1.2_m, -0.7_m}},
-        daffyAlt,
-        config);
-
-    auto movePorkyFromDaffyAlt = frc::TrajectoryGenerator::GenerateTrajectory(
-        daffyAlt,
-        {},
-        porkyAlt,
-        config);
-
-    auto moveShootAlt = frc::TrajectoryGenerator::GenerateTrajectory(
-        porkyAlt,
-        {},
-        shootAlt,
-        reverseConfig);
 
     frc2::SwerveControllerCommand<4> cmd_move_move2(
         move2,
@@ -132,9 +94,13 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
         {drivetrain}
     );
 
-    frc2::InstantCommand cmd_set_gyroOffset = frc2::InstantCommand( [&] {
-        frc::Rotation2d gyroOffsetAuto = drivetrain->getGyroOffset() + frc::Rotation2d(90_deg);
-        drivetrain->setGyroOffset(frc::Rotation2d(gyroOffsetAuto));
+    // frc2::InstantCommand cmd_set_gyroOffset = frc2::InstantCommand( [&] {
+    //     frc::Rotation2d gyroOffsetAuto = drivetrain->getGyroOffset() + frc::Rotation2d(90_deg);
+    //     drivetrain->setGyroOffset(frc::Rotation2d(gyroOffsetAuto));
+    //     });
+
+    frc2::InstantCommand cmd_set_odometry = frc2::InstantCommand( [&] {
+        drivetrain->resetOdometry(startPose);
         });
 
     frc2::SwerveControllerCommand<4> cmd_move_moveBugs(
@@ -192,71 +158,6 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
         {drivetrain}
     );
 
-    
-    frc2::SwerveControllerCommand<4> cmd_move_moveTazAlt(
-        moveTazAlt,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
-
-    frc2::SwerveControllerCommand<4> cmd_move_moveVAlt(
-        moveVAlt,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
-    frc2::SwerveControllerCommand<4> cmd_move_moveBugsAlt(
-        moveBugsAlt,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
-
-    frc2::SwerveControllerCommand<4> cmd_move_moveDaffyAlt(
-        moveDaffyAlt,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
-
-    frc2::SwerveControllerCommand<4> cmd_move_movePorkyAlt(
-        movePorkyFromDaffyAlt,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
-
-    frc2::SwerveControllerCommand<4> cmd_move_moveShootAlt(
-        moveShootAlt,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
 
 /*
     frc2::SequentialCommandGroup *shoot4 = new frc2::SequentialCommandGroup();
@@ -267,7 +168,8 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
 
     frc2::SequentialCommandGroup *shoot4New = new frc2::SequentialCommandGroup();
     shoot4New->AddCommands
-    (cmd_intake2,
+    (cmd_set_odometry,
+    cmd_intake2,
     cmd_move_moveBugs,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_movePorky,
@@ -284,32 +186,19 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
     frc2::WaitCommand((units::second_t).5),
     cmd_move_moveShoot);  
 
-    frc2::SequentialCommandGroup *shoot5RemoveTaz = new frc2::SequentialCommandGroup();
-    shoot5RemoveTaz->AddCommands
-    (cmd_move_moveTazAlt,
-    cmd_move_moveVAlt,
-    frc2::WaitCommand((units::second_t)1.5),
-    cmd_move_moveDaffyAlt,
-    frc2::WaitCommand((units::second_t)1.5),
-    cmd_move_movePorkyAlt,
-    frc2::WaitCommand((units::second_t)1.5),
-    cmd_move_moveShootAlt); 
+     
 
     frc2::SequentialCommandGroup *move2Offset = new frc2::SequentialCommandGroup();
     move2Offset->AddCommands
-    (cmd_set_gyroOffset,
+    (
+    cmd_set_odometry,
     cmd_move_move2); 
 
-    frc2::SequentialCommandGroup *move2x = new frc2::SequentialCommandGroup();
-    move2x->AddCommands
-    (cmd_move_move2); 
+   
 
     m_chooser.SetDefaultOption("4 ball auto new", shoot4New);
     m_chooser.SetDefaultOption("5 ball auto", shoot5);
-    m_chooser.SetDefaultOption("5 ball auto remove Taz", shoot5RemoveTaz);
-    m_chooser.AddOption("Move 2 in x direction", move2x);
     m_chooser.AddOption("Move 2 in x Offset direction", move2Offset);
-    //m_chooser.AddOption("motor test", motorTest);
 
     frc::SmartDashboard::PutData(&m_chooser);
   
