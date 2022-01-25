@@ -117,26 +117,7 @@ public:
          */
     std::vector<ValorSwerve *> getSwerveModules();
 
-    /**
-         * Set the current gyro offset applied to the IMU angle during field oriented driving
-         * Defaults to 0
-         */
-    void setGyroOffset(frc::Rotation2d offset);
-
-    /**
-         * Get the current gyro offset applied to the IMU angle during field oriented driving
-         * @return offset that is applied to the gyro
-         */
-    frc::Rotation2d getGyroOffset();
-
-    /**
-         * Returns the rate of rotation of the gyro
-         * The rate is based on the most recent reading of the gyro analog value.
-         * The rate is expected to be positive as the gyro turns clockwise
-         * @return rate of rotation of the gyro
-         */
-    double getGyroRate();
-
+   
     /**
          * Returns the current gyro heading of the robot
          * This will be affected by any gyro drift that may have accumulated since last recalibration
@@ -186,8 +167,6 @@ private:
                                                                       SwerveConstants::SWERVE_MODULE_DIFF_Y *DriveConstants::MODULE_DIFF_YS[3]}};
 
     AHRS navX;
-    bool hasGyroOffset;
-    frc::Rotation2d gyroOffset;
 
     frc::SwerveDriveKinematics<4> kinematics;
     frc::SwerveDriveOdometry<4> odometry;

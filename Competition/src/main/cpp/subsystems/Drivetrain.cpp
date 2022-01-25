@@ -17,7 +17,6 @@
 Drivetrain::Drivetrain() : ValorSubsystem(),
                            driverController(NULL),
                            navX(frc::SerialPort::Port::kMXP),
-                           hasGyroOffset(false),
                            kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
                            odometry(kinematics, frc::Rotation2d{units::radian_t{0}}),
                            config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
@@ -164,7 +163,6 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
 
-    table->PutNumber("Gyro fused", getHeading(true).Degrees().to<double>());
     table->PutNumber("left stick y", state.leftStickY);
     table->PutNumber("left stick x", state.leftStickX);
     table->PutNumber("right stick x", state.rightStickX);
@@ -188,7 +186,8 @@ void Drivetrain::analyzeDashboard()
         state.saveToFileDebouncer = false;
     }
 
-    odometry.Update(getHeading(true),
+    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading()) * MathConstants::toRadians);
+    odometry.Update(rot,
                     swerveModules[0]->getState(),
                     swerveModules[1]->getState(),
                     swerveModules[2]->getState(),
@@ -235,7 +234,7 @@ void Drivetrain::assignOutputs()
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::radians_per_second_t rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_MAX_SPEED_RPS};
 
-    double heading = getHeading(true).Degrees().to<double>();
+    double heading = getPose_m().Rotation().Degrees().to<double>();
     if (state.bButtonPressed) {
         rotRPS = units::radians_per_second_t{angleWrap(heading - 90) * DriveConstants::TURN_KP};
     } else if (state.aButtonPressed) {
@@ -277,7 +276,6 @@ void Drivetrain::resetState()
 {
     state.tracking = false;
 
-    resetGyro();
     resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
     for (size_t i = 0; i < swerveModules.size(); i++) {
         swerveModules[i]->loadAndSetAzimuthZeroReference();
@@ -294,40 +292,14 @@ frc::Pose2d Drivetrain::getPose_m()
     return odometry.GetPose();
 }
 
-//.3 degrees of drift after 1 minute of sitting still
-//3-5 degrees of drifet after spinning around 10 times
-frc::Rotation2d Drivetrain::getHeading(bool offset)
-{
-    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading()) * MathConstants::toRadians);
-    if (offset)
-    {
-        return hasGyroOffset ? rot.RotateBy(gyroOffset) : rot;
-    }
-    return rot;
-}
 
-double Drivetrain::getGyroRate()
-{
-    return navX.GetRate();
-}
-
-frc::Rotation2d Drivetrain::getGyroOffset()
-{
-    return gyroOffset;
-}
-
-void Drivetrain::setGyroOffset(frc::Rotation2d offset)
-{
-    if (gyroOffset == offset)
-        return;
-    gyroOffset = offset;
-    hasGyroOffset = true;
-}
 
 void Drivetrain::resetOdometry(frc::Pose2d pose)
 {
-    odometry.ResetPosition(pose, getHeading(true));
+    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading()) * MathConstants::toRadians);
+    odometry.ResetPosition(pose, rot);
 }
+
 
 void Drivetrain::resetDriveEncoders()
 {
@@ -340,7 +312,10 @@ void Drivetrain::resetDriveEncoders()
 void Drivetrain::resetGyro()
 {
     //navX.ZeroYaw(); can't reset fused heading
-    setGyroOffset(-getHeading(false));
+    frc::Pose2d oldPose = getPose_m();
+    frc::Pose2d newPose{oldPose.X(), oldPose.Y(), frc::Rotation2d(0_deg)};
+    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading()) * MathConstants::toRadians);
+    odometry.ResetPosition(newPose, rot);
     std::cout << "reset" << std::endl;
 }
 
@@ -364,7 +339,7 @@ wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::meters_
     frc::ChassisSpeeds chassisSpeeds = isFOC ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx_mps,
                                                                                            vy_mps,
                                                                                            omega_radps,
-                                                                                           getHeading(true))
+                                                                                           odometry.GetPose().Rotation())
                                              : frc::ChassisSpeeds{vx_mps, vy_mps, omega_radps};
     auto states = kinematics.ToSwerveModuleStates(chassisSpeeds);
     kinematics.DesaturateWheelSpeeds(&states, units::meters_per_second_t{SwerveConstants::DRIVE_MAX_SPEED_MPS});
