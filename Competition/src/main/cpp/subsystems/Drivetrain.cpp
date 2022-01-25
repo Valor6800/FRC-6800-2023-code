@@ -76,23 +76,7 @@ void Drivetrain::init()
     config.SetKinematics(getKinematics());
     reverseConfig.SetKinematics(getKinematics());
     reverseConfig.SetReversed(true);
-    goZeroZero = frc::TrajectoryGenerator::GenerateTrajectory(
-        getPose_m(),
-        {},
-        x0y0,
-        config);
-    x0y0 = frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg));
-
-    cmd_go_zero_zero = new frc2::SwerveControllerCommand<4>(
-        goZeroZero,
-        [&] () { return getPose_m(); },
-        getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { setModuleStates(states); },
-        {this} //used to be "drivetrain"
-    );
+    
 
     for (int i = 0; i < 4; i++)
     {
@@ -146,9 +130,9 @@ void Drivetrain::assessInputs()
     state.yButtonPressed = driverController->GetYButton();
 
     state.startButtonPressed = driverController->GetStartButtonPressed();
-    state.stickPressed = std::abs(state.leftStickY) > DriveConstants::kDeadbandY || 
-    std::abs(state.leftStickX) > DriveConstants::kDeadbandX ||
-    std::abs(state.rightStickX) > DriveConstants::kDeadbandX;
+    state.stickPressed = std::abs(state.leftStickY) > 0.05 || 
+    std::abs(state.leftStickX) > 0.05 ||
+    std::abs(state.rightStickX) > 0.05;
 
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
@@ -193,9 +177,6 @@ void Drivetrain::analyzeDashboard()
                     swerveModules[2]->getState(),
                     swerveModules[3]->getState());
     
-    if(state.backButtonPressed){
-        resetGyro();
-    }
 }
 
 void Drivetrain::setMotorMode(bool enabled){
@@ -225,10 +206,6 @@ void Drivetrain::assignOutputs()
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
     double rot = std::abs(state.rightStickX) > DriveConstants::kDeadbandX ? fabs(state.rightStickX) * -state.rightStickX : 0;
-    
-
-    
-
 
     units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
@@ -263,6 +240,25 @@ void Drivetrain::assignOutputs()
     }
 
     if (state.startButtonPressed){
+        x0y0 = frc::Pose2d(7.9_m, 1.44_m, frc::Rotation2d(182.1_deg));
+
+        goZeroZero = frc::TrajectoryGenerator::GenerateTrajectory(
+            getPose_m(),
+            {},
+            x0y0,
+            config);
+
+        cmd_go_zero_zero = new frc2::SwerveControllerCommand<4>(
+            goZeroZero,
+            [&] () { return getPose_m(); },
+            getKinematics(),
+            frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+            frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+            thetaController,
+            [this] (auto states) { setModuleStates(states); },
+            {this} //used to be "drivetrain"
+        );
+
         cmd_go_zero_zero->Schedule();
     }
     if (state.stickPressed){
@@ -309,15 +305,7 @@ void Drivetrain::resetDriveEncoders()
     }
 }
 
-void Drivetrain::resetGyro()
-{
-    //navX.ZeroYaw(); can't reset fused heading
-    frc::Pose2d oldPose = getPose_m();
-    frc::Pose2d newPose{oldPose.X(), oldPose.Y(), frc::Rotation2d(0_deg)};
-    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading()) * MathConstants::toRadians);
-    odometry.ResetPosition(newPose, rot);
-    std::cout << "reset" << std::endl;
-}
+
 
 void Drivetrain::drive(units::meters_per_second_t vx_mps, units::meters_per_second_t vy_mps, units::radians_per_second_t omega_radps, bool isFOC)
 {

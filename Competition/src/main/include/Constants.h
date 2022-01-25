@@ -73,7 +73,7 @@ namespace DriveConstants {
 }
 
 namespace SwerveConstants {
-    constexpr static double module_diff = 0.29051;
+    constexpr static double module_diff = 0.22225;
     constexpr static auto SWERVE_MODULE_DIFF_X = units::meter_t(module_diff);
     constexpr static auto SWERVE_MODULE_DIFF_Y = units::meter_t(module_diff);
 

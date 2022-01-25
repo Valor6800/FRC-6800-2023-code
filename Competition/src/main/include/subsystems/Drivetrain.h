@@ -92,11 +92,6 @@ public:
          */
     void setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates);
 
-    /**
-         * Reset the gyro to a heading of zero
-         */
-    void resetGyro();
-
      void setMotorMode(bool);
 
     /**
