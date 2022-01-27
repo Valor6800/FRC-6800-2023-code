@@ -98,8 +98,9 @@ public:
      */
     int getMagEncoderCount();
 
-private:
     units::meters_per_second_t getDriveSpeed_mps();
+
+private:
 
     void setDriveOpenLoop_mps(double mps);
 

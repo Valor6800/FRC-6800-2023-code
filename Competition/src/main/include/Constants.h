@@ -51,8 +51,8 @@ namespace DriveConstants {
     constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1}; //{1, 1, -1, -1};
     constexpr static int MODULE_DIFF_YS[4] = {1, -1, 1, -1}; //{-1, 1, -1, 1};
 
-    constexpr static double kDeadbandX = 0.005;
-    constexpr static double kDeadbandY = 0.005;
+    constexpr static double kDeadbandX = 0.05;
+    constexpr static double kDeadbandY = 0.05;
 
     constexpr static double TURN_KP = 3.8 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = 4.0 * M_PI / 180.0;
@@ -89,7 +89,7 @@ namespace SwerveConstants {
 
     constexpr static double MOTOR_FREE_SPEED = 6380.0;
 
-    constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.0005};
+    constexpr static units::meters_per_second_t DRIVE_DEADBAND_MPS = units::meters_per_second_t{0.05};
 
     constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI;
     constexpr static double AUTO_MAX_SPEED_MPS = DRIVE_MAX_SPEED_MPS;

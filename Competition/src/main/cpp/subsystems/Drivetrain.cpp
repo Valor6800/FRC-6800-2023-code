@@ -147,13 +147,16 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
 
-    table->PutNumber("left stick y", state.leftStickY);
-    table->PutNumber("left stick x", state.leftStickX);
-    table->PutNumber("right stick x", state.rightStickX);
+    table->PutNumber("left stick x", driverController->GetLeftX());
+    table->PutNumber("left stick Y", driverController->GetLeftY());
+    table->PutNumber("right stick x", driverController->GetRightX());
+    table->PutNumber("right stick Y", driverController->GetRightY());
 
     for (int i = 0; i < 4; i++)
     {
         table->PutNumber("Wheel " + std::to_string(i) + " angle", swerveModules[i]->getAzimuthRotation2d().Degrees().to<double>());
+        table->PutNumber("Wheel " + std::to_string(i) + " velocity", swerveModules[i]->getDriveSpeed_mps().to<double>());
+
         table->PutNumber("Wheel " + std::to_string(i) + " mag encoder", swerveModules[i]->getMagEncoderCount());
         table->PutNumber("Wheel " + std::to_string(i) + " mag encoder converted", swerveModules[i]->convertMagEncoderToAzimuthEncoder(swerveModules[i]->getMagEncoderCount()));
         table->PutNumber("Wheel " + std::to_string(i) + " azimuth encoder", swerveModules[i]->getAzimuthEncoderCount());
@@ -176,6 +179,10 @@ void Drivetrain::analyzeDashboard()
                     swerveModules[1]->getState(),
                     swerveModules[2]->getState(),
                     swerveModules[3]->getState());
+
+    if (state.backButtonPressed){
+        resetGyro();
+    }
     
 }
 
@@ -240,13 +247,13 @@ void Drivetrain::assignOutputs()
     }
 
     if (state.startButtonPressed){
-        x0y0 = frc::Pose2d(7.9_m, 1.44_m, frc::Rotation2d(182.1_deg));
+        x0y0 = frc::Pose2d(8.514_m, 1.771_m, frc::Rotation2d(182.1_deg));
 
         goZeroZero = frc::TrajectoryGenerator::GenerateTrajectory(
             getPose_m(),
             {},
             x0y0,
-            config);
+            reverseConfig);
 
         cmd_go_zero_zero = new frc2::SwerveControllerCommand<4>(
             goZeroZero,
@@ -286,6 +293,12 @@ frc::SwerveDriveKinematics<4>& Drivetrain::getKinematics()
 frc::Pose2d Drivetrain::getPose_m()
 {
     return odometry.GetPose();
+}
+
+void Drivetrain::resetGyro(){
+    frc::Pose2d initialPose = getPose_m();
+    frc::Pose2d desiredPose = frc::Pose2d(initialPose.X(), initialPose.Y(), frc::Rotation2d(0_deg));
+    resetOdometry(desiredPose);
 }
 
 
