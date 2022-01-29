@@ -173,8 +173,7 @@ void Drivetrain::analyzeDashboard()
         state.saveToFileDebouncer = false;
     }
 
-    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading()) * MathConstants::toRadians);
-    odometry.Update(rot,
+    odometry.Update(getNavX(),
                     swerveModules[0]->getState(),
                     swerveModules[1]->getState(),
                     swerveModules[2]->getState(),
@@ -299,14 +298,23 @@ void Drivetrain::resetGyro(){
     frc::Pose2d initialPose = getPose_m();
     frc::Pose2d desiredPose = frc::Pose2d(initialPose.X(), initialPose.Y(), frc::Rotation2d(0_deg));
     resetOdometry(desiredPose);
+
+    for (size_t i = 0; i < swerveModules.size(); i++) {
+        swerveModules[i]->loadAndSetAzimuthZeroReference();
+    }
 }
 
 
 
 void Drivetrain::resetOdometry(frc::Pose2d pose)
 {
-    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(navX.GetFusedHeading()) * MathConstants::toRadians);
-    odometry.ResetPosition(pose, rot);
+    odometry.ResetPosition(pose, getNavX());
+}
+
+frc::Rotation2d Drivetrain::getNavX() 
+{
+    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(-navX.GetFusedHeading()) * MathConstants::toRadians);
+    return rot;
 }
 
 

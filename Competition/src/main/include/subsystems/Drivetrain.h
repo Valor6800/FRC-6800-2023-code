@@ -101,6 +101,9 @@ public:
          */
     void resetDriveEncoders();
 
+
+    frc::Rotation2d getNavX();
+
     /**
          * Reset the robot's position on the field. Any accumulted gyro drift will be noted and
          *   accounted for in subsequent calls to getPoseMeters()
