@@ -39,7 +39,8 @@ void ValorSwerve::setDesiredState(frc::SwerveModuleState desiredState, bool isDr
 
     // Deadband
     if (desiredState.speed < SwerveConstants::DRIVE_DEADBAND_MPS) {
-        desiredState = frc::SwerveModuleState{units::meters_per_second_t{0.0}, previousAngle};
+        setDriveOpenLoop_mps(0);
+        return;
     }
     
     // Cache previous angle
@@ -172,6 +173,8 @@ void ValorSwerve::setAzimuthRotation2d(frc::Rotation2d angle)
 units::meters_per_second_t ValorSwerve::getDriveSpeed_mps()
 {
     double encoderCountsPer100ms = driveFalcon->GetSelectedSensorVelocity();
+    if (encoderCountsPer100ms < 0) 
+    encoderCountsPer100ms*= 0.94;
     double motorRotationsPer100ms = encoderCountsPer100ms / SwerveConstants::DRIVE_COUNTS_PER_REV;
     double wheelRotationsPer100ms = motorRotationsPer100ms * SwerveConstants::DRIVE_GEAR_RATIO;
     double metersPer100ms = wheelRotationsPer100ms * SwerveConstants::WHEEL_CIRCUMFERENCE_M;

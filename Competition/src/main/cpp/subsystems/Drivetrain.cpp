@@ -130,6 +130,7 @@ void Drivetrain::assessInputs()
     state.yButtonPressed = driverController->GetYButton();
 
     state.startButtonPressed = driverController->GetStartButtonPressed();
+
     state.stickPressed = std::abs(state.leftStickY) > 0.05 || 
     std::abs(state.leftStickX) > 0.05 ||
     std::abs(state.rightStickX) > 0.05;
@@ -142,6 +143,7 @@ void Drivetrain::assessInputs()
 void Drivetrain::analyzeDashboard()
 {
     state.backButtonPressed = driverController->GetBackButtonPressed();
+
 
     table->PutNumber("Robot X", getPose_m().X().to<double>());
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
@@ -181,6 +183,10 @@ void Drivetrain::analyzeDashboard()
 
     if (state.backButtonPressed){
         resetGyro();
+    }
+
+    if (state.startButtonPressed){
+        resetState();
     }
     
 }
@@ -265,7 +271,7 @@ void Drivetrain::assignOutputs()
             {this} //used to be "drivetrain"
         );
 
-        cmd_go_zero_zero->Schedule();
+        // cmd_go_zero_zero->Schedule();
     }
     if (state.stickPressed){
         cmd_go_zero_zero->Cancel();
@@ -298,10 +304,6 @@ void Drivetrain::resetGyro(){
     frc::Pose2d initialPose = getPose_m();
     frc::Pose2d desiredPose = frc::Pose2d(initialPose.X(), initialPose.Y(), frc::Rotation2d(0_deg));
     resetOdometry(desiredPose);
-
-    for (size_t i = 0; i < swerveModules.size(); i++) {
-        swerveModules[i]->loadAndSetAzimuthZeroReference();
-    }
 }
 
 

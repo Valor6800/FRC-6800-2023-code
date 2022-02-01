@@ -52,6 +52,8 @@ frc::Pose2d x6y4 = frc::Pose2d(6_m, 4_m, frc::Rotation2d(180_deg));
         reverseConfig);
 
 frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE2; } );
+frc2::InstantCommand cmd_shoot = frc2::InstantCommand( [&] { shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_DEFAULT; } );
+
 
     auto moveBugs = frc::TrajectoryGenerator::GenerateTrajectory(
         startPose,
@@ -172,6 +174,7 @@ frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.fee
     frc2::SequentialCommandGroup *shoot4New = new frc2::SequentialCommandGroup();
     shoot4New->AddCommands
     (cmd_set_odometry,
+    cmd_shoot,
     cmd_intake2,
     cmd_move_moveBugs,
     frc2::WaitCommand((units::second_t)1.5),

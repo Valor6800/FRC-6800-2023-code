@@ -89,7 +89,7 @@ void Feeder::assessInputs()
         //     state.feederState = FeederState::FEEDER_INTAKE1;
         // }
         // else {
-            state.feederState = FeederState::FEEDER_INTAKE2;
+            state.feederState = FeederState::FEEDER_INTAKE1;
        // }
     }
     else {
@@ -125,7 +125,7 @@ void Feeder::assignOutputs()
     }
     else if (state.feederState == FeederState::FEEDER_INTAKE1) {
         motor_intake.Set(state.intakeForwardSpeed);
-        motor_stage1.Set(state.feederForwardSpeed);
+        motor_stage1.Set(0);
         motor_stage2.Set(0);
     }
     else {

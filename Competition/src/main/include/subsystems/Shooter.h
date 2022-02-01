@@ -106,7 +106,7 @@ private:
      void limelightTrack(bool track);
 
      WPI_TalonFX flywheel_lead;
-     WPI_TalonFX flywheel_follow;
+     //WPI_TalonFX flywheel_follow;
 
      rev::CANSparkMax turret;
      rev::SparkMaxRelativeEncoder turretEncoder = turret.GetEncoder();

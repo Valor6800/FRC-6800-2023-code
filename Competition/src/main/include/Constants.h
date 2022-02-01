@@ -95,7 +95,7 @@ namespace SwerveConstants {
     constexpr static double AUTO_MAX_SPEED_MPS = DRIVE_MAX_SPEED_MPS;
     constexpr static double AUTO_MAX_ACCEL_MPSS = AUTO_MAX_SPEED_MPS * 1;
 
-    static double ROTATION_MAX_SPEED_RPS = M_PI;// DRIVE_MAX_SPEED_MPS / std::hypot(module_diff / 2, module_diff / 2);
+    static double ROTATION_MAX_SPEED_RPS = 2*M_PI;// DRIVE_MAX_SPEED_MPS / std::hypot(module_diff / 2, module_diff / 2);
     static double AUTO_MAX_ROTATION_RPS = 4 * M_PI;
     static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 1;
 

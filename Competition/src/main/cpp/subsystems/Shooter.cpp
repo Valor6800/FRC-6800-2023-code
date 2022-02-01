@@ -12,7 +12,7 @@
 
 Shooter::Shooter() : ValorSubsystem(),
                      flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD},
-                     flywheel_follow{ShooterConstants::CAN_ID_FLYWHEEL_FOLLOW},
+                     //flywheel_follow{ShooterConstants::CAN_ID_FLYWHEEL_FOLLOW},
                      turret{ShooterConstants::CAN_ID_TURRET, rev::CANSparkMax::MotorType::kBrushless},
                     hood{ShooterConstants::CAN_ID_HOOD, rev::CANSparkMax::MotorType::kBrushless},
                      operatorController(NULL)
@@ -48,9 +48,9 @@ void Shooter::init()
     flywheel_lead.SetNeutralMode(NeutralMode::Coast);
 
     flywheel_lead.SetInverted(false);
-    flywheel_follow.SetInverted(false);
+    //flywheel_follow.SetInverted(false);
 
-    flywheel_follow.Follow(flywheel_lead);
+    //flywheel_follow.Follow(flywheel_lead);
     
     turret.RestoreFactoryDefaults();
     hood.RestoreFactoryDefaults();
