@@ -54,6 +54,7 @@ void Robot::AutonomousInit() {
 
     m_container.m_feeder.robotMode = ValorSubsystem::RobotMode::AUTO;
     m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::AUTO;
+    m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::AUTO;
 }
 
 void Robot::AutonomousPeriodic() {

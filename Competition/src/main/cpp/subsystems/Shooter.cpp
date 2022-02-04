@@ -29,6 +29,7 @@ void Shooter::init()
 {
    limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Shooter");
+    
     table->PutBoolean("Home Turret", false);
     table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     table->PutNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
