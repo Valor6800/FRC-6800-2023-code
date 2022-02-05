@@ -189,11 +189,9 @@ namespace ShooterConstants{
 
 namespace FeederConstants{
     constexpr static int MOTOR_INTAKE_CAN_ID = 9;
-    constexpr static int MOTOR_STAGE1_CAN_ID = 10;
-    constexpr static int MOTOR_STAGE2_CAN_ID = 11;
+    constexpr static int MOTOR_STAGE_CAN_ID = 10;
 
-    constexpr static int BANNER_LOWER_DIO_PORT = 5;
-    constexpr static int BANNER_UPPER_DIO_PORT = 6;
+    constexpr static int BANNER_DIO_PORT = 5;
 
     constexpr static double DEFUALT_INTAKE_SPEED_FORWARD = 0.9;
     constexpr static double DEFUALT_INTAKE_SPEED_REVERSE = -0.9;

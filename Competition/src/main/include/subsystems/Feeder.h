@@ -48,8 +48,7 @@ public:
         bool driver_leftBumperPressed;
         bool operator_leftBumperPressed;
 
-        bool upperBannerTripped;
-        bool lowerBannerTripped;
+        bool bannerTripped;
 
         bool reversed;
         
@@ -70,11 +69,9 @@ private:
     frc::XboxController *operatorController;
 
     rev::CANSparkMax motor_intake;
-    rev::CANSparkMax motor_stage1;
-    rev::CANSparkMax motor_stage2;
+    rev::CANSparkMax motor_stage;
 
-    frc::DigitalInput banner_lower;
-    frc::DigitalInput banner_upper;
+    frc::DigitalInput banner;
 };
 
 #endif
