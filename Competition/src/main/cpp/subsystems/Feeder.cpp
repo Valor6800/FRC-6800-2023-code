@@ -31,14 +31,15 @@ void Feeder::init()
     motor_intake.SetInverted(false);
 
     motor_stage.RestoreFactoryDefaults();
-    motor_stage.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+    motor_stage.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
     motor_stage.SetInverted(false);
 
     table->PutBoolean("Reverse Feeder?", false);
-    table->PutNumber("Intake Reverse Speed", FeederConstants::DEFUALT_INTAKE_SPEED_REVERSE);
-    table->PutNumber("Feeder Reverse Speed", FeederConstants::DEFUALT_FEEDER_SPEED_REVERSE);
-    table->PutNumber("Intake Forward Speed", FeederConstants::DEFUALT_INTAKE_SPEED_FORWARD);
-    table->PutNumber("Feeder Forward Speed", FeederConstants::DEFUALT_FEEDER_SPEED_FORWARD);
+    table->PutNumber("Intake Reverse Speed", FeederConstants::DEFAULT_INTAKE_SPEED_REVERSE);
+    table->PutNumber("Feeder Reverse Speed", FeederConstants::DEFAULT_FEEDER_SPEED_REVERSE);
+    table->PutNumber("Intake Forward Speed", FeederConstants::DEFAULT_INTAKE_SPEED_FORWARD);
+    table->PutNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
+    table->PutNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
 }
 
 void Feeder::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
@@ -69,7 +70,7 @@ void Feeder::assessInputs()
     state.bannerTripped = !banner.Get();
 
     if (state.driver_rightBumperPressed || state.operator_leftBumperPressed) {
-        state.feederState = FeederState::FEEDER_INTAKE2;
+        state.feederState = FeederState::FEEDER_SHOOT;
     }
     else if (state.operator_bButtonPressed || state.driver_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_REVERSE;
@@ -90,10 +91,11 @@ void Feeder::assessInputs()
 void Feeder::analyzeDashboard()
 {
     state.reversed = table->GetBoolean("Reverse Feeder?", false);
-    state.intakeReverseSpeed = table->GetNumber("Intake Reverse Speed", FeederConstants::DEFUALT_INTAKE_SPEED_REVERSE);
-    state.feederReverseSpeed = table->GetNumber("Feeder Reverse Speed", FeederConstants::DEFUALT_FEEDER_SPEED_REVERSE);
-    state.intakeForwardSpeed = table->GetNumber("Intake Forward Speed", FeederConstants::DEFUALT_INTAKE_SPEED_FORWARD);
-    state.feederForwardSpeed = table->GetNumber("Feeder Forward Speed", FeederConstants::DEFUALT_FEEDER_SPEED_FORWARD);
+    state.intakeReverseSpeed = table->GetNumber("Intake Reverse Speed", FeederConstants::DEFAULT_INTAKE_SPEED_REVERSE);
+    state.feederReverseSpeed = table->GetNumber("Feeder Reverse Speed", FeederConstants::DEFAULT_FEEDER_SPEED_REVERSE);
+    state.intakeForwardSpeed = table->GetNumber("Intake Forward Speed", FeederConstants::DEFAULT_INTAKE_SPEED_FORWARD);
+    state.feederForwardSpeedDefault = table->GetNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
+    state.feederForwardSpeedShoot = table->GetNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
 }
 
 void Feeder::assignOutputs()
@@ -104,7 +106,11 @@ void Feeder::assignOutputs()
     }
     else if (state.feederState == FeederState::FEEDER_INTAKE2) {
         motor_intake.Set(state.intakeForwardSpeed);
-        motor_stage.Set(state.feederForwardSpeed);
+        motor_stage.Set(state.feederForwardSpeedDefault);
+    }
+    else if (state.feederState == FeederState::FEEDER_SHOOT) {
+        motor_intake.Set(state.intakeForwardSpeed);
+        motor_stage.Set(state.feederForwardSpeedShoot);
     }
     else if (state.feederState == Feeder::FEEDER_REVERSE) {
         motor_intake.Set(state.intakeReverseSpeed);

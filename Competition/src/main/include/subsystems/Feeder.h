@@ -35,7 +35,8 @@ public:
         FEEDER_DISABLE,
         FEEDER_REVERSE,
         FEEDER_INTAKE1,
-        FEEDER_INTAKE2
+        FEEDER_INTAKE2,
+        FEEDER_SHOOT
     };
     
     struct x
@@ -55,7 +56,8 @@ public:
         double intakeForwardSpeed;
         double intakeReverseSpeed;
 
-        double feederForwardSpeed;
+        double feederForwardSpeedDefault;
+        double feederForwardSpeedShoot;
         double feederReverseSpeed;
         
 
