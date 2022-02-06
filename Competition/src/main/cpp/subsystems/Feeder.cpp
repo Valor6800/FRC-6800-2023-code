@@ -40,6 +40,8 @@ void Feeder::init()
     table->PutNumber("Intake Forward Speed", FeederConstants::DEFAULT_INTAKE_SPEED_FORWARD);
     table->PutNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
     table->PutNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
+
+    state.spiked = false;
 }
 
 void Feeder::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
@@ -68,16 +70,28 @@ void Feeder::assessInputs()
     
 
     state.bannerTripped = !banner.Get();
-
+    
     if (state.driver_rightBumperPressed || state.operator_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_SHOOT;
+        state.spiked = false;
     }
     else if (state.operator_bButtonPressed || state.driver_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_REVERSE;
+        state.spiked = false;
     }
     else if (state.operator_aButtonPressed) {
         if (state.bannerTripped) {
-            state.feederState = FeederState::FEEDER_INTAKE1;
+            if (state.instCurrent > FeederConstants::JAM_CURRENT && state.bannerTripped) {
+                if (state.spiked) {
+                    state.feederState = FeederState::FEEDER_DISABLE;
+                }
+                else {
+                   state.spiked = true; 
+                }
+            }
+            else {
+                state.feederState = FeederState::FEEDER_INTAKE1;
+            }
         }
         else {
             state.feederState = FeederState::FEEDER_INTAKE2;
@@ -100,6 +114,9 @@ void Feeder::analyzeDashboard()
 
 void Feeder::assignOutputs()
 {
+    // Calculate instantaneous current
+    calcCurrent();
+
     if (state.feederState == FeederState::FEEDER_DISABLE) {
         motor_intake.Set(0);
         motor_stage.Set(0);
@@ -126,7 +143,32 @@ void Feeder::assignOutputs()
     }
 }
 
+void Feeder::calcCurrent() {
+
+    // Circular buffer. If index reaches end of vector, start at beginning and override prev values
+    if (state.current_cache_index >= FeederConstants::CACHE_SIZE) {
+        state.current_cache_index = 0;
+    }
+    // Set the current to the index, and increment the index
+    state.current_cache.at(state.current_cache_index++) = motor_intake.GetOutputCurrent();
+
+    // Calculate average current over the cache size, or circular buffer window
+    double sum = 0;
+    for (int i = 0; i < FeederConstants::CACHE_SIZE; i++) {
+        sum += state.current_cache.at(i);
+    }
+    state.instCurrent = sum / FeederConstants::CACHE_SIZE;
+}
+
+
 void Feeder::resetState()
 {
     state.feederState = FeederState::FEEDER_DISABLE;
+
+    state.spiked = false;
+
+    state.current_cache_index = 0;
+    for (int i = 0; i < FeederConstants::CACHE_SIZE; i++) {
+        state.current_cache.push_back(0);
+    }
 }

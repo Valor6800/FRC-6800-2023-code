@@ -52,6 +52,8 @@ public:
         bool bannerTripped;
 
         bool reversed;
+
+        bool spiked;
         
         double intakeForwardSpeed;
         double intakeReverseSpeed;
@@ -60,6 +62,10 @@ public:
         double feederForwardSpeedShoot;
         double feederReverseSpeed;
         
+        int current_cache_index;
+        std::vector<double> current_cache;
+
+        double instCurrent;
 
         FeederState feederState;
     } state;
@@ -74,6 +80,8 @@ private:
     rev::CANSparkMax motor_stage;
 
     frc::DigitalInput banner;
+
+    void calcCurrent();
 };
 
 #endif
