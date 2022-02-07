@@ -42,6 +42,7 @@ void Feeder::init()
     table->PutNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
 
     state.spiked = false;
+    state.previousBanner = false;
 }
 
 void Feeder::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
@@ -70,8 +71,10 @@ void Feeder::assessInputs()
     
 
     state.bannerTripped = !banner.Get();
+
+    state.currentBanner = state.bannerTripped;
     
-    if (state.driver_rightBumperPressed || state.operator_leftBumperPressed) {
+    if (state.operator_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_SHOOT;
         state.spiked = false;
     }
@@ -79,18 +82,22 @@ void Feeder::assessInputs()
         state.feederState = FeederState::FEEDER_REVERSE;
         state.spiked = false;
     }
-    else if (state.operator_aButtonPressed) {
+    else if (state.operator_aButtonPressed || state.driver_rightBumperPressed) {
         if (state.bannerTripped) {
-            if (state.instCurrent > FeederConstants::JAM_CURRENT && state.bannerTripped) {
-                if (state.spiked) {
-                    state.feederState = FeederState::FEEDER_DISABLE;
-                }
-                else {
-                   state.spiked = true; 
-                }
+            if (state.currentBanner && !state.previousBanner) {
+                resetDeque();
+            }
+            if (state.spiked) {
+                state.feederState = FeederState::FEEDER_DISABLE;
             }
             else {
-                state.feederState = FeederState::FEEDER_INTAKE1;
+                if (state.instCurrent > FeederConstants::JAM_CURRENT && state.bannerTripped) {
+                   state.feederState = FeederState::FEEDER_DISABLE;
+                   state.spiked = true;
+                }
+                else {
+                    state.feederState = FeederState::FEEDER_INTAKE1;
+                }
             }
         }
         else {
@@ -100,6 +107,8 @@ void Feeder::assessInputs()
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
     }
+
+    state.previousBanner = state.currentBanner;
 }
 
 void Feeder::analyzeDashboard()
@@ -160,6 +169,13 @@ void Feeder::calcCurrent() {
     state.instCurrent = sum / FeederConstants::CACHE_SIZE;
 }
 
+void Feeder::resetDeque() {
+    state.current_cache_index = 0;
+    for (int i = 0; i < FeederConstants::CACHE_SIZE; i++) {
+        state.current_cache.push_back(0);
+    }
+}
+
 
 void Feeder::resetState()
 {
@@ -167,8 +183,5 @@ void Feeder::resetState()
 
     state.spiked = false;
 
-    state.current_cache_index = 0;
-    for (int i = 0; i < FeederConstants::CACHE_SIZE; i++) {
-        state.current_cache.push_back(0);
-    }
+    resetDeque();
 }

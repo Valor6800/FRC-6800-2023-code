@@ -50,6 +50,8 @@ public:
         bool operator_leftBumperPressed;
 
         bool bannerTripped;
+        bool previousBanner;
+        bool currentBanner;
 
         bool reversed;
 
@@ -82,6 +84,8 @@ private:
     frc::DigitalInput banner;
 
     void calcCurrent();
+    
+    void resetDeque();
 };
 
 #endif
