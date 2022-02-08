@@ -278,7 +278,6 @@ void Drivetrain::assignOutputs()
     if (state.stickPressed){
         cmd_go_zero_zero->Cancel();
     }
-
     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
 

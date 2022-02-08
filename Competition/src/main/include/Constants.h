@@ -154,20 +154,21 @@ namespace ShooterConstants{
     constexpr static double hoodMaxAccel = 1500;
     constexpr static double hoodAllowedError = 0;
 
-    constexpr static int hoodTop = 200;
+    constexpr static int hoodTop = 1060; //calculated
     constexpr static int hoodBottom = 0;
 
     constexpr static double kDeadband = .05;
 
-    constexpr static double pDeadband = .1;
-    constexpr static double TURRET_SPEED_MULTIPLIER = 0.5;
+    constexpr static double pDeadband = .01;
+    constexpr static double TURRET_SPEED_MULTIPLIER = 1;
     constexpr static double pSoftDeadband = 0.06;
 
     constexpr static double homePosition = 0;
-    constexpr static double homeFrontPosition = 153;
 
     constexpr static double falconMaxRPM = 6380;
     constexpr static double falconGearRatio = 1;
+
+    constexpr static double turretGearRatio = 30;
 
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)

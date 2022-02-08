@@ -49,7 +49,7 @@ public:
 
 
      double getTargetTics(double, double, double, double, double, double, double);
-     double convertTargetTics(double, double, double);
+     double convertTargetTics(double, double);
 
     enum TurretState{
          TURRET_DISABLE,
@@ -106,7 +106,6 @@ private:
      void limelightTrack(bool track);
 
      WPI_TalonFX flywheel_lead;
-     //WPI_TalonFX flywheel_follow;
 
      rev::CANSparkMax turret;
      rev::SparkMaxRelativeEncoder turretEncoder = turret.GetEncoder();

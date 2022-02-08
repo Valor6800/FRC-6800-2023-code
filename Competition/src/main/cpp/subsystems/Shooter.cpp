@@ -11,11 +11,10 @@
 #include <iostream>
 
 Shooter::Shooter() : ValorSubsystem(),
-                     flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD},
-                     //flywheel_follow{ShooterConstants::CAN_ID_FLYWHEEL_FOLLOW},
-                     turret{ShooterConstants::CAN_ID_TURRET, rev::CANSparkMax::MotorType::kBrushless},
+                    flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD},
+                    turret{ShooterConstants::CAN_ID_TURRET, rev::CANSparkMax::MotorType::kBrushless},
                     hood{ShooterConstants::CAN_ID_HOOD, rev::CANSparkMax::MotorType::kBrushless},
-                     operatorController(NULL)
+                    operatorController(NULL)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -27,7 +26,7 @@ void Shooter::setDrivetrain(Drivetrain *dt){
 
 void Shooter::init()
 {
-   limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+    limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Shooter");
     
     table->PutBoolean("Home Turret", false);
@@ -49,9 +48,6 @@ void Shooter::init()
     flywheel_lead.SetNeutralMode(NeutralMode::Coast);
 
     flywheel_lead.SetInverted(false);
-    //flywheel_follow.SetInverted(false);
-
-    //flywheel_follow.Follow(flywheel_lead);
     
     turret.RestoreFactoryDefaults();
     hood.RestoreFactoryDefaults();
@@ -63,6 +59,7 @@ void Shooter::init()
 
     hood.SetInverted(false);
 
+    //potentially need to flip left and right
     turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
     turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::limitLeft);
 
@@ -161,6 +158,10 @@ void Shooter::analyzeDashboard()
         state.turretState = TurretState::TURRET_HOME;
     }
 
+    if (table->GetBoolean("Zero Turret", false)){
+        turretEncoder.SetPosition(0);
+    }
+
     //slider
     state.flywheelHigh = table->GetNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     state.flywheelLow = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
@@ -187,7 +188,7 @@ void Shooter::assignOutputs()
         state.turretOutput = sign * std::pow(state.leftStickX, 2) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
 
         // Minimum power deadband
-        if (std::abs(state.turretOutput) < ShooterConstants::pDeadband) {
+        if (std::abs(state.leftStickX) < ShooterConstants::pDeadband) {
             state.turretOutput = 0;
         }
         // Stop deadband
@@ -200,14 +201,14 @@ void Shooter::assignOutputs()
 
     //HOME
     else if(state.turretState == TurretState::TURRET_HOME){
-        state.turretTarget = ShooterConstants::homeFrontPosition;
+        state.turretTarget = ShooterConstants::homePosition;
         useSmartMotion = true;
     }
 
     //PRIMED
     else if (state.turretState == TurretState::TURRET_PRIME){
         float tx = limeTable->GetNumber("tx", 0.0);
-        float tv = limeTable->GetNumber("tv" , 0.0);
+        float tv = limeTable->GetNumber("tv", 0.0);
         state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
     }
 
@@ -224,8 +225,8 @@ void Shooter::assignOutputs()
 
         state.turretTarget = getTargetTics(currentPose.X().to<double>(), currentPose.Y().to<double>(), currentPose.Rotation().Radians().to<double>(),
                                         targetX, targetY
-                                        , ShooterConstants::ticsPerRev, ShooterConstants::falconGearRatio);
-        useSmartMotion = true;
+                                        , ShooterConstants::ticsPerRev, ShooterConstants::turretGearRatio);
+        useSmartMotion = true; //potential issue, might just want to use pid
     }
 
     if (useSmartMotion){
@@ -257,7 +258,7 @@ void Shooter::assignOutputs()
     else if(state.hoodState == HoodState::HOOD_PRIME){
         state.hoodTarget = state.hoodHigh;
     }
-   hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
+    hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
 }
 
 double Shooter::getTargetTics(double x, 
@@ -282,15 +283,16 @@ double gearRatio){
     while (targetTics < -.5 * ticsPerRev * gearRatio){
         targetTics += ticsPerRev * gearRatio;
     }
-    return convertTargetTics(targetTics, turretEncoder.GetPosition(), ticsPerRev);
+    return convertTargetTics(targetTics, ticsPerRev * gearRatio);
 }
 
-double Shooter::convertTargetTics(double originalTarget, double currentTics, double ticsPerRev){
-    //current tics will always be between limitLeft to limitRight
+double Shooter::convertTargetTics(double originalTarget, double realTicsPerRev){
+    //originalTarget will always be between limitLeft to limitRight
     while (originalTarget < ShooterConstants::limitLeft){
-        originalTarget += ticsPerRev;
+        originalTarget += realTicsPerRev;
     }
     while(originalTarget > ShooterConstants::limitRight){
-        originalTarget -= ticsPerRev;
+        originalTarget -= realTicsPerRev;
     }
+    return originalTarget;
 }
