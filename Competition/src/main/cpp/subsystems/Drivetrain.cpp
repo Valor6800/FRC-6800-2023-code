@@ -137,7 +137,7 @@ void Drivetrain::assessInputs()
 
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
-    state.tracking = false;//driverController->GetRightBumper();
+    state.tracking = driverController->GetRightTriggerAxis() > 0.25;
 }
 
 void Drivetrain::analyzeDashboard()
@@ -237,20 +237,8 @@ void Drivetrain::assignOutputs()
     }
 
     // Limelight Tracking
-    int led_mode = limeTable->GetNumber("ledMode", LimelightConstants::LED_MODE_OFF);
     if (state.tracking) {
-        if (led_mode != LimelightConstants::LED_MODE_ON) {
-            limeTable->PutNumber("ledMode", LimelightConstants::LED_MODE_ON);
-            limeTable->PutNumber("camMode", LimelightConstants::TRACK_MODE_ON);
-        }
-        rotRPS = units::radians_per_second_t{-limeTable->GetNumber("tx", 0.0) * DriveConstants::LIMELIGHT_KP};
-
-    // Manual Control
-    } else {
-        if (led_mode != LimelightConstants::LED_MODE_OFF) {
-            limeTable->PutNumber("ledMode", LimelightConstants::LED_MODE_OFF);
-            limeTable->PutNumber("camMode", LimelightConstants::TRACK_MODE_OFF);
-        }
+        rotRPS = units::radians_per_second_t{-limeTable->GetNumber("tx", 0.0) * DriveConstants::LIMELIGHT_KP * limeTable->GetNumber("tv", 0) * SwerveConstants::ROTATION_MAX_SPEED_RPS};
     }
 
     if (state.startButtonPressed){

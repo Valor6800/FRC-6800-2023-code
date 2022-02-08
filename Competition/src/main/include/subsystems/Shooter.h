@@ -75,6 +75,7 @@ public:
           FlywheelState flywheelState;
           HoodState hoodState;
           TurretState turretState;
+          TurretState lastTurretState;
 
           double leftStickX;
      

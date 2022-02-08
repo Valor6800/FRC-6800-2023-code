@@ -90,6 +90,7 @@ void Shooter::init()
 void Shooter::resetState(){
     resetEncoder();
     state.turretState = TurretState::TURRET_DEFAULT;
+    state.lastTurretState = TurretState::TURRET_DEFAULT;
     state.hoodState = HoodState::HOOD_DISABLE;
     state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
     state.trackCorner = false;
@@ -118,15 +119,15 @@ void Shooter::assessInputs()
     }
 
     state.leftStickX = operatorController->GetLeftX();
-    state.startButton = operatorController->GetStartButton();
-    state.backButton = operatorController->GetBackButton(); 
+    state.startButton = operatorController->GetStartButtonPressed();
+    state.backButton = operatorController->GetBackButtonPressed(); 
     state.rightBumper = operatorController->GetRightBumper();
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
         state.turretState = TurretState::TURRET_MANUAL;
     }
-    else if(state.startButton && !state.trackCorner){
+    else if(state.startButton){
        state.turretState = TurretState::TURRET_PRIME;
     }
     else if(state.backButton){
@@ -169,7 +170,20 @@ void Shooter::analyzeDashboard()
     state.hoodLow = table->GetNumber("Hood low position", ShooterConstants::hoodBottom);
     state.hoodHigh = table->GetNumber("Hood high position", ShooterConstants::hoodTop);
 
-    limelightTrack(state.turretState == TurretState::TURRET_PRIME);
+    // if (state.turretState == TurretState::TURRET_PRIME && state.lastTurretState != TurretState::TURRET_PRIME){
+    //     limelightTrack(true);
+    // }
+    // else if (state.turretState != TurretState::TURRET_PRIME && state.lastTurretState == TurretState::TURRET_PRIME){
+    //     limelightTrack(false);
+    // }
+    limelightTrack(TurretState::TURRET_PRIME == state.turretState);
+    state.lastTurretState = state.turretState;
+
+
+
+    table->PutString("state", std::to_string(state.turretState));
+    table->PutString("last state", std::to_string(state.lastTurretState));
+
 }
 
 void Shooter::assignOutputs()
@@ -223,10 +237,14 @@ void Shooter::assignOutputs()
             targetY = ShooterConstants::cornerY;
         }
 
-        state.turretTarget = getTargetTics(currentPose.X().to<double>(), currentPose.Y().to<double>(), currentPose.Rotation().Radians().to<double>(),
+        double tics = getTargetTics(currentPose.X().to<double>(), currentPose.Y().to<double>(), currentPose.Rotation().Radians().to<double>(),
                                         targetX, targetY
                                         , ShooterConstants::ticsPerRev, ShooterConstants::turretGearRatio);
-        useSmartMotion = true; //potential issue, might just want to use pid
+
+        double error  = tics - turretEncoder.GetPosition();
+        state.turretTarget = error * ShooterConstants::turretKP; //need to set value
+        
+        //useSmartMotion = true; //potential issue, might just want to use pid
     }
 
     if (useSmartMotion){
