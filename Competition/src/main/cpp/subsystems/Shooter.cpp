@@ -241,10 +241,8 @@ void Shooter::assignOutputs()
                                         targetX, targetY
                                         , ShooterConstants::ticsPerRev, ShooterConstants::turretGearRatio);
 
-        double error  = tics - turretEncoder.GetPosition();
-        state.turretTarget = error * ShooterConstants::turretKP; //need to set value
-        
-        //useSmartMotion = true; //potential issue, might just want to use pid
+        double error  = tics - turretEncoder.GetPosition(); //might need to invert this
+        state.turretOutput = error * ShooterConstants::turretKP; //need to set value
     }
 
     if (useSmartMotion){
