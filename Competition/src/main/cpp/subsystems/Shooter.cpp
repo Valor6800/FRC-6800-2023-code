@@ -170,13 +170,19 @@ void Shooter::analyzeDashboard()
     state.hoodLow = table->GetNumber("Hood low position", ShooterConstants::hoodBottom);
     state.hoodHigh = table->GetNumber("Hood high position", ShooterConstants::hoodTop);
 
-    // if (state.turretState == TurretState::TURRET_PRIME && state.lastTurretState != TurretState::TURRET_PRIME){
-    //     limelightTrack(true);
-    // }
-    // else if (state.turretState != TurretState::TURRET_PRIME && state.lastTurretState == TurretState::TURRET_PRIME){
-    //     limelightTrack(false);
-    // }
-    limelightTrack(TurretState::TURRET_PRIME == state.turretState);
+    double angle = limeTable->GetNumber("ty", 0.0) + 45;
+    double deltaH = 2.64 - .75;
+    double xDist = deltaH / tan(angle * MathConstants::toRadians);
+
+    table->PutNumber("x distance to hub", xDist);
+
+    if (state.turretState == TurretState::TURRET_PRIME && state.lastTurretState != TurretState::TURRET_PRIME){
+        limelightTrack(true);
+    }
+    else if (state.turretState != TurretState::TURRET_PRIME && state.lastTurretState == TurretState::TURRET_PRIME){
+        limelightTrack(false);
+    }
+    //limelightTrack(TurretState::TURRET_PRIME == state.turretState);
     state.lastTurretState = state.turretState;
 
 
