@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "AHRS.h"
+#include "ctre/phoenix/sensors/WPI_Pigeon2.h"
 #include <frc/XboxController.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
@@ -102,7 +103,7 @@ public:
     void resetDriveEncoders();
 
 
-    frc::Rotation2d getNavX();
+    frc::Rotation2d getPigeon();
 
     /**
          * Reset the robot's position on the field. Any accumulted gyro drift will be noted and
@@ -166,7 +167,7 @@ private:
                                                    frc::Translation2d{SwerveConstants::SWERVE_MODULE_DIFF_X * DriveConstants::MODULE_DIFF_XS[3],
                                                                       SwerveConstants::SWERVE_MODULE_DIFF_Y *DriveConstants::MODULE_DIFF_YS[3]}};
 
-    AHRS navX;
+    WPI_Pigeon2 pigeon;
 
     frc::SwerveDriveKinematics<4> kinematics;
     frc::SwerveDriveOdometry<4> odometry;

@@ -47,6 +47,7 @@ namespace LimelightConstants {
 namespace DriveConstants {
     constexpr static int DRIVE_CANS[4] = {1, 3, 5, 7};
     constexpr static int AZIMUTH_CANS[4] = {2, 4, 6, 8};
+    constexpr static int PIGEON_CAN = 61;
     constexpr static int MAG_ENCODER_PORTS[4] = {1, 2, 3, 4};
     constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1}; //{1, 1, -1, -1};
     constexpr static int MODULE_DIFF_YS[4] = {1, -1, 1, -1}; //{-1, 1, -1, 1};

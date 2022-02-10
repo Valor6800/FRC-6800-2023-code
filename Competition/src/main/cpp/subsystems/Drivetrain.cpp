@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 //start button pulls swerve 0 positions from file
-//back button pushes current swerve positions to file
+//dashboard button pushes current swerve positions to file
 
 
 #include "subsystems/Drivetrain.h"
@@ -16,7 +16,7 @@
 
 Drivetrain::Drivetrain() : ValorSubsystem(),
                            driverController(NULL),
-                           navX(frc::SerialPort::Port::kMXP),
+                           pigeon(DriveConstants::PIGEON_CAN),
                            kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
                            odometry(kinematics, frc::Rotation2d{units::radian_t{0}}),
                            config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
@@ -70,7 +70,7 @@ void Drivetrain::init()
 {
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     initTable("Drivetrain");
-    navX.Calibrate();
+    pigeon.Calibrate();
 
     thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi), units::radian_t(wpi::numbers::pi));
     config.SetKinematics(getKinematics());
@@ -148,6 +148,8 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot X", getPose_m().X().to<double>());
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
+    table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
+
 
     table->PutNumber("left stick x", driverController->GetLeftX());
     table->PutNumber("left stick Y", driverController->GetLeftY());
@@ -175,7 +177,7 @@ void Drivetrain::analyzeDashboard()
         state.saveToFileDebouncer = false;
     }
 
-    odometry.Update(getNavX(),
+    odometry.Update(getPigeon(),
                     swerveModules[0]->getState(),
                     swerveModules[1]->getState(),
                     swerveModules[2]->getState(),
@@ -310,13 +312,12 @@ void Drivetrain::resetGyro(){
 
 void Drivetrain::resetOdometry(frc::Pose2d pose)
 {
-    odometry.ResetPosition(pose, getNavX());
+    odometry.ResetPosition(pose, getPigeon());
 }
 
-frc::Rotation2d Drivetrain::getNavX() 
+frc::Rotation2d Drivetrain::getPigeon() 
 {
-    frc::Rotation2d rot = frc::Rotation2d(units::radian_t(-navX.GetFusedHeading()) * MathConstants::toRadians);
-    return rot;
+    return pigeon.GetRotation2d();
 }
 
 
