@@ -87,6 +87,8 @@ void Feeder::assessInputs()
         if (state.bannerTripped) {
             if (state.currentBanner && !state.previousBanner) {
                 resetDeque();
+                //might need to remove spiked
+                state.spiked = false;
             }
             if (state.spiked) {
                 state.feederState = FeederState::FEEDER_DISABLE;
