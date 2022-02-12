@@ -200,8 +200,8 @@ namespace FeederConstants{
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 1.0;
     constexpr static double DEFAULT_FEEDER_SPEED_REVERSE = -1.0;
 
-    constexpr static int CACHE_SIZE = 20;
-    constexpr static double JAM_CURRENT = 17;
+    constexpr static int CACHE_SIZE = 10;
+    constexpr static double JAM_CURRENT = 20;
 }
 
 namespace MathConstants{

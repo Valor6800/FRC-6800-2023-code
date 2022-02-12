@@ -40,9 +40,10 @@ void Feeder::init()
     table->PutNumber("Intake Forward Speed", FeederConstants::DEFAULT_INTAKE_SPEED_FORWARD);
     table->PutNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
     table->PutNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
-
+    
     state.spiked = false;
     state.previousBanner = false;
+    resetDeque();
 }
 
 void Feeder::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
@@ -119,6 +120,8 @@ void Feeder::analyzeDashboard()
     state.intakeForwardSpeed = table->GetNumber("Intake Forward Speed", FeederConstants::DEFAULT_INTAKE_SPEED_FORWARD);
     state.feederForwardSpeedDefault = table->GetNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
     state.feederForwardSpeedShoot = table->GetNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
+    table->PutNumber("Average Amps", state.instCurrent);
+    table->PutBoolean("Spiked: ", state.spiked);
 }
 
 void Feeder::assignOutputs()
@@ -154,6 +157,7 @@ void Feeder::assignOutputs()
 
 void Feeder::calcCurrent() {
 
+
     // Circular buffer. If index reaches end of vector, start at beginning and override prev values
     if (state.current_cache_index >= FeederConstants::CACHE_SIZE) {
         state.current_cache_index = 0;
@@ -171,6 +175,7 @@ void Feeder::calcCurrent() {
 
 void Feeder::resetDeque() {
     state.current_cache_index = 0;
+    state.current_cache.clear();
     for (int i = 0; i < FeederConstants::CACHE_SIZE; i++) {
         state.current_cache.push_back(0);
     }
