@@ -51,11 +51,10 @@ frc::Pose2d x6y4 = frc::Pose2d(6_m, 4_m, frc::Rotation2d(180_deg));
         x6y4,
         reverseConfig);
 
-frc2::InstantCommand cmd_intake2 = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE2; } );
-frc2::InstantCommand cmd_intake1 = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE1; } );
 frc2::InstantCommand cmd_shoot = frc2::InstantCommand( [&] { shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_PRIME; } );
-
-
+frc2::InstantCommand cmd_intakeAuto = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE; } );
+frc2::InstantCommand cmd_intakeShoot = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_SHOOT; } );
+frc2::InstantCommand cmd_intakeDisable = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_DISABLE; } );
     auto moveBugs = frc::TrajectoryGenerator::GenerateTrajectory(
         startPose,
         {preBugs},
@@ -176,21 +175,30 @@ frc2::InstantCommand cmd_shoot = frc2::InstantCommand( [&] { shooter->state.flyw
     shoot4->AddCommands
     (cmd_set_odometry,
     cmd_shoot,
-    cmd_intake1,
+    cmd_intakeAuto,
     cmd_move_moveBugs,
     frc2::WaitCommand((units::second_t)1.5),
-    cmd_intake2,
+    cmd_intakeAuto,
     frc2::WaitCommand((units::second_t)1.5),
-    cmd_intake1,
+    cmd_intakeAuto,
     frc2::WaitCommand((units::second_t)0.5),
     cmd_move_movePorky,
     cmd_move_moveShoot,
-    cmd_intake2);
+    cmd_intakeAuto);
+
+    frc2::SequentialCommandGroup *intakeTest = new frc2::SequentialCommandGroup();
+    intakeTest->AddCommands
+    (cmd_intakeAuto,
+    frc2::WaitCommand((units::second_t)5),
+    cmd_intakeDisable,
+    frc2::WaitCommand((units::second_t)1),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t)2.5));
 
     frc2::SequentialCommandGroup *shoot5 = new frc2::SequentialCommandGroup();
     shoot5->AddCommands
     (cmd_set_odometry,
-    cmd_intake2,
+    cmd_intakeAuto,
     cmd_move_moveBugs,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_moveDaffy,
@@ -210,9 +218,9 @@ frc2::InstantCommand cmd_shoot = frc2::InstantCommand( [&] { shooter->state.flyw
    
 
     m_chooser.SetDefaultOption("4 ball auto", shoot4);
-    m_chooser.SetDefaultOption("5 ball auto", shoot5);
+    m_chooser.AddOption("5 ball auto", shoot5);
     m_chooser.AddOption("Move 2 in x Offset direction", move2Offset);
-
+    m_chooser.AddOption("Intake Testing", intakeTest);
     frc::SmartDashboard::PutData(&m_chooser);
   
 }

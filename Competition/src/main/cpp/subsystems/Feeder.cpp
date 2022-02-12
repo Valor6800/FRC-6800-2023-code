@@ -41,9 +41,8 @@ void Feeder::init()
     table->PutNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
     table->PutNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
     
-    state.spiked = false;
-    state.previousBanner = false;
-    resetDeque();
+    resetState();
+    
 }
 
 void Feeder::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
@@ -69,12 +68,7 @@ void Feeder::assessInputs()
     state.operator_aButtonPressed = operatorController->GetAButton();
 
     state.operator_leftBumperPressed = operatorController->GetLeftBumper();
-    
-
-    state.bannerTripped = !banner.Get();
-
-    state.currentBanner = state.bannerTripped;
-    
+        
     if (state.operator_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_SHOOT;
         state.spiked = false;
@@ -84,34 +78,11 @@ void Feeder::assessInputs()
         state.spiked = false;
     }
     else if (state.operator_aButtonPressed || state.driver_rightBumperPressed) {
-        if (state.bannerTripped) {
-            if (state.currentBanner && !state.previousBanner) {
-                resetDeque();
-                //might need to remove spiked
-                state.spiked = false;
-            }
-            if (state.spiked) {
-                state.feederState = FeederState::FEEDER_DISABLE;
-            }
-            else {
-                if (state.instCurrent > FeederConstants::JAM_CURRENT && state.bannerTripped) {
-                   state.feederState = FeederState::FEEDER_DISABLE;
-                   state.spiked = true;
-                }
-                else {
-                    state.feederState = FeederState::FEEDER_INTAKE1;
-                }
-            }
-        }
-        else {
-            state.feederState = FeederState::FEEDER_INTAKE2;
-        }
+        state.feederState = FeederState::FEEDER_INTAKE;
     }
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
     }
-
-    state.previousBanner = state.currentBanner;
 }
 
 void Feeder::analyzeDashboard()
@@ -124,6 +95,7 @@ void Feeder::analyzeDashboard()
     state.feederForwardSpeedShoot = table->GetNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
     table->PutNumber("Average Amps", state.instCurrent);
     table->PutBoolean("Spiked: ", state.spiked);
+    table->PutBoolean("Banner: ", state.bannerTripped);
 }
 
 void Feeder::assignOutputs()
@@ -131,13 +103,12 @@ void Feeder::assignOutputs()
     // Calculate instantaneous current
     calcCurrent();
 
+    state.bannerTripped = !banner.Get();
+    state.currentBanner = state.bannerTripped;
+
     if (state.feederState == FeederState::FEEDER_DISABLE) {
         motor_intake.Set(0);
         motor_stage.Set(0);
-    }
-    else if (state.feederState == FeederState::FEEDER_INTAKE2) {
-        motor_intake.Set(state.intakeForwardSpeed);
-        motor_stage.Set(state.feederForwardSpeedDefault);
     }
     else if (state.feederState == FeederState::FEEDER_SHOOT) {
         motor_intake.Set(state.intakeForwardSpeed);
@@ -147,14 +118,38 @@ void Feeder::assignOutputs()
         motor_intake.Set(state.intakeReverseSpeed);
         motor_stage.Set(state.feederReverseSpeed);
     }
-    else if (state.feederState == FeederState::FEEDER_INTAKE1) {
-        motor_intake.Set(state.intakeForwardSpeed);
-        motor_stage.Set(0);
+    else if (state.feederState == FeederState::FEEDER_INTAKE) {
+        if (state.bannerTripped) {
+            if (state.currentBanner && !state.previousBanner) {
+                resetDeque();
+                state.spiked = false;
+            }
+            if (state.spiked) {
+                motor_intake.Set(0);
+                motor_stage.Set(0);
+            }
+            else {
+                if (state.instCurrent > FeederConstants::JAM_CURRENT && state.bannerTripped) {
+                    motor_intake.Set(0);
+                    motor_stage.Set(0);
+                   state.spiked = true;
+                }
+                else {
+                    motor_intake.Set(state.intakeForwardSpeed);
+                    motor_stage.Set(0);
+                }
+            }
+        }
+        else {
+            motor_intake.Set(state.intakeForwardSpeed);
+            motor_stage.Set(state.feederForwardSpeedDefault);
+        }
     }
     else {
         motor_intake.Set(0);
         motor_stage.Set(0);
     }
+    state.previousBanner = state.currentBanner;
 }
 
 void Feeder::calcCurrent() {
@@ -182,6 +177,7 @@ void Feeder::resetState()
     state.feederState = FeederState::FEEDER_DISABLE;
 
     state.spiked = false;
+    state.previousBanner = false;
 
     resetDeque();
 }

@@ -35,9 +35,8 @@ public:
     enum FeederState {
         FEEDER_DISABLE,
         FEEDER_REVERSE,
-        FEEDER_INTAKE1,
-        FEEDER_INTAKE2,
-        FEEDER_SHOOT
+        FEEDER_SHOOT,
+        FEEDER_INTAKE
     };
     
     struct x
