@@ -9,6 +9,7 @@
 
 #include "ValorSubsystem.h"
 #include "Constants.h"
+#include <deque>
 
 #include <frc/XboxController.h>
 #include <rev/CANSparkMax.h>
@@ -64,8 +65,9 @@ public:
         double feederForwardSpeedShoot;
         double feederReverseSpeed;
         
-        int current_cache_index;
-        std::vector<double> current_cache;
+        //int current_cache_index;
+        //std::vector<double> current_cache;
+        std::deque<double> current_cache;
 
         double instCurrent;
 
