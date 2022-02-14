@@ -50,6 +50,7 @@ public:
 
      double getTargetTics(double, double, double, double, double, double, double);
      double convertTargetTics(double, double);
+     void resetHood();
 
     enum TurretState{
          TURRET_DISABLE,
@@ -61,7 +62,8 @@ public:
 
     enum HoodState{
          HOOD_DISABLE,
-         HOOD_PRIME
+         HOOD_PRIME,
+         HOOD_RESET
      };
 
      enum FlywheelState{

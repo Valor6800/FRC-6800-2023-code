@@ -66,15 +66,13 @@ namespace DriveConstants {
     constexpr static double KIY = 0.0; //0
     constexpr static double KDY = 0.0; //.1
 
-
     constexpr static double KPT = 2.5; //.2
     constexpr static double KIT = 0.0; //0
     constexpr static double KDT = 0.0; //.1
-
 }
 
 namespace SwerveConstants {
-    constexpr static double module_diff = 0.22225;
+    constexpr static double module_diff = 0.248;
     constexpr static auto SWERVE_MODULE_DIFF_X = units::meter_t(module_diff);
     constexpr static auto SWERVE_MODULE_DIFF_Y = units::meter_t(module_diff);
 
@@ -82,7 +80,7 @@ namespace SwerveConstants {
     constexpr static double DRIVE_COUNTS_PER_REV = 2048;
     constexpr static double MAG_COUNTS_PER_REV = 4096;
 
-    constexpr static double DRIVE_GEAR_RATIO = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0); // 1/8.14
+    constexpr static double DRIVE_GEAR_RATIO = 1.0 / 5.12; // 1/8.14
     constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0); // 0.078125
 
     constexpr static double WHEEL_DIAMETER_M = 0.1016;
@@ -143,19 +141,24 @@ namespace ShooterConstants{
     constexpr static double turretMaxAccel = 1500;
     constexpr static double turretAllowedError = 0;
 
-    constexpr static double hoodKP = 0;
+    constexpr static double hoodKP = 5e-5;
     constexpr static double hoodKI = 0;
     constexpr static double hoodKD = 0;
     constexpr static double hoodKIZ = 0;
-    constexpr static double hoodKFF = 0.00023;
+    constexpr static double hoodKFF = 0.000156;
 
-    constexpr static double hoodMaxV = 2000;
+    constexpr static double hoodMaxV = 8000;
     constexpr static double hoodMinV = 0;
-    constexpr static double hoodMaxAccel = 1500;
+    constexpr static double hoodMaxAccel = hoodMaxV * 1;
     constexpr static double hoodAllowedError = 0;
 
-    constexpr static int hoodTop = 1060; //calculated
-    constexpr static int hoodBottom = 0;
+    constexpr static int hoodTop = 5;
+    constexpr static int hoodBottom = 0; //make sure this is always 0, need to initialize hood all the way down
+
+    constexpr static double hoodLimitTop = hoodTop + 1;
+    constexpr static double hoodLimitBottom = hoodBottom - 1;
+
+    constexpr static double hoodGearRatio = 1 / 454.17; 
 
     constexpr static double kDeadband = .05;
 
@@ -172,11 +175,8 @@ namespace ShooterConstants{
 
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
-    constexpr static double limitLeft = homePosition + 200; // 20;
-    constexpr static double limitRight = homePosition - 15; // -15;
-
-    constexpr static double limitTop = homePosition + 50;
-    constexpr static double limitBottom = homePosition - 5;
+    constexpr static double turretLimitLeft = homePosition + 15; // 200;
+    constexpr static double turretLimitRight = homePosition - 15; // -15;
 
     constexpr static double hubX = 0;
     constexpr static double hubY = 0;

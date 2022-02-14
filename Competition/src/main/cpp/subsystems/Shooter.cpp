@@ -30,11 +30,11 @@ void Shooter::init()
     initTable("Shooter");
     
     table->PutBoolean("Home Turret", false);
+    table->PutBoolean("Zero Hood", false);
     table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     table->PutNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
     table->PutNumber("Hood Top Position", ShooterConstants::hoodTop);
     table->PutNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
-
 
     flywheel_lead.ConfigFactoryDefault();
     flywheel_lead.ConfigAllowableClosedloopError(0, 0);
@@ -48,29 +48,16 @@ void Shooter::init()
     flywheel_lead.SetNeutralMode(NeutralMode::Coast);
 
     flywheel_lead.SetInverted(false);
-    
+
     turret.RestoreFactoryDefaults();
-    hood.RestoreFactoryDefaults();
-
     turret.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-    hood.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-
     turret.SetInverted(false);
 
-    hood.SetInverted(false);
-
-    //potentially need to flip left and right
     turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
-    turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::limitLeft);
+    turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::turretLimitLeft);
 
     turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
-    turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, ShooterConstants::limitRight);
-
-    hood.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
-    hood.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::limitTop);
-
-    hood.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
-    hood.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, ShooterConstants::limitBottom);
+    turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, ShooterConstants::turretLimitRight);
 
     turretPidController.SetP(ShooterConstants::turretKP);
     turretPidController.SetI(ShooterConstants::turretKI);
@@ -83,7 +70,31 @@ void Shooter::init()
     turretPidController.SetSmartMotionMinOutputVelocity(ShooterConstants::turretMinV);
     turretPidController.SetSmartMotionMaxAccel(ShooterConstants::turretMaxAccel);
     turretPidController.SetSmartMotionAllowedClosedLoopError(ShooterConstants::turretAllowedError);
+    
+    hood.RestoreFactoryDefaults();
+    hood.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+    hood.SetInverted(true);
 
+    hood.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
+    hood.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::hoodLimitTop);
+
+    hood.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
+    hood.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, ShooterConstants::hoodLimitBottom);
+
+    hoodEncoder.SetPositionConversionFactor(360 * ShooterConstants::hoodGearRatio);
+
+    hoodPidController.SetP(ShooterConstants::hoodKP);
+    hoodPidController.SetI(ShooterConstants::hoodKI);
+    hoodPidController.SetD(ShooterConstants::hoodKD);
+    hoodPidController.SetIZone(ShooterConstants::hoodKIZ);
+    hoodPidController.SetFF(ShooterConstants::hoodKFF);
+    hoodPidController.SetOutputRange(-1, 1);
+
+    hoodPidController.SetSmartMotionMaxVelocity(ShooterConstants::hoodMaxV);
+    hoodPidController.SetSmartMotionMinOutputVelocity(ShooterConstants::hoodMinV);
+    hoodPidController.SetSmartMotionMaxAccel(ShooterConstants::hoodMaxAccel);
+    hoodPidController.SetSmartMotionAllowedClosedLoopError(ShooterConstants::hoodAllowedError);
+    
     resetState();
 }
 
@@ -163,12 +174,16 @@ void Shooter::analyzeDashboard()
         turretEncoder.SetPosition(0);
     }
 
+    if (table->GetBoolean("Zero Hood", false)){
+        state.hoodState = HoodState::HOOD_RESET;
+    }
+
     //slider
     state.flywheelHigh = table->GetNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     state.flywheelLow = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
 
-    state.hoodLow = table->GetNumber("Hood low position", ShooterConstants::hoodBottom);
-    state.hoodHigh = table->GetNumber("Hood high position", ShooterConstants::hoodTop);
+    state.hoodLow = table->GetNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
+    state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
 
     double angle = limeTable->GetNumber("ty", 0.0) + 45;
     double deltaH = 2.64 - .75;
@@ -182,14 +197,9 @@ void Shooter::analyzeDashboard()
     else if (state.turretState != TurretState::TURRET_PRIME && state.lastTurretState == TurretState::TURRET_PRIME){
         limelightTrack(false);
     }
-    //limelightTrack(TurretState::TURRET_PRIME == state.turretState);
     state.lastTurretState = state.turretState;
 
-
-
-    table->PutString("state", std::to_string(state.turretState));
-    table->PutString("last state", std::to_string(state.lastTurretState));
-
+    table->PutNumber("Hood degrees", hoodEncoder.GetPosition());
 }
 
 void Shooter::assignOutputs()
@@ -277,10 +287,21 @@ void Shooter::assignOutputs()
     if(state.hoodState == HoodState::HOOD_DISABLE){
         state.hoodTarget = state.hoodLow;
     }
+    else if (state.hoodState == HoodState::HOOD_RESET){
+        resetHood();
+    }
     else if(state.hoodState == HoodState::HOOD_PRIME){
         state.hoodTarget = state.hoodHigh;
     }
     hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
+}
+
+void Shooter::resetHood(){
+    while(hood.GetOutputCurrent() <= 10){
+        hood.Set(-1);
+    }
+    hood.Set(0);
+    hoodEncoder.SetPosition(0);
 }
 
 double Shooter::getTargetTics(double x, 
@@ -310,10 +331,10 @@ double gearRatio){
 
 double Shooter::convertTargetTics(double originalTarget, double realTicsPerRev){
     //originalTarget will always be between limitLeft to limitRight
-    while (originalTarget < ShooterConstants::limitLeft){
+    while (originalTarget < ShooterConstants::turretLimitLeft){
         originalTarget += realTicsPerRev;
     }
-    while(originalTarget > ShooterConstants::limitRight){
+    while(originalTarget > ShooterConstants::turretLimitRight){
         originalTarget -= realTicsPerRev;
     }
     return originalTarget;
