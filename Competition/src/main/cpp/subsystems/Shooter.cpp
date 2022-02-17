@@ -70,6 +70,8 @@ void Shooter::init()
     turretPidController.SetSmartMotionMinOutputVelocity(ShooterConstants::turretMinV);
     turretPidController.SetSmartMotionMaxAccel(ShooterConstants::turretMaxAccel);
     turretPidController.SetSmartMotionAllowedClosedLoopError(ShooterConstants::turretAllowedError);
+
+    turretEncoder.SetPositionConversionFactor(360.0 * ShooterConstants::turretGearRatio);
     
     hood.RestoreFactoryDefaults();
     hood.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
@@ -96,10 +98,10 @@ void Shooter::init()
     hoodPidController.SetSmartMotionAllowedClosedLoopError(ShooterConstants::hoodAllowedError);
     
     resetState();
+    resetEncoder();
 }
 
 void Shooter::resetState(){
-    resetEncoder();
     state.turretState = TurretState::TURRET_DEFAULT;
     state.lastTurretState = TurretState::TURRET_DEFAULT;
     state.hoodState = HoodState::HOOD_DISABLE;
@@ -128,8 +130,6 @@ void Shooter::assessInputs()
     {
         return;
     }
-
-    state.leftStickX = operatorController->GetLeftX();
     state.startButton = operatorController->GetStartButtonPressed();
     state.backButton = operatorController->GetBackButtonPressed(); 
     state.rightBumper = operatorController->GetRightBumper();
@@ -166,6 +166,9 @@ void Shooter::assessInputs()
 
 void Shooter::analyzeDashboard()
 {
+    state.leftStickX = -operatorController->GetLeftX();
+
+
     if(table->GetBoolean("Home Turret", false)){
         state.turretState = TurretState::TURRET_HOME;
     }
@@ -200,6 +203,9 @@ void Shooter::analyzeDashboard()
     state.lastTurretState = state.turretState;
 
     table->PutNumber("Hood degrees", hoodEncoder.GetPosition());
+    table->PutNumber("Turret pos", turretEncoder.GetPosition());
+
+    table->PutNumber("left stick x", state.leftStickX);
 }
 
 void Shooter::assignOutputs()
@@ -214,8 +220,8 @@ void Shooter::assignOutputs()
 
     //MANUAL
     if (state.turretState == TurretState::TURRET_MANUAL) {
-        int sign = state.leftStickX >= 0 ? 1 : -1;
-        state.turretOutput = sign * std::pow(state.leftStickX, 2) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
+        int sign = 1;//state.leftStickX >= 0 ? 1 : -1;
+        state.turretOutput = sign * std::pow(state.leftStickX, 3) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
 
         // Minimum power deadband
         if (std::abs(state.leftStickX) < ShooterConstants::pDeadband) {
@@ -258,14 +264,23 @@ void Shooter::assignOutputs()
                                         , ShooterConstants::ticsPerRev, ShooterConstants::turretGearRatio);
 
         double error  = tics - turretEncoder.GetPosition(); //might need to invert this
-        state.turretOutput = error * ShooterConstants::turretKP; //need to set value
+        state.turretTarget = error * ShooterConstants::turretKP; //need to set value
+        useSmartMotion = true;
+    }
+
+    //DISABLED
+    else{
+        state.turretOutput = 0;
     }
 
     if (useSmartMotion){
-        turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
+        //turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
+        turret.Set(0);
+
     }
     else{
-        turretPidController.SetReference(state.turretOutput, rev::ControlType::kDutyCycle);
+        //turretPidController.SetReference(state.turretOutput, rev::ControlType::kDutyCycle);
+        turret.Set(state.turretOutput);
     }
     
     if(state.flywheelState == FlywheelState::FLYWHEEL_DISABLE){

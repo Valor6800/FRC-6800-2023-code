@@ -32,6 +32,7 @@ void Robot::DisabledInit() {
     m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::DISABLED;
     m_container.m_drivetrain.setMotorMode(false);
     m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::DISABLED;
+    m_container.m_shooter.resetState();
 }
 
 void Robot::DisabledPeriodic() {}

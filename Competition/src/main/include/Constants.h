@@ -113,7 +113,7 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 15;    
     
-    constexpr static double limelightTurnKP = 1/24.0;
+    constexpr static double limelightTurnKP = .3 / 25.445;
 
     constexpr static double flywheelKP = 0.1;
     constexpr static double flywheelKI = 0;
@@ -127,8 +127,8 @@ namespace ShooterConstants{
     constexpr static double flywheelMaxAccel = flywheelCruiseVelo * 1;
     constexpr static double flywheelAllowedError = 0;
 
-    constexpr static double flywheelPrimedValue = .6;
-    constexpr static double flywheelDefaultValue = 0.5;
+    constexpr static double flywheelPrimedValue = .46;
+    constexpr static double flywheelDefaultValue = 0.3;
 
     constexpr static double turretKP = 0;
     constexpr static double turretKI = 0;
@@ -145,14 +145,14 @@ namespace ShooterConstants{
     constexpr static double hoodKI = 0;
     constexpr static double hoodKD = 0;
     constexpr static double hoodKIZ = 0;
-    constexpr static double hoodKFF = 0.000156;
+    constexpr static double hoodKFF = 0.000156 * .5;
 
     constexpr static double hoodMaxV = 8000;
     constexpr static double hoodMinV = 0;
     constexpr static double hoodMaxAccel = hoodMaxV * 1;
     constexpr static double hoodAllowedError = 0;
 
-    constexpr static int hoodTop = 5;
+    constexpr static int hoodTop = 2;
     constexpr static int hoodBottom = 0; //make sure this is always 0, need to initialize hood all the way down
 
     constexpr static double hoodLimitTop = hoodTop + 1;
@@ -160,23 +160,23 @@ namespace ShooterConstants{
 
     constexpr static double hoodGearRatio = 1 / 454.17; 
 
-    constexpr static double kDeadband = .05;
+    constexpr static double kDeadband = .08;
 
-    constexpr static double pDeadband = .01;
-    constexpr static double TURRET_SPEED_MULTIPLIER = 1;
-    constexpr static double pSoftDeadband = 0.06;
+    constexpr static double pDeadband = .08;
+    constexpr static double TURRET_SPEED_MULTIPLIER = .5;
+    constexpr static double pSoftDeadband = 0.1;
 
     constexpr static double homePosition = 0;
 
     constexpr static double falconMaxRPM = 6380;
     constexpr static double falconGearRatio = 1;
 
-    constexpr static double turretGearRatio = 30;
+    constexpr static double turretGearRatio = 1.0 / 30;
 
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
-    constexpr static double turretLimitLeft = homePosition + 15; // 200;
-    constexpr static double turretLimitRight = homePosition - 15; // -15;
+    constexpr static double turretLimitLeft = homePosition + 35; // 200;
+    constexpr static double turretLimitRight = homePosition - 35; // -15;
 
     constexpr static double hubX = 0;
     constexpr static double hubY = 0;
