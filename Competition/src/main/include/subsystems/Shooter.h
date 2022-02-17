@@ -96,10 +96,12 @@ public:
           double flywheelLow;
           double flywheelHigh;
 
-          int hoodLow;
-          int hoodHigh;
+          double hoodLow;
+          double hoodHigh;
 
           bool trackCorner;
+
+          double distanceToHub;
 
     } state;
 

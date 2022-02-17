@@ -112,8 +112,17 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_FLYWHEEL_LEAD = 14;
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 15;    
+
+    constexpr static double aPower = .0357;
+    constexpr static double aHood = 8.57;
+    constexpr static double bPower = .394;
+    constexpr static double bHood = -15.1;
     
     constexpr static double limelightTurnKP = .3 / 25.445;
+    constexpr static double limelightAngle = 50;
+    constexpr static double hubHeight = 2.64;
+    constexpr static double limelightHeight = .6075;
+    
 
     constexpr static double flywheelKP = 0.1;
     constexpr static double flywheelKI = 0;
@@ -156,7 +165,7 @@ namespace ShooterConstants{
     constexpr static int hoodBottom = 0; //make sure this is always 0, need to initialize hood all the way down
 
     constexpr static double hoodLimitTop = hoodTop + 1;
-    constexpr static double hoodLimitBottom = hoodBottom - 1;
+    constexpr static double hoodLimitBottom = hoodBottom;
 
     constexpr static double hoodGearRatio = 1 / 454.17; 
 

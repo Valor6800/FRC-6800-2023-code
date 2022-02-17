@@ -35,6 +35,8 @@ void Shooter::init()
     table->PutNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
     table->PutNumber("Hood Top Position", ShooterConstants::hoodTop);
     table->PutNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
+    
+    table->PutBoolean("Use line of best fit", false);
 
     flywheel_lead.ConfigFactoryDefault();
     flywheel_lead.ConfigAllowableClosedloopError(0, 0);
@@ -168,6 +170,13 @@ void Shooter::analyzeDashboard()
 {
     state.leftStickX = -operatorController->GetLeftX();
 
+    double angle = limeTable->GetNumber("ty", 0.0) + ShooterConstants::limelightAngle;
+    double deltaH = ShooterConstants::hubHeight - ShooterConstants::limelightHeight;
+    double xDist = deltaH / tan(angle * MathConstants::toRadians);
+
+    state.distanceToHub = xDist;
+
+    table->PutNumber("x distance to hub", xDist);
 
     if(table->GetBoolean("Home Turret", false)){
         state.turretState = TurretState::TURRET_HOME;
@@ -182,11 +191,13 @@ void Shooter::analyzeDashboard()
     }
 
     //slider
-    state.flywheelHigh = table->GetNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     state.flywheelLow = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
-
     state.hoodLow = table->GetNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
-    state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
+
+    if(!table->GetBoolean("Use line of best fit", false)){
+        state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
+        state.flywheelHigh = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelPrimedValue);
+    }
 
     double angle = limeTable->GetNumber("ty", 0.0) + 45;
     double deltaH = 2.64 - .75;
@@ -206,6 +217,9 @@ void Shooter::analyzeDashboard()
     table->PutNumber("Turret pos", turretEncoder.GetPosition());
 
     table->PutNumber("left stick x", state.leftStickX);
+
+    table->PutNumber("flywheel power", state.flywheelHigh);
+    table->PutNumber("hood high", state.hoodHigh);
 }
 
 void Shooter::assignOutputs()
@@ -246,6 +260,10 @@ void Shooter::assignOutputs()
         float tx = limeTable->GetNumber("tx", 0.0);
         float tv = limeTable->GetNumber("tv", 0.0);
         state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
+
+        if(table->GetBoolean("Use line of best fit", false)){
+            state.flywheelHigh = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
+        }
     }
 
     //DEFAULT
@@ -306,6 +324,9 @@ void Shooter::assignOutputs()
         resetHood();
     }
     else if(state.hoodState == HoodState::HOOD_PRIME){
+        if(table->GetBoolean("Use line of best fit", false)){
+            state.hoodHigh = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood;
+        }
         state.hoodTarget = state.hoodHigh;
     }
     hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
