@@ -199,12 +199,6 @@ void Shooter::analyzeDashboard()
         state.flywheelHigh = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelPrimedValue);
     }
 
-    double angle = limeTable->GetNumber("ty", 0.0) + 45;
-    double deltaH = 2.64 - .75;
-    double xDist = deltaH / tan(angle * MathConstants::toRadians);
-
-    table->PutNumber("x distance to hub", xDist);
-
     if (state.turretState == TurretState::TURRET_PRIME && state.lastTurretState != TurretState::TURRET_PRIME){
         limelightTrack(true);
     }
