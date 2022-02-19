@@ -32,7 +32,7 @@ void Feeder::init()
 
     motor_stage.RestoreFactoryDefaults();
     motor_stage.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-    motor_stage.SetInverted(false);
+    motor_stage.SetInverted(true);
 
     table->PutBoolean("Reverse Feeder?", false);
     table->PutNumber("Intake Reverse Speed", FeederConstants::DEFAULT_INTAKE_SPEED_REVERSE);
@@ -83,6 +83,9 @@ void Feeder::assessInputs()
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
     }
+    
+    // Calculate instantaneous current
+    calcCurrent();
 }
 
 void Feeder::analyzeDashboard()
@@ -100,9 +103,6 @@ void Feeder::analyzeDashboard()
 
 void Feeder::assignOutputs()
 {
-    // Calculate instantaneous current
-    calcCurrent();
-
     state.bannerTripped = !banner.Get();
     state.currentBanner = state.bannerTripped;
 

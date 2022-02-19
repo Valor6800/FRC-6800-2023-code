@@ -10,7 +10,9 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
-void Robot::RobotInit() {}
+void Robot::RobotInit() {
+    m_container.m_drivetrain.resetState();
+}
 
 /**
  * This function is called every robot packet, no matter the mode. Use
@@ -33,6 +35,7 @@ void Robot::DisabledInit() {
     m_container.m_drivetrain.setMotorMode(false);
     m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::DISABLED;
     m_container.m_shooter.resetState();
+    m_container.m_drivetrain.resetState();
 }
 
 void Robot::DisabledPeriodic() {}
@@ -42,7 +45,6 @@ void Robot::DisabledPeriodic() {}
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-    m_container.m_drivetrain.resetState();
     m_container.m_drivetrain.setMotorMode(true);
     m_container.m_shooter.resetState();
 

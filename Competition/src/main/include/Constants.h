@@ -118,7 +118,7 @@ namespace ShooterConstants{
     constexpr static double bPower = .394;
     constexpr static double bHood = -15.1;
     
-    constexpr static double limelightTurnKP = .3 / 25.445;
+    constexpr static double limelightTurnKP = (.3 / 25.445) * 1.25;
     constexpr static double limelightAngle = 50;
     constexpr static double hubHeight = 2.64;
     constexpr static double limelightHeight = .6075;
@@ -175,7 +175,7 @@ namespace ShooterConstants{
     constexpr static double TURRET_SPEED_MULTIPLIER = .5;
     constexpr static double pSoftDeadband = 0.1;
 
-    constexpr static double homePosition = 0;
+    constexpr static double homePosition = 90;
 
     constexpr static double falconMaxRPM = 6380;
     constexpr static double falconGearRatio = 1;
@@ -184,8 +184,8 @@ namespace ShooterConstants{
 
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
-    constexpr static double turretLimitLeft = homePosition + 35; // 200;
-    constexpr static double turretLimitRight = homePosition - 35; // -15;
+    constexpr static double turretLimitLeft = 40; //40
+    constexpr static double turretLimitRight = 0;
 
     constexpr static double hubX = 0;
     constexpr static double hubY = 0;
@@ -210,7 +210,7 @@ namespace FeederConstants{
     constexpr static double DEFAULT_FEEDER_SPEED_REVERSE = -1.0;
 
     constexpr static int CACHE_SIZE = 25;
-    constexpr static double JAM_CURRENT = 18;
+    constexpr static double JAM_CURRENT = 25;
 }
 
 namespace MathConstants{

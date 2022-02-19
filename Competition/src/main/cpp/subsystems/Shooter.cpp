@@ -214,6 +214,8 @@ void Shooter::analyzeDashboard()
 
     table->PutNumber("flywheel power", state.flywheelHigh);
     table->PutNumber("hood high", state.hoodHigh);
+
+    table->PutNumber("Turret State", state.turretState);
 }
 
 void Shooter::assignOutputs()
@@ -245,8 +247,8 @@ void Shooter::assignOutputs()
 
     //HOME
     else if(state.turretState == TurretState::TURRET_HOME){
-        state.turretTarget = ShooterConstants::homePosition;
-        useSmartMotion = true;
+        state.turretTarget = ShooterConstants::homePosition - turretEncoder.GetPosition();
+        useSmartMotion = false;
     }
 
     //PRIMED

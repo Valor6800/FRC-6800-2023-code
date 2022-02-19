@@ -84,6 +84,8 @@ void Drivetrain::init()
     }
     table->PutBoolean("Save Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
+
+    resetState();
 }
 
 void Drivetrain::setController(frc::XboxController *controller)
@@ -186,11 +188,6 @@ void Drivetrain::analyzeDashboard()
     if (state.backButtonPressed){
         resetGyro();
     }
-
-    if (state.startButtonPressed){
-        resetState();
-    }
-    
 }
 
 void Drivetrain::setMotorMode(bool enabled){
@@ -273,7 +270,7 @@ void Drivetrain::resetState()
 {
     state.tracking = false;
 
-    resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+    // resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
     for (size_t i = 0; i < swerveModules.size(); i++) {
         swerveModules[i]->loadAndSetAzimuthZeroReference();
     }
