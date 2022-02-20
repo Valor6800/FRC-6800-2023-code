@@ -50,26 +50,26 @@ public:
 
      double getTargetTics(double, double, double, double, double, double, double);
      double convertTargetTics(double, double);
-     void resetHood();
 
     enum TurretState{
-         TURRET_DISABLE,
-         TURRET_MANUAL,
-         TURRET_HOME,
-         TURRET_DEFAULT,
-         TURRET_PRIME
+         TURRET_DISABLE, // Not moving
+         TURRET_MANUAL, // Manual control from operator
+         TURRET_HOME, // In process of moving to home
+         TURRET_TRACK, // Tracking via limelight
+         TURRET_AUTO // Using odometry to hub
     };
 
     enum HoodState{
-         HOOD_DISABLE,
-         HOOD_PRIME,
-         HOOD_RESET
+         HOOD_DOWN, // Down position
+         HOOD_UP, // Up position
+         HOOD_TRACK // Tracking using limelight
      };
 
      enum FlywheelState{
-          FLYWHEEL_DISABLE,
-          FLYWHEEL_DEFAULT,
-          FLYWHEEL_PRIME
+          FLYWHEEL_DISABLE, // Not moving
+          FLYWHEEL_DEFAULT, // Low speed
+          FLYWHEEL_PRIME, // Higher speed
+          FLYWHEEL_TRACK // Dynamic calculations
      };
 
     struct x
@@ -93,11 +93,11 @@ public:
           double flywheelTarget; //vel
           int hoodTarget; //pos
 
-          double flywheelLow;
-          double flywheelHigh;
+          double flywheelLow; // Low setpoint
+          double flywheelHigh; // High setpoint
 
-          double hoodLow;
-          double hoodHigh;
+          double hoodLow; // Low position
+          double hoodHigh; // High position
 
           bool trackCorner;
 

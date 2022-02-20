@@ -36,7 +36,7 @@ void Shooter::init()
     table->PutNumber("Hood Top Position", ShooterConstants::hoodTop);
     table->PutNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
     
-    table->PutBoolean("Use line of best fit", false);
+    table->PutBoolean("Use line of best fit", true);
 
     flywheel_lead.ConfigFactoryDefault();
     flywheel_lead.ConfigAllowableClosedloopError(0, 0);
@@ -104,11 +104,18 @@ void Shooter::init()
 }
 
 void Shooter::resetState(){
-    state.turretState = TurretState::TURRET_DEFAULT;
-    state.lastTurretState = TurretState::TURRET_DEFAULT;
-    state.hoodState = HoodState::HOOD_DISABLE;
+    state.turretState = TurretState::TURRET_DISABLE;
+    state.lastTurretState = TurretState::TURRET_DISABLE;
+    state.hoodState = HoodState::HOOD_DOWN;
     state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
     state.trackCorner = false;
+
+    state.turretOutput = 0;
+    state.turretTarget = 0;
+
+    state.flywheelTarget = 0;
+    state.hoodTarget = 0;
+    state.distanceToHub = 3;
 }
 
 void Shooter::resetEncoder(){
@@ -138,29 +145,29 @@ void Shooter::assessInputs()
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
-        state.turretState = TurretState::TURRET_MANUAL;
+        state.turretState = TurretState::TURRET_MANUAL; // Operator control
     }
     else if(state.startButton){
-       state.turretState = TurretState::TURRET_PRIME;
+       state.turretState = TurretState::TURRET_TRACK; // Use limelight
     }
     else if(state.backButton){
-        state.turretState = TurretState::TURRET_DEFAULT;
+        state.turretState = TurretState::TURRET_DISABLE; // Not moving
     }
 
     //Hood
     if(state.startButton){
-        state.hoodState = HoodState::HOOD_PRIME;
+        state.hoodState = HoodState::HOOD_UP; // High position
     }
     else if(state.backButton){
-        state.hoodState = HoodState::HOOD_DISABLE;
+        state.hoodState = HoodState::HOOD_DOWN; // Low position
     }
 
     //Flywheel
     if(state.startButton){
-        state.flywheelState = FlywheelState::FLYWHEEL_PRIME;
+        state.flywheelState = FlywheelState::FLYWHEEL_PRIME; // Higher speed
     }
     else if (state.backButton){
-        state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
+        state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT; // Lower speed
     }
 
     state.trackCorner = state.rightBumper ? true : false;
@@ -169,43 +176,57 @@ void Shooter::assessInputs()
 void Shooter::analyzeDashboard()
 {
     state.leftStickX = -operatorController->GetLeftX();
+    state.lastTurretState = state.turretState;
 
-    double angle = limeTable->GetNumber("ty", 0.0) + ShooterConstants::limelightAngle;
-    double deltaH = ShooterConstants::hubHeight - ShooterConstants::limelightHeight;
-    double xDist = deltaH / tan(angle * MathConstants::toRadians);
-
-    state.distanceToHub = xDist;
-
-    table->PutNumber("x distance to hub", xDist);
-
-    if(table->GetBoolean("Home Turret", false)){
-        state.turretState = TurretState::TURRET_HOME;
+    // Limelight Distance calculations
+    // Only update if a target is visible. Value is sticky if no target is present
+    if (limeTable->GetNumber("tv", 0.0) == 1.0) {
+        double angle = limeTable->GetNumber("ty", 0.0) + ShooterConstants::limelightAngle;
+        double deltaH = ShooterConstants::hubHeight - ShooterConstants::limelightHeight;
+        double xDist = deltaH / tan(angle * MathConstants::toRadians);
+        state.distanceToHub = xDist;
+        table->PutNumber("x distance to hub", xDist);
     }
 
-    if (table->GetBoolean("Zero Turret", false)){
+    // Turret homing and zeroing
+    if (table->GetBoolean("Home Turret", false)) {
+        state.turretState = TurretState::TURRET_HOME;
+    }
+    if (table->GetBoolean("Zero Turret", false)) {
         turretEncoder.SetPosition(0);
     }
 
+    // Hood zeroing
     if (table->GetBoolean("Zero Hood", false)){
-        state.hoodState = HoodState::HOOD_RESET;
+        hoodEncoder.SetPosition(0);
     }
-
-    //slider
-    state.flywheelLow = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
-    state.hoodLow = table->GetNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
 
     if(!table->GetBoolean("Use line of best fit", false)){
         state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
         state.flywheelHigh = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelPrimedValue);
     }
 
-    if (state.turretState == TurretState::TURRET_PRIME && state.lastTurretState != TurretState::TURRET_PRIME){
+    //slider
+    state.flywheelLow = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
+    state.flywheelHigh = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelPrimedValue);
+    state.hoodLow = table->GetNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
+    state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
+
+    // Logic should exist here in case we need to turn off limelight for auto
+    // Set the button to false and default speeds will be used in auto
+    if (table->GetBoolean("Use line of best fit", true)) {
+        if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME)
+            state.flywheelState = FlywheelState::FLYWHEEL_TRACK;
+        if (state.hoodState == HoodState::HOOD_UP)
+            state.hoodState = HoodState::HOOD_TRACK;
+    }
+
+    if (state.turretState == TurretState::TURRET_TRACK && state.lastTurretState != TurretState::TURRET_TRACK){
         limelightTrack(true);
     }
-    else if (state.turretState != TurretState::TURRET_PRIME && state.lastTurretState == TurretState::TURRET_PRIME){
+    else if (state.turretState != TurretState::TURRET_TRACK && state.lastTurretState == TurretState::TURRET_TRACK){
         limelightTrack(false);
     }
-    state.lastTurretState = state.turretState;
 
     table->PutNumber("Hood degrees", hoodEncoder.GetPosition());
     table->PutNumber("Turret pos", turretEncoder.GetPosition());
@@ -219,51 +240,42 @@ void Shooter::analyzeDashboard()
 }
 
 void Shooter::assignOutputs()
-{   
-    state.turretOutput = 0;
-    state.turretTarget = 0;
+{ 
 
-    state.flywheelTarget = 0;
-    state.hoodTarget = 0;
-
-    bool useSmartMotion = false;
+    /*//////////////////////////////////////
+    // Turret                             //  
+    //////////////////////////////////////*/
 
     //MANUAL
     if (state.turretState == TurretState::TURRET_MANUAL) {
-        int sign = 1;//state.leftStickX >= 0 ? 1 : -1;
-        state.turretOutput = sign * std::pow(state.leftStickX, 3) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
+        state.turretOutput = std::pow(state.leftStickX, 3) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
 
         // Minimum power deadband
         if (std::abs(state.leftStickX) < ShooterConstants::pDeadband) {
             state.turretOutput = 0;
         }
         // Stop deadband
-        else if (std::abs(state.turretOutput) < ShooterConstants::pSoftDeadband) {
-            int direction = 1;
-            if (state.turretOutput < 0) direction = -1;
-            state.turretOutput = ShooterConstants::pSoftDeadband * direction;
-        }
+        // else if (std::abs(state.turretOutput) < ShooterConstants::pSoftDeadband) {
+        //     int direction = 1;
+        //     if (state.turretOutput < 0) direction = -1;
+        //     state.turretOutput = ShooterConstants::pSoftDeadband * direction;
+        // }
+        turret.Set(state.turretOutput);
     }
-
     //HOME
     else if(state.turretState == TurretState::TURRET_HOME){
         state.turretTarget = ShooterConstants::homePosition - turretEncoder.GetPosition();
-        useSmartMotion = false;
+        turret.Set(state.turretOutput);
     }
-
     //PRIMED
-    else if (state.turretState == TurretState::TURRET_PRIME){
+    else if (state.turretState == TurretState::TURRET_TRACK){
         float tx = limeTable->GetNumber("tx", 0.0);
         float tv = limeTable->GetNumber("tv", 0.0);
         state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
-
-        if(table->GetBoolean("Use line of best fit", false)){
-            state.flywheelHigh = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
-        }
+        turret.Set(state.turretOutput);
     }
-
     //DEFAULT
-    else if (state.turretState == TurretState::TURRET_DEFAULT){
+    else if (state.turretState == TurretState::TURRET_AUTO){
         //Odometry tracking
         frc::Pose2d currentPose = odom->getPose_m();
         double targetX = ShooterConstants::hubX;
@@ -279,32 +291,29 @@ void Shooter::assignOutputs()
 
         double error  = tics - turretEncoder.GetPosition(); //might need to invert this
         state.turretTarget = error * ShooterConstants::turretKP; //need to set value
-        useSmartMotion = true;
+        turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
     }
-
     //DISABLED
     else{
         state.turretOutput = 0;
-    }
-
-    if (useSmartMotion){
-        //turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
-        turret.Set(0);
-
-    }
-    else{
-        //turretPidController.SetReference(state.turretOutput, rev::ControlType::kDutyCycle);
         turret.Set(state.turretOutput);
     }
+
+    /*//////////////////////////////////////
+    // Flywheel                           //  
+    //////////////////////////////////////*/
     
-    if(state.flywheelState == FlywheelState::FLYWHEEL_DISABLE){
+    if (state.flywheelState == FlywheelState::FLYWHEEL_DISABLE){
         state.flywheelTarget = 0;
-    }
-    else if(state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
-        state.flywheelTarget = state.flywheelHigh;
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_DEFAULT){
         state.flywheelTarget = state.flywheelLow;
+    }
+    else if(state.hoodState == FlywheelState::FLYWHEEL_TRACK){
+        state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
+    }
+    else if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
+        state.flywheelTarget = state.flywheelHigh;
     }
     
     double rpm = state.flywheelTarget * ShooterConstants::falconMaxRPM;
@@ -313,27 +322,20 @@ void Shooter::assignOutputs()
 
     flywheel_lead.Set(ControlMode::Velocity, ticsp100ms);
 
-    if(state.hoodState == HoodState::HOOD_DISABLE){
+    /*//////////////////////////////////////
+    // Hood                               //  
+    //////////////////////////////////////*/
+
+    if(state.hoodState == HoodState::HOOD_DOWN){
         state.hoodTarget = state.hoodLow;
     }
-    else if (state.hoodState == HoodState::HOOD_RESET){
-        resetHood();
+    else if(state.hoodState == HoodState::HOOD_TRACK){
+        state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood;
     }
-    else if(state.hoodState == HoodState::HOOD_PRIME){
-        if(table->GetBoolean("Use line of best fit", false)){
-            state.hoodHigh = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood;
-        }
+    else if(state.hoodState == HoodState::HOOD_UP){
         state.hoodTarget = state.hoodHigh;
     }
     hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
-}
-
-void Shooter::resetHood(){
-    while(hood.GetOutputCurrent() <= 10){
-        hood.Set(-1);
-    }
-    hood.Set(0);
-    hoodEncoder.SetPosition(0);
 }
 
 double Shooter::getTargetTics(double x, 

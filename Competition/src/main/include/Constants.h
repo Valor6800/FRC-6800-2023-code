@@ -161,11 +161,11 @@ namespace ShooterConstants{
     constexpr static double hoodMaxAccel = hoodMaxV * 1;
     constexpr static double hoodAllowedError = 0;
 
-    constexpr static int hoodTop = 2;
+    constexpr static int hoodTop = 5;
     constexpr static int hoodBottom = 0; //make sure this is always 0, need to initialize hood all the way down
 
-    constexpr static double hoodLimitTop = hoodTop + 1;
-    constexpr static double hoodLimitBottom = hoodBottom;
+    constexpr static double hoodLimitTop = 13;
+    constexpr static double hoodLimitBottom = 0;
 
     constexpr static double hoodGearRatio = 1 / 454.17; 
 
@@ -175,8 +175,6 @@ namespace ShooterConstants{
     constexpr static double TURRET_SPEED_MULTIPLIER = .5;
     constexpr static double pSoftDeadband = 0.1;
 
-    constexpr static double homePosition = 90;
-
     constexpr static double falconMaxRPM = 6380;
     constexpr static double falconGearRatio = 1;
 
@@ -184,7 +182,9 @@ namespace ShooterConstants{
 
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
-    constexpr static double turretLimitLeft = 40; //40
+
+    constexpr static double homePosition = 90;
+    constexpr static double turretLimitLeft = 180;
     constexpr static double turretLimitRight = 0;
 
     constexpr static double hubX = 0;
