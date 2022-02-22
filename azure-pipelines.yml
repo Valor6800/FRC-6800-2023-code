@@ -6,7 +6,7 @@ resources:
 jobs:
  - job: Linux_Arm
    pool:
-     vmImage: 'Ubuntu 16.04'
+     vmImage: 'Ubuntu 18.04'
 
    container: wpilib2022
 
