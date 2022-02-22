@@ -113,10 +113,10 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 15;    
 
-    constexpr static double aPower = .0357;
-    constexpr static double aHood = 8.57;
+    constexpr static double aPower = 0.0747;
+    constexpr static double aHood = 9.15;
     constexpr static double bPower = .394;
-    constexpr static double bHood = -15.1;
+    constexpr static double bHood = -1.13;
     
     constexpr static double limelightTurnKP = (.3 / 25.445) * 1.25;
     constexpr static double limelightAngle = 50;
