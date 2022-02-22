@@ -124,9 +124,9 @@ namespace ShooterConstants{
     constexpr static double limelightHeight = .6075;
     
 
-    constexpr static double flywheelKP = 0.1;
+    constexpr static double flywheelKP = 0.35;
     constexpr static double flywheelKI = 0;
-    constexpr static double flywheelKD = 5;
+    constexpr static double flywheelKD = 7.5;
     constexpr static double flywheelKIZ = 0;
     constexpr static double flywheelKFF = 0.05;
     constexpr static double MaxRPM = 6380;
@@ -136,19 +136,19 @@ namespace ShooterConstants{
     constexpr static double flywheelMaxAccel = flywheelCruiseVelo * 1;
     constexpr static double flywheelAllowedError = 0;
 
-    constexpr static double flywheelPrimedValue = .46;
-    constexpr static double flywheelDefaultValue = 0.3;
+    constexpr static double flywheelPrimedValue = 0.4;
+    constexpr static double flywheelDefaultValue = 0.37;
 
-    constexpr static double turretKP = 0;
+    constexpr static double turretKP = 1e-9;
     constexpr static double turretKI = 0;
-    constexpr static double turretKD = 0;
+    constexpr static double turretKD = 1;
     constexpr static double turretKIZ = 0;
-    constexpr static double turretKFF = 0.00023;
+    constexpr static double turretKFF = 0.00005;
 
-    constexpr static double turretMaxV = 2000;
+    constexpr static double turretMaxV = 10000;
     constexpr static double turretMinV = 0;
-    constexpr static double turretMaxAccel = 1500;
-    constexpr static double turretAllowedError = 0;
+    constexpr static double turretMaxAccel = turretMaxV * 10;
+    constexpr static double turretAllowedError = 3;
 
     constexpr static double hoodKP = 5e-5;
     constexpr static double hoodKI = 0;
@@ -206,11 +206,11 @@ namespace FeederConstants{
     constexpr static double DEFAULT_INTAKE_SPEED_REVERSE = -0.9;
 
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT = 0.5;
-    constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 1.0;
+    constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 0.7;
     constexpr static double DEFAULT_FEEDER_SPEED_REVERSE = -1.0;
 
     constexpr static int CACHE_SIZE = 25;
-    constexpr static double JAM_CURRENT = 25;
+    constexpr static double JAM_CURRENT = 30;
 }
 
 namespace MathConstants{

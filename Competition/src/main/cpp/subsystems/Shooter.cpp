@@ -101,6 +101,8 @@ void Shooter::init()
     
     resetState();
     resetEncoder();
+
+    limelightTrack(false);
 }
 
 void Shooter::resetState(){
@@ -142,6 +144,7 @@ void Shooter::assessInputs()
     state.startButton = operatorController->GetStartButtonPressed();
     state.backButton = operatorController->GetBackButtonPressed(); 
     state.rightBumper = operatorController->GetRightBumper();
+    state.leftStickX = -operatorController->GetLeftX();
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
@@ -170,14 +173,14 @@ void Shooter::assessInputs()
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT; // Lower speed
     }
 
-    state.trackCorner = state.rightBumper ? true : false;
+    state.trackCorner = false;//state.rightBumper ? true : false;
+    if (state.rightBumper) {
+        state.turretState = TurretState::TURRET_HOME;
+    }
 }
 
 void Shooter::analyzeDashboard()
 {
-    state.leftStickX = -operatorController->GetLeftX();
-    state.lastTurretState = state.turretState;
-
     // Limelight Distance calculations
     // Only update if a target is visible. Value is sticky if no target is present
     if (limeTable->GetNumber("tv", 0.0) == 1.0) {
@@ -189,9 +192,6 @@ void Shooter::analyzeDashboard()
     }
 
     // Turret homing and zeroing
-    if (table->GetBoolean("Home Turret", false)) {
-        state.turretState = TurretState::TURRET_HOME;
-    }
     if (table->GetBoolean("Zero Turret", false)) {
         turretEncoder.SetPosition(0);
     }
@@ -201,14 +201,9 @@ void Shooter::analyzeDashboard()
         hoodEncoder.SetPosition(0);
     }
 
-    if(!table->GetBoolean("Use line of best fit", false)){
-        state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
-        state.flywheelHigh = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelPrimedValue);
-    }
-
     //slider
     state.flywheelLow = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
-    state.flywheelHigh = table->GetNumber("Flywheel Default Value", ShooterConstants::flywheelPrimedValue);
+    state.flywheelHigh = table->GetNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     state.hoodLow = table->GetNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
     state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
 
@@ -227,6 +222,8 @@ void Shooter::analyzeDashboard()
     else if (state.turretState != TurretState::TURRET_TRACK && state.lastTurretState == TurretState::TURRET_TRACK){
         limelightTrack(false);
     }
+    state.lastTurretState = state.turretState;
+
 
     table->PutNumber("Hood degrees", hoodEncoder.GetPosition());
     table->PutNumber("Turret pos", turretEncoder.GetPosition());
@@ -264,15 +261,22 @@ void Shooter::assignOutputs()
     }
     //HOME
     else if(state.turretState == TurretState::TURRET_HOME){
-        state.turretTarget = ShooterConstants::homePosition - turretEncoder.GetPosition();
-        turret.Set(state.turretOutput);
+        if(fabs(turretEncoder.GetPosition() - ShooterConstants::homePosition) < 2){
+            state.turretState = TurretState::TURRET_DISABLE;
+        }
+        else {
+            state.turretTarget = ShooterConstants::homePosition;
+            turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);  
+        }
     }
     //PRIMED
     else if (state.turretState == TurretState::TURRET_TRACK){
         float tx = limeTable->GetNumber("tx", 0.0);
         float tv = limeTable->GetNumber("tv", 0.0);
-        state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
-        turret.Set(state.turretOutput);
+        state.turretTarget = (-tx * tv * 0.5) + turretEncoder.GetPosition();
+        turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
+        // state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
+        // turret.Set(state.turretOutput);
     }
     //DEFAULT
     else if (state.turretState == TurretState::TURRET_AUTO){

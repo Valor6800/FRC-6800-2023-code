@@ -51,14 +51,14 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     frc2::InstantCommand cmd_shooterPrime = frc2::InstantCommand( [&] {
         shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_PRIME; 
-        shooter->state.turretState = Shooter::TurretState::TURRET_PRIME;
-        shooter->state.hoodState = Shooter::HoodState::HOOD_PRIME;
+        shooter->state.turretState = Shooter::TurretState::TURRET_TRACK;
+        shooter->state.hoodState = Shooter::HoodState::HOOD_TRACK;
     } );
 
     frc2::InstantCommand cmd_shooterDefault = frc2::InstantCommand( [&] {
         shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_DEFAULT; 
-        shooter->state.turretState = Shooter::TurretState::TURRET_DEFAULT;
-        shooter->state.hoodState = Shooter::HoodState::HOOD_DISABLE;
+        shooter->state.turretState = Shooter::TurretState::TURRET_DISABLE;
+        shooter->state.hoodState = Shooter::HoodState::HOOD_DOWN;
     } );
 
     frc2::InstantCommand cmd_intakeAuto = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE; } );
@@ -69,7 +69,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         feeder->state.feederState = Feeder::FeederState::FEEDER_DISABLE;
         shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_DISABLE; 
         shooter->state.turretState = Shooter::TurretState::TURRET_DISABLE;
-        shooter->state.hoodState = Shooter::HoodState::HOOD_DISABLE;
+        shooter->state.hoodState = Shooter::HoodState::HOOD_DOWN;
     });
 
     // frc2::InstantCommand cmd_set_gyroOffset = frc2::InstantCommand( [&] {
