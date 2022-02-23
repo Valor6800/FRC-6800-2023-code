@@ -5,6 +5,16 @@
 #include <frc/XboxController.h>
 #include <rev/CANSparkMax.h>
 
+#include "ValorSubsystem.h"
+#include "Constants.h"
+#include <ctre/Phoenix.h>
+#include <vector>
+
+#include <rev/CANSparkMax.h>
+#include <rev/CANEncoder.h>
+
+#include <frc/XboxController.h>
+
 #ifndef LIFT_H
 #define LIFT_H
 
@@ -12,7 +22,6 @@ class Lift : public ValorSubsystem
 {
 public:
     Lift();
-    ~Lift();
 
     void init();
     void setController(frc::XboxController *controller);
@@ -23,55 +32,55 @@ public:
 
     void resetState();
 
-    enum LiftMainState {
-        LIFT_MAIN_DISABLED,
-        LIFT_MAIN_EXTEND,
-        LIFT_MAIN_RETRACT
-    };
-        
-    enum LiftAuxState {
-        LIFT_AUX_DISABLED,
-        LIFT_AUX_EXTEND,
-        LIFT_AUX_RETRACT
-    };
-        
     enum LiftRotateState {
         LIFT_ROTATE_DISABLED,
-        LIFT_ROTATE_ENABLE
+        LIFT_ROTATE_EXTEND,
+        LIFT_ROTATE_RETRACT,
+        LIFT_ROTATE_TOPOSITION
+    };
+        
+    enum LiftMainState {
+        LIFT_MAIN_DISABLED,
+        LIFT_MAIN_ENABLE,
+        LIFT_MAIN_TOPOSITION
     };
 
 
     struct x
     {
         LiftMainState liftstateMain;
-        LiftAuxState liftstateAux;
         LiftRotateState liftstateRotate;
 
-        bool xButtonPressed;
-        bool yButtonPressed;
-
-        bool dPadUpPressed;  
+        bool dPadUpPressed;
         bool dPadDownPressed;
+        bool dPadLeftPressed;
+        bool dPadRightPressed;
 
-        double leftStickY;
+        double rightStickY;
 
         double powerRetract;
         double powerExtend;
-        double powerAuxRetract;
-        double powerAuxExtend;
-        double powerRotate;
+        double powerMain;
+
+        double desiredRotatePos;
+        double desiredMainPos;
 
     } state;
 
+private:
     frc::XboxController *operatorController;
 
-    rev::CANSparkMax leadMainMotor;
-    rev::CANSparkMax followMainMotor;
+    WPI_TalonFX leadMainMotor;
 
-    rev::CANSparkMax auxMotor;
+    WPI_TalonFX followMainMotor;
     
     rev::CANSparkMax rotateMotor;
 
+    rev::SparkMaxPIDController rotateMotorPidController = rotateMotor.GetPIDController();
+
+    rev::SparkMaxRelativeEncoder rotateEncoder = rotateMotor.GetEncoder();
+
 };
+
 
 #endif

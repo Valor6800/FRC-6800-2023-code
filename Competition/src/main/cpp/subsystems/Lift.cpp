@@ -1,95 +1,166 @@
 #include "subsystems/Lift.h"
 
 Lift::Lift() : ValorSubsystem(),
-                operatorController(NULL),
-                leadMainMotor{LiftConstants::MAIN_CAN_ID, rev::CANSparkMax::MotorType::kBrushless},
-                followMainMotor{LiftConstants::MAIN_FOLLOW_CAN_ID, rev::CANSparkMax::MotorType::kBrushless},
-                auxMotor{LiftConstants::AUX_CAN_ID, rev::CANSparkMax::MotorType::kBrushless},
-                rotateMotor{LiftConstants::ROTATE_CAN_ID, rev::CANSparkMax::MotorType::kBrushless}
+               operatorController(NULL),
+               leadMainMotor{LiftConstants::MAIN_CAN_ID},
+               followMainMotor{LiftConstants::MAIN_FOLLOW_CAN_ID},
+               rotateMotor{LiftConstants::ROTATE_CAN_ID, rev::CANSparkMax::MotorType::kBrushless}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
 }
 
-void Lift::init() {
+void Lift::init()
+{
     initTable("Lift");
-    table->PutNumber("Lift Speed Extend", LiftConstants::DEFAULT_EXTEND_SPD);
-    table->PutNumber("Lift Speed Retract", LiftConstants::DEFAULT_RETRACT_SPD);
 
-    leadMainMotor.RestoreFactoryDefaults();
-    followMainMotor.RestoreFactoryDefaults();
+    rotateMotor.RestoreFactoryDefaults();
+    rotateMotor.SetInverted(true);
 
-    leadMainMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-    followMainMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+    rotateMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+    rotateEncoder.SetPositionConversionFactor(360 * LiftConstants::pivotGearRatio);
 
-    leadMainMotor.Follow(rev::CANSparkMax::kFollowerDisabled, false);
+    rotateMotor.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
+    rotateMotor.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, LiftConstants::rotateForwardLimit);
+
+    rotateMotor.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
+    rotateMotor.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, LiftConstants::rotateReverseLimit);
+
+    leadMainMotor.ConfigForwardSoftLimitThreshold(LiftConstants::extendForwardLimit);
+    leadMainMotor.ConfigReverseSoftLimitThreshold(LiftConstants::extendReverseLimit);
+
+    leadMainMotor.ConfigForwardSoftLimitEnable(true);
+    leadMainMotor.ConfigReverseSoftLimitEnable(true);
+
+    rotateEncoder.SetPosition(0);
+
+    leadMainMotor.SetSelectedSensorPosition(0);
+    leadMainMotor.SetInverted(true);
     followMainMotor.Follow(leadMainMotor);
 
-    auxMotor.RestoreFactoryDefaults();
-    rotateMotor.RestoreFactoryDefaults();
+    leadMainMotor.SetNeutralMode(ctre::phoenix::motorcontrol::Brake);
+    followMainMotor.SetNeutralMode(ctre::phoenix::motorcontrol::Brake);
 
-    auxMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-    rotateMotor.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+    rotateMotorPidController.SetP(LiftConstants::rotate_kP);
+    rotateMotorPidController.SetI(LiftConstants::rotate_kI);
+    rotateMotorPidController.SetD(LiftConstants::rotate_kD);
+    rotateMotorPidController.SetIZone(LiftConstants::rotate_kIz);
+    rotateMotorPidController.SetFF(LiftConstants::rotate_kFF);
+    rotateMotorPidController.SetOutputRange(LiftConstants::rotate_kMinOutput, LiftConstants::rotate_kMaxOutput);
+
+    rotateMotorPidController.SetSmartMotionMaxVelocity(LiftConstants::rotate_kMaxVel);
+    rotateMotorPidController.SetSmartMotionMinOutputVelocity(LiftConstants::rotate_kMinVel);
+    rotateMotorPidController.SetSmartMotionMaxAccel(LiftConstants::rotate_kMaxAcc);
+    rotateMotorPidController.SetSmartMotionAllowedClosedLoopError(LiftConstants::rotate_kAllErr);
+
+    leadMainMotor.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
+    leadMainMotor.ConfigAllowableClosedloopError(0, 0);
+    leadMainMotor.Config_IntegralZone(0, 0);
+    leadMainMotor.Config_kF(0, LiftConstants::main_KF);
+    leadMainMotor.Config_kD(0, LiftConstants::main_KD);
+    leadMainMotor.Config_kI(0, LiftConstants::main_KI);
+    leadMainMotor.Config_kP(0, LiftConstants::main_KP);
+    leadMainMotor.ConfigMotionAcceleration(LiftConstants::MAIN_MOTION_ACCELERATION);
+    leadMainMotor.ConfigMotionCruiseVelocity(LiftConstants::MAIN_MOTION_CRUISE_VELOCITY);
+
+
+    table->PutNumber("Desired Rotate Angle", rotateEncoder.GetPosition());
+    table->PutNumber("Desired Lift Pos", leadMainMotor.GetSelectedSensorPosition());
 }
 
-void Lift::setController(frc::XboxController *controller) {
+void Lift::setController(frc::XboxController *controller)
+{
     operatorController = controller;
 }
 
-void Lift::assessInputs() {
-    if (!operatorController) {
+void Lift::assessInputs()
+{
+    if (!operatorController)
+    {
         return;
     }
 
-    state.leftStickY = std::abs(operatorController->GetLeftY()) < 0.05 ? 0 : operatorController->GetLeftY();
+    state.rightStickY = -1 * operatorController->GetRightY();
 
-    state.xButtonPressed = operatorController->GetXButton();
-    state.yButtonPressed = operatorController->GetYButton();
+    state.dPadLeftPressed = operatorController->GetPOV(frc::GenericHID::kXInputGamepad) == OIConstants::dpadLeft;
+    state.dPadRightPressed = operatorController->GetPOV(frc::GenericHID::kXInputGamepad) == OIConstants::dpadRight;
+    state.dPadDownPressed = operatorController->GetPOV(frc::GenericHID::kXInputGamepad) == OIConstants::dpadDown;
+    state.dPadUpPressed = operatorController->GetPOV(frc::GenericHID::kXInputGamepad) == OIConstants::dpadUp;
 
-    state.dPadDownPressed = operatorController->GetPOV() == OIConstants::dpadDown;
-    state.dPadUpPressed = operatorController->GetPOV() == OIConstants::dpadUp;
-
-}
-
-void Lift::analyzeDashboard() {
-    state.powerRetract = table->GetNumber("Lift Speed Retract", LiftConstants::DEFAULT_RETRACT_SPD);
-    state.powerExtend = table->GetNumber("Lift Speed Extend", LiftConstants::DEFAULT_EXTEND_SPD);
-    
-    state.powerAuxRetract = table->GetNumber("Aux Lift Speed Retract", LiftConstants::DEFAULT_AUX_RETRACT_SPD);
-    state.powerAuxExtend = table->GetNumber("Aux Lift Speed Extend", LiftConstants::DEFAULT_AUX_EXTEND_SPD);
-    
-    state.powerRotate = table->GetNumber("Rotate Speed", LiftConstants::DEFAULT_ROTATE_SPD);
-}
-
-void Lift::assignOutputs() {
-
-    if (state.liftstateMain == LiftMainState::LIFT_MAIN_DISABLED){
-        leadMainMotor.Set(0);
-    } else if (state.liftstateMain == LiftMainState::LIFT_MAIN_EXTEND){
-        leadMainMotor.Set(LiftConstants::DEFAULT_EXTEND_SPD);
-    } else if (state.liftstateMain == LiftMainState::LIFT_MAIN_RETRACT){
-        leadMainMotor.Set(LiftConstants::DEFAULT_RETRACT_SPD);
+    if (state.dPadLeftPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold)
+    {
+        state.liftstateRotate = LiftRotateState::LIFT_ROTATE_EXTEND;
+    }
+    else if (state.dPadRightPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold)
+    {
+        state.liftstateRotate = LiftRotateState::LIFT_ROTATE_RETRACT;
+    }
+    else if (state.dPadDownPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold) {
+        // state.liftstateRotate = LiftRotateState::LIFT_ROTATE_TOPOSITION;
+    }
+    else
+    {
+        state.liftstateRotate = LiftRotateState::LIFT_ROTATE_DISABLED;
     }
 
-    if (state.liftstateAux == LiftAuxState::LIFT_AUX_DISABLED){
-        auxMotor.Set(0);
-    } else if (state.liftstateAux == LiftAuxState::LIFT_AUX_EXTEND){
-        auxMotor.Set(LiftConstants::DEFAULT_AUX_EXTEND_SPD);
-    } else if (state.liftstateAux == LiftAuxState::LIFT_AUX_RETRACT){
-        auxMotor.Set(LiftConstants::DEFAULT_AUX_RETRACT_SPD);
+    if (std::abs(state.rightStickY) > LiftConstants::kDeadbandY)
+    {
+        state.liftstateMain = LiftMainState::LIFT_MAIN_ENABLE;
     }
+    else if (state.dPadUpPressed) {
+        // state.liftstateMain = LiftMainState::LIFT_MAIN_TOPOSITION;
+    }
+    else
+    {
+        state.liftstateMain = LiftMainState::LIFT_MAIN_DISABLED;
+    }
+}
 
-    if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_DISABLED){
+void Lift::analyzeDashboard()
+{
+    state.powerMain = table->GetNumber("Rotate Speed", LiftConstants::DEFAULT_MAIN_SPD);
+
+    table->PutNumber("Lift Main Encoder Value", leadMainMotor.GetSelectedSensorPosition());
+    table->PutNumber("Lift Follow Encoder Value", followMainMotor.GetSelectedSensorPosition());
+    table->PutNumber("Lift Rotate Encoder Value", rotateEncoder.GetPosition());
+
+    state.desiredRotatePos = table->GetNumber("Desired Rotate Angle", rotateEncoder.GetPosition());
+    state.desiredMainPos = table->GetNumber("Desired Lift Pos", leadMainMotor.GetSelectedSensorPosition());
+}
+
+void Lift::assignOutputs()
+{
+
+    if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_DISABLED)
+    {
         rotateMotor.Set(0);
-    } else if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_ENABLE){
-        rotateMotor.Set(state.leftStickY);
-    } 
-    
+    }
+    else if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_EXTEND)
+    {
+        rotateMotor.Set(LiftConstants::DEFAULT_EXTEND_SPD);
+    }
+    else if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_RETRACT)
+    {
+        rotateMotor.Set(LiftConstants::DEFAULT_RETRACT_SPD);
+    }
+    else if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_TOPOSITION) {
+        rotateMotorPidController.SetReference(state.desiredRotatePos, rev::ControlType::kSmartMotion);
+    }
+
+    if (state.liftstateMain == LiftMainState::LIFT_MAIN_DISABLED) {
+        leadMainMotor.Set(0);
+    }
+    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_ENABLE) {
+        leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_SPD);
+    }
+    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_TOPOSITION) {
+        leadMainMotor.Set(ControlMode::MotionMagic, state.desiredMainPos);
+
+    }
 }
 
 void Lift::resetState()
 {
     state.liftstateMain = LiftMainState::LIFT_MAIN_DISABLED;
-    state.liftstateAux = LiftAuxState::LIFT_AUX_DISABLED;
     state.liftstateRotate = LiftRotateState::LIFT_ROTATE_DISABLED;
 }
