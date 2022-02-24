@@ -82,10 +82,10 @@ void Lift::assessInputs()
 
     state.rightStickY = -1 * operatorController->GetRightY();
 
-    state.dPadLeftPressed = operatorController->GetPOV(frc::GenericHID::kXInputGamepad) == OIConstants::dpadLeft;
-    state.dPadRightPressed = operatorController->GetPOV(frc::GenericHID::kXInputGamepad) == OIConstants::dpadRight;
-    state.dPadDownPressed = operatorController->GetPOV(frc::GenericHID::kXInputGamepad) == OIConstants::dpadDown;
-    state.dPadUpPressed = operatorController->GetPOV(frc::GenericHID::kXInputGamepad) == OIConstants::dpadUp;
+    state.dPadLeftPressed = operatorController->GetPOV() == OIConstants::dpadLeft;
+    state.dPadRightPressed = operatorController->GetPOV() == OIConstants::dpadRight;
+    state.dPadDownPressed = operatorController->GetPOV() == OIConstants::dpadDown;
+    state.dPadUpPressed = operatorController->GetPOV() == OIConstants::dpadUp;
 
     if (state.dPadLeftPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold)
     {

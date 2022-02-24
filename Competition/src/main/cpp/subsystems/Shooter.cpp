@@ -107,7 +107,8 @@ void Shooter::init()
 
 void Shooter::resetState(){
     state.turretState = TurretState::TURRET_DISABLE;
-    state.lastTurretState = TurretState::TURRET_DISABLE;
+    //hack solution
+    state.lastTurretState = TurretState::TURRET_TRACK;
     state.hoodState = HoodState::HOOD_DOWN;
     state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
     state.trackCorner = false;
@@ -273,7 +274,7 @@ void Shooter::assignOutputs()
     else if (state.turretState == TurretState::TURRET_TRACK){
         float tx = limeTable->GetNumber("tx", 0.0);
         float tv = limeTable->GetNumber("tv", 0.0);
-        state.turretTarget = (-tx * tv * 0.5) + turretEncoder.GetPosition();
+        state.turretTarget = (-tx * tv * .5) + turretEncoder.GetPosition();
         turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
         // state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
         // turret.Set(state.turretOutput);

@@ -139,16 +139,16 @@ namespace ShooterConstants{
     constexpr static double flywheelPrimedValue = 0.4;
     constexpr static double flywheelDefaultValue = 0.37;
 
-    constexpr static double turretKP = 1e-9;
+    constexpr static double turretKP = 1e-5;
     constexpr static double turretKI = 0;
-    constexpr static double turretKD = 1;
+    constexpr static double turretKD = 0;
     constexpr static double turretKIZ = 0;
-    constexpr static double turretKFF = 0.00005;
+    constexpr static double turretKFF = 0.0001;
 
     constexpr static double turretMaxV = 10000;
     constexpr static double turretMinV = 0;
-    constexpr static double turretMaxAccel = turretMaxV * 10;
-    constexpr static double turretAllowedError = 3;
+    constexpr static double turretMaxAccel = turretMaxV * 2;
+    constexpr static double turretAllowedError = 0.1;
 
     constexpr static double hoodKP = 5e-5;
     constexpr static double hoodKI = 0;
@@ -237,7 +237,7 @@ namespace LiftConstants{
 
     constexpr static double pivotGearRatio = 1 / 95.67;
 
-    constexpr static double DEFAULT_MAIN_SPD = 0.2;
+    constexpr static double DEFAULT_MAIN_SPD = 0.;
 
     constexpr static double kDeadbandY = 0.05;
 
