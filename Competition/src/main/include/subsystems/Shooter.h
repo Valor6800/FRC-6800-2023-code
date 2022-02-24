@@ -54,7 +54,9 @@ public:
     enum TurretState{
          TURRET_DISABLE, // Not moving
          TURRET_MANUAL, // Manual control from operator
-         TURRET_HOME, // In process of moving to home
+         TURRET_HOME_MID, // In process of moving to home
+         TURRET_HOME_LEFT,
+         TURRET_HOME_RIGHT,
          TURRET_TRACK, // Tracking via limelight
          TURRET_AUTO // Using odometry to hub
     };
@@ -84,6 +86,10 @@ public:
           bool backButton;
           bool startButton;
           bool rightBumper;
+          bool aButton;
+          bool yButton;
+          bool xButton;
+          bool bButton;
 
           double limelightDistance;
 

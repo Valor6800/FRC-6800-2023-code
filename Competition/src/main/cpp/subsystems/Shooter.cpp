@@ -36,7 +36,7 @@ void Shooter::init()
     table->PutNumber("Hood Top Position", ShooterConstants::hoodTop);
     table->PutNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
     
-    table->PutBoolean("Use line of best fit", true);
+    table->PutBoolean("Use line of best fit", false);
 
     flywheel_lead.ConfigFactoryDefault();
     flywheel_lead.ConfigAllowableClosedloopError(0, 0);
@@ -146,38 +146,48 @@ void Shooter::assessInputs()
     state.backButton = operatorController->GetBackButtonPressed(); 
     state.rightBumper = operatorController->GetRightBumper();
     state.leftStickX = -operatorController->GetLeftX();
+    state.aButton = operatorController->GetAButtonPressed();
+    state.yButton = operatorController->GetYButton();
+    state.xButton = operatorController->GetXButton();
+    state.bButton = operatorController->GetBButtonPressed();
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
         state.turretState = TurretState::TURRET_MANUAL; // Operator control
     }
-    else if(state.startButton){
+    else if(state.rightBumper){
        state.turretState = TurretState::TURRET_TRACK; // Use limelight
     }
-    else if(state.backButton){
+    else{
         state.turretState = TurretState::TURRET_DISABLE; // Not moving
     }
 
     //Hood
-    if(state.startButton){
+    if(state.bButton){
         state.hoodState = HoodState::HOOD_UP; // High position
     }
-    else if(state.backButton){
+    else if(state.aButton){
         state.hoodState = HoodState::HOOD_DOWN; // Low position
     }
 
     //Flywheel
-    if(state.startButton){
+    if(state.bButton){
         state.flywheelState = FlywheelState::FLYWHEEL_PRIME; // Higher speed
     }
-    else if (state.backButton){
+    else if (state.aButton){
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT; // Lower speed
     }
 
     state.trackCorner = false;//state.rightBumper ? true : false;
-    if (state.rightBumper) {
-        state.turretState = TurretState::TURRET_HOME;
+    if (state.yButton) {
+        state.turretState = TurretState::TURRET_HOME_MID;
     }
+    // else if (state.xButton) {
+    //     state.turretState = TurretState::TURRET_HOME_LEFT;
+    // }
+    // else if (state.bButton) {
+    //     state.turretState = TurretState::TURRET_HOME_RIGHT;
+    // }
 }
 
 void Shooter::analyzeDashboard()
@@ -210,7 +220,7 @@ void Shooter::analyzeDashboard()
 
     // Logic should exist here in case we need to turn off limelight for auto
     // Set the button to false and default speeds will be used in auto
-    if (table->GetBoolean("Use line of best fit", true)) {
+    if (table->GetBoolean("Use line of best fit", false)) {
         if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME)
             state.flywheelState = FlywheelState::FLYWHEEL_TRACK;
         if (state.hoodState == HoodState::HOOD_UP)
@@ -261,12 +271,30 @@ void Shooter::assignOutputs()
         turret.Set(state.turretOutput);
     }
     //HOME
-    else if(state.turretState == TurretState::TURRET_HOME){
-        if(fabs(turretEncoder.GetPosition() - ShooterConstants::homePosition) < 2){
+    else if(state.turretState == TurretState::TURRET_HOME_MID){
+        if(fabs(turretEncoder.GetPosition() - ShooterConstants::homePositionMid) < 2){
             state.turretState = TurretState::TURRET_DISABLE;
         }
         else {
-            state.turretTarget = ShooterConstants::homePosition;
+            state.turretTarget = ShooterConstants::homePositionMid;
+            turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);  
+        }
+    }
+    else if(state.turretState == TurretState::TURRET_HOME_LEFT){
+        if(fabs(turretEncoder.GetPosition() - ShooterConstants::homePositionLeft) < 2){
+            state.turretState = TurretState::TURRET_DISABLE;
+        }
+        else {
+            state.turretTarget = ShooterConstants::homePositionLeft;
+            turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);  
+        }
+    }
+    else if(state.turretState == TurretState::TURRET_HOME_RIGHT){
+        if(fabs(turretEncoder.GetPosition() - ShooterConstants::homePositionRight) < 2){
+            state.turretState = TurretState::TURRET_DISABLE;
+        }
+        else {
+            state.turretTarget = ShooterConstants::homePositionRight;
             turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);  
         }
     }

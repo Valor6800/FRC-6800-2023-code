@@ -64,8 +64,6 @@ void Feeder::assessInputs()
     state.driver_rightBumperPressed = driverController->GetRightBumper();
 
     // operator inputs
-    state.operator_bButtonPressed = operatorController->GetBButton();
-    state.operator_aButtonPressed = operatorController->GetAButton();
 
     state.operator_leftBumperPressed = operatorController->GetLeftBumper();
         
@@ -73,11 +71,11 @@ void Feeder::assessInputs()
         state.feederState = FeederState::FEEDER_SHOOT;
         state.spiked = false;
     }
-    else if (state.operator_bButtonPressed || state.driver_leftBumperPressed) {
+    else if (state.driver_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_REVERSE;
         state.spiked = false;
     }
-    else if (state.operator_aButtonPressed || state.driver_rightBumperPressed) {
+    else if (state.driver_rightBumperPressed) {
         state.feederState = FeederState::FEEDER_INTAKE;
     }
     else {

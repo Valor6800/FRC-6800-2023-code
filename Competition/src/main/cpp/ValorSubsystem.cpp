@@ -6,6 +6,8 @@
 /*----------------------------------------------------------------------------*/
 
 #include "ValorSubsystem.h"
+#include <iostream>
+
 
 ValorSubsystem::ValorSubsystem() 
 {
@@ -30,6 +32,7 @@ ValorSubsystem& ValorSubsystem::GetInstance() {
 
 void ValorSubsystem::init() {
     // init subsystem
+    std::cout << "init valor subsytem" << std::endl;
 }
 
 void ValorSubsystem::analyzeDashboard() {

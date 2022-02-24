@@ -115,7 +115,7 @@ namespace ShooterConstants{
 
     constexpr static double aPower = 0.0747;
     constexpr static double aHood = 9.15;
-    constexpr static double bPower = .394;
+    constexpr static double bPower = .349;
     constexpr static double bHood = -1.13;
     
     constexpr static double limelightTurnKP = (.3 / 25.445) * 1.25;
@@ -183,7 +183,9 @@ namespace ShooterConstants{
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
 
-    constexpr static double homePosition = 90;
+    constexpr static double homePositionMid = 90;
+    constexpr static double homePositionLeft = 180;
+    constexpr static double homePositionRight = 0;
     constexpr static double turretLimitLeft = 180;
     constexpr static double turretLimitRight = 0;
 

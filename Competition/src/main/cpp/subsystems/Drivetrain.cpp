@@ -86,6 +86,7 @@ void Drivetrain::init()
     state.saveToFileDebouncer = false;
 
     resetState();
+    std::cout <<"init drivetrain" << std::endl;
 }
 
 void Drivetrain::setController(frc::XboxController *controller)
