@@ -105,7 +105,7 @@ void ValorSwerve::loadAndSetAzimuthZeroReference()
     //issue: mag encoder tics don't keep increasing forever, they "wrap around" and reset back to 0
     //so, modding doesn't really help anything because the falcon encoder could have been spun around 10 times
     //line below might fix burn out issue
-    //azimuthSetpoint = fmod(azimuthSetpoint, SwerveConstants::AZIMUTH_COUNTS_PER_REV);
+    //azimuthSetpoint = fmod(azimuthSetpoint, SwerveConstants::AZIMUTH_COUNTS_PER_REV / SwerveConstants::AZIMUTH_GEAR_RATIO);
 
     // Set the azimuth offset to the calculated setpoint (which will take over in teleop)
     azimuthFalcon->SetSelectedSensorPosition(azimuthSetpoint, 0, 10);

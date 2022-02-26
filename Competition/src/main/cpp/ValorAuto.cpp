@@ -41,7 +41,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d daffyRed = frc::Pose2d(3.85_m, 1.4_m, frc::Rotation2d(95_deg));
     
     frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(100_deg));
-    frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, 1.5_m, frc::Rotation2d(95_deg));
+    frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(95_deg));
     
     //shifting each movement by .5 to avoid smacking into the pipes
     frc::Pose2d porkyBlue = frc::Pose2d(0.0_m, 2_m, frc::Rotation2d(200_deg));
@@ -59,7 +59,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     frc2::InstantCommand cmd_shooterFar = frc2::InstantCommand( [&] {
         shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_AUTO; 
-        shooter->state.hoodState = Shooter::HoodState::HOOD_UP;
+        shooter->state.hoodState = Shooter::HoodState::HOOD_AUTO;
     } );
 
     frc2::InstantCommand cmd_turretTrack = frc2::InstantCommand( [&] {
@@ -77,6 +77,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     } );
 
     frc2::InstantCommand cmd_intakeOne = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_AUTO; } );
+    frc2::InstantCommand cmd_intakeDisable = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_DISABLE; } );
+
 
 
     frc2::InstantCommand cmd_intakeAuto = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE; } );
@@ -396,9 +398,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_turretDisable,
     cmd_intakeOne,
     cmd_move_movePorkyFromDaffyBlue,
-    frc2::WaitCommand((units::second_t)1.5),
+    frc2::WaitCommand((units::second_t)2),
+    cmd_intakeDisable,
     cmd_move_moveShootBlue,
     frc2::WaitCommand((units::second_t).5),
+    cmd_shooterPrime,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
@@ -426,9 +430,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_turretDisable,
     cmd_intakeOne,
     cmd_move_movePorkyFromDaffyRed,
-    frc2::WaitCommand((units::second_t)1.5),
+    frc2::WaitCommand((units::second_t)2),
+    cmd_intakeDisable,
     cmd_move_moveShootRed,
     frc2::WaitCommand((units::second_t).5),
+    cmd_shooterPrime,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,

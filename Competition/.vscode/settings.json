@@ -21,6 +21,7 @@
     "complex": "cpp",
     "memory_resource": "cpp",
     "memory": "cpp",
-    "*.inc": "cpp"
+    "*.inc": "cpp",
+    "cmath": "cpp"
   }
 }

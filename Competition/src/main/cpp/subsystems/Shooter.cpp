@@ -303,6 +303,7 @@ void Shooter::assignOutputs()
         float tx = limeTable->GetNumber("tx", 0.0);
         float tv = limeTable->GetNumber("tv", 0.0);
         state.turretTarget = (-tx * tv * .5) + turretEncoder.GetPosition();
+        std::clamp(state.turretTarget, ShooterConstants::turretLimitRight, ShooterConstants::turretLimitLeft);
         turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
         // state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
         // turret.Set(state.turretOutput);
@@ -367,6 +368,9 @@ void Shooter::assignOutputs()
     }
     else if(state.hoodState == HoodState::HOOD_TRACK){
         state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood;
+    }
+    else if(state.hoodState = HoodState::HOOD_AUTO){
+        state.hoodTarget = ShooterConstants::hoodAuto;
     }
     else if(state.hoodState == HoodState::HOOD_UP){
         state.hoodTarget = state.hoodHigh;

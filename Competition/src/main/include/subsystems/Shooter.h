@@ -64,7 +64,8 @@ public:
     enum HoodState{
          HOOD_DOWN, // Down position
          HOOD_UP, // Up position
-         HOOD_TRACK // Tracking using limelight
+         HOOD_TRACK, // Tracking using limelight
+         HOOD_AUTO //Auto for the furthest shot
      };
 
      enum FlywheelState{
@@ -72,7 +73,7 @@ public:
           FLYWHEEL_DEFAULT, // Low speed
           FLYWHEEL_PRIME, // Higher speed
           FLYWHEEL_TRACK, // Dynamic calculations
-          FLYWHEEL_AUTO
+          FLYWHEEL_AUTO // Auto value for the furthest shot
      };
 
     struct x
@@ -95,7 +96,7 @@ public:
           double limelightDistance;
 
           double turretOutput; //%
-          int turretTarget; //pos
+          double turretTarget; //pos
 
           double flywheelTarget; //vel
           int hoodTarget; //pos
