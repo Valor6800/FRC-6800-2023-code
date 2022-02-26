@@ -76,7 +76,7 @@ void Feeder::assessInputs()
         state.spiked = false;
     }
     else if (state.driver_rightBumperPressed) {
-        state.feederState = FeederState::FEEDER_INTAKE;
+        state.feederState = FeederState::FEEDER_AUTO;
     }
     else {
         state.feederState = FeederState::FEEDER_DISABLE;

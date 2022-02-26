@@ -137,6 +137,7 @@ namespace ShooterConstants{
     constexpr static double flywheelAllowedError = 0;
 
     constexpr static double flywheelPrimedValue = 0.36;
+    constexpr static double flywheelAutoValue = 0.38;
     constexpr static double flywheelDefaultValue = 0.345;
 
     constexpr static double turretKP = 1e-5;
@@ -241,7 +242,8 @@ namespace LiftConstants{
 
     constexpr static double pivotGearRatio = 1 / 95.67;
 
-    constexpr static double DEFAULT_MAIN_SPD = 0.5;
+    constexpr static double DEFAULT_MAIN_EXTEND_SPD = 0.65;
+    constexpr static double DEFAULT_MAIN_RETRACT_SPD = 0.65;
 
     constexpr static double kDeadbandY = 0.05;
 

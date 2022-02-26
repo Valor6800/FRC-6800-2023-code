@@ -33,18 +33,32 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
 
     frc::Pose2d startPose = frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-92.1_deg));
-    frc::Pose2d bugs = frc::Pose2d(7_m, 0.35_m, frc::Rotation2d(-90_deg));
-    frc::Pose2d daffy = frc::Pose2d(3.8_m, 2.1_m, frc::Rotation2d(90_deg));
-    frc::Pose2d predaffy = frc::Pose2d(5.083_m, 1.75_m, frc::Rotation2d(95_deg));
-    frc::Pose2d porky = frc::Pose2d(0.1_m, 1.2_m, frc::Rotation2d(200_deg));
-    frc::Pose2d shoot = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
-    frc::Pose2d x6y4 = frc::Pose2d(6_m, 4_m, frc::Rotation2d(180_deg));
+    //Bugs y blue .35
+    frc::Pose2d bugsBlue = frc::Pose2d(7_m, 0.35_m, frc::Rotation2d(-90_deg));
+    frc::Pose2d bugsRed = frc::Pose2d(7_m, 0.5_m, frc::Rotation2d(-90_deg));
+    //Daffy y was 1.6
+    frc::Pose2d daffyBlue = frc::Pose2d(3.8_m, 1.4_m, frc::Rotation2d(90_deg));
+    frc::Pose2d daffyRed = frc::Pose2d(3.8_m, 1.4_m, frc::Rotation2d(90_deg));
+    
+    frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, 1.5_m, frc::Rotation2d(95_deg));
+    frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, 1.5_m, frc::Rotation2d(95_deg));
+    
+    //shifting each movement by .5 to avoid smacking into the pipes
+    frc::Pose2d porkyBlue = frc::Pose2d(0.6_m, 1.7_m, frc::Rotation2d(200_deg));
+    frc::Pose2d porkyRed = frc::Pose2d(0.6_m, 1.7_m, frc::Rotation2d(200_deg));
 
+    frc::Pose2d shootBlue = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
+    frc::Pose2d shootRed = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
     //frc::Translation2d preBugs{startPose.X(), bugs.Translation().Y()};
     // frc::Rotation2d gyroOffsetAuto = drivetrain->getGyroOffset() + frc::Rotation2d(180_deg);
 
     frc2::InstantCommand cmd_shooterPrime = frc2::InstantCommand( [&] {
         shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_PRIME; 
+        shooter->state.hoodState = Shooter::HoodState::HOOD_UP;
+    } );
+
+    frc2::InstantCommand cmd_shooterFar = frc2::InstantCommand( [&] {
+        shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_AUTO; 
         shooter->state.hoodState = Shooter::HoodState::HOOD_UP;
     } );
 
@@ -81,62 +95,155 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         drivetrain->resetOdometry(startPose);
     });
 
-    auto move2 = frc::TrajectoryGenerator::GenerateTrajectory(
-        startPose,
-        {},
-        x6y4,
-        reverseConfig);
     
-    auto moveBugs = frc::TrajectoryGenerator::GenerateTrajectory(
+    auto moveBugsBlue = frc::TrajectoryGenerator::GenerateTrajectory(
         startPose,
         {},//{preBugs},
-        bugs,
+        bugsBlue,
         config);
 
-    auto movePorky = frc::TrajectoryGenerator::GenerateTrajectory(
-        bugs,
-        {predaffy.Translation()},
-        porky,
+    auto moveBugsRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        startPose,
+        {},//{preBugs},
+        bugsRed,
         config);
 
-    auto movePorkyFromDaffy = frc::TrajectoryGenerator::GenerateTrajectory(
-        daffy,
+    auto movePorkyBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        bugsBlue,
+        {predaffyBlue.Translation()},
+        porkyBlue,
+        config);
+    
+    auto movePorkyRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        bugsRed,
+        {predaffyRed.Translation()},
+        porkyRed,
+        config);
+
+    auto movePorkyFromDaffyBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        daffyBlue,
         {},
-        porky,
+        porkyBlue,
+        config);
+    auto movePorkyFromDaffyRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        daffyRed,
+        {},
+        porkyRed,
         config);
 
-    auto moveDaffy = frc::TrajectoryGenerator::GenerateTrajectory(
-        bugs,
+    auto moveDaffyBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        bugsBlue,
         {},
-        daffy,
+        daffyBlue,
+        config);
+    auto moveDaffyRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        bugsRed,
+        {},
+        daffyRed,
         config);
 
-    auto moveDaffyFromPredaffy = frc::TrajectoryGenerator::GenerateTrajectory(
-        predaffy,
+    auto moveDaffyFromPredaffyBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        predaffyBlue,
         {},
-        daffy,
+        daffyBlue,
+        config);
+    auto moveDaffyFromPredaffyRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        predaffyRed,
+        {},
+        daffyRed,
         config);
 
-    auto movePreDaffy = frc::TrajectoryGenerator::GenerateTrajectory(
-        bugs,
+    auto movePreDaffyBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        bugsBlue,
         {},
-        predaffy,
+        predaffyBlue,
+        config);
+    auto movePreDaffyRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        bugsRed,
+        {},
+        predaffyRed,
         config);
 
-    auto moveShoot = frc::TrajectoryGenerator::GenerateTrajectory(
-        porky,
+    auto moveShootBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        porkyBlue,
         {},
-        shoot,
+        shootBlue,
+        reverseConfig);
+    
+    auto moveShootRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        porkyRed,
+        {},
+        shootRed,
         reverseConfig);
 
-     auto moveTest = frc::TrajectoryGenerator::GenerateTrajectory(
-        frc::Pose2d(0_m, 0_m, frc::Rotation2d(0_deg)),
-        {},
-        frc::Pose2d(2_m, 0_m, frc::Rotation2d(0_deg)),
-        config);
+    frc2::SwerveControllerCommand<4> cmd_move_moveBugsBlue(
+        moveBugsBlue,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_moveBugsRed(
+        moveBugsRed,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_moveDaffyBlue(
+        moveDaffyBlue,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_moveDaffyRed(
+        moveDaffyRed,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_movePreDaffyBlue(
+        movePreDaffyBlue,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_movePreDaffyRed(
+        movePreDaffyRed,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
     
-    frc2::SwerveControllerCommand<4> cmd_move_move2(
-        move2,
+    frc2::SwerveControllerCommand<4> cmd_move_movePorkyBlue(
+        movePorkyBlue,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
         frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
@@ -146,8 +253,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
-    frc2::SwerveControllerCommand<4> cmd_move_moveBugs(
-        moveBugs,
+    frc2::SwerveControllerCommand<4> cmd_move_movePorkyRed(
+        movePorkyRed,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
         frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
@@ -157,8 +264,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
-    frc2::SwerveControllerCommand<4> cmd_move_moveDaffy(
-        moveDaffy,
+    frc2::SwerveControllerCommand<4> cmd_move_movePorkyFromDaffyBlue(
+        movePorkyFromDaffyBlue,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
         frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
@@ -168,19 +275,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
-    frc2::SwerveControllerCommand<4> cmd_move_movePreDaffy(
-        movePreDaffy,
-        [&] () { return drivetrain->getPose_m(); },
-        drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        thetaController,
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
-    );
-    
-    frc2::SwerveControllerCommand<4> cmd_move_movePorky(
-        movePorky,
+        frc2::SwerveControllerCommand<4> cmd_move_movePorkyFromDaffyRed(
+        movePorkyFromDaffyRed,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
         frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
@@ -190,8 +286,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
-    frc2::SwerveControllerCommand<4> cmd_move_movePorkyFromDaffy(
-        movePorkyFromDaffy,
+    frc2::SwerveControllerCommand<4> cmd_move_moveDaffyFromPredaffyBlue(
+        moveDaffyFromPredaffyBlue,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
         frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
@@ -201,8 +297,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
-    frc2::SwerveControllerCommand<4> cmd_move_moveDaffyFromPredaffy(
-        moveDaffyFromPredaffy,
+    frc2::SwerveControllerCommand<4> cmd_move_moveDaffyFromPredaffyRed(
+        moveDaffyFromPredaffyRed,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
         frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
@@ -212,8 +308,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
-    frc2::SwerveControllerCommand<4> cmd_move_moveShoot(
-        moveShoot,
+    frc2::SwerveControllerCommand<4> cmd_move_moveShootBlue(
+        moveShootBlue,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
         frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
@@ -223,8 +319,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
-    frc2::SwerveControllerCommand<4> cmd_move_test(
-        moveTest,
+    frc2::SwerveControllerCommand<4> cmd_move_moveShootRed(
+        moveShootRed,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
         frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
@@ -234,110 +330,112 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
-
-/*
-    frc2::SequentialCommandGroup *shoot4 = new frc2::SequentialCommandGroup();
-    shoot4->AddCommands
-    (cmd_move_move1,
-    cmd_move_move2,
-    cmd_move_move3); */
-
-    frc2::SequentialCommandGroup *testCommands = new frc2::SequentialCommandGroup();
-    testCommands->AddCommands
-    (cmd_set_odometry,
-    frc2::WaitCommand((units::second_t).5),
-    cmd_intakeAuto,
-    frc2::WaitCommand((units::second_t).5),
-    cmd_shooterPrime,
-    frc2::WaitCommand((units::second_t).5),
-    cmd_intakeShoot,
-    frc2::WaitCommand((units::second_t).5),
-    cmd_shooterDefault,
-    frc2::WaitCommand((units::second_t).5),
-    cmd_move_test
-    );
-
-    frc2::SequentialCommandGroup *shoot4 = new frc2::SequentialCommandGroup();
-    shoot4->AddCommands
-    (cmd_set_odometry,
-    cmd_intakeAuto,
-    cmd_shooterPrime,
-    cmd_move_moveBugs,
-    frc2::WaitCommand((units::second_t).25),
-    cmd_intakeShoot,
-    frc2::WaitCommand((units::second_t)1.5),
-    cmd_shooterDefault,
-    cmd_intakeAuto,
-    cmd_move_movePorky,
-    cmd_shooterPrime,
-    cmd_move_moveShoot,
-    frc2::WaitCommand((units::second_t).5),
-    cmd_intakeShoot
-    );
-
-    frc2::SequentialCommandGroup *shoot3 = new frc2::SequentialCommandGroup();
-    shoot3->AddCommands
+    frc2::SequentialCommandGroup *shoot3Blue = new frc2::SequentialCommandGroup();
+    shoot3Blue->AddCommands
     (cmd_set_odometry,
     cmd_shooterPrime,
     cmd_intakeOne,
-    cmd_move_moveBugs,
-    cmd_move_movePreDaffy,
+    cmd_move_moveBugsBlue,
+    cmd_move_movePreDaffyBlue,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
     cmd_intakeAuto,
-    cmd_move_moveDaffyFromPredaffy,
+    cmd_move_moveDaffyFromPredaffyBlue,
     frc2::WaitCommand((units::second_t).5),
+    cmd_shooterFar,
+    frc2::WaitCommand((units::second_t).1),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5)
+    );
+
+    frc2::SequentialCommandGroup *shoot3Red = new frc2::SequentialCommandGroup();
+    shoot3Red->AddCommands
+    (cmd_set_odometry,
+    cmd_shooterPrime,
+    cmd_intakeOne,
+    cmd_move_moveBugsRed,
+    cmd_move_movePreDaffyRed,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t)1.0),
+    cmd_intakeAuto,
+    cmd_move_moveDaffyFromPredaffyRed,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_shooterFar,
+    frc2::WaitCommand((units::second_t).1),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t).5)
+    );
+
+
+    frc2::SequentialCommandGroup *shoot5Blue = new frc2::SequentialCommandGroup();
+    shoot5Blue->AddCommands
+    (cmd_set_odometry,
+    cmd_shooterPrime,
+    cmd_intakeOne,
+    cmd_move_moveBugsBlue,
+    cmd_move_movePreDaffyBlue,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t)1.0),
+    cmd_intakeAuto,
+    cmd_move_moveDaffyFromPredaffyBlue,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_shooterFar,
+    frc2::WaitCommand((units::second_t).1),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeAuto,
+    cmd_move_movePorkyFromDaffyBlue,
+    frc2::WaitCommand((units::second_t)1.5),
+    cmd_move_moveShootBlue,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeAuto,
+    frc2::WaitCommand((units::second_t)1)
+    );
+
+    frc2::SequentialCommandGroup *shoot5Red = new frc2::SequentialCommandGroup();
+    shoot5Red->AddCommands
+    (cmd_set_odometry,
+    cmd_shooterPrime,
+    cmd_intakeOne,
+    cmd_move_moveBugsRed,
+    cmd_move_movePreDaffyRed,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t)1.0),
+    cmd_intakeAuto,
+    cmd_move_moveDaffyFromPredaffyRed,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_shooterFar,
+    frc2::WaitCommand((units::second_t).1),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeAuto,
+    cmd_move_movePorkyFromDaffyRed,
+    frc2::WaitCommand((units::second_t)1.5),
+    cmd_move_moveShootRed,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeAuto,
+    frc2::WaitCommand((units::second_t)1)
+
+    );
+
+   //right now shoot 5 auto is shoot 3, need to make a red and blue auto
+    m_chooser.AddOption("RED 3 ball auto", shoot3Red);
+    m_chooser.AddOption("RED 5 ball auto", shoot5Red);
+    m_chooser.AddOption("BLUE 3 ball auto", shoot3Blue);
+    m_chooser.AddOption("BLUE 5 ball auto", shoot5Blue);
     
-    );
-
-    frc2::SequentialCommandGroup *intakeTest = new frc2::SequentialCommandGroup();
-    intakeTest->AddCommands
-    (cmd_intakeAuto,
-    frc2::WaitCommand((units::second_t)5),
-    cmd_disable,
-    frc2::WaitCommand((units::second_t)1),
-    cmd_intakeShoot,
-    frc2::WaitCommand((units::second_t)2.5));
-
-    frc2::SequentialCommandGroup *shoot5 = new frc2::SequentialCommandGroup();
-    shoot5->AddCommands
-    (cmd_set_odometry,
-    cmd_intakeAuto,
-    cmd_move_moveBugs,
-    cmd_shooterPrime,
-    frc2::WaitCommand((units::second_t).25),
-    cmd_intakeShoot,
-    frc2::WaitCommand((units::second_t)1.5),
-    cmd_intakeAuto,
-    cmd_move_moveDaffy,
-    cmd_shooterPrime,
-    frc2::WaitCommand((units::second_t).25),
-    cmd_intakeShoot,
-    frc2::WaitCommand((units::second_t)1.5),
-    cmd_shooterDefault,
-    cmd_move_movePorkyFromDaffy,
-    frc2::WaitCommand((units::second_t)1.5),
-    cmd_move_moveShoot,
-    cmd_shooterPrime,
-    frc2::WaitCommand((units::second_t).25),
-    cmd_intakeShoot
-    );
-     
-    frc2::SequentialCommandGroup *move2Offset = new frc2::SequentialCommandGroup();
-    move2Offset->AddCommands
-    (cmd_set_odometry,
-    cmd_move_move2); 
-
-    m_chooser.SetDefaultOption("4 ball auto", shoot4);
-    m_chooser.AddOption("5 ball auto", shoot5);
-    m_chooser.AddOption("3 ball auto", shoot3);
-    m_chooser.AddOption("Move 2 in x Offset direction", move2Offset);
-    m_chooser.AddOption("Intake Testing", intakeTest);
-    m_chooser.AddOption("All command check", testCommands);
     frc::SmartDashboard::PutData(&m_chooser);
   
     //potential issues

@@ -118,7 +118,7 @@ void Lift::assessInputs()
 
 void Lift::analyzeDashboard()
 {
-    state.powerMain = table->GetNumber("Rotate Speed", LiftConstants::DEFAULT_MAIN_SPD);
+    state.powerMain = table->GetNumber("Rotate Speed", LiftConstants::DEFAULT_EXTEND_SPD);
 
     table->PutNumber("Lift Main Encoder Value", leadMainMotor.GetSelectedSensorPosition());
     table->PutNumber("Lift Rotate Encoder Value", rotateEncoder.GetPosition());
@@ -150,7 +150,12 @@ void Lift::assignOutputs()
         leadMainMotor.Set(0);
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_ENABLE) {
-        leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_SPD);
+        if(state.rightStickY > LiftConstants::kDeadbandY){
+            leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_EXTEND_SPD);
+        }
+        else if(state.rightStickY < (-1 * LiftConstants::kDeadbandY)){
+            leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_RETRACT_SPD);
+        }
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_TOPOSITION) {
         leadMainMotor.Set(ControlMode::MotionMagic, state.desiredMainPos);

@@ -32,11 +32,15 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
 void Robot::DisabledInit() {
     m_container.m_feeder.robotMode = ValorSubsystem::RobotMode::DISABLED;
     m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::DISABLED;
-    m_container.m_drivetrain.setMotorMode(false);
     m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::DISABLED;
+    //m_container.m_lift.robotMode = ValorSubsystem::RobotMode::DISABLED; //just added, not tested
+
     m_container.m_shooter.resetState();
     m_container.m_drivetrain.resetState();
     m_container.m_lift.resetState();
+    //m_container.m_feeder.resetState(); //just added, not tested
+
+    m_container.m_drivetrain.setMotorMode(false);
 }
 
 void Robot::DisabledPeriodic() {}
@@ -47,11 +51,11 @@ void Robot::DisabledPeriodic() {}
  */
 void Robot::AutonomousInit() {
     m_container.m_drivetrain.setMotorMode(true);
+
+    //might need to add back
     m_container.m_shooter.resetState();
 
-
     m_autonomousCommand = m_container.GetAutonomousCommand();
-
     if (m_autonomousCommand != nullptr) {
         m_autonomousCommand->Schedule();
     }

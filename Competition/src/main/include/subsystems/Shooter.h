@@ -71,7 +71,8 @@ public:
           FLYWHEEL_DISABLE, // Not moving
           FLYWHEEL_DEFAULT, // Low speed
           FLYWHEEL_PRIME, // Higher speed
-          FLYWHEEL_TRACK // Dynamic calculations
+          FLYWHEEL_TRACK, // Dynamic calculations
+          FLYWHEEL_AUTO
      };
 
     struct x

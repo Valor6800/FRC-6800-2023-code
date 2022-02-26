@@ -342,8 +342,11 @@ void Shooter::assignOutputs()
     else if (state.flywheelState == FlywheelState::FLYWHEEL_DEFAULT){
         state.flywheelTarget = state.flywheelLow;
     }
-    else if(state.hoodState == FlywheelState::FLYWHEEL_TRACK){
+    else if(state.flywheelTarget == FlywheelState::FLYWHEEL_TRACK){
         state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
+    }
+    else if(state.flywheelTarget == FlywheelState::FLYWHEEL_AUTO){
+        state.flywheelTarget = ShooterConstants::flywheelAutoValue;
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
         state.flywheelTarget = state.flywheelHigh;

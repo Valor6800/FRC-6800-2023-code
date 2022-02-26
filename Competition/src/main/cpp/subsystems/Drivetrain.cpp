@@ -90,6 +90,7 @@ void Drivetrain::init()
     // }
 
     resetState();
+    //pullSwerveModuleZeroReference();
     std::cout <<"init drivetrain" << std::endl;
 }
 
@@ -278,10 +279,17 @@ void Drivetrain::resetState()
     state.tracking = false;
 
     // resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
+    //pullSwerveModuleZeroReference();
     for (size_t i = 0; i < swerveModules.size(); i++) {
         swerveModules[i]->loadAndSetAzimuthZeroReference();
     }
 }
+
+// void Drivetrain::pullSwerveModuleZeroReference(){
+//     for (size_t i = 0; i < swerveModules.size(); i++) {
+//         swerveModules[i]->loadAndSetAzimuthZeroReference();
+//     }
+// }
 
 frc::SwerveDriveKinematics<4>& Drivetrain::getKinematics()
 {
