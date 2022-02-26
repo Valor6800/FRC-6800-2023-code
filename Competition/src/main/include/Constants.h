@@ -136,8 +136,8 @@ namespace ShooterConstants{
     constexpr static double flywheelMaxAccel = flywheelCruiseVelo * 1;
     constexpr static double flywheelAllowedError = 0;
 
-    constexpr static double flywheelPrimedValue = 0.4;
-    constexpr static double flywheelDefaultValue = 0.37;
+    constexpr static double flywheelPrimedValue = 0.36;
+    constexpr static double flywheelDefaultValue = 0.345;
 
     constexpr static double turretKP = 1e-5;
     constexpr static double turretKI = 0;

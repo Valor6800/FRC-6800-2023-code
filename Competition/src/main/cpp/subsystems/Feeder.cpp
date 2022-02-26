@@ -116,6 +116,10 @@ void Feeder::assignOutputs()
         motor_intake.Set(state.intakeReverseSpeed);
         motor_stage.Set(state.feederReverseSpeed);
     }
+    else if (state.feederState == Feeder::FEEDER_AUTO){
+        motor_intake.Set(state.intakeForwardSpeed);
+        motor_stage.Set(0);
+    }
     else if (state.feederState == FeederState::FEEDER_INTAKE) {
         if (state.bannerTripped) {
             if (state.currentBanner && !state.previousBanner) {

@@ -36,7 +36,8 @@ public:
         FEEDER_DISABLE,
         FEEDER_REVERSE,
         FEEDER_SHOOT,
-        FEEDER_INTAKE
+        FEEDER_INTAKE,
+        FEEDER_AUTO
     };
     
     struct x

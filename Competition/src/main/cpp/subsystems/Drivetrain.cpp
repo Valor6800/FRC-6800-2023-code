@@ -85,6 +85,10 @@ void Drivetrain::init()
     table->PutBoolean("Save Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
 
+    // for (size_t i = 0; i < swerveModules.size(); i++) {
+    //     swerveModules[i]->loadAndSetAzimuthZeroReference();
+    // }
+
     resetState();
     std::cout <<"init drivetrain" << std::endl;
 }
@@ -267,6 +271,8 @@ void Drivetrain::assignOutputs()
     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
 
+//hack fix is removing reseting swerve modules from reset state
+//TODO: clean up reset state logic across all subsystems and in robot.cpp in general
 void Drivetrain::resetState()
 {
     state.tracking = false;
