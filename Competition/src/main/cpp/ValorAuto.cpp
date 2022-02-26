@@ -44,7 +44,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(95_deg));
     
     //shifting each movement by .5 to avoid smacking into the pipes
-    frc::Pose2d porkyBlue = frc::Pose2d(0.0_m, 2_m, frc::Rotation2d(200_deg));
+    frc::Pose2d porkyBlue = frc::Pose2d(-0.05_m, 2.1_m, frc::Rotation2d(200_deg));
     frc::Pose2d porkyRed = frc::Pose2d(0.0_m, 2_m, frc::Rotation2d(200_deg));
 
     frc::Pose2d shootBlue = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
@@ -347,7 +347,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
-    cmd_intakeAuto,
+    cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyBlue,
     frc2::WaitCommand((units::second_t).5),
     cmd_shooterFar,
@@ -367,7 +367,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
-    cmd_intakeAuto,
+    cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyRed,
     frc2::WaitCommand((units::second_t).5),
     cmd_shooterFar,
@@ -388,7 +388,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
-    cmd_intakeAuto,
+    cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyBlue,
     frc2::WaitCommand((units::second_t).5),
     cmd_shooterFar,
@@ -420,7 +420,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
-    cmd_intakeAuto,
+    cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyRed,
     frc2::WaitCommand((units::second_t).5),
     cmd_shooterFar,
