@@ -34,18 +34,18 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     frc::Pose2d startPose = frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-92.1_deg));
     //Bugs y blue .35
-    frc::Pose2d bugsBlue = frc::Pose2d(7_m, 0.35_m, frc::Rotation2d(-90_deg));
-    frc::Pose2d bugsRed = frc::Pose2d(7_m, 0.5_m, frc::Rotation2d(-90_deg));
+    frc::Pose2d bugsBlue = frc::Pose2d(7_m, 0.6_m, frc::Rotation2d(-90_deg));
+    frc::Pose2d bugsRed = frc::Pose2d(7_m, 0.6_m, frc::Rotation2d(-90_deg));
     //Daffy y was 1.6
-    frc::Pose2d daffyBlue = frc::Pose2d(3.8_m, 1.4_m, frc::Rotation2d(90_deg));
-    frc::Pose2d daffyRed = frc::Pose2d(3.8_m, 1.4_m, frc::Rotation2d(90_deg));
+    frc::Pose2d daffyBlue = frc::Pose2d(3.85_m, 1.4_m, frc::Rotation2d(100_deg));
+    frc::Pose2d daffyRed = frc::Pose2d(3.85_m, 1.4_m, frc::Rotation2d(95_deg));
     
-    frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, 1.5_m, frc::Rotation2d(95_deg));
+    frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(100_deg));
     frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, 1.5_m, frc::Rotation2d(95_deg));
     
     //shifting each movement by .5 to avoid smacking into the pipes
-    frc::Pose2d porkyBlue = frc::Pose2d(0.6_m, 1.7_m, frc::Rotation2d(200_deg));
-    frc::Pose2d porkyRed = frc::Pose2d(0.6_m, 1.7_m, frc::Rotation2d(200_deg));
+    frc::Pose2d porkyBlue = frc::Pose2d(0.0_m, 2_m, frc::Rotation2d(200_deg));
+    frc::Pose2d porkyRed = frc::Pose2d(0.0_m, 2_m, frc::Rotation2d(200_deg));
 
     frc::Pose2d shootBlue = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
     frc::Pose2d shootRed = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
@@ -64,6 +64,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     frc2::InstantCommand cmd_turretTrack = frc2::InstantCommand( [&] {
         shooter->state.turretState = Shooter::TurretState::TURRET_TRACK;
+    } );
+
+    frc2::InstantCommand cmd_turretDisable = frc2::InstantCommand( [&] {
+        shooter->state.turretState = Shooter::TurretState::TURRET_DISABLE;
     } );
 
     frc2::InstantCommand cmd_shooterDefault = frc2::InstantCommand( [&] {
@@ -386,17 +390,18 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_move_moveDaffyFromPredaffyBlue,
     frc2::WaitCommand((units::second_t).5),
     cmd_shooterFar,
-    frc2::WaitCommand((units::second_t).1),
+    frc2::WaitCommand((units::second_t).2),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
-    cmd_intakeAuto,
+    cmd_turretDisable,
+    cmd_intakeOne,
     cmd_move_movePorkyFromDaffyBlue,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_moveShootBlue,
     frc2::WaitCommand((units::second_t).5),
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).5),
-    cmd_intakeAuto,
+    cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1)
     );
 
@@ -418,14 +423,15 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).1),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
-    cmd_intakeAuto,
+    cmd_turretDisable,
+    cmd_intakeOne,
     cmd_move_movePorkyFromDaffyRed,
     frc2::WaitCommand((units::second_t)1.5),
     cmd_move_moveShootRed,
     frc2::WaitCommand((units::second_t).5),
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).5),
-    cmd_intakeAuto,
+    cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1)
 
     );
