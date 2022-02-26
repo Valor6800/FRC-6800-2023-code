@@ -53,7 +53,7 @@ void Shooter::init()
 
     turret.RestoreFactoryDefaults();
     turret.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
-    turret.SetInverted(false);
+    turret.SetInverted(true);
 
     turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
     turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::turretLimitLeft);

@@ -234,16 +234,16 @@ namespace LiftConstants{
     constexpr static double rotateForwardLimit = 40;
     constexpr static double rotateReverseLimit = 0;
 
-    constexpr static double extendForwardLimit = 104000;
+    constexpr static double extendForwardLimit = 103000;
     constexpr static double extendReverseLimit = 125;
 
     constexpr static double pivotGearRatio = 1 / 95.67;
 
-    constexpr static double DEFAULT_MAIN_SPD = 0.;
+    constexpr static double DEFAULT_MAIN_SPD = 0.5;
 
     constexpr static double kDeadbandY = 0.05;
 
-    constexpr static double rotateNoLowerThreshold = 70000;
+    constexpr static double rotateNoLowerThreshold = 80000;
 
     constexpr static double rotate_kP = 5e-5;
     constexpr static double rotate_kI = 1e-6;
