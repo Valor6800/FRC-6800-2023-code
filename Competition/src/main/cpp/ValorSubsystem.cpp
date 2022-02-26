@@ -20,7 +20,7 @@ void ValorSubsystem::Periodic() {
         assessInputs();
 
     analyzeDashboard();
-    
+
     if (robotMode != RobotMode::DISABLED)
         assignOutputs();
 }

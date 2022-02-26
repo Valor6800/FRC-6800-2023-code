@@ -11,7 +11,9 @@
 #include <frc2/command/CommandScheduler.h>
 
 void Robot::RobotInit() {
-    m_container.m_drivetrain.resetState();
+    //m_container.m_drivetrain.resetState();
+    // m_container.m_drivetrain.setKF();
+    // m_container.m_drivetrain.pullSwerveModuleZeroReference();
 }
 
 /**
@@ -41,6 +43,8 @@ void Robot::DisabledInit() {
     //m_container.m_feeder.resetState(); //just added, not tested
 
     m_container.m_drivetrain.setMotorMode(false);
+
+    //m_container.m_drivetrain.pullSwerveModuleZeroReference();
 }
 
 void Robot::DisabledPeriodic() {}
@@ -64,6 +68,8 @@ void Robot::AutonomousInit() {
     m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::AUTO;
     m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::AUTO;
     m_container.m_lift.robotMode = ValorSubsystem::RobotMode::AUTO;
+
+    m_container.m_drivetrain.pullSwerveModuleZeroReference();
 }
 
 void Robot::AutonomousPeriodic() {

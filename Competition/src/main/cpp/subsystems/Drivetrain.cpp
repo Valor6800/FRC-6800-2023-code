@@ -27,6 +27,11 @@ Drivetrain::Drivetrain() : ValorSubsystem(),
     init();
 }
 
+void Drivetrain::setKF(){
+    azimuthMotors[0]->Config_kF(0, SwerveConstants::KF);
+    std::cout << "set kf" << std::endl;
+}
+
 Drivetrain::~Drivetrain()
 {
     for (int i = 0; i < 4; i++)
@@ -245,29 +250,30 @@ void Drivetrain::assignOutputs()
     }
 
     if (state.startButtonPressed){
-        x0y0 = frc::Pose2d(8.514_m, 1.771_m, frc::Rotation2d(182.1_deg));
+        // x0y0 = frc::Pose2d(8.514_m, 1.771_m, frc::Rotation2d(182.1_deg));
 
-        goZeroZero = frc::TrajectoryGenerator::GenerateTrajectory(
-            getPose_m(),
-            {},
-            x0y0,
-            reverseConfig);
+        // goZeroZero = frc::TrajectoryGenerator::GenerateTrajectory(
+        //     getPose_m(),
+        //     {},
+        //     x0y0,
+        //     reverseConfig);
 
-        cmd_go_zero_zero = new frc2::SwerveControllerCommand<4>(
-            goZeroZero,
-            [&] () { return getPose_m(); },
-            getKinematics(),
-            frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-            frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-            thetaController,
-            [this] (auto states) { setModuleStates(states); },
-            {this} //used to be "drivetrain"
-        );
+        // cmd_go_zero_zero = new frc2::SwerveControllerCommand<4>(
+        //     goZeroZero,
+        //     [&] () { return getPose_m(); },
+        //     getKinematics(),
+        //     frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        //     frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        //     thetaController,
+        //     [this] (auto states) { setModuleStates(states); },
+        //     {this} //used to be "drivetrain"
+        // );
+        pullSwerveModuleZeroReference();
 
         // cmd_go_zero_zero->Schedule();
     }
     if (state.stickPressed){
-        cmd_go_zero_zero->Cancel();
+        //cmd_go_zero_zero->Cancel();
     }
     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
@@ -280,16 +286,16 @@ void Drivetrain::resetState()
 
     // resetOdometry(frc::Pose2d{0_m, 0_m, 0_rad});
     //pullSwerveModuleZeroReference();
+    // for (size_t i = 0; i < swerveModules.size(); i++) {
+    //     swerveModules[i]->loadAndSetAzimuthZeroReference();
+    // }
+}
+
+void Drivetrain::pullSwerveModuleZeroReference(){
     for (size_t i = 0; i < swerveModules.size(); i++) {
         swerveModules[i]->loadAndSetAzimuthZeroReference();
     }
 }
-
-// void Drivetrain::pullSwerveModuleZeroReference(){
-//     for (size_t i = 0; i < swerveModules.size(); i++) {
-//         swerveModules[i]->loadAndSetAzimuthZeroReference();
-//     }
-// }
 
 frc::SwerveDriveKinematics<4>& Drivetrain::getKinematics()
 {

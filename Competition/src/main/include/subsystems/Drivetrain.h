@@ -102,7 +102,9 @@ public:
          */
     void resetDriveEncoders();
 
-    //void pullSwerveModuleZeroReference();
+    void pullSwerveModuleZeroReference();
+
+    void setKF();
 
 
     frc::Rotation2d getPigeon();
