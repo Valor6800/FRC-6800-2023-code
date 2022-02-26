@@ -64,7 +64,7 @@ void Lift::init()
     leadMainMotor.ConfigMotionCruiseVelocity(LiftConstants::MAIN_MOTION_CRUISE_VELOCITY);
 
 
-    table->PutNumber("Desired Rotate Angle", rotateEncoder.GetPosition());
+    table->PutNumber("Rotate First Angle", LiftConstants::ROTATE_FIRST_POSITION);
     table->PutNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
 }
 
@@ -96,7 +96,7 @@ void Lift::assessInputs()
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_RETRACT;
     }
     else if (state.dPadDownPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold) {
-        // state.liftstateRotate = LiftRotateState::LIFT_ROTATE_TOPOSITION;
+        state.liftstateRotate = LiftRotateState::LIFT_ROTATE_TOPOSITION;
     }
     else
     {
@@ -121,10 +121,9 @@ void Lift::analyzeDashboard()
     state.powerMain = table->GetNumber("Rotate Speed", LiftConstants::DEFAULT_MAIN_SPD);
 
     table->PutNumber("Lift Main Encoder Value", leadMainMotor.GetSelectedSensorPosition());
-    table->PutNumber("Lift Follow Encoder Value", followMainMotor.GetSelectedSensorPosition());
     table->PutNumber("Lift Rotate Encoder Value", rotateEncoder.GetPosition());
 
-    state.desiredRotatePos = table->GetNumber("Desired Rotate Angle", rotateEncoder.GetPosition());
+    state.desiredRotatePos = table->GetNumber("Rotate First Angle", LiftConstants::ROTATE_FIRST_POSITION);
     state.desiredMainPos = table->GetNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
 }
 

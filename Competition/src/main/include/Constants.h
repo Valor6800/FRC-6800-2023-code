@@ -228,8 +228,10 @@ namespace LiftConstants{
     constexpr static int MAIN_FOLLOW_CAN_ID = 17;
     constexpr static int ROTATE_CAN_ID = 18;
 
-    constexpr static int MAIN_FIRST_POSITION = 80000;
+    constexpr static int MAIN_FIRST_POSITION = 78500;
     constexpr static double MAIN_DOWN_POSITION = 125;
+
+    constexpr static int ROTATE_FIRST_POSITION = 40;
 
     constexpr static double rotateForwardLimit = 40;
     constexpr static double rotateReverseLimit = 0;
@@ -243,28 +245,28 @@ namespace LiftConstants{
 
     constexpr static double kDeadbandY = 0.05;
 
-    constexpr static double rotateNoLowerThreshold = 80000;
+    constexpr static double rotateNoLowerThreshold = 77500;
 
     constexpr static double rotate_kP = 5e-5;
-    constexpr static double rotate_kI = 1e-6;
+    constexpr static double rotate_kI = 0;
     constexpr static double rotate_kD = 0;
     constexpr static double rotate_kIz = 0;
-    constexpr static double rotate_kFF = 0.000156;
+    constexpr static double rotate_kFF = 0.000156 / 2;
     constexpr static double rotate_kMaxOutput = 0.2;   //1
     constexpr static double rotate_kMinOutput = -0.2;  //-1
 
-    constexpr static double rotate_kMaxVel = 8000;
+    constexpr static double rotate_kMaxVel = 5000;
     constexpr static double rotate_kMinVel = 0; 
-    constexpr static double rotate_kMaxAcc = rotate_kMaxVel * 2; 
+    constexpr static double rotate_kMaxAcc = rotate_kMaxVel * 1; 
     constexpr static double rotate_kAllErr = 0;
 
     constexpr static double main_KF = 0.05;
     constexpr static double main_KD = 0.0;
-    constexpr static double main_KI = 0.2;
+    constexpr static double main_KI = 0.0;
     constexpr static double main_KP = 0.1;
 
-    constexpr static double MAIN_MOTION_CRUISE_VELOCITY = 20000;
-    constexpr static double MAIN_MOTION_ACCELERATION = MAIN_MOTION_CRUISE_VELOCITY * 20;
+    constexpr static double MAIN_MOTION_CRUISE_VELOCITY = 15000;
+    constexpr static double MAIN_MOTION_ACCELERATION = MAIN_MOTION_CRUISE_VELOCITY * 7;
 
     constexpr static double DEFAULT_EXTEND_SPD = 0.2;
     constexpr static double DEFAULT_RETRACT_SPD = -0.2;
