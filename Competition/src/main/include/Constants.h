@@ -172,13 +172,13 @@ namespace ShooterConstants{
     constexpr static double kDeadband = .08;
 
     constexpr static double pDeadband = .08;
-    constexpr static double TURRET_SPEED_MULTIPLIER = .5;
+    constexpr static double TURRET_SPEED_MULTIPLIER = 1;
     constexpr static double pSoftDeadband = 0.1;
 
     constexpr static double falconMaxRPM = 6380;
     constexpr static double falconGearRatio = 1;
 
-    constexpr static double turretGearRatio = 1.0 / 30;
+    constexpr static double turretGearRatio = 1.0 / 60;
 
     // Encoder ticks off of center
     // 192 (gear ration) * angle ratio (ex. 1/2 for 180 deg)
