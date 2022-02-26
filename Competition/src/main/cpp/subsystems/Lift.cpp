@@ -65,7 +65,7 @@ void Lift::init()
 
 
     table->PutNumber("Desired Rotate Angle", rotateEncoder.GetPosition());
-    table->PutNumber("Desired Lift Pos", leadMainMotor.GetSelectedSensorPosition());
+    table->PutNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
 }
 
 void Lift::setController(frc::XboxController *controller)
@@ -108,7 +108,7 @@ void Lift::assessInputs()
         state.liftstateMain = LiftMainState::LIFT_MAIN_ENABLE;
     }
     else if (state.dPadUpPressed) {
-        // state.liftstateMain = LiftMainState::LIFT_MAIN_TOPOSITION;
+        state.liftstateMain = LiftMainState::LIFT_MAIN_TOPOSITION;
     }
     else
     {
@@ -125,7 +125,7 @@ void Lift::analyzeDashboard()
     table->PutNumber("Lift Rotate Encoder Value", rotateEncoder.GetPosition());
 
     state.desiredRotatePos = table->GetNumber("Desired Rotate Angle", rotateEncoder.GetPosition());
-    state.desiredMainPos = table->GetNumber("Desired Lift Pos", leadMainMotor.GetSelectedSensorPosition());
+    state.desiredMainPos = table->GetNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
 }
 
 void Lift::assignOutputs()

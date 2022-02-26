@@ -228,8 +228,8 @@ namespace LiftConstants{
     constexpr static int MAIN_FOLLOW_CAN_ID = 17;
     constexpr static int ROTATE_CAN_ID = 18;
 
-    constexpr static int UP_POSITION = 100;
-    constexpr static double DOWN_POSITION = -100;
+    constexpr static int MAIN_FIRST_POSITION = 80000;
+    constexpr static double MAIN_DOWN_POSITION = 125;
 
     constexpr static double rotateForwardLimit = 40;
     constexpr static double rotateReverseLimit = 0;
