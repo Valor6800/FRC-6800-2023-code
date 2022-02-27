@@ -14,6 +14,7 @@ void Robot::RobotInit() {
     //m_container.m_drivetrain.resetState();
     // m_container.m_drivetrain.setKF();
     // m_container.m_drivetrain.pullSwerveModuleZeroReference();
+    m_container.m_shooter.resetState();
 }
 
 /**
