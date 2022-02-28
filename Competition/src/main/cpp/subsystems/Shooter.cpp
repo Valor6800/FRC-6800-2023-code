@@ -302,7 +302,7 @@ void Shooter::assignOutputs()
     else if (state.turretState == TurretState::TURRET_TRACK){
         float tx = limeTable->GetNumber("tx", 0.0);
         float tv = limeTable->GetNumber("tv", 0.0);
-        state.turretTarget = (-tx * tv * .5) + turretEncoder.GetPosition();
+        state.turretTarget = (-tx * tv * 0.75) + turretEncoder.GetPosition();
         std::clamp(state.turretTarget, ShooterConstants::turretLimitRight, ShooterConstants::turretLimitLeft);
         turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
         // state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
