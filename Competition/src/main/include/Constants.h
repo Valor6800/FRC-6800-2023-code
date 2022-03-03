@@ -58,15 +58,15 @@ namespace DriveConstants {
     constexpr static double TURN_KP = 3.8 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = .02;
 
-    constexpr static double KPX = .75; //.2
+    constexpr static double KPX = .5; //.75
     constexpr static double KIX = 0.0; //0
     constexpr static double KDX = 0.0; //.1
 
-    constexpr static double KPY = .75; //.2
+    constexpr static double KPY = .5; //.75
     constexpr static double KIY = 0.0; //0
     constexpr static double KDY = 0.0; //.1
 
-    constexpr static double KPT = 2.5; //.2
+    constexpr static double KPT = 2; //2.5
     constexpr static double KIT = 0.0; //0
     constexpr static double KDT = 0.0; //.1
 }
@@ -83,7 +83,7 @@ namespace SwerveConstants {
     constexpr static double DRIVE_GEAR_RATIO = 1.0 / 5.12; // 1/8.14
     constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0); // 0.078125
 
-    constexpr static double WHEEL_DIAMETER_M = 0.1016;
+    constexpr static double WHEEL_DIAMETER_M = .091; // original number with blue tread 0.1016;
     constexpr static double WHEEL_CIRCUMFERENCE_M = WHEEL_DIAMETER_M * M_PI;
 
     constexpr static double MOTOR_FREE_SPEED = 6380.0;
@@ -139,6 +139,7 @@ namespace ShooterConstants{
     constexpr static double flywheelPrimedValue = 0.36;
     constexpr static double flywheelAutoValue = 0.47;
     constexpr static double flywheelDefaultValue = 0.345;
+
 
     constexpr static double turretKP = 1e-5;
     constexpr static double turretKI = 0;

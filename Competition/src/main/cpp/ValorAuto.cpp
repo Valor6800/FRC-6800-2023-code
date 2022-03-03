@@ -380,6 +380,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::SequentialCommandGroup *shoot5Blue = new frc2::SequentialCommandGroup();
     shoot5Blue->AddCommands
     (cmd_set_odometry,
+    cmd_turretDisable,
     cmd_shooterPrime,
     cmd_intakeOne,
     cmd_move_moveBugsBlue,
@@ -414,6 +415,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     (cmd_set_odometry,
     cmd_shooterPrime,
     cmd_intakeOne,
+    cmd_turretDisable,
     cmd_move_moveBugsRed,
     cmd_move_movePreDaffyRed,
     cmd_turretTrack,
@@ -442,11 +444,28 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     );
 
+    frc2::SequentialCommandGroup *shooterTest = new frc2::SequentialCommandGroup();
+    shooterTest->AddCommands
+    (cmd_set_odometry,
+    cmd_shooterPrime,
+    cmd_intakeOne,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t)3),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t)1.0),
+    cmd_intakeOne
+    );
+
+
+
    //right now shoot 5 auto is shoot 3, need to make a red and blue auto
     m_chooser.AddOption("RED 3 ball auto", shoot3Red);
     m_chooser.AddOption("RED 5 ball auto", shoot5Red);
     m_chooser.AddOption("BLUE 3 ball auto", shoot3Blue);
     m_chooser.AddOption("BLUE 5 ball auto", shoot5Blue);
+
+    m_chooser.AddOption("SHOOTER TEST", shooterTest);
+
     
     frc::SmartDashboard::PutData(&m_chooser);
   
