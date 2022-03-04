@@ -66,7 +66,7 @@ namespace DriveConstants {
     constexpr static double KIY = 0.0; //0
     constexpr static double KDY = 0.0; //.1
 
-    constexpr static double KPT = 2; //2.5
+    constexpr static double KPT = 2.5; //2.5
     constexpr static double KIT = 0.0; //0
     constexpr static double KDT = 0.0; //.1
 }
