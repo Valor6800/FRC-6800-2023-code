@@ -83,7 +83,7 @@ namespace SwerveConstants {
     constexpr static double DRIVE_GEAR_RATIO = 1.0 / 5.12; // 1/8.14
     constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0); // 0.078125
 
-    constexpr static double WHEEL_DIAMETER_M = .091; // original number with blue tread 0.1016;
+    constexpr static double WHEEL_DIAMETER_M = 0.1016; //.091 with black tread // original number with blue tread 0.1016;
     constexpr static double WHEEL_CIRCUMFERENCE_M = WHEEL_DIAMETER_M * M_PI;
 
     constexpr static double MOTOR_FREE_SPEED = 6380.0;
