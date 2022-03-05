@@ -164,7 +164,7 @@ void Shooter::assessInputs()
 
     //Hood
     if(state.bButton){
-        state.hoodState = HoodState::HOOD_UP; // High position
+        state.hoodState = HoodState::HOOD_TRACK; // High position
     }
     else if(state.aButton){
         state.hoodState = HoodState::HOOD_DOWN; // Low position
@@ -172,7 +172,7 @@ void Shooter::assessInputs()
 
     //Flywheel
     if(state.bButton){
-        state.flywheelState = FlywheelState::FLYWHEEL_PRIME; // Higher speed
+        state.flywheelState = FlywheelState::FLYWHEEL_TRACK; // Higher speed
     }
     else if (state.aButton){
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT; // Lower speed
@@ -343,10 +343,10 @@ void Shooter::assignOutputs()
     else if (state.flywheelState == FlywheelState::FLYWHEEL_DEFAULT){
         state.flywheelTarget = state.flywheelLow;
     }
-    else if(state.flywheelTarget == FlywheelState::FLYWHEEL_TRACK){
+    else if(state.flywheelState == FlywheelState::FLYWHEEL_TRACK){
         state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
     }
-    else if(state.flywheelTarget == FlywheelState::FLYWHEEL_AUTO){
+    else if(state.flywheelState == FlywheelState::FLYWHEEL_AUTO){
         state.flywheelTarget = ShooterConstants::flywheelAutoValue;
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
@@ -356,6 +356,9 @@ void Shooter::assignOutputs()
     double rpm = state.flywheelTarget * ShooterConstants::falconMaxRPM;
     double rp100ms = rpm / 600.0;
     double ticsp100ms = rp100ms * ShooterConstants::falconGearRatio * ShooterConstants::ticsPerRev;
+
+    table->PutNumber("FlyWheel State", state.flywheelState);
+    table->PutNumber("FlyWheel Target", state.flywheelTarget);
 
     flywheel_lead.Set(ControlMode::Velocity, ticsp100ms);
 
