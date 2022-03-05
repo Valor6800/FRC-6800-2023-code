@@ -33,6 +33,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
 
     frc::Pose2d startPose = frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-92.1_deg));
+    frc::Pose2d alternateStartPose = frc::Pose2d(5.566_m, 5.905_m, frc::Rotation2d(156_deg));
+
     //Bugs y blue .35
     frc::Pose2d bugsBlue = frc::Pose2d(7_m, 0.6_m, frc::Rotation2d(-90_deg));
     frc::Pose2d bugsRed = frc::Pose2d(7_m, 0.6_m, frc::Rotation2d(-90_deg));
@@ -47,8 +49,15 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d porkyBlue = frc::Pose2d(-0.05_m, 2.1_m, frc::Rotation2d(200_deg));
     frc::Pose2d porkyRed = frc::Pose2d(0.0_m, 2_m, frc::Rotation2d(200_deg));
 
+    frc::Pose2d marvinBlue = frc::Pose2d(5.097_m, 6.805_m, frc::Rotation2d(156_deg));
+    frc::Pose2d marvinRed = frc::Pose2d(5.097_m, 6.805_m, frc::Rotation2d(156_deg));
+    
+
     frc::Pose2d shootBlue = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
     frc::Pose2d shootRed = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
+
+    frc::Pose2d alternateShootBlue = frc::Pose2d(5.397_m, 7.105_m, frc::Rotation2d(66_deg));
+    frc::Pose2d alternateShootRed = frc::Pose2d(5.397_m, 7.105_m, frc::Rotation2d(66_deg));
     //frc::Translation2d preBugs{startPose.X(), bugs.Translation().Y()};
     // frc::Rotation2d gyroOffsetAuto = drivetrain->getGyroOffset() + frc::Rotation2d(180_deg);
 
@@ -99,6 +108,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     frc2::InstantCommand cmd_set_odometry = frc2::InstantCommand( [&] {
         drivetrain->resetOdometry(startPose);
+    });
+
+    frc2::InstantCommand cmd_set_alternateOdometry = frc2::InstantCommand( [&] {
+        drivetrain->resetOdometry(alternateStartPose);
     });
 
     
@@ -175,12 +188,36 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {},
         shootBlue,
         reverseConfig);
+
+    auto moveMarvinBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        alternateStartPose,
+        {},
+        marvinBlue,
+        config);
+
+    auto moveMarvinRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        alternateStartPose,
+        {},
+        marvinRed,
+        config);
     
     auto moveShootRed = frc::TrajectoryGenerator::GenerateTrajectory(
         porkyRed,
         {},
         shootRed,
         reverseConfig);
+
+    auto moveAlternateShootBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        marvinBlue,
+        {},
+        alternateShootBlue,
+        config);
+
+    auto moveAlternateShootRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        marvinRed,
+        {},
+        alternateShootRed,
+        config);
 
     frc2::SwerveControllerCommand<4> cmd_move_moveBugsBlue(
         moveBugsBlue,
@@ -336,6 +373,52 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
+    
+    frc2::SwerveControllerCommand<4> cmd_move_moveMarvinBlue(
+        moveMarvinBlue,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_moveMarvinRed(
+        moveMarvinRed,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_moveAlternateShootBlue(
+        moveAlternateShootBlue,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_moveAlternateShootRed(
+        moveAlternateShootRed,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+
     frc2::SequentialCommandGroup *shoot3Blue = new frc2::SequentialCommandGroup();
     shoot3Blue->AddCommands
     (cmd_set_odometry,
@@ -444,6 +527,38 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     );
 
+
+    frc2::SequentialCommandGroup *shoot2Blue = new frc2::SequentialCommandGroup();
+    shoot2Blue->AddCommands
+    (cmd_set_alternateOdometry,
+    cmd_shooterPrime,
+    cmd_intakeOne,
+    cmd_move_moveMarvinBlue,
+    cmd_move_moveAlternateShootBlue,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t)1.0),
+    cmd_turretDisable,
+    cmd_intakeDisable
+    );
+
+    frc2::SequentialCommandGroup *shoot2Red = new frc2::SequentialCommandGroup();
+    shoot2Red->AddCommands
+    (cmd_set_alternateOdometry,
+    cmd_shooterPrime,
+    cmd_intakeOne,
+    cmd_move_moveMarvinRed,
+    cmd_move_moveAlternateShootRed,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t)1.0),
+    cmd_turretDisable,
+    cmd_intakeDisable
+    );
+
+
     frc2::SequentialCommandGroup *shooterTest = new frc2::SequentialCommandGroup();
     shooterTest->AddCommands
     (cmd_set_odometry,
@@ -461,8 +576,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
    //right now shoot 5 auto is shoot 3, need to make a red and blue auto
     m_chooser.AddOption("RED 3 ball auto", shoot3Red);
     m_chooser.AddOption("RED 5 ball auto", shoot5Red);
+    m_chooser.AddOption("RED 2 ball auto", shoot2Red);
+
     m_chooser.AddOption("BLUE 3 ball auto", shoot3Blue);
     m_chooser.AddOption("BLUE 5 ball auto", shoot5Blue);
+    m_chooser.AddOption("BLUE 2 ball auto", shoot2Blue);
 
     m_chooser.AddOption("SHOOTER TEST", shooterTest);
 
