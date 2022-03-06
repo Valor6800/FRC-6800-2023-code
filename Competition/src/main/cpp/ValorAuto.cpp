@@ -47,7 +47,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d daffyBlue = frc::Pose2d(3.55_m, 1.7_m, frc::Rotation2d(90_deg));
     frc::Pose2d daffyRed = frc::Pose2d(3.55_m, 1.7_m, frc::Rotation2d(85_deg));
     
-    frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(90_deg)); //same as -270
+    frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(85_deg)); //same as -270
     frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(85_deg));
     
     //shifting each movement by .5 to avoid smacking into the pipes

@@ -64,6 +64,14 @@ void ValorSwerve::resetDriveEncoder()
     driveFalcon->SetSelectedSensorPosition(0);
 }
 
+double ValorSwerve::getAzimuthCurrent(){
+    return azimuthFalcon->GetSupplyCurrent();
+}
+
+double ValorSwerve::getDriveCurrent(){
+    return driveFalcon->GetSupplyCurrent();
+}
+
 void ValorSwerve::storeAzimuthZeroReference()
 {
     int index = getWheelIndex();

@@ -58,13 +58,14 @@ void Drivetrain::configSwerveModule(int i)
     azimuthMotors[i]->ConfigMotionAcceleration(SwerveConstants::MOTION_ACCELERATION);
     azimuthMotors[i]->ConfigMotionCruiseVelocity(SwerveConstants::MOTION_CRUISE_VELOCITY);
     azimuthMotors[i]->SetNeutralMode(NeutralMode::Brake);
-    //azimuthMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 60, 80, .3));
+    //azimuthMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 60, 80, .75));
 
     driveMotors.push_back(new WPI_TalonFX(DriveConstants::DRIVE_CANS[i]));
     driveMotors[i]->ConfigFactoryDefault();
     driveMotors[i]->SetInverted(false);
     driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     driveMotors[i]->SetNeutralMode(NeutralMode::Coast);
+    driveMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 60, 80, .75));
 
     magEncoders.push_back(new frc::DutyCycleEncoder(DriveConstants::MAG_ENCODER_PORTS[i]));
     magEncoders[i]->SetDistancePerRotation(4096.0);
@@ -178,6 +179,9 @@ void Drivetrain::analyzeDashboard()
         table->PutNumber("Wheel " + std::to_string(i) + " mag encoder", swerveModules[i]->getMagEncoderCount());
         table->PutNumber("Wheel " + std::to_string(i) + " mag encoder converted", swerveModules[i]->convertMagEncoderToAzimuthEncoder(swerveModules[i]->getMagEncoderCount()));
         table->PutNumber("Wheel " + std::to_string(i) + " azimuth encoder", swerveModules[i]->getAzimuthEncoderCount());
+
+        table->PutNumber("Rotation motor " + std::to_string(i) + " current draw", swerveModules[i]->getAzimuthCurrent());
+        table->PutNumber("Drive motor " + std::to_string(i) + " current draw", swerveModules[i]->getDriveCurrent());
     }
 
     // Only save to file once. Wait until switch is toggled to run again

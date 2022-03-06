@@ -98,6 +98,9 @@ public:
      */
     int getMagEncoderCount();
 
+    double getDriveCurrent();
+    double getAzimuthCurrent();
+
     units::meters_per_second_t getDriveSpeed_mps();
 
 private:
