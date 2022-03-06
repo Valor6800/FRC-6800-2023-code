@@ -58,6 +58,7 @@ void Drivetrain::configSwerveModule(int i)
     azimuthMotors[i]->ConfigMotionAcceleration(SwerveConstants::MOTION_ACCELERATION);
     azimuthMotors[i]->ConfigMotionCruiseVelocity(SwerveConstants::MOTION_CRUISE_VELOCITY);
     azimuthMotors[i]->SetNeutralMode(NeutralMode::Brake);
+    //azimuthMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 60, 80, .3));
 
     driveMotors.push_back(new WPI_TalonFX(DriveConstants::DRIVE_CANS[i]));
     driveMotors[i]->ConfigFactoryDefault();

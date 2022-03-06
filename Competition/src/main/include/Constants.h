@@ -137,7 +137,7 @@ namespace ShooterConstants{
     constexpr static double flywheelAllowedError = 0;
 
     constexpr static double flywheelPrimedValue = 0.36;
-    constexpr static double flywheelAutoValue = 0.47;
+    constexpr static double flywheelAutoValue = 0.4;
     constexpr static double flywheelDefaultValue = 0.345;
 
 
@@ -164,7 +164,7 @@ namespace ShooterConstants{
     constexpr static double hoodAllowedError = 0;
 
     constexpr static int hoodTop = 5;
-    constexpr static int hoodAuto = 3;
+    constexpr static int hoodAuto = 5;
     constexpr static int hoodBottom = 0; //make sure this is always 0, need to initialize hood all the way down
 
     constexpr static double hoodLimitTop = 13;
