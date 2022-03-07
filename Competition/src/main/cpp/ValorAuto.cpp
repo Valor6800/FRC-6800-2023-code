@@ -32,7 +32,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
                                         units::radian_t(wpi::numbers::pi));
 
 
-    frc::Pose2d startPose = frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-92.1_deg));
+    frc::Pose2d startPose = frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-92.1_deg)); //hub is 7, 2.771
     frc::Pose2d alternateStartPose = frc::Pose2d(5.566_m, 5.905_m, frc::Rotation2d(156_deg));
 
     //Bugs y blue .35
@@ -43,22 +43,31 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d rotateBlue = frc::Pose2d(6.5_m, 0.9_m, frc::Rotation2d(-150_deg));
     frc::Pose2d rotateRed = frc::Pose2d(6.5_m, 0.9_m, frc::Rotation2d(-150_deg));
 
+    //subtract all by 90 if starting with turrethome
+
     //Daffy y was 1.6
-    frc::Pose2d daffyBlue = frc::Pose2d(3.55_m, 1.7_m, frc::Rotation2d(90_deg));
-    frc::Pose2d daffyRed = frc::Pose2d(3.55_m, 1.7_m, frc::Rotation2d(85_deg));
+    frc::Pose2d daffyBlue = frc::Pose2d(3.55_m, 1.7_m, frc::Rotation2d(80_deg));
+    //-3.45, -1.071 relative to hub
+    //72.75
+    frc::Pose2d daffyRed = frc::Pose2d(3.55_m, 1.7_m, frc::Rotation2d(80_deg));
     
-    frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(85_deg)); //same as -270
-    frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(85_deg));
+    frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(77_deg));
+    //-1.917, -1.071 relative to hub
+    //150.81 angle to make shot with turret to the right
+    //angles appear to be 90 degrees off so use 60.81 instead
+    frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(77_deg));
     
     //shifting each movement by .5 to avoid smacking into the pipes
-    frc::Pose2d porkyBlue = frc::Pose2d(-0.5_m, 2.2_m, frc::Rotation2d(200_deg));
-    frc::Pose2d porkyRed = frc::Pose2d(-0.5_m, 2.2_m, frc::Rotation2d(200_deg));
+    frc::Pose2d porkyBlue = frc::Pose2d(-0.4_m, 2.1_m, frc::Rotation2d(200_deg));
+    frc::Pose2d porkyRed = frc::Pose2d(-0.7_m, 2.1_m, frc::Rotation2d(200_deg));
 
     frc::Pose2d marvinBlue = frc::Pose2d(5.097_m, 6.805_m, frc::Rotation2d(156_deg));
     frc::Pose2d marvinRed = frc::Pose2d(5.097_m, 6.805_m, frc::Rotation2d(156_deg));
     
 
     frc::Pose2d shootBlue = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
+    //0, -1.5771 relative to hub
+    //+-180
     frc::Pose2d shootRed = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
 
     frc::Pose2d alternateShootBlue = frc::Pose2d(5.397_m, 7.105_m, frc::Rotation2d(66_deg));
@@ -78,6 +87,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     frc2::InstantCommand cmd_turretTrack = frc2::InstantCommand( [&] {
         shooter->state.turretState = Shooter::TurretState::TURRET_TRACK;
+    } );
+
+    frc2::InstantCommand cmd_turretHomeMid = frc2::InstantCommand( [&] {
+        shooter->state.turretState = Shooter::TurretState::TURRET_HOME_MID;
     } );
 
     frc2::InstantCommand cmd_turretDisable = frc2::InstantCommand( [&] {
@@ -528,7 +541,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeOne,
     cmd_move_movePorkyFromDaffyBlue,
     frc2::WaitCommand((units::second_t)1.5),
-    cmd_intakeDisable,
+    //cmd_intakeDisable,
     cmd_move_moveShootBlue,
     frc2::WaitCommand((units::second_t).5),
     cmd_shooterPrime,
@@ -562,7 +575,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeOne,
     cmd_move_movePorkyFromDaffyRed,
     frc2::WaitCommand((units::second_t)1.5),
-    cmd_intakeDisable,
+    //cmd_intakeDisable,
     cmd_move_moveShootRed,
     frc2::WaitCommand((units::second_t).5),
     cmd_shooterPrime,
