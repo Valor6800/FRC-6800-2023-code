@@ -130,6 +130,7 @@ private:
 
      frc::XboxController *operatorController;
      std::shared_ptr<nt::NetworkTable> limeTable;
+     std::shared_ptr<nt::NetworkTable> liftTable;
 
      Drivetrain *odom;
 };

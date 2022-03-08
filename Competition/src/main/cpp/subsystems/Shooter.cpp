@@ -27,6 +27,7 @@ void Shooter::setDrivetrain(Drivetrain *dt){
 void Shooter::init()
 {
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+    liftTable = nt::NetworkTableInstance::GetDefault().GetTable("Lift");
     initTable("Shooter");
     
     table->PutBoolean("Home Turret", false);
@@ -225,6 +226,10 @@ void Shooter::analyzeDashboard()
             state.flywheelState = FlywheelState::FLYWHEEL_TRACK;
         if (state.hoodState == HoodState::HOOD_UP)
             state.hoodState = HoodState::HOOD_TRACK;
+    }
+
+    if (liftTable->GetNumber("Lift Main Encoder Value", 0) > ShooterConstants::turretRotateLiftThreshold) {
+        state.turretState = TurretState::TURRET_HOME_RIGHT;
     }
 
     if (state.turretState == TurretState::TURRET_TRACK && state.lastTurretState != TurretState::TURRET_TRACK){
