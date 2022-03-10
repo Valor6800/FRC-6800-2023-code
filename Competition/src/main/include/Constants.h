@@ -221,7 +221,7 @@ namespace FeederConstants{
     constexpr static double DEFAULT_FEEDER_SPEED_REVERSE = -1.0;
 
     constexpr static int CACHE_SIZE = 25;
-    constexpr static double JAM_CURRENT = 30;
+    constexpr static double JAM_CURRENT = 35;
 }
 
 namespace MathConstants{
