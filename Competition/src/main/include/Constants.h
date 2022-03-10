@@ -35,6 +35,11 @@ namespace OIConstants {
     constexpr static int dpadRight = 90;
     constexpr static int dpadDown = 180;
     constexpr static int dpadLeft = 270;
+
+    constexpr static double kDeadbandX = 0.05;
+    constexpr static double kDeadbandY = 0.05;
+
+    constexpr static double kDeadBandTrigger = 0.05;
 }
 
 namespace LimelightConstants {

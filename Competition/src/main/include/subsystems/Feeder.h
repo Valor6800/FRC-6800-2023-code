@@ -50,6 +50,8 @@ public:
         bool driver_leftBumperPressed;
         bool operator_leftBumperPressed;
 
+        bool driver_rightTriggerPressed;
+
         bool bannerTripped;
         bool previousBanner;
         bool currentBanner;

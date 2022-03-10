@@ -63,6 +63,8 @@ void Feeder::assessInputs()
     state.driver_leftBumperPressed = driverController->GetLeftBumper();
     state.driver_rightBumperPressed = driverController->GetRightBumper();
 
+    state.driver_rightTriggerPressed = driverController->GetRightTriggerAxis() > OIConstants::kDeadBandTrigger;
+
     // operator inputs
 
     state.operator_leftBumperPressed = operatorController->GetLeftBumper();
@@ -77,6 +79,9 @@ void Feeder::assessInputs()
     }
     else if (state.driver_rightBumperPressed) {
         state.feederState = FeederState::FEEDER_AUTO;
+    }
+    else if (state.driver_rightTriggerPressed) {
+        state.feederState = FeederState::FEEDER_INTAKE;
     }
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
