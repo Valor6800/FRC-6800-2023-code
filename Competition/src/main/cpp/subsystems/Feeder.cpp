@@ -70,7 +70,7 @@ void Feeder::assessInputs()
     state.operator_leftBumperPressed = operatorController->GetLeftBumper();
         
     if (state.operator_leftBumperPressed) {
-        state.feederState = FeederState::FEEDER_SHOOT;
+        state.feederState = FeederState::FEEDER_SHOOT; //intake and feeder run
         state.spiked = false;
     }
     else if (state.driver_leftBumperPressed) {
@@ -78,10 +78,10 @@ void Feeder::assessInputs()
         state.spiked = false;
     }
     else if (state.driver_rightBumperPressed) {
-        state.feederState = FeederState::FEEDER_AUTO;
+        state.feederState = FeederState::FEEDER_AUTO; //standard intake
     }
     else if (state.driver_rightTriggerPressed) {
-        state.feederState = FeederState::FEEDER_INTAKE;
+        state.feederState = FeederState::FEEDER_INTAKE; //includes current/banner sensing
     }
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
@@ -125,7 +125,7 @@ void Feeder::assignOutputs()
         motor_intake.Set(state.intakeForwardSpeed);
         motor_stage.Set(0);
     }
-    else if (state.feederState == FeederState::FEEDER_INTAKE) {
+    else if (state.feederState == FeederState::FEEDER_INTAKE) { //includes currrent sensing
         if (state.bannerTripped) {
             if (state.currentBanner && !state.previousBanner) {
                 resetDeque();
