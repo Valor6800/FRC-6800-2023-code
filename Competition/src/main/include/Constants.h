@@ -192,8 +192,7 @@ namespace ShooterConstants{
     constexpr static double turretLimitLeft = 180;
     constexpr static double turretLimitRight = 0;
 
-    constexpr static double turretRotateLiftThreshold = (LiftConstants::rotateNoLowerThreshold * 5) / 6;
-
+    constexpr static double turretRotateLiftThreshold = 64500;
     constexpr static double hubX = 0;
     constexpr static double hubY = 0;
 
