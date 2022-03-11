@@ -99,7 +99,7 @@ public:
           double turretTarget; //pos
 
           double flywheelTarget; //vel
-          int hoodTarget; //pos
+          double hoodTarget; //pos
 
           double flywheelLow; // Low setpoint
           double flywheelHigh; // High setpoint
@@ -110,6 +110,8 @@ public:
           bool trackCorner;
 
           double distanceToHub;
+
+          int currentBall;
 
     } state;
 

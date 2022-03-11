@@ -120,6 +120,7 @@ void Shooter::resetState(){
     state.flywheelTarget = 0;
     state.hoodTarget = 0;
     state.distanceToHub = 3;
+    state.currentBall = 0;
 }
 
 void Shooter::resetEncoder(){
@@ -352,7 +353,8 @@ void Shooter::assignOutputs()
         state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_AUTO){
-        state.flywheelTarget = ShooterConstants::flywheelAutoValue;
+        //state.flywheelTarget = ShooterConstants::flywheelAutoValue;
+        state.flywheelTarget = ShooterConstants::flywheelSpeeds[state.currentBall];
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
         state.flywheelTarget = state.flywheelHigh;
@@ -378,14 +380,15 @@ void Shooter::assignOutputs()
         state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood;
     }
     else if(state.hoodState = HoodState::HOOD_AUTO){
-        state.hoodTarget = ShooterConstants::hoodAuto;
+        //state.hoodTarget = ShooterConstants::hoodAuto;
+        state.hoodTarget = ShooterConstants::hoodAngles[state.currentBall];
     }
     else if(state.hoodState == HoodState::HOOD_UP){
         state.hoodTarget = state.hoodHigh;
     }
     hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
 }
-
+//testing if git is broken
 double Shooter::getTargetTics(double x, 
 double y,
 double theta,

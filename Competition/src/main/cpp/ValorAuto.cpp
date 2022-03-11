@@ -1,12 +1,12 @@
 #include "ValorAuto.h"
+#include <iostream>
 
+//See https://github.com/wpilibsuite/allwpilib/blob/v2022.1.1/wpilibcExamples/src/main/cpp/examples/SwerveControllerCommand/cpp/RobotContainer.cpp
 ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder) : 
     drivetrain(_drivetrain), 
     shooter(_shooter),
     feeder(_feeder)
 {   
-    // See: https://github.com/wpilibsuite/allwpilib/blob/v2022.1.1/wpilibcExamples/src/main/cpp/examples/SwerveControllerCommand/cpp/RobotContainer.cpp
-
     frc::TrajectoryConfig config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS},
                                  units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS});
 
@@ -31,7 +31,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi),
                                         units::radian_t(wpi::numbers::pi));
 
-
     frc::Pose2d startPose = frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-92.1_deg)); //hub is 7, 2.771
     frc::Pose2d alternateStartPose = frc::Pose2d(5.566_m, 5.905_m, frc::Rotation2d(156_deg));
 
@@ -43,44 +42,50 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d rotateBlue = frc::Pose2d(6.5_m, 0.9_m, frc::Rotation2d(-150_deg));
     frc::Pose2d rotateRed = frc::Pose2d(6.5_m, 0.9_m, frc::Rotation2d(-150_deg));
 
-    //subtract all by 90 if starting with turrethome
-
     //Daffy y was 1.6
     frc::Pose2d daffyBlue = frc::Pose2d(3.55_m, 1.7_m, frc::Rotation2d(80_deg));
+    
     //-3.45, -1.071 relative to hub
     //72.75
     frc::Pose2d daffyRed = frc::Pose2d(3.55_m, 1.7_m, frc::Rotation2d(80_deg));
     
     frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(77_deg));
+    
     //-1.917, -1.071 relative to hub
     //150.81 angle to make shot with turret to the right
     //angles appear to be 90 degrees off so use 60.81 instead
     frc::Pose2d predaffyRed = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(77_deg));
     
     //shifting each movement by .5 to avoid smacking into the pipes
-    frc::Pose2d porkyBlue = frc::Pose2d(-0.4_m, 2.1_m, frc::Rotation2d(200_deg));
-    frc::Pose2d porkyRed = frc::Pose2d(-0.7_m, 2.1_m, frc::Rotation2d(200_deg));
+    frc::Pose2d porkyBlue = frc::Pose2d(-0.4_m, 2.35_m, frc::Rotation2d(212_deg));
+    frc::Pose2d porkyRed = frc::Pose2d(-0.7_m, 2.35_m, frc::Rotation2d(212_deg));
+    frc::Translation2d porkyEntryRed = frc::Translation2d(1.3_m, 4.6_m);
+    frc::Translation2d porkyEntryBlue = frc::Translation2d(1.3_m, 4.6_m);
+
+
+
 
     frc::Pose2d marvinBlue = frc::Pose2d(5.097_m, 6.805_m, frc::Rotation2d(156_deg));
     frc::Pose2d marvinRed = frc::Pose2d(5.097_m, 6.805_m, frc::Rotation2d(156_deg));
     
 
     frc::Pose2d shootBlue = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
+    
     //0, -1.5771 relative to hub
     //+-180
     frc::Pose2d shootRed = frc::Pose2d(7_m, 1.2_m, frc::Rotation2d(100_deg));
 
     frc::Pose2d alternateShootBlue = frc::Pose2d(5.397_m, 7.105_m, frc::Rotation2d(66_deg));
     frc::Pose2d alternateShootRed = frc::Pose2d(5.397_m, 7.105_m, frc::Rotation2d(66_deg));
+    
     //frc::Translation2d preBugs{startPose.X(), bugs.Translation().Y()};
-    // frc::Rotation2d gyroOffsetAuto = drivetrain->getGyroOffset() + frc::Rotation2d(180_deg);
 
-    frc2::InstantCommand cmd_shooterPrime = frc2::InstantCommand( [&] {
-        shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_PRIME; 
-        shooter->state.hoodState = Shooter::HoodState::HOOD_UP;
-    } );
+    // frc2::InstantCommand cmd_shooterPrime = frc2::InstantCommand( [&] {
+    //     shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_PRIME; 
+    //     shooter->state.hoodState = Shooter::HoodState::HOOD_UP;
+    // } );
 
-    frc2::InstantCommand cmd_shooterFar = frc2::InstantCommand( [&] {
+    frc2::InstantCommand cmd_shooterAuto = frc2::InstantCommand( [&] {
         shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_AUTO; 
         shooter->state.hoodState = Shooter::HoodState::HOOD_AUTO;
     } );
@@ -91,6 +96,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     frc2::InstantCommand cmd_turretHomeMid = frc2::InstantCommand( [&] {
         shooter->state.turretState = Shooter::TurretState::TURRET_HOME_MID;
+    } );
+
+    frc2::InstantCommand cmd_printHeading = frc2::InstantCommand( [&] {
+        std::cout << drivetrain->getPose_m().Rotation().Degrees().to<double>() << std::endl;    
     } );
 
     frc2::InstantCommand cmd_turretDisable = frc2::InstantCommand( [&] {
@@ -106,7 +115,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::InstantCommand cmd_intakeOne = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_AUTO; } );
     frc2::InstantCommand cmd_intakeDisable = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_DISABLE; } );
 
-
+    frc2::InstantCommand cmd_nextBall = frc2::InstantCommand( [&] {
+        shooter->state.currentBall++; 
+    } );
 
     frc2::InstantCommand cmd_intakeAuto = frc2::InstantCommand( [&] { feeder->state.feederState = Feeder::FeederState::FEEDER_INTAKE; } );
 
@@ -119,11 +130,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         shooter->state.hoodState = Shooter::HoodState::HOOD_DOWN;
     });
 
-    // frc2::InstantCommand cmd_set_gyroOffset = frc2::InstantCommand( [&] {
-    //     frc::Rotation2d gyroOffsetAuto = drivetrain->getGyroOffset() + frc::Rotation2d(90_deg);
-    //     drivetrain->setGyroOffset(frc::Rotation2d(gyroOffsetAuto));
-    //     });
-
     frc2::InstantCommand cmd_set_odometry = frc2::InstantCommand( [&] {
         drivetrain->resetOdometry(startPose);
     });
@@ -132,7 +138,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         drivetrain->resetOdometry(alternateStartPose);
     });
 
-    
     auto moveBugsBlue = frc::TrajectoryGenerator::GenerateTrajectory(
         startPose,
         {},//{preBugs},
@@ -159,12 +164,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     auto movePorkyFromDaffyBlue = frc::TrajectoryGenerator::GenerateTrajectory(
         daffyBlue,
-        {},
+        {porkyEntryBlue},
         porkyBlue,
         config);
     auto movePorkyFromDaffyRed = frc::TrajectoryGenerator::GenerateTrajectory(
         daffyRed,
-        {},
+        {porkyEntryRed},
         porkyRed,
         config);
 
@@ -477,7 +482,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::SequentialCommandGroup *shoot3Blue = new frc2::SequentialCommandGroup();
     shoot3Blue->AddCommands
     (cmd_set_odometry,
-    cmd_shooterPrime,
+    //cmd_shooterPrime,
+    cmd_shooterAuto,
     cmd_intakeOne,
     cmd_move_moveBugsBlue,
     cmd_move_moveRotateBlue,
@@ -486,10 +492,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
+    cmd_nextBall,
     cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyBlue,
     frc2::WaitCommand((units::second_t).5),
-    cmd_shooterFar,
+    //cmd_shooterFar,
     frc2::WaitCommand((units::second_t).1),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5)
@@ -498,7 +505,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::SequentialCommandGroup *shoot3Red = new frc2::SequentialCommandGroup();
     shoot3Red->AddCommands
     (cmd_set_odometry,
-    cmd_shooterPrime,
+    //cmd_shooterPrime,
+    cmd_shooterAuto,
     cmd_intakeOne,
     cmd_move_moveBugsRed,
     cmd_move_moveRotateRed,
@@ -507,10 +515,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
+    cmd_nextBall,
     cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyRed,
     frc2::WaitCommand((units::second_t).5),
-    cmd_shooterFar,
+    //cmd_shooterFar,
     frc2::WaitCommand((units::second_t).1),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5)
@@ -521,7 +530,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     shoot5Blue->AddCommands
     (cmd_set_odometry,
     cmd_turretDisable,
-    cmd_shooterPrime,
+    //cmd_shooterPrime,
+    cmd_shooterAuto,
     cmd_intakeOne,
     cmd_move_moveBugsBlue,
     cmd_move_moveRotateBlue,
@@ -530,22 +540,26 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
+    cmd_nextBall,
     cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyBlue,
     frc2::WaitCommand((units::second_t).5),
-    cmd_shooterFar,
+    //cmd_shooterFar,
     frc2::WaitCommand((units::second_t).2),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
+    cmd_nextBall,
     cmd_turretDisable,
     cmd_intakeOne,
     cmd_move_movePorkyFromDaffyBlue,
     frc2::WaitCommand((units::second_t)1.5),
+    cmd_turretTrack,
     //cmd_intakeDisable,
     cmd_move_moveShootBlue,
-    frc2::WaitCommand((units::second_t).5),
-    cmd_shooterPrime,
-    cmd_turretTrack,
+    //frc2::WaitCommand((units::second_t).5),
+    //cmd_shooterPrime,
+    //cmd_shooterAuto,
+    //cmd_turretTrack,
     frc2::WaitCommand((units::second_t).75),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1)
@@ -554,43 +568,54 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::SequentialCommandGroup *shoot5Red = new frc2::SequentialCommandGroup();
     shoot5Red->AddCommands
     (cmd_set_odometry,
+    cmd_printHeading,
     cmd_turretDisable,
-    cmd_shooterPrime,
+    //cmd_shooterPrime,
+    cmd_shooterAuto,
     cmd_intakeOne,
     cmd_move_moveBugsRed,
+    cmd_printHeading,
     cmd_move_moveRotateRed,
+    cmd_printHeading,
     cmd_move_movePreDaffyRed,
+    cmd_printHeading,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1.0),
+    cmd_nextBall,
     cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyRed,
+    cmd_printHeading,
     frc2::WaitCommand((units::second_t).5),
-    cmd_shooterFar,
+    //cmd_shooterFar,
     frc2::WaitCommand((units::second_t).2),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
+    cmd_nextBall,
     cmd_turretDisable,
     cmd_intakeOne,
     cmd_move_movePorkyFromDaffyRed,
+    cmd_printHeading,
     frc2::WaitCommand((units::second_t)1.5),
+    cmd_turretTrack,
     //cmd_intakeDisable,
     cmd_move_moveShootRed,
-    frc2::WaitCommand((units::second_t).5),
-    cmd_shooterPrime,
-    cmd_turretTrack,
-    frc2::WaitCommand((units::second_t).75),
+    cmd_printHeading,
+   // frc2::WaitCommand((units::second_t).5),
+    //cmd_shooterPrime,
+   // cmd_turretTrack,
+    //frc2::WaitCommand((units::second_t).75),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t)1)
-
     );
 
 
     frc2::SequentialCommandGroup *shoot2Blue = new frc2::SequentialCommandGroup();
     shoot2Blue->AddCommands
     (cmd_set_alternateOdometry,
-    cmd_shooterPrime,
+    //cmd_shooterPrime,
+    cmd_shooterAuto,
     cmd_intakeOne,
     cmd_move_moveMarvinBlue,
     cmd_move_moveAlternateShootBlue,
@@ -605,7 +630,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::SequentialCommandGroup *shoot2Red = new frc2::SequentialCommandGroup();
     shoot2Red->AddCommands
     (cmd_set_alternateOdometry,
-    cmd_shooterPrime,
+    //cmd_shooterPrime,
+    cmd_shooterAuto,
     cmd_intakeOne,
     cmd_move_moveMarvinRed,
     cmd_move_moveAlternateShootRed,
@@ -621,7 +647,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::SequentialCommandGroup *shooterTest = new frc2::SequentialCommandGroup();
     shooterTest->AddCommands
     (cmd_set_odometry,
-    cmd_shooterPrime,
+    //cmd_shooterPrime,
+    cmd_shooterAuto,
     cmd_intakeOne,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t)3),
@@ -630,9 +657,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeOne
     );
 
-
-
-   //right now shoot 5 auto is shoot 3, need to make a red and blue auto
     m_chooser.AddOption("RED 3 ball auto", shoot3Red);
     m_chooser.AddOption("RED 5 ball auto", shoot5Red);
     m_chooser.AddOption("RED 2 ball auto", shoot2Red);
@@ -642,14 +666,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     m_chooser.AddOption("BLUE 2 ball auto", shoot2Blue);
 
     m_chooser.AddOption("SHOOTER TEST", shooterTest);
-
-    
     frc::SmartDashboard::PutData(&m_chooser);
-  
-    //potential issues
-    //turret can't see the hub, might need to set position manually
-    //hood and flywheel need to be at different speeds depending on location
-    //might run out of time
 }
 
 frc2::Command* ValorAuto::getCurrentAuto() {
