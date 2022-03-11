@@ -229,7 +229,7 @@ void Shooter::analyzeDashboard()
     }
 
     if (liftTable->GetNumber("Lift Main Encoder Value", 0) > ShooterConstants::turretRotateLiftThreshold) {
-        state.turretState = TurretState::TURRET_HOME_RIGHT;
+        state.turretState = TurretState::TURRET_HOME_LEFT;
     }
 
     if (state.turretState == TurretState::TURRET_TRACK && state.lastTurretState != TurretState::TURRET_TRACK){
