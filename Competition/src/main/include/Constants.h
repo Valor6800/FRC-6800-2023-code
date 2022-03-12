@@ -71,7 +71,7 @@ namespace DriveConstants {
     constexpr static double KIY = 0.0; //0
     constexpr static double KDY = 0.0; //.1
 
-    constexpr static double KPT = 2.5; //2.5
+    constexpr static double KPT = 4; //2.5
     constexpr static double KIT = 0.0; //0
     constexpr static double KDT = 0.0; //.1
 }
@@ -97,11 +97,11 @@ namespace SwerveConstants {
 
     constexpr static double DRIVE_MAX_SPEED_MPS = MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI;
     constexpr static double AUTO_MAX_SPEED_MPS = DRIVE_MAX_SPEED_MPS;
-    constexpr static double AUTO_MAX_ACCEL_MPSS = AUTO_MAX_SPEED_MPS * 1;
+    constexpr static double AUTO_MAX_ACCEL_MPSS = AUTO_MAX_SPEED_MPS * .6; // * 1
 
     static double ROTATION_MAX_SPEED_RPS = 2*M_PI;// DRIVE_MAX_SPEED_MPS / std::hypot(module_diff / 2, module_diff / 2);
     static double AUTO_MAX_ROTATION_RPS = 4 * M_PI;
-    static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * 1;
+    static double AUTO_MAX_ROTATION_ACCEL_RPSS = AUTO_MAX_ROTATION_RPS * .5; // * 1
 
     constexpr static double MOTION_CRUISE_VELOCITY = 17000; // 21.9k is max. We chose 80%ish of that number
     constexpr static double MOTION_ACCELERATION = MOTION_CRUISE_VELOCITY * 20; // Acceleration matching cruise velocity means 1 second to hit cruise
@@ -145,8 +145,8 @@ namespace ShooterConstants{
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
     constexpr static double flywheelDefaultValue = 0.345;
     
-    constexpr static double flywheelSpeeds[] = {.36, .375, .36};
-    constexpr static double hoodAngles[] = {5, 7, 5};
+    constexpr static double flywheelSpeeds[] = {.37, .385, .38};
+    constexpr static double hoodAngles[] = {5, 7, 7};
 
     constexpr static double turretKP = 1e-5;
     constexpr static double turretKI = 0;

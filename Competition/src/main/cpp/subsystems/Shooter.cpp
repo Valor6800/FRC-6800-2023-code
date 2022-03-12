@@ -261,6 +261,7 @@ void Shooter::assignOutputs()
     //////////////////////////////////////*/
 
     //MANUAL
+    state.turretTarget = 0;
     if (state.turretState == TurretState::TURRET_MANUAL) {
         state.turretOutput = std::pow(state.leftStickX, 3) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
 
@@ -338,6 +339,7 @@ void Shooter::assignOutputs()
         state.turretOutput = 0;
         turret.Set(state.turretOutput);
     }
+    table->PutNumber("Turret Error", state.turretTarget - turretEncoder.GetPosition());
 
     /*//////////////////////////////////////
     // Flywheel                           //  

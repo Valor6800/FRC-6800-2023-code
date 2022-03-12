@@ -171,6 +171,11 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("right stick x", driverController->GetRightX());
     table->PutNumber("right stick Y", driverController->GetRightY());
 
+    // table->PutNumber("x velocity", kinematics.ToChassisSpeeds().vx.to<double>());
+    // table->PutNumber("y velocity", kinematics.ToChassisSpeeds().vy.to<double>());
+    // table->PutNumber("angular velocity", kinematics.ToChassisSpeeds().omega.to<double>());
+    // table->PutNumber("net velocity", hypot(kinematics.ToChassisSpeeds().vx.to<double>(), kinematics.ToChassisSpeeds().vy.to<double>()));
+
     for (int i = 0; i < 4; i++)
     {
         table->PutNumber("Wheel " + std::to_string(i) + " angle", swerveModules[i]->getAzimuthRotation2d().Degrees().to<double>());
