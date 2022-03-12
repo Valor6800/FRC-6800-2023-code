@@ -227,6 +227,10 @@ void Shooter::analyzeDashboard()
             state.flywheelState = FlywheelState::FLYWHEEL_TRACK;
         if (state.hoodState == HoodState::HOOD_UP)
             state.hoodState = HoodState::HOOD_TRACK;
+        //limeTable->PutNumber("pipeline", 1);
+    }
+    else{
+        limeTable->PutNumber("pipeline", 0);
     }
 
     if (liftTable->GetNumber("Lift Main Encoder Value", 0) > ShooterConstants::turretRotateLiftThreshold) {
