@@ -51,6 +51,7 @@ void Shooter::init()
     flywheel_lead.SetNeutralMode(NeutralMode::Coast);
 
     flywheel_lead.SetInverted(false);
+    flywheel_lead.SelectProfileSlot(0, 0);
 
     turret.RestoreFactoryDefaults();
     turret.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
@@ -105,11 +106,16 @@ void Shooter::init()
 
     limelightTrack(false);
 
-    m_chooser.AddOption("teleop close profile", 0);
-    m_chooser.AddOption("teleop far profile", 1);
-    m_chooser.AddOption("auto profile", 2);
+    m_chooserLimelight.AddOption("teleop close profile", 0);
+    m_chooserLimelight.AddOption("teleop far profile", 1);
+    m_chooserLimelight.AddOption("auto profile", 2);
 
-    frc::SmartDashboard::PutData(&m_chooser);
+    frc::SmartDashboard::PutData(&m_chooserLimelight);
+
+    m_chooserPID.AddOption("close up shot", 0);
+    m_chooserPID.AddOption("far shot", 1);
+
+    frc::SmartDashboard::PutData(&m_chooserPID);
 }
 
 void Shooter::resetState(){
@@ -239,7 +245,8 @@ void Shooter::analyzeDashboard()
         //setLimelight(0);
     }
 
-    setLimelight(m_chooser.GetSelected());
+    setLimelight(m_chooserLimelight.GetSelected());
+    setPIDProfile(m_chooserPID.GetSelected());
 
     if (liftTable->GetNumber("Lift Main Encoder Value", 0) > ShooterConstants::turretRotateLiftThreshold) {
         state.turretState = TurretState::TURRET_HOME_LEFT;
@@ -268,6 +275,10 @@ void Shooter::analyzeDashboard()
 //0 is close, 1 is far, 2 is auto
 void Shooter::setLimelight(int pipeline){
     limeTable->PutNumber("pipeline", pipeline);
+}
+
+void Shooter::setPIDProfile(int slotID){
+    flywheel_lead.SelectProfileSlot(slotID, 0);
 }
 
 void Shooter::assignOutputs()

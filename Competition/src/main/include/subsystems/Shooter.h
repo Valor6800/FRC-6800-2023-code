@@ -52,6 +52,7 @@ public:
      double convertTargetTics(double, double);
 
      void setLimelight(int pipeline);
+     void setPIDProfile(int slotID);
 
     enum TurretState{
          TURRET_DISABLE, // Not moving
@@ -138,7 +139,8 @@ private:
 
      Drivetrain *odom;
 
-     frc::SendableChooser<int> m_chooser;
+     frc::SendableChooser<int> m_chooserLimelight;
+     frc::SendableChooser<int> m_chooserPID;
 };
 
 #endif
