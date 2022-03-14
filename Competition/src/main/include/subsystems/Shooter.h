@@ -51,6 +51,8 @@ public:
      double getTargetTics(double, double, double, double, double, double, double);
      double convertTargetTics(double, double);
 
+     void setLimelight(int pipeline);
+
     enum TurretState{
          TURRET_DISABLE, // Not moving
          TURRET_MANUAL, // Manual control from operator
@@ -135,6 +137,8 @@ private:
      std::shared_ptr<nt::NetworkTable> liftTable;
 
      Drivetrain *odom;
+
+     frc::SendableChooser<int> m_chooser;
 };
 
 #endif

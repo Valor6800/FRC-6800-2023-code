@@ -59,6 +59,7 @@ void Robot::AutonomousInit() {
 
     //might need to add back
     m_container.m_shooter.resetState();
+    m_container.m_shooter.setLimelight(2);
 
     m_autonomousCommand = m_container.GetAutonomousCommand();
     if (m_autonomousCommand != nullptr) {
@@ -85,10 +86,14 @@ void Robot::TeleopInit() {
         m_autonomousCommand = nullptr;
     }
 
+    m_container.m_shooter.setLimelight(0);
+
     m_container.m_feeder.robotMode = ValorSubsystem::RobotMode::TELEOP;
     m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::TELEOP;
     m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::TELEOP;
     m_container.m_lift.robotMode = ValorSubsystem::RobotMode::TELEOP;
+
+    
 
 }
 

@@ -104,6 +104,12 @@ void Shooter::init()
     resetEncoder();
 
     limelightTrack(false);
+
+    m_chooser.AddOption("teleop close profile", 0);
+    m_chooser.AddOption("teleop far profile", 1);
+    m_chooser.AddOption("auto profile", 2);
+
+    frc::SmartDashboard::PutData(&m_chooser);
 }
 
 void Shooter::resetState(){
@@ -227,11 +233,13 @@ void Shooter::analyzeDashboard()
             state.flywheelState = FlywheelState::FLYWHEEL_TRACK;
         if (state.hoodState == HoodState::HOOD_UP)
             state.hoodState = HoodState::HOOD_TRACK;
-        //limeTable->PutNumber("pipeline", 1);
+        //setLimelight(1);
     }
     else{
-        limeTable->PutNumber("pipeline", 0);
+        //setLimelight(0);
     }
+
+    setLimelight(m_chooser.GetSelected());
 
     if (liftTable->GetNumber("Lift Main Encoder Value", 0) > ShooterConstants::turretRotateLiftThreshold) {
         state.turretState = TurretState::TURRET_HOME_LEFT;
@@ -255,6 +263,11 @@ void Shooter::analyzeDashboard()
     table->PutNumber("hood high", state.hoodHigh);
 
     table->PutNumber("Turret State", state.turretState);
+}
+
+//0 is close, 1 is far, 2 is auto
+void Shooter::setLimelight(int pipeline){
+    limeTable->PutNumber("pipeline", pipeline);
 }
 
 void Shooter::assignOutputs()
