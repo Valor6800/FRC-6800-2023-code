@@ -119,7 +119,6 @@ public:
     } state;
 
 
-
 private:
      void limelightTrack(bool track);
 

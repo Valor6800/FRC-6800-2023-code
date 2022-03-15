@@ -128,12 +128,18 @@ namespace ShooterConstants{
     constexpr static double hubHeight = 2.64;
     constexpr static double limelightHeight = .6075;
     
+    constexpr static double flywheelKP1 = 0.21;
+    constexpr static double flywheelKI1 = 0;
+    constexpr static double flywheelKD1 = 6.5;
+    constexpr static double flywheelKIZ1 = 0;
+    constexpr static double flywheelKFF1 = 0.05;
 
-    constexpr static double flywheelKP = 0.35;
-    constexpr static double flywheelKI = 0;
-    constexpr static double flywheelKD = 7.5;
-    constexpr static double flywheelKIZ = 0;
-    constexpr static double flywheelKFF = 0.05;
+    constexpr static double flywheelKP0 = 0.25;
+    constexpr static double flywheelKI0 = 0;
+    constexpr static double flywheelKD0 = 7.5;
+    constexpr static double flywheelKIZ0 = 0;
+    constexpr static double flywheelKFF0 = 0.05;
+
     constexpr static double MaxRPM = 6380;
 
     constexpr static double flywheelCruiseVelo = 20000;
@@ -143,10 +149,10 @@ namespace ShooterConstants{
 
     constexpr static double flywheelPrimedValue = 0.36;
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
-    constexpr static double flywheelDefaultValue = 0.345;
+    constexpr static double flywheelDefaultValue = 0.4;
     
-    constexpr static double flywheelSpeeds[] = {.37, .385, .38};
-    constexpr static double hoodAngles[] = {5, 7, 7};
+    constexpr static double flywheelSpeeds[] = {.385, .385, .385};
+    constexpr static double hoodAngles[] = {9, 11, 9};
 
     constexpr static double turretKP = 1e-5;
     constexpr static double turretKI = 0;
@@ -171,13 +177,13 @@ namespace ShooterConstants{
     constexpr static double hoodAllowedError = 0;
 
     constexpr static double hoodTop = 5;
-    constexpr static double hoodAuto = 6; //can change back to 5//
-    constexpr static double hoodBottom = 0; //make sure this is always 0, need to initialize hood all the way down
+    constexpr static double hoodAuto = 6;
+    constexpr static double hoodBottom = 2; //make sure this is always 0, need to initialize hood all the way down
 
-    constexpr static double hoodLimitTop = 13;
+    constexpr static double hoodLimitTop = 22;
     constexpr static double hoodLimitBottom = 0;
 
-    constexpr static double hoodGearRatio = 1 / 454.17; 
+    constexpr static double hoodGearRatio = 1 / 454.17;
 
     constexpr static double kDeadband = .08;
 

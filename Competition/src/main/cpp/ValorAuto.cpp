@@ -463,6 +463,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     m_chooser.AddOption("BLUE 2 ball auto", shoot2Blue);
 
     frc::SmartDashboard::PutData(&m_chooser);
+    //frc::SmartDashboard::PutData()
 }
 
 frc2::Command* ValorAuto::getCurrentAuto() {

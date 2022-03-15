@@ -42,10 +42,18 @@ void Shooter::init()
     flywheel_lead.ConfigFactoryDefault();
     flywheel_lead.ConfigAllowableClosedloopError(0, 0);
     flywheel_lead.Config_IntegralZone(0, 0);
-    flywheel_lead.Config_kF(0, ShooterConstants::flywheelKFF);
-    flywheel_lead.Config_kD(0, ShooterConstants::flywheelKD);
-    flywheel_lead.Config_kI(0, ShooterConstants::flywheelKI);
-    flywheel_lead.Config_kP(0, ShooterConstants::flywheelKP);
+    flywheel_lead.Config_kF(0, ShooterConstants::flywheelKFF0);
+    flywheel_lead.Config_kD(0, ShooterConstants::flywheelKD0);
+    flywheel_lead.Config_kI(0, ShooterConstants::flywheelKI0);
+    flywheel_lead.Config_kP(0, ShooterConstants::flywheelKP0);
+
+    flywheel_lead.ConfigAllowableClosedloopError(1, 0);
+    flywheel_lead.Config_IntegralZone(1, 0);
+    flywheel_lead.Config_kF(1, ShooterConstants::flywheelKFF1);
+    flywheel_lead.Config_kD(1, ShooterConstants::flywheelKD1);
+    flywheel_lead.Config_kI(1, ShooterConstants::flywheelKI1);
+    flywheel_lead.Config_kP(1, ShooterConstants::flywheelKP1);
+
     flywheel_lead.ConfigMotionAcceleration(ShooterConstants::flywheelMaxAccel);
     flywheel_lead.ConfigMotionCruiseVelocity(ShooterConstants::flywheelCruiseVelo);
     flywheel_lead.SetNeutralMode(NeutralMode::Coast);
@@ -111,6 +119,7 @@ void Shooter::init()
     m_chooserLimelight.AddOption("auto profile", 2);
 
     frc::SmartDashboard::PutData(&m_chooserLimelight);
+    //frc::SmartDashboard::data
 
     m_chooserPID.AddOption("close up shot", 0);
     m_chooserPID.AddOption("far shot", 1);
@@ -231,6 +240,7 @@ void Shooter::analyzeDashboard()
     state.flywheelHigh = table->GetNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     state.hoodLow = table->GetNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
     state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
+
 
     // Logic should exist here in case we need to turn off limelight for auto
     // Set the button to false and default speeds will be used in auto

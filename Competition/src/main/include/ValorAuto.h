@@ -31,9 +31,8 @@ class ValorAuto {
         Drivetrain *drivetrain;
         Shooter *shooter;
         Feeder *feeder;
-
-        
         frc::SendableChooser<frc2::Command*> m_chooser;
+        
 };
 
 #endif
