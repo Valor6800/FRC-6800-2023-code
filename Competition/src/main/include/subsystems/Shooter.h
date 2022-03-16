@@ -68,7 +68,8 @@ public:
          HOOD_DOWN, // Down position
          HOOD_UP, // Up position
          HOOD_TRACK, // Tracking using limelight
-         HOOD_AUTO //Auto for the furthest shot
+         HOOD_AUTO, //Auto for the furthest shot
+         HOOD_POOP //Low goal shot
      };
 
      enum FlywheelState{
@@ -76,7 +77,8 @@ public:
           FLYWHEEL_DEFAULT, // Low speed
           FLYWHEEL_PRIME, // Higher speed
           FLYWHEEL_TRACK, // Dynamic calculations
-          FLYWHEEL_AUTO // Auto value for the furthest shot
+          FLYWHEEL_AUTO, // Auto value for the furthest shot
+          FLYWHEEL_POOP //Low goal shot
      };
 
     struct x

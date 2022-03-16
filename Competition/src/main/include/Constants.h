@@ -150,6 +150,7 @@ namespace ShooterConstants{
     constexpr static double flywheelPrimedValue = 0.36;
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
     constexpr static double flywheelDefaultValue = 0.4;
+    constexpr static double flywheelPoopValue = 0.2;    
     
     constexpr static double flywheelSpeeds[] = {.385, .385, .385};
     constexpr static double hoodAngles[] = {9, 11, 9};
@@ -179,6 +180,7 @@ namespace ShooterConstants{
     constexpr static double hoodTop = 5;
     constexpr static double hoodAuto = 6;
     constexpr static double hoodBottom = 2; //make sure this is always 0, need to initialize hood all the way down
+    constexpr static double hoodPoop = 0;
 
     constexpr static double hoodLimitTop = 22;
     constexpr static double hoodLimitBottom = 0;

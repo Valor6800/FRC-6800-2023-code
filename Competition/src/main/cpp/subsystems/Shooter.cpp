@@ -192,6 +192,9 @@ void Shooter::assessInputs()
     else if(state.aButton){
         state.hoodState = HoodState::HOOD_DOWN; // Low position
     }
+    else if(state.xButton){
+        state.hoodState = HoodState::HOOD_POOP;
+    }
 
     //Flywheel
     if(state.bButton){
@@ -199,6 +202,9 @@ void Shooter::assessInputs()
     }
     else if (state.aButton){
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT; // Lower speed
+    }
+    else if (state.xButton){
+        state.flywheelState = FlywheelState::FLYWHEEL_POOP;
     }
 
     state.trackCorner = false;//state.rightBumper ? true : false;
@@ -396,13 +402,19 @@ void Shooter::assignOutputs()
         setLimelight(1);
         setPIDProfile(1);
     }
+    else if(state.flywheelState == FlywheelState::FLYWHEEL_POOP){
+        state.flywheelTarget = ShooterConstants::flywheelPoopValue;
+    }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_AUTO){
         //state.flywheelTarget = ShooterConstants::flywheelAutoValue;
         state.flywheelTarget = ShooterConstants::flywheelSpeeds[state.currentBall];
+        setLimelight(2);
+        setPIDProfile(0);
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
         state.flywheelTarget = state.flywheelHigh;
     }
+    
     
     double rpm = state.flywheelTarget * ShooterConstants::falconMaxRPM;
     double rp100ms = rpm / 600.0;
@@ -423,9 +435,12 @@ void Shooter::assignOutputs()
     else if(state.hoodState == HoodState::HOOD_TRACK){
         state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood;
     }
-    else if(state.hoodState = HoodState::HOOD_AUTO){
+    else if(state.hoodState == HoodState::HOOD_AUTO){
         //state.hoodTarget = ShooterConstants::hoodAuto;
         state.hoodTarget = ShooterConstants::hoodAngles[state.currentBall];
+    }
+    else if(state.hoodState == HoodState::HOOD_POOP){
+        state.hoodTarget = ShooterConstants::hoodPoop;
     }
     else if(state.hoodState == HoodState::HOOD_UP){
         state.hoodTarget = state.hoodHigh;
