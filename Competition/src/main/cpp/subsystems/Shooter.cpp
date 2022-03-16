@@ -114,17 +114,17 @@ void Shooter::init()
 
     limelightTrack(false);
 
-    m_chooserLimelight.AddOption("teleop close profile", 0);
-    m_chooserLimelight.AddOption("teleop far profile", 1);
-    m_chooserLimelight.AddOption("auto profile", 2);
+    // m_chooserLimelight.AddOption("teleop close profile", 0);
+    // m_chooserLimelight.AddOption("teleop far profile", 1);
+    // m_chooserLimelight.AddOption("auto profile", 2);
 
-    frc::SmartDashboard::PutData(&m_chooserLimelight);
+    // frc::SmartDashboard::PutData(&m_chooserLimelight);
     //frc::SmartDashboard::data
 
-    m_chooserPID.AddOption("close up shot", 0);
-    m_chooserPID.AddOption("far shot", 1);
+    // m_chooserPID.AddOption("close up shot", 0);
+    // m_chooserPID.AddOption("far shot", 1);
 
-    frc::SmartDashboard::PutData(&m_chooserPID);
+    // frc::SmartDashboard::PutData(&m_chooserPID);
 }
 
 void Shooter::resetState(){
@@ -255,8 +255,8 @@ void Shooter::analyzeDashboard()
         //setLimelight(0);
     }
 
-    setLimelight(m_chooserLimelight.GetSelected());
-    setPIDProfile(m_chooserPID.GetSelected());
+    //setLimelight(m_chooserLimelight.GetSelected());
+    //setPIDProfile(m_chooserPID.GetSelected());
 
     if (liftTable->GetNumber("Lift Main Encoder Value", 0) > ShooterConstants::turretRotateLiftThreshold) {
         state.turretState = TurretState::TURRET_HOME_LEFT;
@@ -388,9 +388,13 @@ void Shooter::assignOutputs()
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_DEFAULT){
         state.flywheelTarget = state.flywheelLow;
+        setLimelight(0);
+        setPIDProfile(0);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_TRACK){
         state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
+        setLimelight(1);
+        setPIDProfile(1);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_AUTO){
         //state.flywheelTarget = ShooterConstants::flywheelAutoValue;
