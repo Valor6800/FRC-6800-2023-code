@@ -51,7 +51,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d porkyBlue = frc::Pose2d(-0.35_m, 2.4_m, frc::Rotation2d(212_deg));
     frc::Pose2d porkyStepBackBlue = frc::Pose2d(.3_m, 2.8_m, frc::Rotation2d(212_deg));
     
+    frc::Translation2d shootConstrainRed = frc::Translation2d(3.15_m, 2_m);
     frc::Pose2d shootRed = frc::Pose2d(6_m, 1.2_m, frc::Rotation2d(65_deg));
+    frc::Translation2d shootConstrainBlue = frc::Translation2d(3.15_m, 2_m);
     frc::Pose2d shootBlue = frc::Pose2d(6_m, 1.2_m, frc::Rotation2d(65_deg));
 
     frc::Pose2d endPose2ballRed = frc::Pose2d(10_m, 10_m, frc::Rotation2d(0_deg));
@@ -65,8 +67,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         shooter->state.currentBall++; 
     } );
 
+//CAN USE AUTO INSTEAD OF TRACK TO MANUALLY CHANGE VALUES
+//TRACK USES LINE OF BEST FIT
     frc2::InstantCommand cmd_shooterAuto = frc2::InstantCommand( [&] {
-        shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_AUTO; 
+        shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_AUTO;
         shooter->state.hoodState = Shooter::HoodState::HOOD_AUTO;
     } );
 
@@ -169,12 +173,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     
     auto moveShootRed = frc::TrajectoryGenerator::GenerateTrajectory(
         porkyRed,
-        {},
+        {shootConstrainRed},
         shootRed,
         reverseConfig);
     auto moveShootBlue = frc::TrajectoryGenerator::GenerateTrajectory(
         porkyBlue,
-        {},
+        {shootConstrainBlue},
         shootBlue,
         reverseConfig);
 
@@ -399,11 +403,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeOne,
     cmd_move_moveBugsRed,
     cmd_move_moveBackBugsRed,
+    cmd_intakeDisable,
     cmd_move_movePreDaffyRed,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).25),
     cmd_intakeShoot,
-    frc2::WaitCommand((units::second_t).35),
+    frc2::WaitCommand((units::second_t).6),
     cmd_nextBall,
     cmd_intakeOne,
     cmd_move_moveDaffyFromPredaffyRed,
@@ -415,7 +420,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeOne,
     cmd_move_movePorkyFromDaffyRed,
     cmd_move_moveStepBackRed,
-    frc2::WaitCommand((units::second_t).65),
+    frc2::WaitCommand((units::second_t).4),
     cmd_turretHomeMid,
     cmd_move_moveShootRed,
     cmd_turretTrack,

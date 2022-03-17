@@ -31,6 +31,7 @@ void Shooter::init()
     initTable("Shooter");
     
     table->PutBoolean("Home Turret", false);
+
     table->PutBoolean("Zero Hood", false);
     table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     table->PutNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
@@ -125,6 +126,7 @@ void Shooter::init()
     // m_chooserPID.AddOption("far shot", 1);
 
     // frc::SmartDashboard::PutData(&m_chooserPID);
+    setPIDProfile(0);
 }
 
 void Shooter::resetState(){
@@ -395,12 +397,12 @@ void Shooter::assignOutputs()
     else if (state.flywheelState == FlywheelState::FLYWHEEL_DEFAULT){
         state.flywheelTarget = state.flywheelLow;
         setLimelight(0);
-        setPIDProfile(0);
+        //setPIDProfile(0);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_TRACK){
         state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
         setLimelight(1);
-        setPIDProfile(1);
+        //setPIDProfile(1);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_POOP){
         state.flywheelTarget = ShooterConstants::flywheelPoopValue;
@@ -409,7 +411,7 @@ void Shooter::assignOutputs()
         //state.flywheelTarget = ShooterConstants::flywheelAutoValue;
         state.flywheelTarget = ShooterConstants::flywheelSpeeds[state.currentBall];
         setLimelight(2);
-        setPIDProfile(0);
+        //setPIDProfile(0);
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
         state.flywheelTarget = state.flywheelHigh;
