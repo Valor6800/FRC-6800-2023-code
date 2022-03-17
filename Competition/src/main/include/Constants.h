@@ -88,7 +88,7 @@ namespace SwerveConstants {
     constexpr static double DRIVE_GEAR_RATIO = 1.0 / 5.12; // 1/8.14
     constexpr static double AZIMUTH_GEAR_RATIO = (15.0 / 32.0) * (10.0 / 60.0); // 0.078125
 
-    constexpr static double WHEEL_DIAMETER_M = 0.091; //.091 with black tread // original number with blue tread 0.1016;
+    constexpr static double WHEEL_DIAMETER_M = 0.1016; //.091 with black tread // original number with blue tread 0.1016;
     constexpr static double WHEEL_CIRCUMFERENCE_M = WHEEL_DIAMETER_M * M_PI;
 
     constexpr static double MOTOR_FREE_SPEED = 6380.0;
@@ -152,8 +152,8 @@ namespace ShooterConstants{
     constexpr static double flywheelDefaultValue = 0.375;
     constexpr static double flywheelPoopValue = 0.2;    
     
-    constexpr static double flywheelSpeeds[] = {.38, .4175, .39};
-    constexpr static double hoodAngles[] = {9, 13.4, 9};
+    constexpr static double flywheelSpeeds[] = {.375, .375, .375};
+    constexpr static double hoodAngles[] = {0, 0, 0};
 
     constexpr static double turretKP = 1e-5;
     constexpr static double turretKI = 0;
@@ -178,8 +178,8 @@ namespace ShooterConstants{
     constexpr static double hoodAllowedError = 0;
 
     constexpr static double hoodTop = 5;
-    constexpr static double hoodAuto = 6;
-    constexpr static double hoodBottom = 2.5;
+   // constexpr static double hoodAuto = 6;
+    constexpr static double hoodBottom = 0;
     constexpr static double hoodPoop = 0;
 
     constexpr static double hoodLimitTop = 22;
