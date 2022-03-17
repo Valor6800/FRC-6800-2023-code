@@ -426,7 +426,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_turretHomeMid,
     cmd_move_moveShootRed,
     cmd_turretTrack,
-    frc2::WaitCommand((units::second_t).225), //og .2
+    frc2::WaitCommand((units::second_t).225),
     cmd_intakeShoot
     );
     frc2::SequentialCommandGroup *shoot5Blue = new frc2::SequentialCommandGroup();
