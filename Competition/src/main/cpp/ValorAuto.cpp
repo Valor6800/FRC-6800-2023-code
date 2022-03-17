@@ -45,7 +45,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d daffyBlue = frc::Pose2d(3.55_m, 2.15_m, frc::Rotation2d(115_deg));
 
     frc::Translation2d porkyEntryRed = frc::Translation2d(1.3_m, 3.5_m);
-    frc::Pose2d porkyRed = frc::Pose2d(-0.35_m, 2.4_m, frc::Rotation2d(212_deg));
+    frc::Pose2d porkyRed = frc::Pose2d(-0.15_m, 2.2_m, frc::Rotation2d(212_deg));
     frc::Pose2d porkyStepBackRed = frc::Pose2d(.3_m, 2.8_m, frc::Rotation2d(212_deg));
     frc::Translation2d porkyEntryBlue = frc::Translation2d(1.3_m, 3.5_m);
     frc::Pose2d porkyBlue = frc::Pose2d(-0.35_m, 2.4_m, frc::Rotation2d(212_deg));
