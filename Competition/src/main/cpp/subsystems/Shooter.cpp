@@ -30,7 +30,7 @@ void Shooter::init()
     liftTable = nt::NetworkTableInstance::GetDefault().GetTable("Lift");
     initTable("Shooter");
     
-    table->PutBoolean("Home Turret", false);
+    table->PutBoolean("Zero Turret", false);
 
     table->PutBoolean("Zero Hood", false);
     table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
@@ -235,7 +235,19 @@ void Shooter::analyzeDashboard()
 
     // Turret homing and zeroing
     if (table->GetBoolean("Zero Turret", false)) {
+        turret.RestoreFactoryDefaults();
+        turret.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+        turret.SetInverted(true);
+
+        turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
+        turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::turretLimitLeft);
+
+        turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
+        turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, ShooterConstants::turretLimitRight);
+
+        turretEncoder = turret.GetEncoder();
         turretEncoder.SetPosition(0);
+        turretEncoder.SetPositionConversionFactor(360.0 * ShooterConstants::turretGearRatio);
     }
 
     // Hood zeroing

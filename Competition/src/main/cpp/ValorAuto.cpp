@@ -44,17 +44,17 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d predaffyBlue = frc::Pose2d(5.083_m, .7_m, frc::Rotation2d(135_deg));
     frc::Pose2d daffyBlue = frc::Pose2d(3.55_m, 2.15_m, frc::Rotation2d(115_deg));
 
-    frc::Translation2d porkyEntryRed = frc::Translation2d(1.3_m, 3.5_m);
-    frc::Pose2d porkyRed = frc::Pose2d(-0.25_m, 2.2_m, frc::Rotation2d(212_deg));
+    frc::Translation2d porkyEntryRed = frc::Translation2d(1.3_m, 3.25_m); //3.5
+    frc::Pose2d porkyRed = frc::Pose2d(-0.35_m, 2.1_m, frc::Rotation2d(212_deg));
     frc::Pose2d porkyStepBackRed = frc::Pose2d(.3_m, 2.8_m, frc::Rotation2d(212_deg));
-    frc::Translation2d porkyEntryBlue = frc::Translation2d(1.3_m, 3.5_m);
-    frc::Pose2d porkyBlue = frc::Pose2d(-0.25_m, 2.2_m, frc::Rotation2d(212_deg));
+    frc::Translation2d porkyEntryBlue = frc::Translation2d(1.3_m, 3.25_m); //3.5
+    frc::Pose2d porkyBlue = frc::Pose2d(-0.35_m, 2.1_m, frc::Rotation2d(212_deg));
     frc::Pose2d porkyStepBackBlue = frc::Pose2d(.3_m, 2.8_m, frc::Rotation2d(212_deg));
     
     frc::Translation2d shootConstrainRed = frc::Translation2d(3.15_m, 2_m); //1.2_m in case we need to push it more towards wall
-    frc::Pose2d shootRed = frc::Pose2d(6_m, 1.2_m, frc::Rotation2d(53_deg));
+    frc::Pose2d shootRed = frc::Pose2d(6_m, 1.2_m, frc::Rotation2d(53_deg)); // lower angle to 50 in case of time
     frc::Translation2d shootConstrainBlue = frc::Translation2d(3.15_m, 2_m); //1.2_m in case we need to push it more towards wall
-    frc::Pose2d shootBlue = frc::Pose2d(6_m, 1.2_m, frc::Rotation2d(53_deg));
+    frc::Pose2d shootBlue = frc::Pose2d(6_m, 1.2_m, frc::Rotation2d(53_deg)); //lower angle to 50 in case of time
 
     frc::Pose2d endPose2ballRed = frc::Pose2d(10_m, 10_m, frc::Rotation2d(0_deg));
     frc::Pose2d endPose2ballBlue = frc::Pose2d(10_m, 10_m, frc::Rotation2d(0_deg));
@@ -421,11 +421,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_move_movePorkyFromDaffyRed,
     cmd_move_moveStepBackRed,
     cmd_intakeOne,
-    frc2::WaitCommand((units::second_t).475),
+    frc2::WaitCommand((units::second_t).5),
     cmd_intakeDisable,
     cmd_turretHomeMid,
     cmd_move_moveShootRed,
-    cmd_turretTrack,
+    cmd_turretTrack, // if we lower the angle to 50 we could potentially cut tracking / lower time
     frc2::WaitCommand((units::second_t).225),
     cmd_intakeShoot
     );
@@ -455,11 +455,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_move_movePorkyFromDaffyBlue,
     cmd_move_moveStepBackBlue,
     cmd_intakeOne,
-    frc2::WaitCommand((units::second_t).475),
+    frc2::WaitCommand((units::second_t).5),
     cmd_intakeDisable,
     cmd_turretHomeMid,
     cmd_move_moveShootBlue,
-    cmd_turretTrack,
+    cmd_turretTrack, //if we lower the angle to 50 we could potentially cut the tracking / wait
     frc2::WaitCommand((units::second_t).225),
     cmd_intakeShoot
     );
@@ -473,7 +473,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     m_chooser.AddOption("BLUE 2 ball auto", shoot2Blue);
 
     frc::SmartDashboard::PutData(&m_chooser);
-    //frc::SmartDashboard::PutData()
 }
 
 frc2::Command* ValorAuto::getCurrentAuto() {

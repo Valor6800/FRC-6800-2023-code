@@ -66,6 +66,7 @@ void Lift::init()
 
     table->PutNumber("Rotate First Angle", LiftConstants::ROTATE_FIRST_POSITION);
     table->PutNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
+    table->PutNumber("Main Lift Second Pos", LiftConstants::MAIN_SECOND_POSITION);
 }
 
 void Lift::setController(frc::XboxController *controller)
@@ -87,6 +88,9 @@ void Lift::assessInputs()
     state.dPadDownPressed = operatorController->GetPOV() == OIConstants::dpadDown;
     state.dPadUpPressed = operatorController->GetPOV() == OIConstants::dpadUp;
 
+    state.leftTriggerPressed = operatorController->GetLeftTriggerAxis() > .9;
+    state.rightTriggerPressed = operatorController->GetRightTriggerAxis() > .9;
+
     if (state.dPadLeftPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold)
     {
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_EXTEND;
@@ -107,6 +111,9 @@ void Lift::assessInputs()
     {
         state.liftstateMain = LiftMainState::LIFT_MAIN_ENABLE;
     }
+    else if (state.leftTriggerPressed && state.rightTriggerPressed) {
+        state.liftstateMain = LiftMainState::LIFT_MAIN_FIRSTPOSITION;
+    }
     else if (state.dPadUpPressed) {
         state.liftstateMain = LiftMainState::LIFT_MAIN_TOPOSITION;
     }
@@ -124,7 +131,8 @@ void Lift::analyzeDashboard()
     table->PutNumber("Lift Rotate Encoder Value", rotateEncoder.GetPosition());
 
     state.desiredRotatePos = table->GetNumber("Rotate First Angle", LiftConstants::ROTATE_FIRST_POSITION);
-    state.desiredMainPos = table->GetNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
+    state.desiredMainPos = table->GetNumber("Main Lift Second Pos", LiftConstants::MAIN_SECOND_POSITION);
+    state.desiredMainFirstPos = table->GetNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
 }
 
 void Lift::assignOutputs()
@@ -156,6 +164,10 @@ void Lift::assignOutputs()
         else if(state.rightStickY < (-1 * LiftConstants::kDeadbandY)){
             leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_RETRACT_SPD);
         }
+    }
+    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_FIRSTPOSITION) {
+        leadMainMotor.Set(ControlMode::MotionMagic, state.desiredMainFirstPos);
+
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_TOPOSITION) {
         leadMainMotor.Set(ControlMode::MotionMagic, state.desiredMainPos);

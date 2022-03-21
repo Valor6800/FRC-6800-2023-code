@@ -152,7 +152,7 @@ void Drivetrain::assessInputs()
 
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
-    state.tracking = driverController->GetRightTriggerAxis() > 0.25;
+    state.tracking = false;//driverController->GetRightTriggerAxis() > 0.25;
 }
 
 void Drivetrain::analyzeDashboard()

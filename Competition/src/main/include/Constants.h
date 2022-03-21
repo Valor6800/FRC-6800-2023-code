@@ -119,7 +119,7 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_HOOD = 15;    
 
     constexpr static double aPower = 0.12;
-    constexpr static double bPower = 0.215;
+    constexpr static double bPower = 0.205; //.215
     constexpr static double aHood = 22.6;
     constexpr static double bHood = -25;
     
@@ -134,7 +134,7 @@ namespace ShooterConstants{
     constexpr static double flywheelKIZ1 = 0;
     constexpr static double flywheelKFF1 = 0.05;
 
-    constexpr static double flywheelKP0 = 0.25;
+    constexpr static double flywheelKP0 = 0.22; //.25
     constexpr static double flywheelKI0 = 0;
     constexpr static double flywheelKD0 = 7.5;
     constexpr static double flywheelKIZ0 = 0;
@@ -149,11 +149,11 @@ namespace ShooterConstants{
 
     constexpr static double flywheelPrimedValue = 0.36;
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
-    constexpr static double flywheelDefaultValue = 0.375;
+    constexpr static double flywheelDefaultValue = 0.365; //.375
     constexpr static double flywheelPoopValue = 0.25;
     constexpr static double flywheelLaunchpadValue = .455;    
     
-    constexpr static double flywheelSpeeds[] = {.387, .39125, .387};
+    constexpr static double flywheelSpeeds[] = {.372, .38125, .372}; //.387, .39125
     constexpr static double hoodAngles[] = {5, 9, 5};
 
     constexpr static double turretKP = 1e-5;
@@ -249,7 +249,8 @@ namespace LiftConstants{
     constexpr static int MAIN_FOLLOW_CAN_ID = 17;
     constexpr static int ROTATE_CAN_ID = 18;
 
-    constexpr static int MAIN_FIRST_POSITION = 78500;
+    constexpr static int MAIN_FIRST_POSITION = 62000;
+    constexpr static int MAIN_SECOND_POSITION = 78500;
     constexpr static double MAIN_DOWN_POSITION = 125;
 
     constexpr static int ROTATE_FIRST_POSITION = 40;

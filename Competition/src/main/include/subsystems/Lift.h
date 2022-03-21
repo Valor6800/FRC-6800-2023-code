@@ -42,7 +42,8 @@ public:
     enum LiftMainState {
         LIFT_MAIN_DISABLED,
         LIFT_MAIN_ENABLE,
-        LIFT_MAIN_TOPOSITION
+        LIFT_MAIN_TOPOSITION,
+        LIFT_MAIN_FIRSTPOSITION
     };
 
 
@@ -56,6 +57,9 @@ public:
         bool dPadLeftPressed;
         bool dPadRightPressed;
 
+        bool leftTriggerPressed;
+        bool rightTriggerPressed;
+
         double rightStickY;
 
         double powerRetract;
@@ -64,6 +68,7 @@ public:
 
         double desiredRotatePos;
         double desiredMainPos;
+        double desiredMainFirstPos;
 
     } state;
 

@@ -59,7 +59,7 @@ void Feeder::assessInputs()
     }
 
     // driver inputs
-
+  
     state.driver_leftBumperPressed = driverController->GetLeftBumper();
     state.driver_rightBumperPressed = driverController->GetRightBumper();
 
