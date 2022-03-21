@@ -226,18 +226,18 @@ void Drivetrain::assignOutputs()
 {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    double xSpeed = std::abs(state.leftStickY) > DriveConstants::kDeadbandY ? fabs(state.leftStickY) * -state.leftStickY : 0 ;
+    double xSpeed = std::abs(state.leftStickY) > OIConstants::kDeadbandY ? fabs(state.leftStickY) * -state.leftStickY : 0 ;
 
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    double ySpeed = std::abs(state.leftStickX) > DriveConstants::kDeadbandX ? fabs(state.leftStickX) * -state.leftStickX : 0;
+    double ySpeed = std::abs(state.leftStickX) > OIConstants::kDeadbandX ? fabs(state.leftStickX) * -state.leftStickX : 0;
 
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left (remember, CCW is positive in
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
-    double rot = std::abs(state.rightStickX) > DriveConstants::kDeadbandX ? fabs(state.rightStickX) * -state.rightStickX : 0;
+    double rot = std::abs(state.rightStickX) > OIConstants::kDeadbandX ? fabs(state.rightStickX) * -state.rightStickX : 0;
 
     units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};

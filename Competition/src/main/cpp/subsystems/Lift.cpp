@@ -88,8 +88,8 @@ void Lift::assessInputs()
     state.dPadDownPressed = operatorController->GetPOV() == OIConstants::dpadDown;
     state.dPadUpPressed = operatorController->GetPOV() == OIConstants::dpadUp;
 
-    state.leftTriggerPressed = operatorController->GetLeftTriggerAxis() > .9;
-    state.rightTriggerPressed = operatorController->GetRightTriggerAxis() > .9;
+    state.leftTriggerPressed = operatorController->GetLeftTriggerAxis() > LiftConstants::kDeadBandTrigger;
+    state.rightTriggerPressed = operatorController->GetRightTriggerAxis() > LiftConstants::kDeadBandTrigger;
 
     if (state.dPadLeftPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold)
     {
@@ -107,7 +107,7 @@ void Lift::assessInputs()
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_DISABLED;
     }
 
-    if (std::abs(state.rightStickY) > LiftConstants::kDeadbandY)
+    if (std::abs(state.rightStickY) > OIConstants::kDeadbandY)
     {
         state.liftstateMain = LiftMainState::LIFT_MAIN_ENABLE;
     }
@@ -158,10 +158,10 @@ void Lift::assignOutputs()
         leadMainMotor.Set(0);
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_ENABLE) {
-        if(state.rightStickY > LiftConstants::kDeadbandY){
+        if(state.rightStickY > OIConstants::kDeadbandY){
             leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_EXTEND_SPD);
         }
-        else if(state.rightStickY < (-1 * LiftConstants::kDeadbandY)){
+        else if(state.rightStickY < (-1 * OIConstants::kDeadbandY)){
             leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_RETRACT_SPD);
         }
     }

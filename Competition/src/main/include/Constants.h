@@ -57,9 +57,6 @@ namespace DriveConstants {
     constexpr static int MODULE_DIFF_XS[4] = {1, 1, -1, -1}; //{1, 1, -1, -1};
     constexpr static int MODULE_DIFF_YS[4] = {1, -1, 1, -1}; //{-1, 1, -1, 1};
 
-    constexpr static double kDeadbandX = 0.05;
-    constexpr static double kDeadbandY = 0.05;
-
     constexpr static double TURN_KP = 3.8 * M_PI / 180.0;
     constexpr static double LIMELIGHT_KP = .02;
 
@@ -266,7 +263,7 @@ namespace LiftConstants{
     constexpr static double DEFAULT_MAIN_EXTEND_SPD = 0.65;
     constexpr static double DEFAULT_MAIN_RETRACT_SPD = 0.65;
 
-    constexpr static double kDeadbandY = 0.05;
+    constexpr static double kDeadBandTrigger = 0.9;
 
     constexpr static double rotateNoLowerThreshold = 77500;
 
