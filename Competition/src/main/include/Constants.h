@@ -125,17 +125,17 @@ namespace ShooterConstants{
     constexpr static double hubHeight = 2.64;
     constexpr static double limelightHeight = .6075;
     
-    constexpr static double flywheelKP1 = 0.21;
+    constexpr static double flywheelKP1 = 0.04;
     constexpr static double flywheelKI1 = 0;
-    constexpr static double flywheelKD1 = 6.5;
+    constexpr static double flywheelKD1 = 0;
     constexpr static double flywheelKIZ1 = 0;
-    constexpr static double flywheelKFF1 = 0.05;
+    constexpr static double flywheelKFF1 = 0.1;
 
-    constexpr static double flywheelKP0 = 0.22; //.25
+    constexpr static double flywheelKP0 = 0.04; //.25
     constexpr static double flywheelKI0 = 0;
-    constexpr static double flywheelKD0 = 7.5;
+    constexpr static double flywheelKD0 = 0;
     constexpr static double flywheelKIZ0 = 0;
-    constexpr static double flywheelKFF0 = 0.05;
+    constexpr static double flywheelKFF0 = 0.1;
 
     constexpr static double MaxRPM = 6380;
 
