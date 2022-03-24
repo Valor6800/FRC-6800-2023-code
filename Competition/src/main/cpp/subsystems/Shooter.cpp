@@ -412,7 +412,8 @@ void Shooter::assignOutputs()
         //setPIDProfile(0);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_TRACK){
-        state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower;
+        //state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower; commented out for testing PID
+        state.flywheelTarget = state.flywheelHigh;
         setLimelight(1);
         //setPIDProfile(1);
     }
@@ -421,7 +422,7 @@ void Shooter::assignOutputs()
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_AUTO){
         //state.flywheelTarget = ShooterConstants::flywheelAutoValue;
-        state.flywheelTarget = ShooterConstants::flywheelSpeeds[state.currentBall];
+        state.flywheelTarget = ShooterConstants::flywheelSpeeds[state.currentBall]; 
         setLimelight(2);
         //setPIDProfile(0);
     }
@@ -435,7 +436,9 @@ void Shooter::assignOutputs()
     double ticsp100ms = rp100ms * ShooterConstants::falconGearRatio * ShooterConstants::ticsPerRev;
 
     table->PutNumber("FlyWheel State", state.flywheelState);
-    table->PutNumber("FlyWheel Target", state.flywheelTarget);
+    table->PutNumber("FlyWheel Target", ticsp100ms);
+    table->PutNumber("Flywheel Speed", flywheel_lead.GetSelectedSensorVelocity());
+    
 
     flywheel_lead.Set(ControlMode::Velocity, ticsp100ms);
 
@@ -447,7 +450,8 @@ void Shooter::assignOutputs()
         state.hoodTarget = state.hoodLow;
     }
     else if(state.hoodState == HoodState::HOOD_TRACK){
-        state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood;
+        //state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood; commented out for testing PID
+        state.hoodTarget = state.hoodHigh;
     }
     else if(state.hoodState == HoodState::HOOD_AUTO){
         //state.hoodTarget = ShooterConstants::hoodAuto;
