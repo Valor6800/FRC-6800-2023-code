@@ -78,7 +78,7 @@ void Feeder::assessInputs()
         state.spiked = false;
     }
     else if (state.driver_rightBumperPressed) {
-        state.feederState = FeederState::FEEDER_REGUALR_INTAKE; //standard intake
+        state.feederState = FeederState::FEEDER_REGULAR_INTAKE; //standard intake
     }
     else if (state.driver_rightTriggerPressed) {
         state.feederState = FeederState::FEEDER_CURRENT_INTAKE; //includes current/banner sensing
@@ -121,7 +121,7 @@ void Feeder::assignOutputs()
         motor_intake.Set(state.intakeReverseSpeed);
         motor_stage.Set(state.feederReverseSpeed);
     }
-    else if (state.feederState == Feeder::FEEDER_REGUALR_INTAKE){
+    else if (state.feederState == Feeder::FEEDER_REGULAR_INTAKE){
         motor_intake.Set(state.intakeForwardSpeed);
         motor_stage.Set(0);
     }
