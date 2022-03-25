@@ -36,7 +36,7 @@ public:
     Shooter();
 
     void init();
-    void setController(frc::XboxController *controller);
+    void setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD);
     void setDrivetrain(Drivetrain * dt);
 
     void assessInputs();
@@ -98,6 +98,9 @@ public:
           bool xButton;
           bool bButton;
 
+          bool driverLeftTrigger;
+          bool driverLastLeftTrigger;
+
           double limelightDistance;
 
           double turretOutput; //%
@@ -118,6 +121,11 @@ public:
 
           int currentBall;
 
+          int pipeline;
+
+          double hoodB;
+          double powerB;
+
     } state;
 
 
@@ -135,6 +143,8 @@ private:
      rev::SparkMaxPIDController hoodPidController = hood.GetPIDController();
 
      frc::XboxController *operatorController;
+     frc::XboxController *driverController;
+
      std::shared_ptr<nt::NetworkTable> limeTable;
      std::shared_ptr<nt::NetworkTable> liftTable;
 

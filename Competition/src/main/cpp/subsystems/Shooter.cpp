@@ -14,7 +14,8 @@ Shooter::Shooter() : ValorSubsystem(),
                     flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD},
                     turret{ShooterConstants::CAN_ID_TURRET, rev::CANSparkMax::MotorType::kBrushless},
                     hood{ShooterConstants::CAN_ID_HOOD, rev::CANSparkMax::MotorType::kBrushless},
-                    operatorController(NULL)
+                    operatorController(NULL),
+                    driverController(NULL)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -39,6 +40,9 @@ void Shooter::init()
     table->PutNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
     
     table->PutBoolean("Use line of best fit", false);
+
+    table->PutNumber("Hood Y Int", ShooterConstants::bHood);
+    table->PutNumber("Power Y Int", ShooterConstants::bPower);
 
     flywheel_lead.ConfigFactoryDefault();
     flywheel_lead.ConfigAllowableClosedloopError(0, 0);
@@ -151,9 +155,10 @@ void Shooter::resetEncoder(){
     hoodEncoder.SetPosition(0);
 }
 
-void Shooter::setController(frc::XboxController *controller)
+void Shooter::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
 {
-    operatorController = controller;
+    operatorController = controllerO;
+    driverController = controllerD;
 }
 
 void Shooter::limelightTrack(bool track){
@@ -175,16 +180,17 @@ void Shooter::assessInputs()
     state.yButton = operatorController->GetYButton();
     state.xButton = operatorController->GetXButton();
     state.bButton = operatorController->GetBButtonPressed();
+    state.driverLeftTrigger = driverController->GetLeftTriggerAxis() > 0.9;
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
         state.turretState = TurretState::TURRET_MANUAL; // Operator control
     }
-    else if(state.rightBumper){
-       state.turretState = TurretState::TURRET_TRACK; // Use limelight
-    }
+    // else if(state.rightBumper){
+    //    state.turretState = TurretState::TURRET_TRACK; // Use limelight
+    // }
     else{
-        state.turretState = TurretState::TURRET_DISABLE; // Not moving
+        state.turretState = TurretState::TURRET_TRACK; // Not moving
     }
 
     //Hood
@@ -219,6 +225,16 @@ void Shooter::assessInputs()
     // else if (state.bButton) {
     //     state.turretState = TurretState::TURRET_HOME_RIGHT;
     // }
+
+    //Limelight
+    if(state.driverLeftTrigger && state.pipeline == 1 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
+        setLimelight(0);
+    }
+    else if (state.driverLeftTrigger && state.pipeline == 0 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
+        setLimelight(1);
+    }
+
+    state.driverLastLeftTrigger = state.driverLeftTrigger;
 }
 
 void Shooter::analyzeDashboard()
@@ -300,11 +316,15 @@ void Shooter::analyzeDashboard()
     table->PutNumber("hood high", state.hoodHigh);
 
     table->PutNumber("Turret State", state.turretState);
+
+    state.hoodB = table->GetNumber("Hood Y Int", ShooterConstants::bHood);
+    state.powerB = table->GetNumber("Power Y Int", ShooterConstants::bPower);
 }
 
 //0 is close, 1 is far, 2 is auto
 void Shooter::setLimelight(int pipeline){
     limeTable->PutNumber("pipeline", pipeline);
+    state.pipeline = pipeline;
 }
 
 void Shooter::setPIDProfile(int slotID){
@@ -408,13 +428,13 @@ void Shooter::assignOutputs()
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_DEFAULT){
         state.flywheelTarget = state.flywheelLow;
-        setLimelight(0);
+        //setLimelight(0);
         //setPIDProfile(0);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_TRACK){
-        //state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + ShooterConstants::bPower; commented out for testing PID
-        state.flywheelTarget = state.flywheelHigh;
-        setLimelight(1);
+        state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + state.powerB; //commented out for testing PID
+        //state.flywheelTarget = state.flywheelHigh;
+        //setLimelight(0);
         //setPIDProfile(1);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_POOP){
@@ -450,8 +470,8 @@ void Shooter::assignOutputs()
         state.hoodTarget = state.hoodLow;
     }
     else if(state.hoodState == HoodState::HOOD_TRACK){
-        //state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + ShooterConstants::bHood; commented out for testing PID
-        state.hoodTarget = state.hoodHigh;
+        state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + state.hoodB; //commented out for testing PID
+        //state.hoodTarget = state.hoodHigh;
     }
     else if(state.hoodState == HoodState::HOOD_AUTO){
         //state.hoodTarget = ShooterConstants::hoodAuto;

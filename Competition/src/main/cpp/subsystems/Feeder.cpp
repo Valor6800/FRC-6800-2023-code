@@ -69,7 +69,7 @@ void Feeder::assessInputs()
 
     state.operator_leftBumperPressed = operatorController->GetLeftBumper();
         
-    if (state.operator_leftBumperPressed) {
+    if (state.driver_rightTriggerPressed || state.operator_leftBumperPressed) {
         state.feederState = FeederState::FEEDER_SHOOT; //intake and feeder run
         state.spiked = false;
     }
@@ -115,7 +115,8 @@ void Feeder::assignOutputs()
     }
     else if (state.feederState == FeederState::FEEDER_SHOOT) {
         motor_intake.Set(state.intakeForwardSpeed);
-        motor_stage.Set(state.feederForwardSpeedShoot);
+        //motor_stage.Set(state.feederForwardSpeedShoot);
+        motor_stage.SetVoltage(10_V * state.feederForwardSpeedShoot);
     }
     else if (state.feederState == Feeder::FEEDER_REVERSE) {
         motor_intake.Set(state.intakeReverseSpeed);

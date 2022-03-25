@@ -116,7 +116,7 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_HOOD = 15;    
 
     constexpr static double aPower = 0.12;
-    constexpr static double bPower = 0.205; //.215
+    constexpr static double bPower = 0.26; //.215
     constexpr static double aHood = 22.6;
     constexpr static double bHood = -25;
     
@@ -125,17 +125,17 @@ namespace ShooterConstants{
     constexpr static double hubHeight = 2.64;
     constexpr static double limelightHeight = .6075;
     
-    constexpr static double flywheelKP1 = 0.04;
+    constexpr static double flywheelKP1 = 0.1;
     constexpr static double flywheelKI1 = 0;
     constexpr static double flywheelKD1 = 0;
     constexpr static double flywheelKIZ1 = 0;
-    constexpr static double flywheelKFF1 = 0.1;
+    constexpr static double flywheelKFF1 = 0.04;
 
-    constexpr static double flywheelKP0 = 0.04; //.25
+    constexpr static double flywheelKP0 = 0.1  ; //.25
     constexpr static double flywheelKI0 = 0;
     constexpr static double flywheelKD0 = 0;
     constexpr static double flywheelKIZ0 = 0;
-    constexpr static double flywheelKFF0 = 0.1;
+    constexpr static double flywheelKFF0 = 0.04;
 
     constexpr static double MaxRPM = 6380;
 
@@ -146,7 +146,7 @@ namespace ShooterConstants{
 
     constexpr static double flywheelPrimedValue = 0.46;
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
-    constexpr static double flywheelDefaultValue = 0.365; //.375
+    constexpr static double flywheelDefaultValue = 0.42; //.375
     constexpr static double flywheelPoopValue = 0.25;
     constexpr static double flywheelLaunchpadValue = .455;    
     
@@ -162,7 +162,7 @@ namespace ShooterConstants{
     constexpr static double turretMaxV = 10000;
     constexpr static double turretMinV = 0;
     constexpr static double turretMaxAccel = turretMaxV * 2;
-    constexpr static double turretAllowedError = 1.0;
+    constexpr static double turretAllowedError = 0.75;
 
     constexpr static double hoodKP = 5e-5;
     constexpr static double hoodKI = 0;
@@ -226,7 +226,7 @@ namespace FeederConstants{
     constexpr static double DEFAULT_INTAKE_SPEED_REVERSE = -0.9;
 
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT = 0.5;
-    constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 0.9;
+    constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 0.98;
     constexpr static double DEFAULT_FEEDER_SPEED_REVERSE = -1.0;
 
     constexpr static int CACHE_SIZE = 25;

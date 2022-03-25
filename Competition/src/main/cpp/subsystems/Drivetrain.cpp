@@ -237,22 +237,23 @@ void Drivetrain::assignOutputs()
     // positive value when we pull to the left (remember, CCW is positive in
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
+    
     double rot = std::abs(state.rightStickX) > OIConstants::kDeadbandX ? fabs(state.rightStickX) * -state.rightStickX : 0;
-
+    
     units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::radians_per_second_t rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_MAX_SPEED_RPS};
-
-    double heading = getPose_m().Rotation().Degrees().to<double>();
-    if (state.bButtonPressed) {
-        rotRPS = units::radians_per_second_t{angleWrap(heading - 90) * DriveConstants::TURN_KP};
-    } else if (state.aButtonPressed) {
-        rotRPS = units::radians_per_second_t{angleWrap(heading - 180) * DriveConstants::TURN_KP};
-    } else if (state.xButtonPressed) {
-        rotRPS = units::radians_per_second_t{angleWrap(heading - 270) * DriveConstants::TURN_KP};
-    } else if (state.yButtonPressed) {
-        rotRPS = units::radians_per_second_t{angleWrap(heading) * DriveConstants::TURN_KP};
-    }
+    
+    // double heading = getPose_m().Rotation().Degrees().to<double>();
+    // if (state.bButtonPressed) {
+    //     rotRPS = units::radians_per_second_t{angleWrap(heading - 90) * DriveConstants::TURN_KP};
+    // } else if (state.aButtonPressed) {
+    //     rotRPS = units::radians_per_second_t{angleWrap(heading - 180) * DriveConstants::TURN_KP};
+    // } else if (state.xButtonPressed) {
+    //     rotRPS = units::radians_per_second_t{angleWrap(heading - 270) * DriveConstants::TURN_KP};
+    // } else if (state.yButtonPressed) {
+    //     rotRPS = units::radians_per_second_t{angleWrap(heading) * DriveConstants::TURN_KP};
+    // }
 
     // Limelight Tracking
     if (state.tracking) {
