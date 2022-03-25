@@ -262,8 +262,8 @@ namespace LiftConstants{
 
     constexpr static double pivotGearRatio = 1 / 95.67;
 
-    constexpr static double DEFAULT_MAIN_EXTEND_SPD = 0.65;
-    constexpr static double DEFAULT_MAIN_RETRACT_SPD = 0.65;
+    constexpr static double DEFAULT_MAIN_EXTEND_SPD = 0.7; //.65
+    constexpr static double DEFAULT_MAIN_RETRACT_SPD = 0.7; //.65
 
     constexpr static double kDeadBandTrigger = 0.9;
 
