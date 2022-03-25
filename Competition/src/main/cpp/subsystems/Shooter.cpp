@@ -51,7 +51,7 @@ void Shooter::init()
     flywheel_lead.Config_kD(0, ShooterConstants::flywheelKD0);
     flywheel_lead.Config_kI(0, ShooterConstants::flywheelKI0);
     flywheel_lead.Config_kP(0, ShooterConstants::flywheelKP0);
-
+     
     flywheel_lead.ConfigAllowableClosedloopError(1, 0);
     flywheel_lead.Config_IntegralZone(1, 0);
     flywheel_lead.Config_kF(1, ShooterConstants::flywheelKFF1);
@@ -62,6 +62,7 @@ void Shooter::init()
     flywheel_lead.ConfigMotionAcceleration(ShooterConstants::flywheelMaxAccel);
     flywheel_lead.ConfigMotionCruiseVelocity(ShooterConstants::flywheelCruiseVelo);
     flywheel_lead.SetNeutralMode(NeutralMode::Coast);
+    flywheel_lead.ConfigPeakOutputReverse(0);
 
     flywheel_lead.SetInverted(false);
     flywheel_lead.SelectProfileSlot(0, 0);
