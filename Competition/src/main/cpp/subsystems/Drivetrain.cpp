@@ -245,9 +245,15 @@ void Drivetrain::assignOutputs()
     units::radians_per_second_t rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_MAX_SPEED_RPS};
 
     if(state.aButtonPressed){
-        xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_SLOW_SPEED_MPS};
-        ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_SLOW_SPEED_MPS};
-        rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_SLOW_SPEED_RPS};
+        double magnitude = std::sqrt(std::pow(xSpeed, 2) + std::pow(ySpeed, 2));
+        xSpeed /= magnitude;
+        ySpeed /= magnitude;
+        xSpeedMPS = units::meters_per_second_t{xSpeed};
+        ySpeedMPS = units::meters_per_second_t{ySpeed};
+        if(rot != 0){
+            int sign = std::signbit(rot) == 0 ? 1 : -1;
+            rotRPS = units::radians_per_second_t{SwerveConstants::ROTATION_SLOW_SPEED_RPS};
+        }
     }
     // double heading = getPose_m().Rotation().Degrees().to<double>();
     // if (state.bButtonPressed) {

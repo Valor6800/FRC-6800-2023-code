@@ -126,6 +126,9 @@ public:
           double hoodB;
           double powerB;
 
+          double powerC;
+          double hoodC;
+
     } state;
 
 

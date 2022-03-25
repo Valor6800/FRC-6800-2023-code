@@ -41,8 +41,8 @@ void Shooter::init()
     
     table->PutBoolean("Use line of best fit", false);
 
-    table->PutNumber("Hood Y Int", ShooterConstants::bHood);
-    table->PutNumber("Power Y Int", ShooterConstants::bPower);
+    table->PutNumber("Hood Y Int", ShooterConstants::cHood);
+    table->PutNumber("Power Y Int", ShooterConstants::cPower);
 
     flywheel_lead.ConfigFactoryDefault();
     flywheel_lead.ConfigAllowableClosedloopError(0, 0);
@@ -195,25 +195,26 @@ void Shooter::assessInputs()
     }
 
     //Hood
-    if(state.bButton){
-        state.hoodState = HoodState::HOOD_TRACK; // High position
-    }
-    else if(state.aButton){
+    
+    if(state.aButton){
         state.hoodState = HoodState::HOOD_DOWN; // Low position
     }
     else if(state.xButton){
         state.hoodState = HoodState::HOOD_POOP;
     }
+    else{
+        state.hoodState = HoodState::HOOD_TRACK; // High position
+    }
 
     //Flywheel
-    if(state.bButton){
-        state.flywheelState = FlywheelState::FLYWHEEL_TRACK; // Higher speed
-    }
-    else if (state.aButton){
+    if (state.aButton){
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT; // Lower speed
     }
     else if (state.xButton){
         state.flywheelState = FlywheelState::FLYWHEEL_POOP;
+    }
+    else{
+        state.flywheelState = FlywheelState::FLYWHEEL_TRACK; // Higher speed
     }
 
     state.trackCorner = false;//state.rightBumper ? true : false;
@@ -297,6 +298,8 @@ void Shooter::analyzeDashboard()
 
     if (liftTable->GetNumber("Lift Main Encoder Value", 0) > ShooterConstants::turretRotateLiftThreshold) {
         state.turretState = TurretState::TURRET_HOME_LEFT;
+        limelightTrack(false);
+        state.hoodState = HoodState::HOOD_DOWN;
     }
 
     if (state.turretState == TurretState::TURRET_TRACK && state.lastTurretState != TurretState::TURRET_TRACK){
@@ -318,8 +321,8 @@ void Shooter::analyzeDashboard()
 
     table->PutNumber("Turret State", state.turretState);
 
-    state.hoodB = table->GetNumber("Hood Y Int", ShooterConstants::bHood);
-    state.powerB = table->GetNumber("Power Y Int", ShooterConstants::bPower);
+    state.hoodC = table->GetNumber("Hood Y Int", ShooterConstants::cHood);
+    state.powerC = table->GetNumber("Power Y Int", ShooterConstants::cPower);
 }
 
 //0 is close, 1 is far, 2 is auto
@@ -433,7 +436,7 @@ void Shooter::assignOutputs()
         //setPIDProfile(0);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_TRACK){
-        state.flywheelTarget = ShooterConstants::aPower * state.distanceToHub + state.powerB; //commented out for testing PID
+        state.flywheelTarget = ShooterConstants::aPower *(state.distanceToHub * state.distanceToHub) + ShooterConstants::bPower * state.distanceToHub + state.powerC ; //commented out for testing PID
         //state.flywheelTarget = state.flywheelHigh;
         //setLimelight(0);
         //setPIDProfile(1);
@@ -471,7 +474,7 @@ void Shooter::assignOutputs()
         state.hoodTarget = state.hoodLow;
     }
     else if(state.hoodState == HoodState::HOOD_TRACK){
-        state.hoodTarget = ShooterConstants::aHood * state.distanceToHub + state.hoodB; //commented out for testing PID
+        state.hoodTarget = ShooterConstants::aHood * (state.distanceToHub * state.distanceToHub) + ShooterConstants::bHood * state.distanceToHub + state.hoodC; //commented out for testing PID
         //state.hoodTarget = state.hoodHigh;
     }
     else if(state.hoodState == HoodState::HOOD_AUTO){
