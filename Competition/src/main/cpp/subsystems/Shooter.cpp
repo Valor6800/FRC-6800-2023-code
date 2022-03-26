@@ -134,7 +134,7 @@ void Shooter::resetState(){
 
     state.flywheelTarget = 0;
     state.hoodTarget = 0;
-    state.distanceToHub = 3;
+    state.distanceToHub = 1;
     state.currentBall = 0;
 }
 
