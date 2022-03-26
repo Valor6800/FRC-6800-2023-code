@@ -39,8 +39,6 @@ void Shooter::init()
     table->PutNumber("Hood Top Position", ShooterConstants::hoodTop);
     table->PutNumber("Hood Bottom Position", ShooterConstants::hoodBottom);
     
-    table->PutBoolean("Use line of best fit", false);
-
     table->PutNumber("Hood Y Int", ShooterConstants::cHood);
     table->PutNumber("Power Y Int", ShooterConstants::cPower);
 
@@ -120,17 +118,6 @@ void Shooter::init()
 
     limelightTrack(false);
 
-    // m_chooserLimelight.AddOption("teleop close profile", 0);
-    // m_chooserLimelight.AddOption("teleop far profile", 1);
-    // m_chooserLimelight.AddOption("auto profile", 2);
-
-    // frc::SmartDashboard::PutData(&m_chooserLimelight);
-    //frc::SmartDashboard::data
-
-    // m_chooserPID.AddOption("close up shot", 0);
-    // m_chooserPID.AddOption("far shot", 1);
-
-    // frc::SmartDashboard::PutData(&m_chooserPID);
     setPIDProfile(0);
 }
 
@@ -280,22 +267,6 @@ void Shooter::analyzeDashboard()
     state.hoodHigh = table->GetNumber("Hood Top Position", ShooterConstants::hoodTop);
 
 
-    // Logic should exist here in case we need to turn off limelight for auto
-    // Set the button to false and default speeds will be used in auto
-    if (table->GetBoolean("Use line of best fit", false)) {
-        if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME)
-            state.flywheelState = FlywheelState::FLYWHEEL_TRACK;
-        if (state.hoodState == HoodState::HOOD_UP)
-            state.hoodState = HoodState::HOOD_TRACK;
-        //setLimelight(1);
-    }
-    else{
-        //setLimelight(0);
-    }
-
-    //setLimelight(m_chooserLimelight.GetSelected());
-    //setPIDProfile(m_chooserPID.GetSelected());
-
     if (liftTable->GetNumber("Lift Main Encoder Value", 0) > ShooterConstants::turretRotateLiftThreshold) {
         state.turretState = TurretState::TURRET_HOME_LEFT;
         limelightTrack(false);
@@ -313,6 +284,8 @@ void Shooter::analyzeDashboard()
 
     table->PutNumber("Hood degrees", hoodEncoder.GetPosition());
     table->PutNumber("Turret pos", turretEncoder.GetPosition());
+
+    table->PutNumber("Turret target", state.turretTarget);
 
     table->PutNumber("left stick x", state.leftStickX);
 
@@ -341,6 +314,9 @@ void Shooter::assignOutputs()
     /*//////////////////////////////////////
     // Turret                             //  
     //////////////////////////////////////*/
+
+    state.tx = limeTable->GetNumber("tx", 0.0);
+    state.tv = limeTable->GetNumber("tv", 0.0);
 
     //MANUAL
     state.turretTarget = 0;
@@ -389,13 +365,7 @@ void Shooter::assignOutputs()
     }
     //PRIMED
     else if (state.turretState == TurretState::TURRET_TRACK){
-        float tx = limeTable->GetNumber("tx", 0.0);
-        float tv = limeTable->GetNumber("tv", 0.0);
-        state.turretTarget = (-tx * tv * 0.75) + turretEncoder.GetPosition();
-        std::clamp(state.turretTarget, ShooterConstants::turretLimitRight, ShooterConstants::turretLimitLeft);
         turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
-        // state.turretOutput = tv * -tx * ShooterConstants::limelightTurnKP;
-        // turret.Set(state.turretOutput);
     }
     //DEFAULT
     else if (state.turretState == TurretState::TURRET_AUTO){
@@ -524,4 +494,8 @@ double Shooter::convertTargetTics(double originalTarget, double realTicsPerRev){
         originalTarget -= realTicsPerRev;
     }
     return originalTarget;
+}
+
+void Shooter::assignTurret(double tg) {
+    state.turretTarget = tg;
 }

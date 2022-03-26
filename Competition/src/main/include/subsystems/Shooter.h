@@ -54,6 +54,8 @@ public:
      void setLimelight(int pipeline);
      void setPIDProfile(int slotID);
 
+     void assignTurret(double tg);
+
     enum TurretState{
          TURRET_DISABLE, // Not moving
          TURRET_MANUAL, // Manual control from operator
@@ -128,6 +130,8 @@ public:
 
           double powerC;
           double hoodC;
+          double tv;
+          double tx;
 
     } state;
 
