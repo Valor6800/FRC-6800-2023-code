@@ -174,9 +174,6 @@ void Shooter::assessInputs()
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
         state.turretState = TurretState::TURRET_MANUAL; // Operator control
     }
-    // else if(state.rightBumper){
-    //    state.turretState = TurretState::TURRET_TRACK; // Use limelight
-    // }
     else{
         state.turretState = TurretState::TURRET_TRACK; // Not moving
     }
@@ -208,12 +205,6 @@ void Shooter::assessInputs()
     if (state.yButton) {
         state.turretState = TurretState::TURRET_HOME_MID;
     }
-    // else if (state.xButton) {
-    //     state.turretState = TurretState::TURRET_HOME_LEFT;
-    // }
-    // else if (state.bButton) {
-    //     state.turretState = TurretState::TURRET_HOME_RIGHT;
-    // }
 
     //Limelight
     if(state.driverLeftTrigger && state.pipeline == 1 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
@@ -286,6 +277,7 @@ void Shooter::analyzeDashboard()
     table->PutNumber("Turret pos", turretEncoder.GetPosition());
 
     table->PutNumber("Turret target", state.turretTarget);
+    table->PutNumber("Turret Desired", state.turretDesired);
 
     table->PutNumber("left stick x", state.leftStickX);
 
@@ -365,6 +357,7 @@ void Shooter::assignOutputs()
     }
     //PRIMED
     else if (state.turretState == TurretState::TURRET_TRACK){
+        state.turretTarget = state.turretDesired;
         turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
     }
     //DEFAULT
@@ -497,5 +490,5 @@ double Shooter::convertTargetTics(double originalTarget, double realTicsPerRev){
 }
 
 void Shooter::assignTurret(double tg) {
-    state.turretTarget = tg;
+    state.turretDesired = tg;
 }
