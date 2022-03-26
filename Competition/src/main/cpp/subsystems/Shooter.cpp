@@ -164,7 +164,7 @@ void Shooter::assessInputs()
     state.backButton = operatorController->GetBackButtonPressed(); 
     state.rightBumper = operatorController->GetRightBumper();
     state.leftStickX = -operatorController->GetLeftX();
-    state.aButton = operatorController->GetAButtonPressed();
+    state.aButton = operatorController->GetAButton();
     state.yButton = operatorController->GetYButton();
     state.xButton = operatorController->GetXButton();
     state.bButton = operatorController->GetBButtonPressed();
