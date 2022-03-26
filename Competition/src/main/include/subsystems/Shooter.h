@@ -135,8 +135,6 @@ public:
 
     } state;
 
-
-private:
      void limelightTrack(bool track);
 
      WPI_TalonFX flywheel_lead;

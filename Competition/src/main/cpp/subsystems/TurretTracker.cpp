@@ -46,8 +46,8 @@ void TurretTracker::assignOutputs() {
         state.target = (-state.cachedTx * 0.75) + shooter->turretEncoder.GetPosition();
         
         state.cachedHeading = drivetrain->getPose_m().Rotation().Degrees().to<double>();
-        state.cachedX = drivetrain->getPose_m().X();
-        state.cachedY = drivetrain->getPose_m().Y();
+        state.cachedX = drivetrain->getPose_m().X().to<double>();
+        state.cachedY = drivetrain->getPose_m().Y().to<double>();
         state.cachedTurretPos = shooter->turretEncoder.GetPosition();
     }
     else {
