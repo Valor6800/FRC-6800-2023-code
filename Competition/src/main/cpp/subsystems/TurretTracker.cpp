@@ -15,6 +15,7 @@ TurretTracker::TurretTracker() : ValorSubsystem()
 
 void TurretTracker::init() {
     initTable("TurretTracker");
+    table->PutBoolean("Use Turret Shoot", false);
 }
 
 void TurretTracker::setDrivetrain(Drivetrain *dt){
@@ -51,7 +52,10 @@ void TurretTracker::assignOutputs() {
         state.cachedTurretPos = shooter->turretEncoder.GetPosition();
     }
     else {
-        state.target = -1 * drivetrain->getPose_m().Rotation().Degrees().to<double>() + state.cachedTurretPos - state.cachedTx;
+        if (table->GetBoolean("Use Turret Shoot", false))
+            state.target = -1 * drivetrain->getPose_m().Rotation().Degrees().to<double>() + state.cachedTurretPos - state.cachedTx;
+        else
+            state.target = shooter->turretEncoder.GetPosition();
     }
 
     if (state.target < -90) {

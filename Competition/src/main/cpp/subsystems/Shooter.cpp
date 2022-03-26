@@ -32,7 +32,6 @@ void Shooter::init()
     initTable("Shooter");
     
     table->PutBoolean("Zero Turret", false);
-    table->PutBoolean("Use Turret Shoot", true);
 
     table->PutBoolean("Zero Hood", false);
     table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
@@ -135,7 +134,7 @@ void Shooter::resetState(){
 
     state.flywheelTarget = 0;
     state.hoodTarget = 0;
-    state.distanceToHub = 1;
+    state.distanceToHub = 0.5;//change to 0?
     state.currentBall = 0;
 }
 
@@ -208,9 +207,9 @@ void Shooter::assessInputs()
     }
 
     //Limelight
-    if(state.driverLeftTrigger && state.pipeline == 1 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
-        setLimelight(0);
-    }
+    //if(state.driverLeftTrigger && state.pipeline == 1 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
+    //    setLimelight(0);
+    //}
     else if (state.driverLeftTrigger && state.pipeline == 0 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
         setLimelight(1);
     }
@@ -359,11 +358,7 @@ void Shooter::assignOutputs()
     //PRIMED
     else if (state.turretState == TurretState::TURRET_TRACK){
         state.turretTarget = state.turretDesired;
-        if (table->PutBoolean("Use Turret Shoot", true)) {
-            turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
-        } else {
-            turret.Set(0);
-        }
+        turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
     }
     //DEFAULT
     else if (state.turretState == TurretState::TURRET_AUTO){
@@ -422,6 +417,8 @@ void Shooter::assignOutputs()
         state.flywheelTarget = state.flywheelHigh;
     }
     
+    if (state.flywheelTarget > 0.6)
+        state.flywheelTarget = 0.6;
     
     double rpm = state.flywheelTarget * ShooterConstants::falconMaxRPM;
     double rp100ms = rpm / 600.0;
@@ -455,6 +452,8 @@ void Shooter::assignOutputs()
     else if(state.hoodState == HoodState::HOOD_UP){
         state.hoodTarget = state.hoodHigh;
     }
+    if (state.hoodTarget < 0)
+        state.hoodTarget = 0;
     hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
 }
 //testing if git is broken
