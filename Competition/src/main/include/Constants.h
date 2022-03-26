@@ -268,6 +268,7 @@ namespace LiftConstants{
     constexpr static double DEFAULT_MAIN_RETRACT_SPD = 0.7; //.65
 
     constexpr static double kDeadBandTrigger = 0.9;
+    constexpr static double deadBandRightStick = 0.1;
 
     constexpr static double rotateNoLowerThreshold = 77500;
 

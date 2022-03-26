@@ -210,9 +210,7 @@ void Shooter::assessInputs()
     //if(state.driverLeftTrigger && state.pipeline == 1 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
     //    setLimelight(0);
     //}
-    else if (state.driverLeftTrigger && state.pipeline == 0 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
-        setLimelight(1);
-    }
+    
 
     state.driverLastLeftTrigger = state.driverLeftTrigger;
 }
