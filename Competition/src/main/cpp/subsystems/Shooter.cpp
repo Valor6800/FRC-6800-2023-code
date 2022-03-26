@@ -32,6 +32,7 @@ void Shooter::init()
     initTable("Shooter");
     
     table->PutBoolean("Zero Turret", false);
+    table->PutBoolean("Use Turret Shoot", true);
 
     table->PutBoolean("Zero Hood", false);
     table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
@@ -358,7 +359,11 @@ void Shooter::assignOutputs()
     //PRIMED
     else if (state.turretState == TurretState::TURRET_TRACK){
         state.turretTarget = state.turretDesired;
-        turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
+        if (table->PutBoolean("Use Turret Shoot", true)) {
+            turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
+        } else {
+            turret.Set(0);
+        }
     }
     //DEFAULT
     else if (state.turretState == TurretState::TURRET_AUTO){
