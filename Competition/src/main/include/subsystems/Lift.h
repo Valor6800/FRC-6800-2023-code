@@ -72,6 +72,9 @@ public:
 
     } state;
 
+    double getExtensionEncoderValue();
+    double getRotationEncoderValue();
+
 private:
     frc::XboxController *operatorController;
 

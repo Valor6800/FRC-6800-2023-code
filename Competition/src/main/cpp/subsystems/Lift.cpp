@@ -123,12 +123,22 @@ void Lift::assessInputs()
     }
 }
 
+double Lift::getExtensionEncoderValue()
+{
+    return leadMainMotor.GetSelectedSensorPosition();
+}
+
+double Lift::getRotationEncoderValue()
+{
+    return rotateEncoder.GetPosition();
+}
+
 void Lift::analyzeDashboard()
 {
     state.powerMain = table->GetNumber("Rotate Speed", LiftConstants::DEFAULT_EXTEND_SPD);
 
-    table->PutNumber("Lift Main Encoder Value", leadMainMotor.GetSelectedSensorPosition());
-    table->PutNumber("Lift Rotate Encoder Value", rotateEncoder.GetPosition());
+    table->PutNumber("Lift Main Encoder Value", getExtensionEncoderValue());
+    table->PutNumber("Lift Rotate Encoder Value", getRotationEncoderValue());
 
     state.desiredRotatePos = table->GetNumber("Rotate First Angle", LiftConstants::ROTATE_FIRST_POSITION);
     state.desiredMainPos = table->GetNumber("Main Lift Second Pos", LiftConstants::MAIN_SECOND_POSITION);
