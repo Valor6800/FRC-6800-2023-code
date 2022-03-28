@@ -63,15 +63,43 @@ void Lift::init()
     leadMainMotor.ConfigMotionAcceleration(LiftConstants::MAIN_MOTION_ACCELERATION);
     leadMainMotor.ConfigMotionCruiseVelocity(LiftConstants::MAIN_MOTION_CRUISE_VELOCITY);
 
-
     table->PutNumber("Rotate First Angle", LiftConstants::ROTATE_FIRST_POSITION);
     table->PutNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
     table->PutNumber("Main Lift Second Pos", LiftConstants::MAIN_SECOND_POSITION);
+
+    setupCommands();
 }
 
 void Lift::setController(frc::XboxController *controller)
 {
     operatorController = controller;
+}
+
+void Lift::setupCommands()
+{
+    frc2::FunctionalCommand liftExtend(
+        [this]() {
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_FIRSTPOSITION;
+        },
+        [this](){},
+        [this](bool){},
+        [this](){
+            return getExtensionEncoderValue() > (LiftConstants::MAIN_FIRST_POSITION - 2000);
+        },
+        {}
+    );
+    frc2::FunctionalCommand liftRotateOut(
+        [this]() {
+            state.liftstateRotate = Lift::LiftRotateState::LIFT_ROTATE_TOPOSITION;
+        },
+        [this](){},
+        [this](bool){},
+        [this](){
+            return getRotationEncoderValue() > (LiftConstants::ROTATE_FIRST_POSITION - 3);
+        },
+        {}
+    );
+    liftSequence.AddCommands(liftExtend, liftRotateOut);
 }
 
 void Lift::assessInputs()

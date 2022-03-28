@@ -36,7 +36,6 @@ class RobotContainer {
         Lift m_lift;
         TurretTracker m_turretTracker;
 
-
     private:
         ValorAuto m_auto;
         void ConfigureButtonBindings();

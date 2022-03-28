@@ -13,7 +13,8 @@
 #include <rev/CANSparkMax.h>
 #include <rev/CANEncoder.h>
 
-#include <frc/XboxController.h>
+#include <frc2/command/FunctionalCommand.h>
+#include <frc2/command/SequentialCommandGroup.h>
 
 #ifndef LIFT_H
 #define LIFT_H
@@ -75,6 +76,8 @@ public:
     double getExtensionEncoderValue();
     double getRotationEncoderValue();
 
+    void setupCommands();
+
 private:
     frc::XboxController *operatorController;
 
@@ -88,7 +91,7 @@ private:
 
     rev::SparkMaxRelativeEncoder rotateEncoder = rotateMotor.GetEncoder();
 
+    frc2::SequentialCommandGroup liftSequence;
 };
-
 
 #endif
