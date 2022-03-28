@@ -70,8 +70,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 //CAN USE AUTO INSTEAD OF TRACK TO MANUALLY CHANGE VALUES
 //TRACK USES LINE OF BEST FIT
     frc2::InstantCommand cmd_shooterAuto = frc2::InstantCommand( [&] {
-        shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_AUTO;
-        shooter->state.hoodState = Shooter::HoodState::HOOD_AUTO;
+        shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_TRACK;
+        shooter->state.hoodState = Shooter::HoodState::HOOD_TRACK;
     } );
 
     frc2::InstantCommand cmd_turretTrack = frc2::InstantCommand( [&] {

@@ -95,9 +95,7 @@ void Robot::TeleopInit() {
     m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::TELEOP;
     m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::TELEOP;
     m_container.m_lift.robotMode = ValorSubsystem::RobotMode::TELEOP;
-    m_container.m_turretTracker.robotMode = ValorSubsystem::RobotMode::TELEOP;
-
-    
+    m_container.m_turretTracker.robotMode = ValorSubsystem::RobotMode::TELEOP; 
 
 }
 
