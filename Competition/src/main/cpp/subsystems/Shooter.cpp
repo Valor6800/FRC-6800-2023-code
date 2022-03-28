@@ -34,6 +34,7 @@ void Shooter::init()
     table->PutBoolean("Zero Turret", false);
 
     table->PutBoolean("Zero Hood", false);
+    table->PutBoolean("Pit Disable", false);
     table->PutNumber("Flywheel Primed Value", ShooterConstants::flywheelPrimedValue);
     table->PutNumber("Flywheel Default Value", ShooterConstants::flywheelDefaultValue);
     table->PutNumber("Hood Top Position", ShooterConstants::hoodTop);
@@ -174,7 +175,7 @@ void Shooter::assessInputs()
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
         state.turretState = TurretState::TURRET_MANUAL; // Operator control
     }
-    else{
+    else if (state.bButton){
         state.turretState = TurretState::TURRET_TRACK; // Not moving
     }
 
@@ -186,7 +187,7 @@ void Shooter::assessInputs()
     else if(state.xButton){
         state.hoodState = HoodState::HOOD_POOP;
     }
-    else{
+    else if (state.bButton){
         state.hoodState = HoodState::HOOD_TRACK; // High position
     }
 
@@ -197,7 +198,7 @@ void Shooter::assessInputs()
     else if (state.xButton){
         state.flywheelState = FlywheelState::FLYWHEEL_POOP;
     }
-    else{
+    else if (state.bButton){
         state.flywheelState = FlywheelState::FLYWHEEL_TRACK; // Higher speed
     }
 
@@ -207,11 +208,9 @@ void Shooter::assessInputs()
     }
 
     //Limelight
-    //if(state.driverLeftTrigger && state.pipeline == 1 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
-    //    setLimelight(0);
-    //}
-    
-
+    else if (state.driverLeftTrigger && state.pipeline == 0 && state.driverLeftTrigger != state.driverLastLeftTrigger) {
+        setLimelight(1);
+    }
     state.driverLastLeftTrigger = state.driverLeftTrigger;
 }
 
@@ -225,6 +224,12 @@ void Shooter::analyzeDashboard()
         double xDist = deltaH / tan(angle * MathConstants::toRadians);
         state.distanceToHub = xDist;
         table->PutNumber("x distance to hub", xDist);
+    }
+
+    if (table->GetBoolean("Pit Disable", false)){
+        state.turretState = TurretState::TURRET_DISABLE;
+        state.hoodState = HoodState::HOOD_DOWN;
+        state.flywheelState = FlywheelState::FLYWHEEL_DISABLE;
     }
 
     // Turret homing and zeroing
@@ -270,7 +275,6 @@ void Shooter::analyzeDashboard()
     }
     state.lastTurretState = state.turretState;
 
-
     table->PutNumber("Hood degrees", hoodEncoder.GetPosition());
     table->PutNumber("Turret pos", turretEncoder.GetPosition());
 
@@ -304,7 +308,6 @@ void Shooter::assignOutputs()
     /*//////////////////////////////////////
     // Turret                             //  
     //////////////////////////////////////*/
-
     state.tx = limeTable->GetNumber("tx", 0.0);
     state.tv = limeTable->GetNumber("tv", 0.0);
 
@@ -317,12 +320,6 @@ void Shooter::assignOutputs()
         if (std::abs(state.leftStickX) < ShooterConstants::pDeadband) {
             state.turretOutput = 0;
         }
-        // Stop deadband
-        // else if (std::abs(state.turretOutput) < ShooterConstants::pSoftDeadband) {
-        //     int direction = 1;
-        //     if (state.turretOutput < 0) direction = -1;
-        //     state.turretOutput = ShooterConstants::pSoftDeadband * direction;
-        // }
         turret.Set(state.turretOutput);
     }
     //HOME
@@ -358,25 +355,6 @@ void Shooter::assignOutputs()
         state.turretTarget = state.turretDesired;
         turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
     }
-    //DEFAULT
-    else if (state.turretState == TurretState::TURRET_AUTO){
-        //Odometry tracking
-        frc::Pose2d currentPose = odom->getPose_m();
-        double targetX = ShooterConstants::hubX;
-        double targetY = ShooterConstants::hubY;
-        if (state.trackCorner){
-            targetX = ShooterConstants::cornerX;
-            targetY = ShooterConstants::cornerY;
-        }
-
-        double tics = getTargetTics(currentPose.X().to<double>(), currentPose.Y().to<double>(), currentPose.Rotation().Radians().to<double>(),
-                                        targetX, targetY
-                                        , ShooterConstants::ticsPerRev, ShooterConstants::turretGearRatio);
-
-        double error  = tics - turretEncoder.GetPosition(); //might need to invert this
-        state.turretTarget = error * ShooterConstants::turretKP; //need to set value
-        turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
-    }
     //DISABLED
     else{
         state.turretOutput = 0;
@@ -387,32 +365,17 @@ void Shooter::assignOutputs()
     /*//////////////////////////////////////
     // Flywheel                           //  
     //////////////////////////////////////*/
-    
     if (state.flywheelState == FlywheelState::FLYWHEEL_DISABLE){
         state.flywheelTarget = 0;
     }
     else if (state.flywheelState == FlywheelState::FLYWHEEL_DEFAULT){
         state.flywheelTarget = state.flywheelLow;
-        //setLimelight(0);
-        //setPIDProfile(0);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_TRACK){
         state.flywheelTarget = ShooterConstants::aPower *(state.distanceToHub * state.distanceToHub) + ShooterConstants::bPower * state.distanceToHub + state.powerC ; //commented out for testing PID
-        //state.flywheelTarget = state.flywheelHigh;
-        //setLimelight(0);
-        //setPIDProfile(1);
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_POOP){
         state.flywheelTarget = ShooterConstants::flywheelPoopValue;
-    }
-    else if(state.flywheelState == FlywheelState::FLYWHEEL_AUTO){
-        //state.flywheelTarget = ShooterConstants::flywheelAutoValue;
-        state.flywheelTarget = ShooterConstants::flywheelSpeeds[state.currentBall]; 
-        setLimelight(2);
-        //setPIDProfile(0);
-    }
-    else if (state.flywheelState == FlywheelState::FLYWHEEL_PRIME){
-        state.flywheelTarget = state.flywheelHigh;
     }
     
     if (state.flywheelTarget > 0.6)
@@ -426,69 +389,23 @@ void Shooter::assignOutputs()
     table->PutNumber("FlyWheel Target", ticsp100ms);
     table->PutNumber("Flywheel Speed", flywheel_lead.GetSelectedSensorVelocity());
     
-
     flywheel_lead.Set(ControlMode::Velocity, ticsp100ms);
 
     /*//////////////////////////////////////
     // Hood                               //  
     //////////////////////////////////////*/
-
     if(state.hoodState == HoodState::HOOD_DOWN){
         state.hoodTarget = state.hoodLow;
     }
     else if(state.hoodState == HoodState::HOOD_TRACK){
         state.hoodTarget = ShooterConstants::aHood * (state.distanceToHub * state.distanceToHub) + ShooterConstants::bHood * state.distanceToHub + state.hoodC; //commented out for testing PID
-        //state.hoodTarget = state.hoodHigh;
-    }
-    else if(state.hoodState == HoodState::HOOD_AUTO){
-        //state.hoodTarget = ShooterConstants::hoodAuto;
-        state.hoodTarget = ShooterConstants::hoodAngles[state.currentBall];
     }
     else if(state.hoodState == HoodState::HOOD_POOP){
         state.hoodTarget = ShooterConstants::hoodPoop;
     }
-    else if(state.hoodState == HoodState::HOOD_UP){
-        state.hoodTarget = state.hoodHigh;
-    }
     if (state.hoodTarget < 0)
         state.hoodTarget = 0;
     hoodPidController.SetReference(state.hoodTarget, rev::ControlType::kSmartMotion);
-}
-//testing if git is broken
-double Shooter::getTargetTics(double x, 
-double y,
-double theta,
-double hubX, 
-double hubY,
-double ticsPerRev,
-double gearRatio){
-
-    double deltaX = hubX - x;
-    double deltaY = hubY - y;
-
-    double targetThetaRad = atan2(deltaY, deltaX);
-    double relativeAngle = targetThetaRad - theta;
-    double rot = relativeAngle / (2 * M_PI);
-    double targetTics = rot * ticsPerRev * gearRatio;
-
-    while (targetTics > .5 * ticsPerRev * gearRatio){
-        targetTics -= ticsPerRev * gearRatio;
-    }
-    while (targetTics < -.5 * ticsPerRev * gearRatio){
-        targetTics += ticsPerRev * gearRatio;
-    }
-    return convertTargetTics(targetTics, ticsPerRev * gearRatio);
-}
-
-double Shooter::convertTargetTics(double originalTarget, double realTicsPerRev){
-    //originalTarget will always be between limitLeft to limitRight
-    while (originalTarget < ShooterConstants::turretLimitLeft){
-        originalTarget += realTicsPerRev;
-    }
-    while(originalTarget > ShooterConstants::turretLimitRight){
-        originalTarget -= realTicsPerRev;
-    }
-    return originalTarget;
 }
 
 void Shooter::assignTurret(double tg) {

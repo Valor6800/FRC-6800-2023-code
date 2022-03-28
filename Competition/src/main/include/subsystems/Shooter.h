@@ -62,24 +62,19 @@ public:
          TURRET_HOME_MID, // In process of moving to home
          TURRET_HOME_LEFT,
          TURRET_HOME_RIGHT,
-         TURRET_TRACK, // Tracking via limelight
-         TURRET_AUTO // Using odometry to hub
+         TURRET_TRACK // Tracking via limelight
     };
 
     enum HoodState{
          HOOD_DOWN, // Down position
-         HOOD_UP, // Up position
          HOOD_TRACK, // Tracking using limelight
-         HOOD_AUTO, //Auto for the furthest shot
          HOOD_POOP //Low goal shot
      };
 
      enum FlywheelState{
           FLYWHEEL_DISABLE, // Not moving
           FLYWHEEL_DEFAULT, // Low speed
-          FLYWHEEL_PRIME, // Higher speed
           FLYWHEEL_TRACK, // Dynamic calculations
-          FLYWHEEL_AUTO, // Auto value for the furthest shot
           FLYWHEEL_POOP //Low goal shot
      };
 
