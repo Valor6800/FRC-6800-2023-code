@@ -254,6 +254,7 @@ void Lift::assignOutputs()
         }
         else if(state.rightStickY < (-1 * OIConstants::kDeadbandY)){
             leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_RETRACT_SPD);
+            rotateMotor.Set(-.1);
         }
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_FIRSTPOSITION) {
@@ -268,6 +269,7 @@ void Lift::assignOutputs()
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_DOWN) {
         leadMainMotor.Set(ControlMode::MotionMagic, LiftConstants::MAIN_DOWN_POSITION);
+        rotateMotor.Set(-.1);
     }
 }
 
