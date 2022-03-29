@@ -51,6 +51,7 @@ public:
         bool operator_leftBumperPressed;
 
         bool driver_rightTriggerPressed;
+        bool driver_leftTriggerPressed;
 
         bool bannerTripped;
         bool previousBanner;
@@ -62,6 +63,7 @@ public:
         
         double intakeForwardSpeed;
         double intakeReverseSpeed;
+        double spikeCurrent;
 
         double feederForwardSpeedDefault;
         double feederForwardSpeedShoot;

@@ -40,6 +40,7 @@ void Feeder::init()
     table->PutNumber("Intake Forward Speed", FeederConstants::DEFAULT_INTAKE_SPEED_FORWARD);
     table->PutNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
     table->PutNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
+    table->PutNumber("Intake Spike Current", FeederConstants::JAM_CURRENT);
     
     resetState();
     
@@ -64,6 +65,8 @@ void Feeder::assessInputs()
     state.driver_rightBumperPressed = driverController->GetRightBumper();
 
     state.driver_rightTriggerPressed = driverController->GetRightTriggerAxis() > OIConstants::kDeadBandTrigger;
+    state.driver_leftTriggerPressed = driverController->GetLeftTriggerAxis() > OIConstants::kDeadBandTrigger;
+
 
     // operator inputs
 
@@ -80,7 +83,7 @@ void Feeder::assessInputs()
     else if (state.driver_rightBumperPressed) {
         state.feederState = FeederState::FEEDER_REGULAR_INTAKE; //standard intake
     }
-    else if (state.driver_rightTriggerPressed) {
+    else if (state.driver_leftTriggerPressed) {
         state.feederState = FeederState::FEEDER_CURRENT_INTAKE; //includes current/banner sensing
     }
     else {
@@ -99,6 +102,8 @@ void Feeder::analyzeDashboard()
     state.intakeForwardSpeed = table->GetNumber("Intake Forward Speed", FeederConstants::DEFAULT_INTAKE_SPEED_FORWARD);
     state.feederForwardSpeedDefault = table->GetNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
     state.feederForwardSpeedShoot = table->GetNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
+    state.spikeCurrent = table->GetNumber("Intake Spike Current", FeederConstants::JAM_CURRENT);
+
     table->PutNumber("Average Amps", state.instCurrent);
     table->PutBoolean("Spiked: ", state.spiked);
     table->PutBoolean("Banner: ", state.bannerTripped);
@@ -137,7 +142,7 @@ void Feeder::assignOutputs()
                 motor_stage.Set(0);
             }
             else {
-                if (state.instCurrent > FeederConstants::JAM_CURRENT && state.bannerTripped) {
+                if (state.instCurrent > state.spikeCurrent && state.bannerTripped) {
                     motor_intake.Set(0);
                     motor_stage.Set(0);
                    state.spiked = true;
