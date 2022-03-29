@@ -92,7 +92,7 @@ public:
           bool rightBumper;
           bool aButton;
           bool yButton;
-          bool xButton;
+          bool xButtonPressed;
           bool bButton;
 
           bool driverLeftTrigger;

@@ -37,7 +37,7 @@ namespace OIConstants {
     constexpr static int dpadLeft = 270;
 
     constexpr static double kDeadbandX = 0.05;
-    constexpr static double kDeadbandY = 0.05;
+    constexpr static double kDeadbandY = 0.1;
 
     constexpr static double kDeadBandTrigger = 0.05;
 }
@@ -252,9 +252,11 @@ namespace LiftConstants{
 
     constexpr static int MAIN_FIRST_POSITION = 62000;
     constexpr static int MAIN_SECOND_POSITION = 78500;
+    constexpr static int MAIN_THIRD_POSITION = 103000;
     constexpr static double MAIN_DOWN_POSITION = 125;
 
     constexpr static int ROTATE_FIRST_POSITION = 40;
+    constexpr static double ROTATE_BAR_POSITION = 30;    
 
     constexpr static double rotateForwardLimit = 40;
     constexpr static double rotateReverseLimit = 0;

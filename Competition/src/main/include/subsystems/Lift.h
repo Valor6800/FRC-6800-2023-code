@@ -15,6 +15,7 @@
 
 #include <frc2/command/FunctionalCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
+#include <frc2/command/ParallelCommandGroup.h>
 
 #ifndef LIFT_H
 #define LIFT_H
@@ -37,14 +38,17 @@ public:
         LIFT_ROTATE_DISABLED,
         LIFT_ROTATE_EXTEND,
         LIFT_ROTATE_RETRACT,
-        LIFT_ROTATE_TOPOSITION
+        LIFT_ROTATE_TOPOSITION,
+        LIFT_ROTATE_ROTATEBAR
     };
         
     enum LiftMainState {
         LIFT_MAIN_DISABLED,
         LIFT_MAIN_ENABLE,
         LIFT_MAIN_TOPOSITION,
-        LIFT_MAIN_FIRSTPOSITION
+        LIFT_MAIN_FIRSTPOSITION,
+        LIFT_MAIN_MAXPOS,
+        LIFT_MAIN_DOWN
     };
 
 

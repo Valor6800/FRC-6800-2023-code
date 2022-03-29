@@ -1,4 +1,5 @@
 #include "subsystems/Lift.h"
+#include <iostream>
 
 Lift::Lift() : ValorSubsystem(),
                operatorController(NULL),
@@ -78,13 +79,15 @@ void Lift::setController(frc::XboxController *controller)
 void Lift::setupCommands()
 {
     frc2::FunctionalCommand liftExtend(
-        [this]() {
-            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_FIRSTPOSITION;
+        [this]() { //onInit
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_TOPOSITION;
         },
-        [this](){},
-        [this](bool){},
-        [this](){
-            return getExtensionEncoderValue() > (LiftConstants::MAIN_FIRST_POSITION - 2000);
+        [this](){}, //onExecute
+        [this](bool){ //onEnd
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_DISABLED;
+        },
+        [this](){ //isFinished
+            return getExtensionEncoderValue() > (LiftConstants::MAIN_SECOND_POSITION - 2000);
         },
         {}
     );
@@ -93,13 +96,56 @@ void Lift::setupCommands()
             state.liftstateRotate = Lift::LiftRotateState::LIFT_ROTATE_TOPOSITION;
         },
         [this](){},
-        [this](bool){},
+        [this](bool){
+            state.liftstateRotate = Lift::LiftRotateState::LIFT_ROTATE_DISABLED;
+        },
         [this](){
             return getRotationEncoderValue() > (LiftConstants::ROTATE_FIRST_POSITION - 3);
         },
         {}
     );
-    liftSequence.AddCommands(liftExtend, liftRotateOut);
+    frc2::FunctionalCommand liftExtend2(
+        [this]() { //onInit
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_MAXPOS;
+        },
+        [this](){}, //onExecute
+        [this](bool){ //onEnd
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_DISABLED;
+        },
+        [this](){ //isFinished
+            return getExtensionEncoderValue() > (LiftConstants::extendForwardLimit - 2000);
+        },
+        {}
+    );
+    frc2::FunctionalCommand liftRotateIn(
+        [this]() { //onInit
+            state.liftstateRotate = Lift::LiftRotateState::LIFT_ROTATE_ROTATEBAR;
+        },
+        [this](){}, //onExecute
+        [this](bool){ //onEnd
+            state.liftstateRotate = Lift::LiftRotateState::LIFT_ROTATE_DISABLED;
+        },
+        [this](){ //isFinished
+            return getRotationEncoderValue() < LiftConstants::ROTATE_BAR_POSITION;
+        },
+        {}
+    );
+    frc2::FunctionalCommand liftPullUp(
+        [this]() { //onInit
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_ENABLE;
+        },
+        [this](){}, //onExecute
+        [this](bool){ //onEnd
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_DISABLED;
+        },
+        [this](){ //isFinished
+            return getExtensionEncoderValue() < 2000;
+        },
+        {}
+    );
+    frc2::ParallelCommandGroup grabBar(liftRotateIn, liftPullUp);
+
+    liftSequence.AddCommands(liftExtend, liftRotateOut, liftExtend2, liftRotateIn);
 }
 
 void Lift::assessInputs()
@@ -119,6 +165,11 @@ void Lift::assessInputs()
     state.leftTriggerPressed = operatorController->GetLeftTriggerAxis() > LiftConstants::kDeadBandTrigger;
     state.rightTriggerPressed = operatorController->GetRightTriggerAxis() > LiftConstants::kDeadBandTrigger;
 
+    if((std::abs(state.rightStickY) > OIConstants::kDeadbandY) && liftSequence.IsScheduled()){
+        liftSequence.Cancel();
+        std::cout << "canceling" << std::endl;
+    }
+
     if (state.dPadLeftPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold)
     {
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_EXTEND;
@@ -130,7 +181,7 @@ void Lift::assessInputs()
     else if (state.dPadDownPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold) {
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_TOPOSITION;
     }
-    else
+    else if(!liftSequence.IsScheduled())
     {
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_DISABLED;
     }
@@ -143,9 +194,9 @@ void Lift::assessInputs()
         state.liftstateMain = LiftMainState::LIFT_MAIN_FIRSTPOSITION;
     }
     else if (state.dPadUpPressed) {
-        state.liftstateMain = LiftMainState::LIFT_MAIN_TOPOSITION;
+        liftSequence.Schedule();
     }
-    else
+    else if(!liftSequence.IsScheduled())
     {
         state.liftstateMain = LiftMainState::LIFT_MAIN_DISABLED;
     }
@@ -175,7 +226,6 @@ void Lift::analyzeDashboard()
 
 void Lift::assignOutputs()
 {
-
     if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_DISABLED)
     {
         rotateMotor.Set(0);
@@ -190,6 +240,9 @@ void Lift::assignOutputs()
     }
     else if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_TOPOSITION) {
         rotateMotorPidController.SetReference(state.desiredRotatePos, rev::ControlType::kSmartMotion);
+    }
+    else if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_ROTATEBAR) {
+        rotateMotorPidController.SetReference(LiftConstants::ROTATE_BAR_POSITION, rev::ControlType::kSmartMotion);
     }
 
     if (state.liftstateMain == LiftMainState::LIFT_MAIN_DISABLED) {
@@ -209,7 +262,12 @@ void Lift::assignOutputs()
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_TOPOSITION) {
         leadMainMotor.Set(ControlMode::MotionMagic, state.desiredMainPos);
-
+    }
+    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_MAXPOS) {
+        leadMainMotor.Set(ControlMode::MotionMagic, LiftConstants::extendForwardLimit);
+    }
+    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_DOWN) {
+        leadMainMotor.Set(ControlMode::MotionMagic, LiftConstants::MAIN_DOWN_POSITION);
     }
 }
 

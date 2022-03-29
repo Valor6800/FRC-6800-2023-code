@@ -117,17 +117,17 @@ void Shooter::init()
     resetState();
     resetEncoder();
 
-    limelightTrack(false);
+    limelightTrack(true);
 
     setPIDProfile(0);
 }
 
 void Shooter::resetState(){
-    state.turretState = TurretState::TURRET_DISABLE;
+    state.turretState = TurretState::TURRET_TRACK;
     //hack solution
-    state.lastTurretState = TurretState::TURRET_TRACK;
-    state.hoodState = HoodState::HOOD_DOWN;
-    state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT;
+    state.lastTurretState = TurretState::TURRET_DISABLE;
+    state.hoodState = HoodState::HOOD_TRACK;
+    state.flywheelState = FlywheelState::FLYWHEEL_TRACK;
     state.trackCorner = false;
 
     state.turretOutput = 0;
@@ -165,9 +165,9 @@ void Shooter::assessInputs()
     state.backButton = operatorController->GetBackButtonPressed(); 
     state.rightBumper = operatorController->GetRightBumper();
     state.leftStickX = -operatorController->GetLeftX();
-    state.aButton = operatorController->GetAButton();
+    state.aButton = operatorController->GetAButtonPressed();
     state.yButton = operatorController->GetYButton();
-    state.xButton = operatorController->GetXButton();
+    state.xButtonPressed = operatorController->GetXButtonPressed();
     state.bButton = operatorController->GetBButtonPressed();
     state.driverLeftTrigger = driverController->GetLeftTriggerAxis() > 0.9;
     
@@ -178,13 +178,16 @@ void Shooter::assessInputs()
     else if (state.bButton){
         state.turretState = TurretState::TURRET_TRACK; // Not moving
     }
+    else if(state.turretState == TurretState::TURRET_MANUAL){
+        state.turretState = TurretState::TURRET_TRACK;
+    }
 
     //Hood
     
     if(state.aButton){
         state.hoodState = HoodState::HOOD_DOWN; // Low position
     }
-    else if(state.xButton){
+    else if(state.xButtonPressed){
         state.hoodState = HoodState::HOOD_POOP;
     }
     else if (state.bButton){
@@ -195,7 +198,7 @@ void Shooter::assessInputs()
     if (state.aButton){
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT; // Lower speed
     }
-    else if (state.xButton){
+    else if (state.xButtonPressed){
         state.flywheelState = FlywheelState::FLYWHEEL_POOP;
     }
     else if (state.bButton){
@@ -265,6 +268,7 @@ void Shooter::analyzeDashboard()
         state.turretState = TurretState::TURRET_HOME_LEFT;
         limelightTrack(false);
         state.hoodState = HoodState::HOOD_DOWN;
+        state.flywheelState = FlywheelState::FLYWHEEL_DISABLE;
     }
 
     if (state.turretState == TurretState::TURRET_TRACK && state.lastTurretState != TurretState::TURRET_TRACK){
