@@ -12,7 +12,7 @@
 
 Shooter::Shooter() : ValorSubsystem(),
                     flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD},
-                    turret{ShooterConstants::CAN_ID_TURRET},
+                    turret{ShooterConstants::CAN_ID_TURRET, "baseCAN"},
                     hood{ShooterConstants::CAN_ID_HOOD, rev::CANSparkMax::MotorType::kBrushless},
                     operatorController(NULL),
                     driverController(NULL)

@@ -10,8 +10,8 @@
 Feeder::Feeder() : ValorSubsystem(),
                            driverController(NULL),
                            operatorController(NULL),
-                           motor_intake(FeederConstants::MOTOR_INTAKE_CAN_ID),
-                           motor_stage(FeederConstants::MOTOR_STAGE_CAN_ID),
+                           motor_intake(FeederConstants::MOTOR_INTAKE_CAN_ID, "baseCAN"),
+                           motor_stage(FeederConstants::MOTOR_STAGE_CAN_ID, "baseCAN"),
                            banner(FeederConstants::BANNER_DIO_PORT)
 
 {

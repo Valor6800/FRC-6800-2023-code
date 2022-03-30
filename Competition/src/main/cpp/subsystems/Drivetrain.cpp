@@ -16,7 +16,7 @@
 
 Drivetrain::Drivetrain() : ValorSubsystem(),
                            driverController(NULL),
-                           pigeon(DriveConstants::PIGEON_CAN),
+                           pigeon(DriveConstants::PIGEON_CAN, "baseCAN"),
                            kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
                            odometry(kinematics, frc::Rotation2d{units::radian_t{0}}),
                            config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
@@ -45,7 +45,7 @@ Drivetrain::~Drivetrain()
 
 void Drivetrain::configSwerveModule(int i)
 {
-    azimuthMotors.push_back(new WPI_TalonFX(DriveConstants::AZIMUTH_CANS[i]));
+    azimuthMotors.push_back(new WPI_TalonFX(DriveConstants::AZIMUTH_CANS[i], "baseCAN"));
     azimuthMotors[i]->ConfigFactoryDefault();
     azimuthMotors[i]->SetInverted(false);
     azimuthMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
@@ -60,7 +60,7 @@ void Drivetrain::configSwerveModule(int i)
     azimuthMotors[i]->SetNeutralMode(NeutralMode::Brake);
     //azimuthMotors[i]->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 60, 80, .75));
 
-    driveMotors.push_back(new WPI_TalonFX(DriveConstants::DRIVE_CANS[i]));
+    driveMotors.push_back(new WPI_TalonFX(DriveConstants::DRIVE_CANS[i], "baseCAN"));
     driveMotors[i]->ConfigFactoryDefault();
     driveMotors[i]->SetInverted(false);
     driveMotors[i]->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
