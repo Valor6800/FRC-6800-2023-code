@@ -12,7 +12,7 @@
 #include <deque>
 
 #include <frc/XboxController.h>
-#include <rev/CANSparkMax.h>
+#include <ctre/Phoenix.h>
 #include <frc/DigitalInput.h>
 
 #ifndef FEEDER_H
@@ -84,8 +84,8 @@ private:
     frc::XboxController *driverController;
     frc::XboxController *operatorController;
 
-    rev::CANSparkMax motor_intake;
-    rev::CANSparkMax motor_stage;
+    WPI_TalonFX motor_intake;
+    WPI_TalonFX motor_stage;
 
     frc::DigitalInput banner;
 

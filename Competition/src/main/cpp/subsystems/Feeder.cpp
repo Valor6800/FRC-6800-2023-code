@@ -14,8 +14,8 @@
 Feeder::Feeder() : ValorSubsystem(),
                            driverController(NULL),
                            operatorController(NULL),
-                           motor_intake(FeederConstants::MOTOR_INTAKE_CAN_ID, rev::CANSparkMax::MotorType::kBrushless),
-                           motor_stage(FeederConstants::MOTOR_STAGE_CAN_ID, rev::CANSparkMax::MotorType::kBrushless),
+                           motor_intake(FeederConstants::MOTOR_INTAKE_CAN_ID),
+                           motor_stage(FeederConstants::MOTOR_STAGE_CAN_ID),
                            banner(FeederConstants::BANNER_DIO_PORT)
 
 {
@@ -26,12 +26,12 @@ Feeder::Feeder() : ValorSubsystem(),
 void Feeder::init()
 {
     initTable("Feeder");
-    motor_intake.RestoreFactoryDefaults();
-    motor_intake.SetIdleMode(rev::CANSparkMax::IdleMode::kCoast);
+    motor_intake.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
+    motor_intake.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
     motor_intake.SetInverted(false);
 
-    motor_stage.RestoreFactoryDefaults();
-    motor_stage.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+    motor_stage.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
+    motor_stage.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
     motor_stage.SetInverted(true);
 
     table->PutBoolean("Reverse Feeder?", false);
