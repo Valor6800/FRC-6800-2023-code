@@ -44,18 +44,18 @@ void TurretTracker::assignOutputs() {
     if (tv == 1) {
         state.cachedTx = shooter->state.tx;
         // 0.75 = limeligh KP
-        state.target = (-state.cachedTx * 0.75) + shooter->turretEncoder.GetPosition();
+        state.target = (-state.cachedTx * 0.75) + shooter->turret.GetSelectedSensorPosition();
         
         state.cachedHeading = drivetrain->getPose_m().Rotation().Degrees().to<double>();
         state.cachedX = drivetrain->getPose_m().X().to<double>();
         state.cachedY = drivetrain->getPose_m().Y().to<double>();
-        state.cachedTurretPos = shooter->turretEncoder.GetPosition();
+        state.cachedTurretPos = shooter->turret.GetSelectedSensorPosition();
     }
     else {
         if (table->GetBoolean("Use Turret Shoot", false))
             state.target = -1 * drivetrain->getPose_m().Rotation().Degrees().to<double>() + state.cachedTurretPos - state.cachedTx;
         else
-            state.target = shooter->turretEncoder.GetPosition();
+            state.target = shooter->turret.GetSelectedSensorPosition();
     }
 
     if (state.target < -90) {

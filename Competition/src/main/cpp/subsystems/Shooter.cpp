@@ -12,7 +12,7 @@
 
 Shooter::Shooter() : ValorSubsystem(),
                     flywheel_lead{ShooterConstants::CAN_ID_FLYWHEEL_LEAD},
-                    turret{ShooterConstants::CAN_ID_TURRET, rev::CANSparkMax::MotorType::kBrushless},
+                    turret{ShooterConstants::CAN_ID_TURRET},
                     hood{ShooterConstants::CAN_ID_HOOD, rev::CANSparkMax::MotorType::kBrushless},
                     operatorController(NULL),
                     driverController(NULL)
@@ -66,29 +66,29 @@ void Shooter::init()
     flywheel_lead.SetInverted(false);
     flywheel_lead.SelectProfileSlot(0, 0);
 
-    turret.RestoreFactoryDefaults();
-    turret.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+    turret.ConfigFactoryDefault();
+    turret.SetNeutralMode(ctre::phoenix::motorcontrol::Brake);
+    turret.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     turret.SetInverted(true);
 
-    turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
-    turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::turretLimitLeft);
+    turret.ConfigForwardSoftLimitEnable(true);
+    turret.ConfigForwardSoftLimitThreshold(ShooterConstants::turretLimitLeft);
 
-    turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
-    turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, ShooterConstants::turretLimitRight);
+    turret.ConfigReverseSoftLimitEnable(true);
+    turret.ConfigReverseSoftLimitThreshold(ShooterConstants::turretLimitRight);
 
-    turretPidController.SetP(ShooterConstants::turretKP);
-    turretPidController.SetI(ShooterConstants::turretKI);
-    turretPidController.SetD(ShooterConstants::turretKD);
-    turretPidController.SetIZone(ShooterConstants::turretKIZ);
-    turretPidController.SetFF(ShooterConstants::turretKFF);
-    turretPidController.SetOutputRange(-1, 1);
+    turret.ConfigMotionAcceleration(ShooterConstants::turretMaxAccel);
+    turret.ConfigMotionCruiseVelocity(ShooterConstants::turretMaxV);
+    turret.ConfigAllowableClosedloopError(0, ShooterConstants::turretAllowedError);
 
-    turretPidController.SetSmartMotionMaxVelocity(ShooterConstants::turretMaxV);
-    turretPidController.SetSmartMotionMinOutputVelocity(ShooterConstants::turretMinV);
-    turretPidController.SetSmartMotionMaxAccel(ShooterConstants::turretMaxAccel);
-    turretPidController.SetSmartMotionAllowedClosedLoopError(ShooterConstants::turretAllowedError);
+    turret.ConfigAllowableClosedloopError(0, 0);
+    turret.Config_IntegralZone(0, 0);
+    turret.Config_kF(0, ShooterConstants::turretKFF);
+    turret.Config_kD(0, ShooterConstants::turretKD);
+    turret.Config_kI(0, ShooterConstants::turretKI);
+    turret.Config_kP(0, ShooterConstants::turretKP);
 
-    turretEncoder.SetPositionConversionFactor(360.0 * ShooterConstants::turretGearRatio);
+    turret.ConfigSelectedFeedbackCoefficient(360.0 * ShooterConstants::turretGearRatio);
     
     hood.RestoreFactoryDefaults();
     hood.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
@@ -140,7 +140,7 @@ void Shooter::resetState(){
 }
 
 void Shooter::resetEncoder(){
-    turretEncoder.SetPosition(0);
+    turret.SetSelectedSensorPosition(0);
     hoodEncoder.SetPosition(0);
 }
 
@@ -237,19 +237,19 @@ void Shooter::analyzeDashboard()
 
     // Turret homing and zeroing
     if (table->GetBoolean("Zero Turret", false)) {
-        turret.RestoreFactoryDefaults();
-        turret.SetIdleMode(rev::CANSparkMax::IdleMode::kBrake);
+        turret.ConfigFactoryDefault();
+        turret.SetNeutralMode(ctre::phoenix::motorcontrol::Brake);
         turret.SetInverted(true);
 
-        turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
-        turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, ShooterConstants::turretLimitLeft);
+        turret.ConfigForwardSoftLimitEnable(true);
+        turret.ConfigForwardSoftLimitThreshold(ShooterConstants::turretLimitLeft);
 
-        turret.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
-        turret.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, ShooterConstants::turretLimitRight);
+        turret.ConfigReverseSoftLimitEnable(true);
+        turret.ConfigReverseSoftLimitThreshold(ShooterConstants::turretLimitRight);
 
-        turretEncoder = turret.GetEncoder();
-        turretEncoder.SetPosition(0);
-        turretEncoder.SetPositionConversionFactor(360.0 * ShooterConstants::turretGearRatio);
+        turret.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
+        turret.SetSelectedSensorPosition(0);
+        turret.ConfigSelectedFeedbackCoefficient(360.0 * ShooterConstants::turretGearRatio);
     }
 
     // Hood zeroing
@@ -280,7 +280,7 @@ void Shooter::analyzeDashboard()
     state.lastTurretState = state.turretState;
 
     table->PutNumber("Hood degrees", hoodEncoder.GetPosition());
-    table->PutNumber("Turret pos", turretEncoder.GetPosition());
+    table->PutNumber("Turret pos", turret.GetSelectedSensorPosition());
 
     table->PutNumber("Turret target", state.turretTarget);
     table->PutNumber("Turret Desired", state.turretDesired);
@@ -328,43 +328,43 @@ void Shooter::assignOutputs()
     }
     //HOME
     else if(state.turretState == TurretState::TURRET_HOME_MID){
-        if(fabs(turretEncoder.GetPosition() - ShooterConstants::homePositionMid) < 2){
+        if(fabs(turret.GetSelectedSensorPosition() - ShooterConstants::homePositionMid) < 2){
             state.turretState = TurretState::TURRET_DISABLE;
         }
         else {
             state.turretTarget = ShooterConstants::homePositionMid;
-            turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);  
+            turret.Set(ControlMode::MotionMagic, state.turretTarget);  
         }
     }
     else if(state.turretState == TurretState::TURRET_HOME_LEFT){
-        if(fabs(turretEncoder.GetPosition() - ShooterConstants::homePositionLeft) < 2){
+        if(fabs(turret.GetSelectedSensorPosition() - ShooterConstants::homePositionLeft) < 2){
             state.turretState = TurretState::TURRET_DISABLE;
         }
         else {
             state.turretTarget = ShooterConstants::homePositionLeft;
-            turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);  
+            turret.Set(ControlMode::MotionMagic, state.turretTarget);  
         }
     }
     else if(state.turretState == TurretState::TURRET_HOME_RIGHT){
-        if(fabs(turretEncoder.GetPosition() - ShooterConstants::homePositionRight) < 2){
+        if(fabs(turret.GetSelectedSensorPosition() - ShooterConstants::homePositionRight) < 2){
             state.turretState = TurretState::TURRET_DISABLE;
         }
         else {
             state.turretTarget = ShooterConstants::homePositionRight;
-            turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);  
+            turret.Set(ControlMode::MotionMagic, state.turretTarget);  
         }
     }
     //PRIMED
     else if (state.turretState == TurretState::TURRET_TRACK){
         state.turretTarget = state.turretDesired;
-        turretPidController.SetReference(state.turretTarget, rev::ControlType::kSmartMotion);
+        turret.Set(ControlMode::MotionMagic, state.turretTarget);
     }
     //DISABLED
     else{
         state.turretOutput = 0;
         turret.Set(state.turretOutput);
     }
-    table->PutNumber("Turret Error", state.turretTarget - turretEncoder.GetPosition());
+    table->PutNumber("Turret Error", state.turretTarget - turret.GetSelectedSensorPosition());
 
     /*//////////////////////////////////////
     // Flywheel                           //  
