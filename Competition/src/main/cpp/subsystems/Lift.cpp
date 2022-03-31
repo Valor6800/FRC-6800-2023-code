@@ -126,26 +126,53 @@ void Lift::setupCommands()
             state.liftstateRotate = Lift::LiftRotateState::LIFT_ROTATE_DISABLED;
         },
         [this](){ //isFinished
-            return getRotationEncoderValue() < LiftConstants::ROTATE_BAR_POSITION;
+            return getRotationEncoderValue() < LiftConstants::ROTATE_BAR_POSITION + 2;
         },
         {}
     );
-    frc2::FunctionalCommand liftPullUp(
+    // frc2::FunctionalCommand liftPullUp(
+    //     [this]() { //onInit
+    //         state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_ENABLE;
+    //     },
+    //     [this](){}, //onExecute
+    //     [this](bool){ //onEnd
+    //         state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_DISABLED;
+    //     },
+    //     [this](){ //isFinished
+    //         return getExtensionEncoderValue() < 2000;
+    //     },
+    //     {}
+    // );
+       frc2::FunctionalCommand liftPullUpStop(
         [this]() { //onInit
-            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_ENABLE;
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_PULLUP;
         },
         [this](){}, //onExecute
         [this](bool){ //onEnd
             state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_DISABLED;
         },
         [this](){ //isFinished
-            return getExtensionEncoderValue() < 2000;
+            return getExtensionEncoderValue() < LiftConstants::MAIN_BOTTOM_POSITION + 1000;
         },
         {}
     );
-    frc2::ParallelCommandGroup grabBar(liftRotateIn, liftPullUp);
+    frc2::FunctionalCommand liftMainSlowUp(
+        [this]() { //onInit
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_SLOWUP;
+        },
+        [this](){}, //onExecute
+        [this](bool){ //onEnd
+            state.liftstateMain = Lift::LiftMainState::LIFT_MAIN_DISABLED;
+        },
+        [this](){ //isFinished
+            return getExtensionEncoderValue() > LiftConstants::MAIN_SLOW_UP_POSITION;
+        },
+        {}
+    );
+    //frc2::ParallelCommandGroup grabBar(liftRotateIn, liftPullUp);
 
     liftSequence.AddCommands(liftExtend, liftRotateOut, liftExtend2, liftRotateIn);
+    liftSequenceBefore.AddCommands(liftPullUpStop, liftMainSlowUp, liftExtend, liftRotateOut, liftExtend2, liftRotateIn, liftPullUpStop, liftMainSlowUp);
 }
 
 void Lift::assessInputs()
@@ -169,6 +196,10 @@ void Lift::assessInputs()
         liftSequence.Cancel();
         std::cout << "canceling" << std::endl;
     }
+    if((std::abs(state.rightStickY) > OIConstants::kDeadbandY) && liftSequenceBefore.IsScheduled()){
+        liftSequenceBefore.Cancel();
+        std::cout << "canceling" << std::endl;
+    }
 
     if (state.dPadLeftPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold)
     {
@@ -178,10 +209,11 @@ void Lift::assessInputs()
     {
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_RETRACT;
     }
-    else if (state.dPadDownPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold) {
-        state.liftstateRotate = LiftRotateState::LIFT_ROTATE_TOPOSITION;
+    else if (state.dPadDownPressed){// && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold) {
+        //state.liftstateRotate = LiftRotateState::LIFT_ROTATE_TOPOSITION;
+        liftSequenceBefore.Schedule();
     }
-    else if(!liftSequence.IsScheduled())
+    else if(!liftSequence.IsScheduled() && !liftSequenceBefore.IsScheduled())
     {
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_DISABLED;
     }
@@ -196,7 +228,7 @@ void Lift::assessInputs()
     else if (state.dPadUpPressed) {
         liftSequence.Schedule();
     }
-    else if(!liftSequence.IsScheduled())
+    else if(!liftSequence.IsScheduled() && !liftSequenceBefore.IsScheduled())
     {
         state.liftstateMain = LiftMainState::LIFT_MAIN_DISABLED;
     }
@@ -226,7 +258,9 @@ void Lift::analyzeDashboard()
 
 void Lift::assignOutputs()
 {
-    if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_DISABLED)
+    if (state.liftstateRotate == LiftRotateState::LIFT_ROTATE_DISABLED &&
+    !(state.liftstateMain == LiftMainState::LIFT_MAIN_ENABLE &&
+    state.rightStickY < (-1 * OIConstants::kDeadbandY)))
     {
         rotateMotor.Set(0);
     }
@@ -254,7 +288,7 @@ void Lift::assignOutputs()
         }
         else if(state.rightStickY < (-1 * OIConstants::kDeadbandY)){
             leadMainMotor.Set(state.rightStickY * LiftConstants::DEFAULT_MAIN_RETRACT_SPD);
-            rotateMotor.Set(-.1);
+            rotateMotor.Set(-0.2);
         }
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_FIRSTPOSITION) {
@@ -267,9 +301,12 @@ void Lift::assignOutputs()
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_MAXPOS) {
         leadMainMotor.Set(ControlMode::MotionMagic, LiftConstants::extendForwardLimit);
     }
-    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_DOWN) {
-        leadMainMotor.Set(ControlMode::MotionMagic, LiftConstants::MAIN_DOWN_POSITION);
-        rotateMotor.Set(-.1);
+    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_PULLUP){
+        leadMainMotor.Set(ControlMode::MotionMagic, LiftConstants::MAIN_BOTTOM_POSITION);
+        rotateMotor.Set(-0.2);
+    }
+    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_SLOWUP){
+        leadMainMotor.Set(0.05);
     }
 }
 

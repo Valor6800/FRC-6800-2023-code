@@ -48,7 +48,9 @@ public:
         LIFT_MAIN_TOPOSITION,
         LIFT_MAIN_FIRSTPOSITION,
         LIFT_MAIN_MAXPOS,
-        LIFT_MAIN_DOWN
+        LIFT_MAIN_DOWN,
+        LIFT_MAIN_PULLUP,
+        LIFT_MAIN_SLOWUP
     };
 
 
@@ -96,6 +98,7 @@ private:
     rev::SparkMaxRelativeEncoder rotateEncoder = rotateMotor.GetEncoder();
 
     frc2::SequentialCommandGroup liftSequence;
+    frc2::SequentialCommandGroup liftSequenceBefore;
 };
 
 #endif

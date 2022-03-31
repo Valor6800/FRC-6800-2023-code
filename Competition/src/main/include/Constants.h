@@ -253,10 +253,12 @@ namespace LiftConstants{
     constexpr static int MAIN_FIRST_POSITION = 62000;
     constexpr static int MAIN_SECOND_POSITION = 78500;
     constexpr static int MAIN_THIRD_POSITION = 103000;
-    constexpr static double MAIN_DOWN_POSITION = 125;
+    constexpr static int MAIN_DOWN_POSITION = 125;
+    constexpr static int MAIN_BOTTOM_POSITION = 0;
+    constexpr static int MAIN_SLOW_UP_POSITION = 5500;
 
     constexpr static int ROTATE_FIRST_POSITION = 40;
-    constexpr static double ROTATE_BAR_POSITION = 30;    
+    constexpr static double ROTATE_BAR_POSITION = 28;   
 
     constexpr static double rotateForwardLimit = 40;
     constexpr static double rotateReverseLimit = 0;
@@ -279,12 +281,12 @@ namespace LiftConstants{
     constexpr static double rotate_kD = 0;
     constexpr static double rotate_kIz = 0;
     constexpr static double rotate_kFF = 0.000156 / 2;
-    constexpr static double rotate_kMaxOutput = 0.2;   //1
-    constexpr static double rotate_kMinOutput = -0.2;  //-1
+    constexpr static double rotate_kMaxOutput = 0.5;   //1
+    constexpr static double rotate_kMinOutput = -0.5;  //-1
 
-    constexpr static double rotate_kMaxVel = 5000;
+    constexpr static double rotate_kMaxVel = 10000;
     constexpr static double rotate_kMinVel = 0; 
-    constexpr static double rotate_kMaxAcc = rotate_kMaxVel * 1; 
+    constexpr static double rotate_kMaxAcc = rotate_kMaxVel * 2; 
     constexpr static double rotate_kAllErr = 0;
 
     constexpr static double main_KF = 0.05;
@@ -295,8 +297,8 @@ namespace LiftConstants{
     constexpr static double MAIN_MOTION_CRUISE_VELOCITY = 15000;
     constexpr static double MAIN_MOTION_ACCELERATION = MAIN_MOTION_CRUISE_VELOCITY * 7;
 
-    constexpr static double DEFAULT_EXTEND_SPD = 0.2;
-    constexpr static double DEFAULT_RETRACT_SPD = -0.2;
+    constexpr static double DEFAULT_EXTEND_SPD = 0.5;
+    constexpr static double DEFAULT_RETRACT_SPD = -0.5;
 
     constexpr static double DEFAULT_ROTATE_SPD = 0.1;
 }
