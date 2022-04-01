@@ -97,8 +97,8 @@ private:
 
     rev::SparkMaxRelativeEncoder rotateEncoder = rotateMotor.GetEncoder();
 
-    frc2::SequentialCommandGroup liftSequence;
-    frc2::SequentialCommandGroup liftSequenceBefore;
+    frc2::SequentialCommandGroup liftSequenceUp;
+    frc2::SequentialCommandGroup liftSequenceDown;
 };
 
 #endif

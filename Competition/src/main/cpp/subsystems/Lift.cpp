@@ -171,8 +171,8 @@ void Lift::setupCommands()
     );
     //frc2::ParallelCommandGroup grabBar(liftRotateIn, liftPullUp);
 
-    liftSequence.AddCommands(liftExtend, liftRotateOut, liftExtend2, liftRotateIn);
-    liftSequenceBefore.AddCommands(liftPullUpStop, liftMainSlowUp, liftExtend, liftRotateOut, liftExtend2, liftRotateIn, liftPullUpStop, liftMainSlowUp);
+    liftSequenceUp.AddCommands(liftExtend, liftRotateOut, liftExtend2, liftRotateIn);
+    liftSequenceDown.AddCommands(liftPullUpStop, liftMainSlowUp);
 }
 
 void Lift::assessInputs()
@@ -192,12 +192,12 @@ void Lift::assessInputs()
     state.leftTriggerPressed = operatorController->GetLeftTriggerAxis() > LiftConstants::kDeadBandTrigger;
     state.rightTriggerPressed = operatorController->GetRightTriggerAxis() > LiftConstants::kDeadBandTrigger;
 
-    if((std::abs(state.rightStickY) > OIConstants::kDeadbandY) && liftSequence.IsScheduled()){
-        liftSequence.Cancel();
+    if((std::abs(state.rightStickY) > OIConstants::kDeadbandY) && liftSequenceUp.IsScheduled()){
+        liftSequenceUp.Cancel();
         std::cout << "canceling" << std::endl;
     }
-    if((std::abs(state.rightStickY) > OIConstants::kDeadbandY) && liftSequenceBefore.IsScheduled()){
-        liftSequenceBefore.Cancel();
+    if((std::abs(state.rightStickY) > OIConstants::kDeadbandY) && liftSequenceDown.IsScheduled()){
+        liftSequenceDown.Cancel();
         std::cout << "canceling" << std::endl;
     }
 
@@ -209,11 +209,7 @@ void Lift::assessInputs()
     {
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_RETRACT;
     }
-    else if (state.dPadDownPressed){// && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold) {
-        //state.liftstateRotate = LiftRotateState::LIFT_ROTATE_TOPOSITION;
-        liftSequenceBefore.Schedule();
-    }
-    else if(!liftSequence.IsScheduled() && !liftSequenceBefore.IsScheduled())
+    else if(!liftSequenceUp.IsScheduled() && !liftSequenceDown.IsScheduled())
     {
         state.liftstateRotate = LiftRotateState::LIFT_ROTATE_DISABLED;
     }
@@ -225,12 +221,16 @@ void Lift::assessInputs()
     else if (state.leftTriggerPressed && state.rightTriggerPressed) {
         state.liftstateMain = LiftMainState::LIFT_MAIN_FIRSTPOSITION;
     }
-    else if (state.dPadUpPressed) {
-        liftSequence.Schedule();
-    }
-    else if(!liftSequence.IsScheduled() && !liftSequenceBefore.IsScheduled())
+    else if(!liftSequenceUp.IsScheduled() && !liftSequenceDown.IsScheduled())
     {
         state.liftstateMain = LiftMainState::LIFT_MAIN_DISABLED;
+    }
+
+    if (state.dPadDownPressed){
+        liftSequenceDown.Schedule();
+    }
+    else if (state.dPadUpPressed) {
+        liftSequenceUp.Schedule();
     }
 }
 
@@ -293,7 +293,6 @@ void Lift::assignOutputs()
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_FIRSTPOSITION) {
         leadMainMotor.Set(ControlMode::MotionMagic, state.desiredMainFirstPos);
-
     }
     else if (state.liftstateMain == LiftMainState::LIFT_MAIN_TOPOSITION) {
         leadMainMotor.Set(ControlMode::MotionMagic, state.desiredMainPos);
