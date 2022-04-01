@@ -29,10 +29,14 @@ void Feeder::init()
     motor_intake.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     motor_intake.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
     motor_intake.SetInverted(false);
+    motor_intake.EnableVoltageCompensation(true);
+    motor_intake.ConfigVoltageCompSaturation(10);
 
     motor_stage.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     motor_stage.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
     motor_stage.SetInverted(true);
+    motor_stage.EnableVoltageCompensation(true);
+    motor_stage.ConfigVoltageCompSaturation(10);
 
     table->PutBoolean("Reverse Feeder?", false);
     table->PutNumber("Intake Reverse Speed", FeederConstants::DEFAULT_INTAKE_SPEED_REVERSE);
