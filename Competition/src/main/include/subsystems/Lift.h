@@ -54,10 +54,10 @@ public:
     };
 
     enum LiftAutomationState {
+        LIFT_AUTOMATION_DISABLED,
         LIFT_AUTOMATION_INITIAL_GRAB,
         LIFT_AUTOMATION_PULL_UP,
-        LIFT_AUTOMATION_UPANDOUT,
-        LIFT_AUTOMATION_DISABLED
+        LIFT_AUTOMATION_UPANDOUT
     };
 
 

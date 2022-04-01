@@ -262,6 +262,8 @@ void Lift::analyzeDashboard()
     table->PutNumber("Lift Main Encoder Value", getExtensionEncoderValue());
     table->PutNumber("Lift Rotate Encoder Value", getRotationEncoderValue());
 
+    table->PutNumber("Lift Automation State", state.liftStateAutomation);
+
     state.desiredRotatePos = table->GetNumber("Rotate First Angle", LiftConstants::ROTATE_FIRST_POSITION);
     state.desiredMainPos = table->GetNumber("Main Lift Second Pos", LiftConstants::MAIN_SECOND_POSITION);
     state.desiredMainFirstPos = table->GetNumber("Main Lift First Pos", LiftConstants::MAIN_FIRST_POSITION);
