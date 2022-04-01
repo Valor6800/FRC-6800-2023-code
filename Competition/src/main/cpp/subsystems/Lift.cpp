@@ -237,7 +237,7 @@ void Lift::assessInputs()
     else if (liftSequenceUp.IsScheduled()){
         state.liftStateAutomation = LiftAutomationState::LIFT_AUTOMATION_UPANDOUT;
     }
-    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_FIRSTPOSITION){
+    else if (leadMainMotor.GetSelectedSensorPosition() > LiftConstants::MAIN_SLOW_UP_POSITION){
         state.liftStateAutomation = LiftAutomationState::LIFT_AUTOMATION_INITIAL_GRAB;
     }
     else{
