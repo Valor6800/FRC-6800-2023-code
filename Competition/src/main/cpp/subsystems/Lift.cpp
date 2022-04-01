@@ -194,11 +194,9 @@ void Lift::assessInputs()
 
     if((std::abs(state.rightStickY) > OIConstants::kDeadbandY) && liftSequenceUp.IsScheduled()){
         liftSequenceUp.Cancel();
-        std::cout << "canceling" << std::endl;
     }
     if((std::abs(state.rightStickY) > OIConstants::kDeadbandY) && liftSequenceDown.IsScheduled()){
         liftSequenceDown.Cancel();
-        std::cout << "canceling" << std::endl;
     }
 
     if (state.dPadLeftPressed && leadMainMotor.GetSelectedSensorPosition() > LiftConstants::rotateNoLowerThreshold)
@@ -231,6 +229,19 @@ void Lift::assessInputs()
     }
     else if (state.dPadUpPressed) {
         liftSequenceUp.Schedule();
+    }
+
+    if (liftSequenceDown.IsScheduled()){
+        state.liftStateAutomation = LiftAutomationState::LIFT_AUTOMATION_PULL_UP;
+    }
+    else if (liftSequenceUp.IsScheduled()){
+        state.liftStateAutomation = LiftAutomationState::LIFT_AUTOMATION_UPANDOUT;
+    }
+    else if (state.liftstateMain == LiftMainState::LIFT_MAIN_FIRSTPOSITION){
+        state.liftStateAutomation = LiftAutomationState::LIFT_AUTOMATION_INITIAL_GRAB;
+    }
+    else{
+        state.liftStateAutomation = LiftAutomationState::LIFT_AUTOMATION_DISABLED;
     }
 }
 
@@ -313,4 +324,5 @@ void Lift::resetState()
 {
     state.liftstateMain = LiftMainState::LIFT_MAIN_DISABLED;
     state.liftstateRotate = LiftRotateState::LIFT_ROTATE_DISABLED;
+    state.liftStateAutomation = LiftAutomationState::LIFT_AUTOMATION_DISABLED;
 }

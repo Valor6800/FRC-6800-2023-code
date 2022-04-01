@@ -53,11 +53,19 @@ public:
         LIFT_MAIN_SLOWUP
     };
 
+    enum LiftAutomationState {
+        LIFT_AUTOMATION_INITIAL_GRAB,
+        LIFT_AUTOMATION_PULL_UP,
+        LIFT_AUTOMATION_UPANDOUT,
+        LIFT_AUTOMATION_DISABLED
+    };
+
 
     struct x
     {
         LiftMainState liftstateMain;
         LiftRotateState liftstateRotate;
+        LiftAutomationState liftStateAutomation;
 
         bool dPadUpPressed;
         bool dPadDownPressed;
