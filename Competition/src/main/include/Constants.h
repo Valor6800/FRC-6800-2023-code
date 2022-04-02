@@ -117,25 +117,32 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 15;    
 
-    constexpr static double aPower = 0.0613;
-    constexpr static double bPower = -.139; //.215
-    constexpr static double cPower = .496;
-    constexpr static double aHood = 8.95;
-    constexpr static double bHood = -12.9;
-    constexpr static double cHood = 1.8;
+    constexpr static double aPower_1x = 0.0452;
+    constexpr static double bPower_1x = -0.0879;
+    constexpr static double cPower_1x = 0.448;
+    constexpr static double aHood_1x = 5.33;
+    constexpr static double bHood_1x = -4.69;
+    constexpr static double cHood_1x = -1.51;
+
+    constexpr static double aPower_2x = 0.123;
+    constexpr static double bPower_2x = -0.307;
+    constexpr static double cPower_2x = -0.618;
+    constexpr static double aHood_2x = 4.05;
+    constexpr static double bHood_2x = 6.72;
+    constexpr static double cHood_2x = -11.6;
     
     constexpr static double limelightTurnKP = (.3 / 25.445) * 1.25;
     constexpr static double limelightAngle = 50;
     constexpr static double hubHeight = 2.64;
     constexpr static double limelightHeight = .6075;
     
-    constexpr static double flywheelKP1 = 0.1;
+    constexpr static double flywheelKP1 = 0.088; //1
     constexpr static double flywheelKI1 = 0;
     constexpr static double flywheelKD1 = 0;
     constexpr static double flywheelKIZ1 = 0;
     constexpr static double flywheelKFF1 = 0.04;
 
-    constexpr static double flywheelKP0 = 0.1  ; //.25
+    constexpr static double flywheelKP0 = 0.088; //.1
     constexpr static double flywheelKI0 = 0;
     constexpr static double flywheelKD0 = 0;
     constexpr static double flywheelKIZ0 = 0;
@@ -151,7 +158,7 @@ namespace ShooterConstants{
     constexpr static double flywheelPrimedValue = 0.46;
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
     constexpr static double flywheelDefaultValue = 0.42; //.375
-    constexpr static double flywheelPoopValue = 0.25;
+    constexpr static double flywheelPoopValue = 0.3;
     constexpr static double flywheelLaunchpadValue = .455;    
     
     constexpr static double flywheelSpeeds[] = {.372, .38125, .372}; //.387, .39125
@@ -221,19 +228,19 @@ namespace ShooterConstants{
 }
 
 namespace FeederConstants{
-    constexpr static int MOTOR_INTAKE_CAN_ID = 9;
+    constexpr static int MOTOR_INTAKE_CAN_ID = 9;    //PDH slot 15
     constexpr static int MOTOR_STAGE_CAN_ID = 10;
 
     constexpr static int BANNER_DIO_PORT = 5;
 
-    constexpr static double DEFAULT_INTAKE_SPEED_FORWARD = 0.9;
+    constexpr static double DEFAULT_INTAKE_SPEED_FORWARD = 0.7;
     constexpr static double DEFAULT_INTAKE_SPEED_REVERSE = -0.9;
 
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT = 0.5;
-    constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 0.98;
+    constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 0.9;
     constexpr static double DEFAULT_FEEDER_SPEED_REVERSE = -1.0;
 
-    constexpr static int CACHE_SIZE = 25;
+    constexpr static int CACHE_SIZE = 15;
     constexpr static double JAM_CURRENT = 30;
 }
 

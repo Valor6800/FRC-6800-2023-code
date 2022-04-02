@@ -121,11 +121,16 @@ public:
 
           int pipeline;
 
-          double hoodB;
-          double powerB;
+          double hoodB_1x;
+          double powerB_1x;
+          double hoodB_2x;
+          double powerB_2x;
 
-          double powerC;
-          double hoodC;
+          double powerC_1x;
+          double hoodC_1x;
+          double powerC_2x;
+          double hoodC_2x;
+
           double tv;
           double tx;
 

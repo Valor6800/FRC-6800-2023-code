@@ -29,7 +29,7 @@ void Feeder::init()
     motor_intake.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     motor_intake.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
     motor_intake.SetInverted(false);
-    motor_intake.EnableVoltageCompensation(true);
+    motor_intake.EnableVoltageCompensation(false);
     motor_intake.ConfigVoltageCompSaturation(10);
 
     motor_stage.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
@@ -124,8 +124,7 @@ void Feeder::assignOutputs()
     }
     else if (state.feederState == FeederState::FEEDER_SHOOT) {
         motor_intake.Set(state.intakeForwardSpeed);
-        //motor_stage.Set(state.feederForwardSpeedShoot);
-        motor_stage.SetVoltage(10_V * state.feederForwardSpeedShoot);
+        motor_stage.Set(state.feederForwardSpeedShoot);
     }
     else if (state.feederState == Feeder::FEEDER_REVERSE) {
         motor_intake.Set(state.intakeReverseSpeed);
