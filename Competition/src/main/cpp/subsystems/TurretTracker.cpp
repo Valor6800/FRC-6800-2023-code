@@ -50,6 +50,10 @@ void TurretTracker::assignOutputs() {
         state.cachedX = drivetrain->getPose_m().X().to<double>();
         state.cachedY = drivetrain->getPose_m().Y().to<double>();
         state.cachedTurretPos = shooter->turretEncoder.GetPosition();
+
+        // state.target = -1 * drivetrain->getPose_m().Rotation().Degrees().to<double>() + state.cachedTurretPos;
+        // atan2(drivetrain->getKinematics().ToChassisSpeeds().vx.to(<double>()), drivetrain->getPose_m().X());
+
     }
     else {
         if (table->GetBoolean("Use Turret Shoot", false))

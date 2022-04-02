@@ -166,7 +166,7 @@ namespace ShooterConstants{
     constexpr static double turretMaxV = 10000;
     constexpr static double turretMinV = 0;
     constexpr static double turretMaxAccel = turretMaxV * 2;
-    constexpr static double turretAllowedError = 0.75;
+    constexpr static double turretAllowedError = 0.5;
 
     constexpr static double hoodKP = 5e-5;
     constexpr static double hoodKI = 0;

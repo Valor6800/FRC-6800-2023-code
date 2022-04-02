@@ -3,8 +3,8 @@
 
 Lift::Lift() : ValorSubsystem(),
                operatorController(NULL),
-               leadMainMotor{LiftConstants::MAIN_CAN_ID, "baseCAN"},
-               followMainMotor{LiftConstants::MAIN_FOLLOW_CAN_ID, "baseCAN"},
+               leadMainMotor{LiftConstants::MAIN_CAN_ID},
+               followMainMotor{LiftConstants::MAIN_FOLLOW_CAN_ID},
                rotateMotor{LiftConstants::ROTATE_CAN_ID, rev::CANSparkMax::MotorType::kBrushless}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
