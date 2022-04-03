@@ -120,6 +120,7 @@ public:
           int currentBall;
 
           int pipeline;
+          int LoBFZoom;
 
           double hoodB_1x;
           double powerB_1x;

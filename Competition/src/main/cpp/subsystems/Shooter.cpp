@@ -116,6 +116,9 @@ void Shooter::init()
     hoodPidController.SetSmartMotionMinOutputVelocity(ShooterConstants::hoodMinV);
     hoodPidController.SetSmartMotionMaxAccel(ShooterConstants::hoodMaxAccel);
     hoodPidController.SetSmartMotionAllowedClosedLoopError(ShooterConstants::hoodAllowedError);
+
+    state.pipeline = 0;
+    state.LoBFZoom = 1;
     
     resetState();
     resetEncoder();
@@ -181,7 +184,7 @@ void Shooter::assessInputs()
     else if (state.bButton){
         state.turretState = TurretState::TURRET_TRACK; // Not moving
     }
-    else if(state.turretState == TurretState::TURRET_MANUAL || (fabs(state.turretTarget - turretEncoder.GetPosition()) < ShooterConstants::turretAllowedError && state.turretState == TurretState::TURRET_HOME_MID)){
+    else if(state.turretState == TurretState::TURRET_MANUAL || (fabs(ShooterConstants::homePositionMid - turretEncoder.GetPosition()) < ShooterConstants::turretAllowedError * 10 && state.turretState == TurretState::TURRET_HOME_MID)){
         state.turretState = TurretState::TURRET_TRACK;
     }
 
@@ -290,14 +293,18 @@ void Shooter::analyzeDashboard()
 
     table->PutNumber("Turret State", state.turretState);
 
+    table->PutNumber("LoBF Zoom", state.LoBFZoom);
+
     state.hoodC_1x = table->GetNumber("Hood Y Int 1X", ShooterConstants::cHood_1x);
     state.powerC_1x = table->GetNumber("Power Y Int 1X", ShooterConstants::cPower_1x);
 
     state.hoodC_2x = table->GetNumber("Hood Y Int 2X", ShooterConstants::cHood_2x);
     state.powerC_2x = table->GetNumber("Power Y Int 2X", ShooterConstants::cPower_2x);
+
+    state.pipeline = limeTable->GetNumber("pipeline", 0);
 }
 
-//0 is close, 1 is far, 2 is auto
+//0 is close (1x zoom), 1 is far (2x zoom), 2 is auto (1x zoom)
 void Shooter::setLimelight(int pipeline){
     limeTable->PutNumber("pipeline", pipeline);
     state.pipeline = pipeline;
@@ -377,7 +384,12 @@ void Shooter::assignOutputs()
         state.flywheelTarget = state.flywheelLow;
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_TRACK){
-        state.flywheelTarget = ShooterConstants::aPower_1x *(state.distanceToHub * state.distanceToHub) + ShooterConstants::bPower_1x * state.distanceToHub + state.powerC_1x ; //commented out for testing PID
+        if (state.pipeline == 1) {
+            state.flywheelTarget = ShooterConstants::aPower_2x *(state.distanceToHub * state.distanceToHub) + ShooterConstants::bPower_2x * state.distanceToHub + state.powerC_2x ;
+        }
+        else {
+            state.flywheelTarget = ShooterConstants::aPower_1x *(state.distanceToHub * state.distanceToHub) + ShooterConstants::bPower_1x * state.distanceToHub + state.powerC_1x ;
+        }
     }
     else if(state.flywheelState == FlywheelState::FLYWHEEL_POOP){
         state.flywheelTarget = ShooterConstants::flywheelPoopValue;
@@ -403,7 +415,14 @@ void Shooter::assignOutputs()
         state.hoodTarget = state.hoodLow;
     }
     else if(state.hoodState == HoodState::HOOD_TRACK){
-        state.hoodTarget = ShooterConstants::aHood_1x * (state.distanceToHub * state.distanceToHub) + ShooterConstants::bHood_1x * state.distanceToHub + state.hoodC_1x; //commented out for testing PID
+        if (state.pipeline == 1) {
+            state.hoodTarget = ShooterConstants::aHood_2x * (state.distanceToHub * state.distanceToHub) + ShooterConstants::bHood_2x * state.distanceToHub + state.hoodC_2x;
+            state.LoBFZoom = 2;
+        }
+        else {
+            state.hoodTarget = ShooterConstants::aHood_1x * (state.distanceToHub * state.distanceToHub) + ShooterConstants::bHood_1x * state.distanceToHub + state.hoodC_1x;
+            state.LoBFZoom = 1;
+        }
     }
     else if(state.hoodState == HoodState::HOOD_POOP){
         state.hoodTarget = ShooterConstants::hoodPoop;

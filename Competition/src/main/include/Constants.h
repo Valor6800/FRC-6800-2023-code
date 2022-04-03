@@ -117,19 +117,19 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 15;    
 
-    constexpr static double aPower_1x = 0.0452;
-    constexpr static double bPower_1x = -0.0879;
-    constexpr static double cPower_1x = 0.448;
-    constexpr static double aHood_1x = 5.33;
-    constexpr static double bHood_1x = -4.69;
-    constexpr static double cHood_1x = -1.51;
+    constexpr static double aPower_1x = 0.114;
+    constexpr static double bPower_1x = -0.36;
+    constexpr static double cPower_1x = 0.705;
+    constexpr static double aHood_1x = 12.5;
+    constexpr static double bHood_1x = -32.7;
+    constexpr static double cHood_1x = 23.1;
 
-    constexpr static double aPower_2x = 0.123;
-    constexpr static double bPower_2x = -0.307;
-    constexpr static double cPower_2x = -0.618;
-    constexpr static double aHood_2x = 4.05;
-    constexpr static double bHood_2x = 6.72;
-    constexpr static double cHood_2x = -11.6;
+    constexpr static double aPower_2x = 0.165;
+    constexpr static double bPower_2x = -0.432;
+    constexpr static double cPower_2x = 0.704;
+    constexpr static double aHood_2x = 18.7;
+    constexpr static double bHood_2x = -41.2;
+    constexpr static double cHood_2x = 24.6;
     
     constexpr static double limelightTurnKP = (.3 / 25.445) * 1.25;
     constexpr static double limelightAngle = 50;
@@ -173,7 +173,7 @@ namespace ShooterConstants{
     constexpr static double turretMaxV = 10000;
     constexpr static double turretMinV = 0;
     constexpr static double turretMaxAccel = turretMaxV * 2;
-    constexpr static double turretAllowedError = 0.5;
+    constexpr static double turretAllowedError = 0.75;
 
     constexpr static double hoodKP = 5e-5;
     constexpr static double hoodKI = 0;
@@ -240,7 +240,7 @@ namespace FeederConstants{
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 0.9;
     constexpr static double DEFAULT_FEEDER_SPEED_REVERSE = -1.0;
 
-    constexpr static int CACHE_SIZE = 15;
+    constexpr static int CACHE_SIZE = 20;
     constexpr static double JAM_CURRENT = 30;
 }
 
