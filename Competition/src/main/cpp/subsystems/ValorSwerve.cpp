@@ -87,7 +87,7 @@ void ValorSwerve::storeAzimuthZeroReference()
     ofs.open(stream.str(), std::ofstream::out);
     ofs << std::to_string(position);
     ofs.close();
-    std::cout << "stored position in file" << std::endl;
+    //std::cout << "stored position in file" << std::endl;
 }
 
 void ValorSwerve::loadAndSetAzimuthZeroReference()
@@ -117,7 +117,7 @@ void ValorSwerve::loadAndSetAzimuthZeroReference()
 
     // Set the azimuth offset to the calculated setpoint (which will take over in teleop)
     azimuthFalcon->SetSelectedSensorPosition(azimuthSetpoint, 0, 10);
-    std::cout << "pulled pospition from file" << std::endl;
+    //std::cout << "pulled pospition from file" << std::endl;
 }
 
 WPI_TalonFX* ValorSwerve::getAzimuthFalcon()

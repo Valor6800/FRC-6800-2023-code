@@ -29,7 +29,7 @@ Drivetrain::Drivetrain() : ValorSubsystem(),
 
 void Drivetrain::setKF(){
     azimuthMotors[0]->Config_kF(0, SwerveConstants::KF);
-    std::cout << "set kf" << std::endl;
+    //std::cout << "set kf" << std::endl;
 }
 
 Drivetrain::~Drivetrain()
@@ -98,7 +98,7 @@ void Drivetrain::init()
 
     resetState();
     //pullSwerveModuleZeroReference();
-    std::cout <<"init drivetrain" << std::endl;
+    //std::cout <<"init drivetrain" << std::endl;
 }
 
 void Drivetrain::setController(frc::XboxController *controller)

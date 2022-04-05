@@ -27,6 +27,8 @@ void Lift::init()
     rotateMotor.EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
     rotateMotor.SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, LiftConstants::rotateReverseLimit);
 
+    //rotateMotor.SetSecondaryCurrentLimit(40, 5);
+
     leadMainMotor.ConfigForwardSoftLimitThreshold(LiftConstants::extendForwardLimit);
     leadMainMotor.ConfigReverseSoftLimitThreshold(LiftConstants::extendReverseLimit);
 
@@ -48,6 +50,7 @@ void Lift::init()
     rotateMotorPidController.SetIZone(LiftConstants::rotate_kIz);
     rotateMotorPidController.SetFF(LiftConstants::rotate_kFF);
     rotateMotorPidController.SetOutputRange(LiftConstants::rotate_kMinOutput, LiftConstants::rotate_kMaxOutput);
+    
 
     rotateMotorPidController.SetSmartMotionMaxVelocity(LiftConstants::rotate_kMaxVel);
     rotateMotorPidController.SetSmartMotionMinOutputVelocity(LiftConstants::rotate_kMinVel);
@@ -172,7 +175,7 @@ void Lift::setupCommands()
     //frc2::ParallelCommandGroup grabBar(liftRotateIn, liftPullUp);
 
     liftSequenceUp.AddCommands(liftExtend, liftRotateOut, liftExtend2, liftRotateIn);
-    liftSequenceDown.AddCommands(liftPullUpStop, liftMainSlowUp);
+    liftSequenceDown.AddCommands(liftPullUpStop);//, liftMainSlowUp);
 }
 
 void Lift::assessInputs()
@@ -261,6 +264,7 @@ void Lift::analyzeDashboard()
 
     table->PutNumber("Lift Main Encoder Value", getExtensionEncoderValue());
     table->PutNumber("Lift Rotate Encoder Value", getRotationEncoderValue());
+    table->PutNumber("Lift rotate current draw", rotateMotor.GetOutputCurrent());
 
     table->PutNumber("Lift Automation State", state.liftStateAutomation);
 

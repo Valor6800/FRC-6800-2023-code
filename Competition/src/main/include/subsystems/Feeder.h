@@ -92,6 +92,7 @@ private:
     void calcCurrent();
     
     void resetDeque();
+
 };
 
 #endif

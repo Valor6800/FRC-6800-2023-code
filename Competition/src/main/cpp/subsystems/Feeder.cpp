@@ -10,6 +10,7 @@
 
 
 #include "subsystems/Feeder.h"
+#include <iostream>
 
 Feeder::Feeder() : ValorSubsystem(),
                            driverController(NULL),
@@ -46,6 +47,10 @@ void Feeder::init()
     table->PutNumber("Feeder Forward Speed Default", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT);
     table->PutNumber("Feeder Forward Speed Shoot", FeederConstants::DEFAULT_FEEDER_SPEED_FORWARD_SHOOT);
     table->PutNumber("Intake Spike Current", FeederConstants::JAM_CURRENT);
+
+    table->PutNumber("Average Amps", 0);
+    table->PutBoolean("Spiked: ", 0);
+    table->PutBoolean("Banner: ", 0);
     
     resetState();
     
@@ -94,9 +99,6 @@ void Feeder::assessInputs()
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
     }
-    
-    // Calculate instantaneous current
-    calcCurrent();
 }
 
 void Feeder::analyzeDashboard()
@@ -112,6 +114,10 @@ void Feeder::analyzeDashboard()
     table->PutNumber("Average Amps", state.instCurrent);
     table->PutBoolean("Spiked: ", state.spiked);
     table->PutBoolean("Banner: ", state.bannerTripped);
+
+    table->PutNumber("current feeder state", state.feederState);
+    // Calculate instantaneous current
+    calcCurrent();
 }
 
 void Feeder::assignOutputs()
@@ -187,7 +193,6 @@ void Feeder::resetDeque() {
         state.current_cache.push_back(0);
     }
 }
-
 
 void Feeder::resetState()
 {
