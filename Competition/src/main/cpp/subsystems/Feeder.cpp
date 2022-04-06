@@ -192,6 +192,7 @@ void Feeder::resetDeque() {
     for (int i = 0; i < FeederConstants::CACHE_SIZE; i++) {
         state.current_cache.push_back(0);
     }
+    state.spiked = false;
 }
 
 void Feeder::resetState()

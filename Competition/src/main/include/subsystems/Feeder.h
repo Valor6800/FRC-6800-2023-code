@@ -78,7 +78,7 @@ public:
         FeederState feederState;
     } state;
 
-
+void resetDeque();
 
 private:
     frc::XboxController *driverController;
@@ -91,7 +91,7 @@ private:
 
     void calcCurrent();
     
-    void resetDeque();
+    
 
 };
 

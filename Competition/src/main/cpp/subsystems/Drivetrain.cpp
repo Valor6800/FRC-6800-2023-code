@@ -252,7 +252,7 @@ void Drivetrain::assignOutputs()
         ySpeedMPS = units::meters_per_second_t{ySpeed};
         if(rot != 0){
             int sign = std::signbit(rot) == 0 ? 1 : -1;
-            rotRPS = units::radians_per_second_t{SwerveConstants::ROTATION_SLOW_SPEED_RPS};
+            rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_SLOW_SPEED_RPS};
         }
     }
     // double heading = getPose_m().Rotation().Degrees().to<double>();

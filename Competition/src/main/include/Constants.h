@@ -234,7 +234,7 @@ namespace FeederConstants{
     constexpr static int BANNER_DIO_PORT = 5;
 
     constexpr static double DEFAULT_INTAKE_SPEED_FORWARD = 0.7;
-    constexpr static double DEFAULT_INTAKE_SPEED_REVERSE = -0.9;
+    constexpr static double DEFAULT_INTAKE_SPEED_REVERSE = -1;
 
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT = 0.5;
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 0.9;
