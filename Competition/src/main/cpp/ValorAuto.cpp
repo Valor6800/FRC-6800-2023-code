@@ -109,6 +109,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::InstantCommand cmd_turretTrack = frc2::InstantCommand( [&] {
         shooter->state.turretState = Shooter::TurretState::TURRET_TRACK;
     } );
+    frc2::InstantCommand cmd_shooterTarmac = frc2::InstantCommand( [&] {
+        shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_DEFAULT;
+        shooter->state.hoodState = Shooter::HoodState::HOOD_DOWN;
+    } );
 
     frc2::InstantCommand cmd_turretHomeMid = frc2::InstantCommand( [&] {
         shooter->state.turretState = Shooter::TurretState::TURRET_HOME_MID;
@@ -704,6 +708,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     (cmd_setOdometryRed,
     cmd_shooterAuto,
     cmd_intakeOne,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
     cmd_move_moveBugsRed,
     cmd_intakeDisable,
     cmd_move_movePreDaffyRed,
@@ -724,6 +731,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     (cmd_setOdometryBlue,
     cmd_shooterAuto,
     cmd_intakeOne,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
     cmd_move_moveBugsBlue,
     cmd_intakeDisable,
     cmd_move_movePreDaffyBlue,
@@ -746,6 +756,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_turretDisable,
     cmd_shooterAuto,
     cmd_intakeOne,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
     cmd_move_moveBugsRed,
     cmd_intakeDisable,
     cmd_move_moveBackBugsRed,
@@ -769,6 +782,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeAuto,
     frc2::WaitCommand((units::second_t).25),
     cmd_turretTrack,
+    cmd_shooterTarmac,
     cmd_move_moveShootRed,
     frc2::WaitCommand((units::second_t).375),
     cmd_intakeShoot
@@ -779,6 +793,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_turretDisable,
     cmd_shooterAuto,
     cmd_intakeOne,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
     cmd_move_moveBugsBlue,
     cmd_intakeDisable,
     cmd_move_moveBackBugsBlue,
@@ -804,6 +821,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeAuto,
     frc2::WaitCommand((units::second_t).25),
     cmd_turretTrack,
+    cmd_shooterTarmac,
     cmd_move_moveShootBlue,
     frc2::WaitCommand((units::second_t).375),
     cmd_intakeShoot
@@ -813,6 +831,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     shoot2RedAlt->AddCommands
     (cmd_set2ballOdometryRed,
     cmd_intakeOne,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
     cmd_shooterAuto,
     cmd_move_moveMarvinRed,
     cmd_intakeDisable,
@@ -834,6 +855,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     shoot2BlueAlt->AddCommands
     (cmd_set2ballOdometryBlue,
     cmd_intakeOne,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
     cmd_shooterAuto,
     cmd_move_moveMarvinBlue,
     cmd_intakeDisable,
