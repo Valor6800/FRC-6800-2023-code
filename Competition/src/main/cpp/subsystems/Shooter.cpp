@@ -227,6 +227,10 @@ void Shooter::analyzeDashboard()
         double deltaH = ShooterConstants::hubHeight - ShooterConstants::limelightHeight;
         double xDist = deltaH / tan(angle * MathConstants::toRadians);
         state.distanceToHub = xDist;
+
+        if (state.distanceToHub < 1.46)
+            state.distanceToHub = 1.46;
+
         table->PutNumber("x distance to hub", xDist);
     }
 
