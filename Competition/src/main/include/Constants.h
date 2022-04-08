@@ -157,7 +157,7 @@ namespace ShooterConstants{
 
     constexpr static double flywheelPrimedValue = 0.46;
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
-    constexpr static double flywheelDefaultValue = 0.42; //.375
+    constexpr static double flywheelDefaultValue = 0.45; //.375
     constexpr static double flywheelPoopValue = 0.3;
     constexpr static double flywheelLaunchpadValue = .455;    
     
@@ -234,7 +234,7 @@ namespace FeederConstants{
     constexpr static int BANNER_DIO_PORT = 5;
 
     constexpr static double DEFAULT_INTAKE_SPEED_FORWARD = 0.7;
-    constexpr static double DEFAULT_INTAKE_SPEED_REVERSE = -1;
+    constexpr static double DEFAULT_INTAKE_SPEED_REVERSE = -0.7;
 
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_DEFAULT = 0.5;
     constexpr static double DEFAULT_FEEDER_SPEED_FORWARD_SHOOT = 0.9;

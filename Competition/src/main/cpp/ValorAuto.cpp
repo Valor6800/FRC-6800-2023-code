@@ -784,6 +784,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_turretTrack,
     cmd_shooterTarmac,
     cmd_move_moveShootRed,
+    cmd_shooterAuto,
     frc2::WaitCommand((units::second_t).375),
     cmd_intakeShoot
     );
@@ -823,6 +824,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_turretTrack,
     cmd_shooterTarmac,
     cmd_move_moveShootBlue,
+    cmd_shooterAuto,    
     frc2::WaitCommand((units::second_t).375),
     cmd_intakeShoot
     );
