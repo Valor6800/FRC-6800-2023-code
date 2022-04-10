@@ -181,10 +181,10 @@ namespace ShooterConstants{
     constexpr static double hoodKIZ = 0;
     constexpr static double hoodKFF = 0.000156 * .5;
 
-    constexpr static double hoodMaxV = 8000;
+    constexpr static double hoodMaxV = 10000; //8000
     constexpr static double hoodMinV = 0;
-    constexpr static double hoodMaxAccel = hoodMaxV * 1;
-    constexpr static double hoodAllowedError = 0;
+    constexpr static double hoodMaxAccel = hoodMaxV * 4; // *1
+    constexpr static double hoodAllowedError = 0.2;
 
     constexpr static double hoodTop = 5;
    // constexpr static double hoodAuto = 6;

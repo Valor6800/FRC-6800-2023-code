@@ -113,6 +113,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_DEFAULT;
         shooter->state.hoodState = Shooter::HoodState::HOOD_DOWN;
     } );
+    frc2::InstantCommand cmd_shooterDisable = frc2::InstantCommand( [&] {
+        shooter->state.flywheelState = Shooter::FlywheelState::FLYWHEEL_DISABLE;
+        shooter->state.hoodState = Shooter::HoodState::HOOD_DOWN;
+    } );
 
     frc2::InstantCommand cmd_turretHomeMid = frc2::InstantCommand( [&] {
         shooter->state.turretState = Shooter::TurretState::TURRET_HOME_MID;
@@ -849,7 +853,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_shooterPoop,
     cmd_move_moveTasRed,
     cmd_move_moveHangarRed,
-    cmd_intakeShoot,
+    cmd_intakeReverse,
     frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
     cmd_move_moveEndRed
@@ -875,7 +879,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_shooterPoop,
     cmd_move_moveTasBlue,
     cmd_move_moveHangarBlue,
-    cmd_intakeShoot,
+    cmd_intakeReverse,
     frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
     cmd_move_moveEndBlue
@@ -903,7 +907,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_move_moveSpeedyFromAltRed,
     cmd_move_moveTasFromSpeedyRed,
     cmd_move_moveHangarRed,
-    cmd_intakeShoot,
+    cmd_intakeReverse,
     frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
     cmd_move_moveEndRed,
@@ -932,7 +936,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_move_moveSpeedyFromAltBlue,
     cmd_move_moveTasFromSpeedyBlue,
     cmd_move_moveHangarBlue,
-    cmd_intakeShoot,
+    cmd_intakeReverse,
     frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
     cmd_move_moveEndBlue,
