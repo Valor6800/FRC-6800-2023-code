@@ -832,6 +832,43 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).375),
     cmd_intakeShoot
     );
+
+    frc2::SequentialCommandGroup *shoot2Red = new frc2::SequentialCommandGroup();
+    shoot2Red->AddCommands
+    (cmd_set2ballOdometryRed,
+    cmd_intakeOne,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
+    cmd_shooterAuto,
+    cmd_move_moveMarvinRed,
+    cmd_intakeDisable,
+    cmd_move_moveMarvinShootRed,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeDisable
+    );
+
+    frc2::SequentialCommandGroup *shoot2Blue = new frc2::SequentialCommandGroup();
+    shoot2Blue->AddCommands
+    (cmd_set2ballOdometryBlue,
+    cmd_intakeOne,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
+    cmd_shooterAuto,
+    cmd_move_moveMarvinBlue,
+    cmd_intakeDisable,
+    cmd_move_moveMarvinShootBlue,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeDisable
+    );
+    
     
     frc2::SequentialCommandGroup *shoot2RedAlt = new frc2::SequentialCommandGroup();
     shoot2RedAlt->AddCommands
@@ -849,14 +886,16 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
-    cmd_turretHomeMid,
-    cmd_shooterPoop,
     cmd_move_moveTasRed,
     cmd_move_moveHangarRed,
     cmd_intakeReverse,
     frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
-    cmd_move_moveEndRed
+    cmd_move_moveEndRed,
+    cmd_turretHomeRight,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_shooterAuto
     );
 
     frc2::SequentialCommandGroup *shoot2BlueAlt = new frc2::SequentialCommandGroup();
@@ -875,14 +914,16 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
-    cmd_turretHomeMid,
-    cmd_shooterPoop,
     cmd_move_moveTasBlue,
     cmd_move_moveHangarBlue,
     cmd_intakeReverse,
     frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
-    cmd_move_moveEndBlue
+    cmd_move_moveEndBlue,
+    cmd_turretHomeRight,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_shooterAuto
     );
 
     frc2::SequentialCommandGroup *shoot2Def2Red = new frc2::SequentialCommandGroup();
@@ -902,8 +943,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
-    cmd_turretHomeMid,
-    cmd_shooterPoop,
     cmd_move_moveSpeedyFromAltRed,
     cmd_move_moveTasFromSpeedyRed,
     cmd_move_moveHangarRed,
@@ -911,7 +950,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
     cmd_move_moveEndRed,
-    cmd_turretHomeRight
+    cmd_turretHomeRight,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_shooterAuto
     );
 
     frc2::SequentialCommandGroup *shoot2Def2Blue = new frc2::SequentialCommandGroup();
@@ -931,8 +973,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
-    cmd_turretHomeMid,
-    cmd_shooterPoop,
     cmd_move_moveSpeedyFromAltBlue,
     cmd_move_moveTasFromSpeedyBlue,
     cmd_move_moveHangarBlue,
@@ -940,8 +980,14 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
     cmd_move_moveEndBlue,
-    cmd_turretHomeRight
+    cmd_turretHomeRight,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_shooterAuto
     );
+
+    m_chooser.AddOption("RED 2 ball", shoot2Red);
+    m_chooser.AddOption("Blue 2 ball", shoot2Blue);
 
     m_chooser.AddOption("RED 2 ball + 1 Defensive", shoot2RedAlt);
     m_chooser.AddOption("Blue 2 ball + 1 Defensive", shoot2BlueAlt);
@@ -956,6 +1002,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     m_chooser.AddOption("BLUE 3 ball auto", shoot3Blue);
     m_chooser.AddOption("BLUE 5 ball auto", shoot5Blue);
+
+    m_chooser.SetDefaultOption("RED 2 ball", shoot2Red);
 
     frc::SmartDashboard::PutData(&m_chooser);
 }
