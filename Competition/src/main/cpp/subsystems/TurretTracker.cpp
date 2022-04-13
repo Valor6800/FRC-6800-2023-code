@@ -35,31 +35,34 @@ void TurretTracker::analyzeDashboard() {
 }
 
 void TurretTracker::assignOutputs() {
-    // state.cachedVX = drivetrain->getKinematics().ToChassisSpeeds().vx.to<double>();
-    // state.cachedVY = drivetrain->getKinematics().ToChassisSpeeds().vy.to<double>();
-    // state.cachedVT = drivetrain->getKinematics().ToChassisSpeeds().omega.to<double>();
 
     double tv = shooter->state.tv;
+    double turretPos = shooter->turretEncoder.GetPosition();
+    double robotHeading = drivetrain->getPose_m().Rotation().Degrees().to<double>();
+    double x = drivetrain->getPose_m().X().to<double>();
+    double y = drivetrain->getPose_m().Y().to<double>();
+    double tx = shooter->state.tx;
 
     if (tv == 1) {
-        state.cachedTx = shooter->state.tx;
         // 0.75 = limeligh KP
-        state.target = (-state.cachedTx * 0.75) + shooter->turretEncoder.GetPosition();
-        
-        state.cachedHeading = drivetrain->getPose_m().Rotation().Degrees().to<double>();
-        state.cachedX = drivetrain->getPose_m().X().to<double>();
-        state.cachedY = drivetrain->getPose_m().Y().to<double>();
-        state.cachedTurretPos = shooter->turretEncoder.GetPosition();
+        state.target = (-state.cachedTx * 0.75) + turretPos;
 
-        // state.target = -1 * drivetrain->getPose_m().Rotation().Degrees().to<double>() + state.cachedTurretPos;
+        // state.target = -1 * robotHeading + state.cachedTurretPos;
         // atan2(drivetrain->getKinematics().ToChassisSpeeds().vx.to(<double>()), drivetrain->getPose_m().X());
 
+        state.cachedHeading = robotHeading;
+        state.cachedX = x;
+        state.cachedY = y;
+        state.cachedTx = tx;
+        state.cachedTurretPos = turretPos;
+        
+        state.destinationTurretHeading = robotHeading + turretPos - 90 - tx;
     }
     else {
         if (table->GetBoolean("Use Turret Shoot", false))
-            state.target = -1 * drivetrain->getPose_m().Rotation().Degrees().to<double>() + state.cachedTurretPos - state.cachedTx;
+            state.target = state.destinationTurretHeading - robotHeading + 90 + tx;
         else
-            state.target = shooter->turretEncoder.GetPosition();
+            state.target = turretPos;
     }
 
     if (state.target < -90) {

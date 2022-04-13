@@ -45,6 +45,7 @@ public:
         double cachedVT;
 
         double cachedTurretPos;
+        double destinationTurretHeading;
 
     } state;
 

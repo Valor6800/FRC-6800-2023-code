@@ -33,7 +33,7 @@ class RobotContainer {
         Drivetrain m_drivetrain;
         Shooter m_shooter;
         Feeder m_feeder;
-        Lift m_lift;
+        // Lift m_lift;
         TurretTracker m_turretTracker;
 
     private:
