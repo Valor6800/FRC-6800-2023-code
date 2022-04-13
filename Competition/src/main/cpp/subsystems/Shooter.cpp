@@ -176,6 +176,7 @@ void Shooter::assessInputs()
     state.xButtonPressed = operatorController->GetXButtonPressed();
     state.bButton = operatorController->GetBButtonPressed();
     state.driverLeftTrigger = driverController->GetLeftTriggerAxis() > 0.9;
+    state.driverDPadUp = driverController->GetPOV() == OIConstants::dpadUp;
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
@@ -188,7 +189,7 @@ void Shooter::assessInputs()
         state.turretState = TurretState::TURRET_TRACK;
     }
 
-    if (state.yButton) {
+    if (state.yButton || state.driverDPadUp) {
         state.turretState = TurretState::TURRET_HOME_MID;
     }
 
@@ -290,6 +291,8 @@ void Shooter::analyzeDashboard()
     table->PutNumber("Turret target", state.turretTarget);
     table->PutNumber("Turret Desired", state.turretDesired);
 
+    table->PutNumber("Turret Output", state.turretOutput);
+
     table->PutNumber("left stick x", state.leftStickX);
 
     table->PutNumber("flywheel power", state.flywheelHigh);
@@ -334,6 +337,10 @@ void Shooter::assignOutputs()
 
         // Minimum power deadband
         if (std::abs(state.leftStickX) < ShooterConstants::pDeadband) {
+            state.turretOutput = 0;
+        }
+        if( (turretEncoder.GetPosition() > 160 && state.turretOutput > ShooterConstants::pDeadband) ||
+         (turretEncoder.GetPosition() < 20 && state.turretOutput < -1 * ShooterConstants::pDeadband) ){
             state.turretOutput = 0;
         }
         turret.Set(state.turretOutput);

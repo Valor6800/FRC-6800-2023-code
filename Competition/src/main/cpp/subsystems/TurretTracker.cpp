@@ -72,11 +72,11 @@ void TurretTracker::assignOutputs() {
         state.target -= 360;
     }
 
-    if (state.target < 0) {
-        state.target = 0;
+    if (state.target < -20) {
+        state.target = -20;
     }
-    else if (state.target > 180) {
-        state.target = 180;
+    else if (state.target > 200) {
+        state.target = 200;
     }
 
     shooter->assignTurret(state.target);

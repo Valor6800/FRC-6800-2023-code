@@ -158,7 +158,7 @@ namespace ShooterConstants{
     constexpr static double flywheelPrimedValue = 0.46;
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
     constexpr static double flywheelDefaultValue = 0.45; //.375
-    constexpr static double flywheelPoopValue = 0.3;
+    constexpr static double flywheelPoopValue = 0;//0.3;
     constexpr static double flywheelLaunchpadValue = .455;    
     
     constexpr static double flywheelSpeeds[] = {.372, .38125, .372}; //.387, .39125
@@ -214,8 +214,8 @@ namespace ShooterConstants{
     constexpr static double homePositionMid = 90;
     constexpr static double homePositionLeft = 180;
     constexpr static double homePositionRight = 0;
-    constexpr static double turretLimitLeft = 180;
-    constexpr static double turretLimitRight = 0;
+    constexpr static double turretLimitLeft = 180 + 20;
+    constexpr static double turretLimitRight = 0 - 20;
 
     constexpr static double turretRotateLiftThreshold = 20000; // lowered from 64500
     constexpr static double hubX = 0;
