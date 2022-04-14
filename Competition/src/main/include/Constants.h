@@ -158,7 +158,7 @@ namespace ShooterConstants{
     constexpr static double flywheelPrimedValue = 0.46;
     constexpr static double flywheelAutoValue = 0.405; //can change to .4
     constexpr static double flywheelDefaultValue = 0.45; //.375
-    constexpr static double flywheelPoopValue = 0;//0.3;
+    constexpr static double flywheelPoopValue = 0.3;
     constexpr static double flywheelLaunchpadValue = .455;    
     
     constexpr static double flywheelSpeeds[] = {.372, .38125, .372}; //.387, .39125

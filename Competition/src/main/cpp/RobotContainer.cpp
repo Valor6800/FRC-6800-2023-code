@@ -7,7 +7,7 @@
 
 #include "RobotContainer.h"
 
-RobotContainer::RobotContainer() : m_auto(&m_drivetrain, &m_shooter, &m_feeder) {
+RobotContainer::RobotContainer() : m_auto(&m_drivetrain, &m_shooter, &m_feeder, &m_turretTracker) {
     ConfigureButtonBindings();
     m_shooter.setDrivetrain(&m_drivetrain);
     m_turretTracker.setDrivetrain(&m_drivetrain);

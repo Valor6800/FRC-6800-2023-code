@@ -29,6 +29,9 @@ public:
     void analyzeDashboard();
     void assignOutputs();
 
+    void disableWrapAround();
+    void enableWrapAround();
+
     struct x
     {
         double target;

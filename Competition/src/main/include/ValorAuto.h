@@ -19,13 +19,14 @@
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Shooter.h"
 #include "subsystems/Feeder.h"
+#include "subsystems/TurretTracker.h"
 
 #ifndef VALOR_AUTO_H
 #define VALOR_AUTO_H
 
 class ValorAuto {
     public:
-        ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder);
+        ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder, TurretTracker *_turretTracker);
 
         frc2::Command* getCurrentAuto();
 
@@ -33,6 +34,7 @@ class ValorAuto {
         Drivetrain *drivetrain;
         Shooter *shooter;
         Feeder *feeder;
+        TurretTracker *turretTracker;
         frc::SendableChooser<frc2::Command*> m_chooser;
         
 };

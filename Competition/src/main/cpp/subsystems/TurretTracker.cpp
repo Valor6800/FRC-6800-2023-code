@@ -15,7 +15,7 @@ TurretTracker::TurretTracker() : ValorSubsystem()
 
 void TurretTracker::init() {
     initTable("TurretTracker");
-    table->PutBoolean("Use Turret Shoot", false);
+    table->PutBoolean("Use Turret Shoot", true);
 }
 
 void TurretTracker::setDrivetrain(Drivetrain *dt){
@@ -33,6 +33,16 @@ void TurretTracker::assessInputs() {
 void TurretTracker::analyzeDashboard() {
 
 }
+
+void TurretTracker::disableWrapAround(){
+    table->PutBoolean("Use Turret Shoot", false);
+}
+
+void TurretTracker::enableWrapAround(){
+    table->PutBoolean("Use Turret Shoot", true);
+}
+
+
 
 void TurretTracker::assignOutputs() {
 
@@ -59,7 +69,7 @@ void TurretTracker::assignOutputs() {
         state.destinationTurretHeading = robotHeading + turretPos - 90 - tx;
     }
     else {
-        if (table->GetBoolean("Use Turret Shoot", false))
+        if (table->GetBoolean("Use Turret Shoot", true))
             state.target = state.destinationTurretHeading - robotHeading + 90 + tx;
         else
             state.target = turretPos;
