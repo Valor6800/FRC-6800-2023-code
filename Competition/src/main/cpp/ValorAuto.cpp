@@ -673,7 +673,7 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         [this] (auto states) { drivetrain->setModuleStates(states); },
         {drivetrain}
     );
-    frc2::SwerveControllerCommand<4> cmd_move_moveHangarBlue(
+    frc2::SwerveControllerCommand<4> cmd_move_moveMarvinFromTrenchBlue(
         moveMarvinFromTrenchBlue,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
