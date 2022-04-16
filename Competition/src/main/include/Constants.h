@@ -214,8 +214,8 @@ namespace ShooterConstants{
     constexpr static double homePositionMid = 90;
     constexpr static double homePositionLeft = 180;
     constexpr static double homePositionRight = 0;
-    constexpr static double turretLimitLeft = 180 + 16;
-    constexpr static double turretLimitRight = 0 - 16;
+    constexpr static double turretLimitLeft = 180 + 12;
+    constexpr static double turretLimitRight = 0 - 12;
 
     constexpr static double turretRotateLiftThreshold = 20000; // lowered from 64500
     constexpr static double hubX = 0;
@@ -259,7 +259,7 @@ namespace LiftConstants{
 
     constexpr static int MAIN_FIRST_POSITION = 62000;
     constexpr static int MAIN_SECOND_POSITION = 78500;
-    constexpr static int MAIN_THIRD_POSITION = 103000;
+    constexpr static int MAIN_THIRD_POSITION = 98000;
     constexpr static int MAIN_DOWN_POSITION = 125;
     constexpr static int MAIN_BOTTOM_POSITION = 0;
     constexpr static int MAIN_SLOW_UP_POSITION = 5500;
@@ -270,7 +270,7 @@ namespace LiftConstants{
     constexpr static double rotateForwardLimit = 40;
     constexpr static double rotateReverseLimit = 0;
 
-    constexpr static double extendForwardLimit = 103000;
+    constexpr static double extendForwardLimit = 98000;
     constexpr static double extendReverseLimit = 125;
 
     constexpr static double pivotGearRatio = 1 / 95.67;

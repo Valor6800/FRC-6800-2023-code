@@ -78,8 +78,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d hangarSpotRed = frc::Pose2d(units::meter_t(4), units::meter_t(7.5), frc::Rotation2d(170_deg));
     frc::Pose2d hangarSpotBlue = frc::Pose2d(units::meter_t(4), units::meter_t(7.5), frc::Rotation2d(170_deg));
 
-    frc::Pose2d trenchSpotRed = frc::Pose2d(units::meter_t(4.5), units::meter_t(6.4), frc::Rotation2d(-43_deg));
-    frc::Pose2d trenchSpotBlue = frc::Pose2d(units::meter_t(4.5), units::meter_t(6.4), frc::Rotation2d(-43_deg));
+    frc::Pose2d trenchSpotRed = frc::Pose2d(units::meter_t(4.5), units::meter_t(5.4), frc::Rotation2d(-43_deg));
+    frc::Pose2d trenchSpotBlue = frc::Pose2d(units::meter_t(4.5), units::meter_t(5.4), frc::Rotation2d(-43_deg));
 
     frc::Pose2d speedyRed = frc::Pose2d(3.35_m, 3.2_m, frc::Rotation2d(-60_deg)); //originally 0
     frc::Pose2d speedyBlue = frc::Pose2d(3.35_m, 3.2_m, frc::Rotation2d(-60_deg)); //originally 0
@@ -301,12 +301,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         reverseConfig);
 
     auto moveTrenchRed = frc::TrajectoryGenerator::GenerateTrajectory(
-        hangarSpotRed,
+        tasRed,
         {},
         trenchSpotRed,
         reverseConfig);
     auto moveTrenchBlue = frc::TrajectoryGenerator::GenerateTrajectory(
-        hangarSpotBlue,
+        tasBlue,
         {},
         trenchSpotBlue,
         reverseConfig);
@@ -1006,7 +1006,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
     cmd_move_moveTasRed,
-    cmd_move_moveHangarRed,
     cmd_move_moveTrenchRed,
     cmd_intakeReverse,
     frc2::WaitCommand((units::second_t)1),
