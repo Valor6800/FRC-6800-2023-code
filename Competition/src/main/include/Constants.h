@@ -117,12 +117,12 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 15;    
 
-    constexpr static double aPower_1x = 0.114;
-    constexpr static double bPower_1x = -0.36;
-    constexpr static double cPower_1x = 0.705;
-    constexpr static double aHood_1x = 12.5;
-    constexpr static double bHood_1x = -32.7;
-    constexpr static double cHood_1x = 23.1;
+    constexpr static double aPower_1x = 0.0656;
+    constexpr static double bPower_1x = -0.171;
+    constexpr static double cPower_1x = 0.538;
+    constexpr static double aHood_1x = 7.38;
+    constexpr static double bHood_1x = -11.5;
+    constexpr static double cHood_1x = 3.73;
 
     constexpr static double aPower_2x = 0.165;
     constexpr static double bPower_2x = -0.432;
@@ -214,8 +214,8 @@ namespace ShooterConstants{
     constexpr static double homePositionMid = 90;
     constexpr static double homePositionLeft = 180;
     constexpr static double homePositionRight = 0;
-    constexpr static double turretLimitLeft = 180 + 12;
-    constexpr static double turretLimitRight = 0 - 12;
+    constexpr static double turretLimitLeft = 180 + 10.5;
+    constexpr static double turretLimitRight = 0 - 10.5;
 
     constexpr static double turretRotateLiftThreshold = 20000; // lowered from 64500
     constexpr static double hubX = 0;

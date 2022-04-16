@@ -225,8 +225,8 @@ void Shooter::analyzeDashboard()
         double xDist = deltaH / tan(angle * MathConstants::toRadians);
         state.distanceToHub = xDist;
 
-        if (state.distanceToHub < 1.6)
-            state.distanceToHub = 1.6;
+        if (state.distanceToHub < 1.0)
+            state.distanceToHub = 1.0;
 
         table->PutNumber("x distance to hub", xDist);
     }

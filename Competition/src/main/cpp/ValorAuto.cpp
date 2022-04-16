@@ -78,8 +78,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d hangarSpotRed = frc::Pose2d(units::meter_t(4), units::meter_t(7.5), frc::Rotation2d(170_deg));
     frc::Pose2d hangarSpotBlue = frc::Pose2d(units::meter_t(4), units::meter_t(7.5), frc::Rotation2d(170_deg));
 
-    frc::Pose2d trenchSpotRed = frc::Pose2d(units::meter_t(4.5), units::meter_t(5.4), frc::Rotation2d(-43_deg));
-    frc::Pose2d trenchSpotBlue = frc::Pose2d(units::meter_t(4.5), units::meter_t(5.4), frc::Rotation2d(-43_deg));
+    frc::Pose2d trenchSpotRed = frc::Pose2d(units::meter_t(6.6), units::meter_t(5), frc::Rotation2d(-27_deg));
+    frc::Pose2d trenchSpotBlue = frc::Pose2d(units::meter_t(6.6), units::meter_t(5), frc::Rotation2d(-27_deg));
 
     frc::Pose2d speedyRed = frc::Pose2d(3.35_m, 3.2_m, frc::Rotation2d(-60_deg)); //originally 0
     frc::Pose2d speedyBlue = frc::Pose2d(3.35_m, 3.2_m, frc::Rotation2d(-60_deg)); //originally 0
@@ -87,8 +87,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d trenchEndRed = frc::Pose2d(3.75_m, 3_m, frc::Rotation2d(135_deg)); 
     frc::Pose2d trenchEndBlue = frc::Pose2d(3.75_m, 3_m, frc::Rotation2d(135_deg));
 
-    frc::Pose2d endPose2ballRed = frc::Pose2d(10_m, 10_m, frc::Rotation2d(0_deg));
-    frc::Pose2d endPose2ballBlue = frc::Pose2d(10_m, 10_m, frc::Rotation2d(0_deg));
+    frc::Pose2d endPose2BallRed = frc::Pose2d(7.069_m, 7.3_m, frc::Rotation2d(60_deg));
+    frc::Pose2d endPose2BallBlue = frc::Pose2d(7.069_m, 7.3_m, frc::Rotation2d(60_deg));
 
 
     frc2::InstantCommand cmd_printHeading = frc2::InstantCommand( [&] {
@@ -156,12 +156,6 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     });
     frc2::InstantCommand cmd_set2ballOdometryBlue = frc2::InstantCommand( [&] {
         drivetrain->resetOdometry(startPose2ballBlue);
-    });
-    frc2::InstantCommand cmd_setEnd2ballRed = frc2::InstantCommand( [&] {
-        drivetrain->resetOdometry(endPose2ballRed);
-    });
-    frc2::InstantCommand cmd_setEnd2ballBlue = frc2::InstantCommand( [&] {
-        drivetrain->resetOdometry(endPose2ballBlue);
     });
 
     auto moveBugsRed = frc::TrajectoryGenerator::GenerateTrajectory(
@@ -332,18 +326,40 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         hangarSpotBlue,
         {},
         tasBlue,
-        config);
+        reverseConfig);
 
     auto moveEndFromMarvinRed = frc::TrajectoryGenerator::GenerateTrajectory(
         marvinRed,
         {},
         tasRed,
-        reverseConfig);
+        config);
     auto moveEndFromMarvinBlue = frc::TrajectoryGenerator::GenerateTrajectory(
         marvinBlue,
         {},
         tasBlue,
         config);
+
+    auto moveEndFromTrenchRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        trenchSpotRed,
+        {},
+        endPose2BallRed,
+        reverseConfig);
+    auto moveEndFromTrenchBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        trenchSpotBlue,
+        {},
+        endPose2BallBlue,
+        reverseConfig);
+
+    auto moveEndFromTrenchNoCoastRed = frc::TrajectoryGenerator::GenerateTrajectory(
+        trenchSpotRed,
+        {},
+        tasRed,
+        reverseConfig);
+    auto moveEndFromTrenchNoCoastBlue = frc::TrajectoryGenerator::GenerateTrajectory(
+        trenchSpotBlue,
+        {},
+        tasBlue,
+        reverseConfig);
 
     auto moveSpeedyFromTasRed = frc::TrajectoryGenerator::GenerateTrajectory(
         tasRed,
@@ -369,12 +385,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     auto moveTasFromSpeedyRed = frc::TrajectoryGenerator::GenerateTrajectory(
         speedyRed,
-        {tasToSpeedyConstrainRed},
+        {},
         tasRed,
         reverseConfig);
     auto moveTasFromSpeedyBlue = frc::TrajectoryGenerator::GenerateTrajectory(
         speedyBlue,
-        {tasToSpeedyConstrainBlue},
+        {},
         tasBlue,
         reverseConfig);
 
@@ -705,6 +721,48 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
         {drivetrain}
     );
 
+    frc2::SwerveControllerCommand<4> cmd_move_moveEndFromTrenchRed(
+        moveEndFromTrenchRed,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+    frc2::SwerveControllerCommand<4> cmd_move_moveEndFromTrenchBlue(
+        moveEndFromTrenchBlue,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
+    frc2::SwerveControllerCommand<4> cmd_move_moveEndFromTrenchNoCoastRed(
+        moveEndFromTrenchNoCoastRed,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+    frc2::SwerveControllerCommand<4> cmd_move_moveEndFromTrenchNoCoastBlue(
+        moveEndFromTrenchNoCoastBlue,
+        [&] () { return drivetrain->getPose_m(); },
+        drivetrain->getKinematics(),
+        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        thetaController,
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
+    );
+
     frc2::SwerveControllerCommand<4> cmd_move_moveSpeedyFromTasRed(
         moveSpeedyFromTasRed,
         [&] () { return drivetrain->getPose_m(); },
@@ -1001,21 +1059,17 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeDisable,
     cmd_move_moveMarvinShootRed,
     cmd_turretTrack,
-    frc2::WaitCommand((units::second_t).5),
+    frc2::WaitCommand((units::second_t)1),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
     cmd_move_moveTasRed,
     cmd_move_moveTrenchRed,
     cmd_intakeReverse,
-    frc2::WaitCommand((units::second_t)1),
+    frc2::WaitCommand((units::second_t).3),
     cmd_intakeDisable,
-    cmd_move_moveMarvinFromTrenchRed,
-    cmd_move_moveEndFromMarvinRed,
-    // cmd_intakeReverse,
-    // frc2::WaitCommand((units::second_t)1),
-    // cmd_intakeDisable,
-    // cmd_move_moveEndRed,
+    frc2::WaitCommand((units::second_t)2),
+    cmd_move_moveEndFromTrenchRed,
     cmd_turretHomeRight,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).125),
@@ -1036,16 +1090,17 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeDisable,
     cmd_move_moveMarvinShootBlue,
     cmd_turretTrack,
-    frc2::WaitCommand((units::second_t).5),
+    frc2::WaitCommand((units::second_t)1),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
     cmd_move_moveTasBlue,
-    cmd_move_moveHangarBlue,
+    cmd_move_moveTrenchBlue,
     cmd_intakeReverse,
-    frc2::WaitCommand((units::second_t)1),
+    frc2::WaitCommand((units::second_t).3),
     cmd_intakeDisable,
-    cmd_move_moveEndBlue,
+    frc2::WaitCommand((units::second_t)2),
+    cmd_move_moveEndFromTrenchBlue,
     cmd_turretHomeRight,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).125),
@@ -1067,17 +1122,19 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeDisable,
     cmd_move_moveMarvinShootAltRed,
     cmd_turretTrack,
-    frc2::WaitCommand((units::second_t).5),
+    frc2::WaitCommand((units::second_t)1),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
     cmd_move_moveSpeedyFromAltRed,
     cmd_move_moveTasFromSpeedyRed,
-    cmd_move_moveHangarRed,
-    cmd_intakeReverse,
-    frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
-    cmd_move_moveEndRed,
+    cmd_move_moveTrenchRed,
+    cmd_intakeReverse,
+    frc2::WaitCommand((units::second_t).3),
+    cmd_intakeDisable,
+    frc2::WaitCommand((units::second_t)2),
+    cmd_move_moveEndFromTrenchRed,
     cmd_turretHomeRight,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).125),
@@ -1099,17 +1156,89 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     cmd_intakeDisable,
     cmd_move_moveMarvinShootAltBlue,
     cmd_turretTrack,
-    frc2::WaitCommand((units::second_t).5),
+    frc2::WaitCommand((units::second_t)1),
     cmd_intakeShoot,
     frc2::WaitCommand((units::second_t).5),
     cmd_intakeOne,
     cmd_move_moveSpeedyFromAltBlue,
     cmd_move_moveTasFromSpeedyBlue,
-    cmd_move_moveHangarBlue,
-    cmd_intakeReverse,
-    frc2::WaitCommand((units::second_t)1),
     cmd_intakeDisable,
-    cmd_move_moveEndBlue,
+    cmd_move_moveTrenchBlue,
+    cmd_intakeReverse,
+    frc2::WaitCommand((units::second_t).3),
+    cmd_intakeDisable,
+    frc2::WaitCommand((units::second_t)2),
+    cmd_move_moveEndFromTrenchBlue,
+    cmd_turretHomeRight,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_shooterAuto,
+    cmd_turretWrapAround
+    );
+
+
+
+    frc2::SequentialCommandGroup *shoot2Def2RedNoCoast = new frc2::SequentialCommandGroup();
+    shoot2Def2RedNoCoast->AddCommands
+    (cmd_set2ballOdometryRed,
+    cmd_intakeOne,
+    cmd_turretHomeLeft,
+    cmd_shooterAuto,
+    cmd_turretNoWrapAround,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
+    cmd_move_moveMarvinRed,
+    cmd_intakeDisable,
+    cmd_move_moveMarvinShootAltRed,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t)1),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeOne,
+    cmd_move_moveSpeedyFromAltRed,
+    cmd_move_moveTasFromSpeedyRed,
+    cmd_intakeDisable,
+    cmd_move_moveTrenchRed,
+    cmd_intakeReverse,
+    frc2::WaitCommand((units::second_t).3),
+    cmd_intakeDisable,
+    frc2::WaitCommand((units::second_t)2),
+    cmd_move_moveEndFromTrenchNoCoastRed,
+    cmd_turretHomeRight,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_shooterAuto,
+    cmd_turretWrapAround
+    );
+
+    frc2::SequentialCommandGroup *shoot2Def2BlueNoCoast = new frc2::SequentialCommandGroup();
+    shoot2Def2BlueNoCoast->AddCommands
+    (cmd_set2ballOdometryBlue,
+    cmd_intakeOne,
+    cmd_turretHomeLeft,
+    cmd_shooterAuto,
+    cmd_turretNoWrapAround,
+    frc2::WaitCommand((units::second_t).125),
+    cmd_intakeClearDeque,
+    cmd_intakeAuto,
+    cmd_move_moveMarvinBlue,
+    cmd_intakeDisable,
+    cmd_move_moveMarvinShootAltBlue,
+    cmd_turretTrack,
+    frc2::WaitCommand((units::second_t)1),
+    cmd_intakeShoot,
+    frc2::WaitCommand((units::second_t).5),
+    cmd_intakeOne,
+    cmd_move_moveSpeedyFromAltBlue,
+    cmd_move_moveTasFromSpeedyBlue,
+    cmd_intakeDisable,
+    cmd_move_moveTrenchBlue,
+    cmd_intakeReverse,
+    frc2::WaitCommand((units::second_t).3),
+    cmd_intakeDisable,
+    frc2::WaitCommand((units::second_t)2),
+    cmd_move_moveEndFromTrenchNoCoastBlue,
     cmd_turretHomeRight,
     cmd_turretTrack,
     frc2::WaitCommand((units::second_t).125),
@@ -1125,6 +1254,9 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     m_chooser.AddOption("RED 2 ball + 2 Defensive", shoot2Def2Red);
     m_chooser.AddOption("Blue 2 ball + 2 Defensive", shoot2Def2Blue);
+
+    m_chooser.AddOption("RED 2 ball + 2 Defensive :: NO COAST", shoot2Def2RedNoCoast);
+    m_chooser.AddOption("Blue 2 ball + 2 Defensive :: NO COAST", shoot2Def2BlueNoCoast);
 
     
 
