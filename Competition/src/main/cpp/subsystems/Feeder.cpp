@@ -93,9 +93,9 @@ void Feeder::assessInputs()
     else if (state.driver_rightBumperPressed) {
         state.feederState = FeederState::FEEDER_REGULAR_INTAKE; //standard intake
     }
-    else if (state.driver_leftTriggerPressed) {
-        state.feederState = FeederState::FEEDER_CURRENT_INTAKE; //includes current/banner sensing
-    }
+    // else if (state.driver_leftTriggerPressed) {
+    //     state.feederState = FeederState::FEEDER_CURRENT_INTAKE; //includes current/banner sensing
+    // }
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
     }

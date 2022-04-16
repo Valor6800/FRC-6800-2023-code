@@ -119,7 +119,7 @@ namespace ShooterConstants{
 
     constexpr static double aPower_1x = 0.0656;
     constexpr static double bPower_1x = -0.171;
-    constexpr static double cPower_1x = 0.538;
+    constexpr static double cPower_1x = 0.54;
     constexpr static double aHood_1x = 7.38;
     constexpr static double bHood_1x = -11.5;
     constexpr static double cHood_1x = 3.73;

@@ -97,6 +97,7 @@ public:
 
           bool driverLeftTrigger;
           bool driverDPadUp;
+          bool driverDPadLeft;
           bool driverLastLeftTrigger;
 
           double limelightDistance;

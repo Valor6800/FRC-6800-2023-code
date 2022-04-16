@@ -177,12 +177,13 @@ void Shooter::assessInputs()
     state.bButton = operatorController->GetBButtonPressed();
     state.driverLeftTrigger = driverController->GetLeftTriggerAxis() > 0.9;
     state.driverDPadUp = driverController->GetPOV() == OIConstants::dpadUp;
+    state.driverDPadLeft = driverController->GetPOV() == OIConstants::dpadLeft;
     
     //Turret
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
         state.turretState = TurretState::TURRET_MANUAL; // Operator control
     }
-    else if (state.yButton || state.driverDPadUp) {
+    else if (state.yButton || state.driverLeftTrigger) {
         state.turretState = TurretState::TURRET_HOME_MID;
     }
     else if (!table->GetBoolean("Pit Disable", false)){
@@ -441,4 +442,12 @@ void Shooter::assignOutputs()
 
 void Shooter::assignTurret(double tg) {
     state.turretDesired = tg;
+    if(state.driverDPadLeft){
+        if (state.turretDesired < 90){
+            state.turretDesired += 15;
+        }
+        else{
+            state.turretDesired -= 15;
+        }
+    }
 }
