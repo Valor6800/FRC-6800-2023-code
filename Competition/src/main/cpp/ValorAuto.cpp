@@ -66,20 +66,20 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     frc::Pose2d marvinShootRed = frc::Pose2d(units::meter_t(5), units::meter_t(7.5), frc::Rotation2d(27_deg));
     frc::Pose2d marvinShootBlue = frc::Pose2d(units::meter_t(5), units::meter_t(7.5), frc::Rotation2d(27_deg));
 
-    frc::Pose2d marvinShootAltRed = frc::Pose2d(units::meter_t(3.35), units::meter_t(4), frc::Rotation2d(-90_deg));
-    frc::Pose2d marvinShootAltBlue = frc::Pose2d(units::meter_t(3.35), units::meter_t(4), frc::Rotation2d(-90_deg));
+    frc::Pose2d marvinShootAltRed = frc::Pose2d(units::meter_t(3.35), units::meter_t(5), frc::Rotation2d(-90_deg));
+    frc::Pose2d marvinShootAltBlue = frc::Pose2d(units::meter_t(3.35), units::meter_t(5), frc::Rotation2d(-90_deg));
 
     frc::Pose2d tasRed = frc::Pose2d(units::meter_t(6.069), units::meter_t(7.8), frc::Rotation2d(60_deg));
     frc::Pose2d tasBlue = frc::Pose2d(units::meter_t(6.069), units::meter_t(7.8), frc::Rotation2d(60_deg));
 
-    frc::Translation2d tasToSpeedyConstrainRed = frc::Translation2d(.75_m, 2.5_m); //1.2_m in case we need to push it more towards wall
-    frc::Translation2d tasToSpeedyConstrainBlue = frc::Translation2d(.75_m, 2.5_m); //1.2_m in case we need to push it more towards wall
+    frc::Translation2d tasToSpeedyConstrainRed = frc::Translation2d(5_m, 7.5_m); //1.2_m in case we need to push it more towards wall
+    frc::Translation2d tasToSpeedyConstrainBlue = frc::Translation2d(5_m, 7.5_m); //1.2_m in case we need to push it more towards wall
 
-    frc::Pose2d hangarSpotRed = frc::Pose2d(units::meter_t(4), units::meter_t(7.5), frc::Rotation2d(190_deg));
-    frc::Pose2d hangarSpotBlue = frc::Pose2d(units::meter_t(4), units::meter_t(7.5), frc::Rotation2d(190_deg));
+    frc::Pose2d hangarSpotRed = frc::Pose2d(units::meter_t(4), units::meter_t(7.5), frc::Rotation2d(170_deg));
+    frc::Pose2d hangarSpotBlue = frc::Pose2d(units::meter_t(4), units::meter_t(7.5), frc::Rotation2d(170_deg));
 
-    frc::Pose2d speedyRed = frc::Pose2d(3.35_m, 2.8_m, frc::Rotation2d(-60_deg)); //originally 0
-    frc::Pose2d speedyBlue = frc::Pose2d(3.35_m, 2.8_m, frc::Rotation2d(-60_deg)); //originally 0
+    frc::Pose2d speedyRed = frc::Pose2d(3.35_m, 3.2_m, frc::Rotation2d(-60_deg)); //originally 0
+    frc::Pose2d speedyBlue = frc::Pose2d(3.35_m, 3.2_m, frc::Rotation2d(-60_deg)); //originally 0
 
     frc::Pose2d trenchEndRed = frc::Pose2d(3.75_m, 3_m, frc::Rotation2d(135_deg)); 
     frc::Pose2d trenchEndBlue = frc::Pose2d(3.75_m, 3_m, frc::Rotation2d(135_deg));
@@ -332,12 +332,12 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
 
     auto moveTasFromSpeedyRed = frc::TrajectoryGenerator::GenerateTrajectory(
         speedyRed,
-        {},
+        {tasToSpeedyConstrainRed},
         tasRed,
         reverseConfig);
     auto moveTasFromSpeedyBlue = frc::TrajectoryGenerator::GenerateTrajectory(
         speedyBlue,
-        {},
+        {tasToSpeedyConstrainBlue},
         tasBlue,
         reverseConfig);
 
