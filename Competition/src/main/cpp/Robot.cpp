@@ -72,6 +72,7 @@ void Robot::AutonomousInit() {
     m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::AUTO;
     m_container.m_lift.robotMode = ValorSubsystem::RobotMode::AUTO;
     m_container.m_turretTracker.robotMode = ValorSubsystem::RobotMode::AUTO;
+    m_container.m_turretTracker.disableWrapAround();
 
     m_container.m_drivetrain.pullSwerveModuleZeroReference();
 }
@@ -97,6 +98,7 @@ void Robot::TeleopInit() {
     m_container.m_shooter.state.turretState = m_container.m_shooter.TURRET_TRACK;
     m_container.m_lift.robotMode = ValorSubsystem::RobotMode::TELEOP;
     m_container.m_turretTracker.robotMode = ValorSubsystem::RobotMode::TELEOP; 
+    m_container.m_turretTracker.enableWrapAround();
 
 }
 
