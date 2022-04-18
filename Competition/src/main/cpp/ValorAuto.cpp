@@ -1252,11 +1252,11 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Shooter *_shooter, Feeder *_feeder
     m_chooser.AddOption("RED 2 ball + 1 Defensive", shoot2RedAlt);
     m_chooser.AddOption("Blue 2 ball + 1 Defensive", shoot2BlueAlt);
 
-    m_chooser.AddOption("RED 2 ball + 2 Defensive", shoot2Def2Red);
-    m_chooser.AddOption("Blue 2 ball + 2 Defensive", shoot2Def2Blue);
+    m_chooser.AddOption("RED 2 ball + 2 Defensive :: ELIMS", shoot2Def2Red);
+    m_chooser.AddOption("Blue 2 ball + 2 Defensive :: ELIMS", shoot2Def2Blue);
 
-    m_chooser.AddOption("RED 2 ball + 2 Defensive :: NO COAST", shoot2Def2RedNoCoast);
-    m_chooser.AddOption("Blue 2 ball + 2 Defensive :: NO COAST", shoot2Def2BlueNoCoast);
+    m_chooser.AddOption("RED 2 ball + 2 Defensive :: QUALS", shoot2Def2RedNoCoast);
+    m_chooser.AddOption("Blue 2 ball + 2 Defensive :: QUALS", shoot2Def2BlueNoCoast);
 
     
 

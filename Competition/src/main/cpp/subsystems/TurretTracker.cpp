@@ -57,6 +57,10 @@ void TurretTracker::assignOutputs() {
         // 0.75 = limeligh KP
         state.target = (-state.cachedTx * 0.75) + turretPos;
 
+        if(shooter-> state.driverBButton){
+            state.target += 15;
+        }
+
         // state.target = -1 * robotHeading + state.cachedTurretPos;
         // atan2(drivetrain->getKinematics().ToChassisSpeeds().vx.to(<double>()), drivetrain->getPose_m().X());
 
