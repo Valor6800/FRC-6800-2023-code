@@ -32,7 +32,7 @@ void Feeder::init()
     motor_intake.SetInverted(false);
     motor_intake.EnableVoltageCompensation(false);
     motor_intake.ConfigVoltageCompSaturation(10);
-    motor_intake.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 60, 80, .75));
+    motor_intake.ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 45 , 70, .75)); //potentially could do 40 60
 
     motor_stage.ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     motor_stage.SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
