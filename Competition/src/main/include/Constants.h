@@ -117,12 +117,12 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 15;    
 
-    constexpr static double aPower_1x = 0.0656;
-    constexpr static double bPower_1x = -0.171;
-    constexpr static double cPower_1x = 0.54;
-    constexpr static double aHood_1x = 7.38;
-    constexpr static double bHood_1x = -11.5;
-    constexpr static double cHood_1x = 3.73;
+    constexpr static double aPower_1x = 0.0553;
+    constexpr static double bPower_1x = -0.101;
+    constexpr static double cPower_1x = 0.471;
+    constexpr static double aHood_1x = 6.29;
+    constexpr static double bHood_1x = -7.48;
+    constexpr static double cHood_1x = .993;
 
     constexpr static double aPower_2x = 0.165;
     constexpr static double bPower_2x = -0.432;
@@ -136,13 +136,13 @@ namespace ShooterConstants{
     constexpr static double hubHeight = 2.64;
     constexpr static double limelightHeight = .6075;
     
-    constexpr static double flywheelKP1 = 0.088; //1
+    constexpr static double flywheelKP1 = 0.0905; //0.088 -> 0.091
     constexpr static double flywheelKI1 = 0;
     constexpr static double flywheelKD1 = 0;
     constexpr static double flywheelKIZ1 = 0;
     constexpr static double flywheelKFF1 = 0.04;
 
-    constexpr static double flywheelKP0 = 0.088; //.1
+    constexpr static double flywheelKP0 = 0.0905; //0.088 -> 0.091
     constexpr static double flywheelKI0 = 0;
     constexpr static double flywheelKD0 = 0;
     constexpr static double flywheelKIZ0 = 0;
@@ -241,7 +241,7 @@ namespace FeederConstants{
     constexpr static double DEFAULT_FEEDER_SPEED_REVERSE = -1.0;
 
     constexpr static int CACHE_SIZE = 20;
-    constexpr static double JAM_CURRENT = 20;
+    constexpr static double JAM_CURRENT = 22;
 }
 
 namespace MathConstants{

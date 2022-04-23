@@ -183,7 +183,7 @@ void Shooter::assessInputs()
     if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
         state.turretState = TurretState::TURRET_MANUAL; // Operator control
     }
-    else if (state.yButton || state.driverLeftTrigger) {
+    else if (state.yButton || state.driverBButton) {
         state.turretState = TurretState::TURRET_HOME_MID;
     }
     else if (!table->GetBoolean("Pit Disable", false)){

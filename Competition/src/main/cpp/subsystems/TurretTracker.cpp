@@ -57,7 +57,7 @@ void TurretTracker::assignOutputs() {
         // 0.75 = limeligh KP
         state.target = (-state.cachedTx * 0.75) + turretPos;
 
-        if(shooter-> state.driverBButton){
+        if(shooter-> state.driverLeftTrigger){
             state.target += 15;
         }
 
