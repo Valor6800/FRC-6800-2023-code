@@ -86,8 +86,8 @@ void TurretTracker::assignOutputs() {
         state.target -= 360;
     }
 
-    if (state.target < -10.5) {
-        state.target = -10.5;
+    if (state.target < -7) {
+        state.target = -7;
     }
     else if (state.target > 190.5) {
         state.target = 190.5;

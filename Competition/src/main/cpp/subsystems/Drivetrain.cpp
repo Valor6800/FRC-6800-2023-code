@@ -144,7 +144,7 @@ void Drivetrain::assessInputs()
     state.xButtonPressed = driverController->GetXButton();
     state.yButtonPressed = driverController->GetYButton();
 
-    state.startButtonPressed = driverController->GetStartButtonPressed();
+    state.startButtonPressed = false;//driverController->GetStartButtonPressed();
 
     state.stickPressed = std::abs(state.leftStickY) > 0.05 || 
     std::abs(state.leftStickX) > 0.05 ||

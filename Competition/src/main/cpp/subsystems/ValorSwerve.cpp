@@ -116,7 +116,7 @@ void ValorSwerve::loadAndSetAzimuthZeroReference()
     //azimuthSetpoint = fmod(azimuthSetpoint, SwerveConstants::AZIMUTH_COUNTS_PER_REV / SwerveConstants::AZIMUTH_GEAR_RATIO);
 
     // Set the azimuth offset to the calculated setpoint (which will take over in teleop)
-    azimuthFalcon->SetSelectedSensorPosition(azimuthSetpoint, 0, 10);
+    azimuthFalcon->SetSelectedSensorPosition(0, 0, 10);
     //std::cout << "pulled pospition from file" << std::endl;
 }
 

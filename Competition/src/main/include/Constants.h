@@ -117,7 +117,16 @@ namespace ShooterConstants{
     constexpr static int CAN_ID_TURRET = 12;
     constexpr static int CAN_ID_HOOD = 15;    
 
-    constexpr static double aPower_1x = 0.0553;
+    //new power
+    // constexpr static double aPower_1x = 0.0485; 
+    // constexpr static double bPower_1x = -0.076;
+    // constexpr static double cPower_1x = 0.448;
+    // constexpr static double aHood_1x = 6.29;
+    // constexpr static double bHood_1x = -7.48;
+    // constexpr static double cHood_1x = .993;
+
+    //current power
+    constexpr static double aPower_1x = 0.0553; 
     constexpr static double bPower_1x = -0.101;
     constexpr static double cPower_1x = 0.471;
     constexpr static double aHood_1x = 6.29;
@@ -136,7 +145,7 @@ namespace ShooterConstants{
     constexpr static double hubHeight = 2.64;
     constexpr static double limelightHeight = .6075;
     
-    constexpr static double flywheelKP1 = 0.0905; //0.088 -> 0.091
+    constexpr static double flywheelKP1 = 0.09025; //0.088 -> 0.091
     constexpr static double flywheelKI1 = 0;
     constexpr static double flywheelKD1 = 0;
     constexpr static double flywheelKIZ1 = 0;
@@ -215,7 +224,7 @@ namespace ShooterConstants{
     constexpr static double homePositionLeft = 180;
     constexpr static double homePositionRight = 0;
     constexpr static double turretLimitLeft = 180 + 10.5;
-    constexpr static double turretLimitRight = 0 - 10.5;
+    constexpr static double turretLimitRight = 0 - 7;
 
     constexpr static double turretRotateLiftThreshold = 20000; // lowered from 64500
     constexpr static double hubX = 0;
