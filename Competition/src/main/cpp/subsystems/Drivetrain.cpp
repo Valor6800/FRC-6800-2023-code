@@ -101,7 +101,7 @@ void Drivetrain::init()
     //std::cout <<"init drivetrain" << std::endl;
 }
 
-void Drivetrain::setController(frc::XboxController *controller)
+void Drivetrain::setController(ValorGamepad *controller)
 {
     driverController = controller;
 }
@@ -133,22 +133,9 @@ void Drivetrain::assessInputs()
         return;
     }
 
-    // driver inputs
-    state.leftStickX = driverController->GetLeftX();
-    state.leftStickY = driverController->GetLeftY();
-    state.rightStickX = driverController->GetRightX();
-    state.rightStickY = driverController->GetRightY();
-
-    state.bButtonPressed = driverController->GetBButton();
-    state.aButtonPressed = driverController->GetAButton();
-    state.xButtonPressed = driverController->GetXButton();
-    state.yButtonPressed = driverController->GetYButton();
-
-    state.startButtonPressed = false;//driverController->GetStartButtonPressed();
-
-    state.stickPressed = std::abs(state.leftStickY) > 0.05 || 
-    std::abs(state.leftStickX) > 0.05 ||
-    std::abs(state.rightStickX) > 0.05;
+    state.stickPressed = driverController->leftStickYActive() || 
+                         driverController->leftStickXActive() ||
+                         driverController->rightStickXActive();
 
     //state.dPadDownPressed = driverController->GetPOV(frc::GenericHID::)
 
@@ -157,9 +144,6 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
-    state.backButtonPressed = driverController->GetBackButtonPressed();
-
-
     table->PutNumber("Robot X", getPose_m().X().to<double>());
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
@@ -206,7 +190,7 @@ void Drivetrain::analyzeDashboard()
                     swerveModules[2]->getState(),
                     swerveModules[3]->getState());
 
-    if (state.backButtonPressed){
+    if (driverController->GetBackButtonPressed()) {
         resetGyro();
     }
 }
@@ -226,25 +210,24 @@ void Drivetrain::assignOutputs()
 {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
-    double xSpeed = std::abs(state.leftStickY) > OIConstants::kDeadbandY ? fabs(state.leftStickY) * -state.leftStickY : 0 ;
+    double xSpeed = driverController->leftStickY(2);
 
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
-    double ySpeed = std::abs(state.leftStickX) > OIConstants::kDeadbandX ? fabs(state.leftStickX) * -state.leftStickX : 0;
+    double ySpeed = driverController->leftStickX(2);
 
     // Get the rate of angular rotation. We are inverting this because we want a
     // positive value when we pull to the left (remember, CCW is positive in
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
-    
-    double rot = std::abs(state.rightStickX) > .06 ? -1 * state.rightStickX * state.rightStickX * state.rightStickX : 0;
+    double rot = driverController->rightStickX(3);
     
     units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{xSpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{ySpeed * SwerveConstants::DRIVE_MAX_SPEED_MPS};
     units::radians_per_second_t rotRPS = units::radians_per_second_t{rot * SwerveConstants::ROTATION_MAX_SPEED_RPS};
 
-    if(state.aButtonPressed){
+    if(driverController->GetAButton()){
         double magnitude = std::sqrt(std::pow(xSpeed, 2) + std::pow(ySpeed, 2));
         xSpeed /= magnitude;
         ySpeed /= magnitude;
@@ -271,7 +254,7 @@ void Drivetrain::assignOutputs()
         rotRPS = units::radians_per_second_t{-limeTable->GetNumber("tx", 0.0) * DriveConstants::LIMELIGHT_KP * limeTable->GetNumber("tv", 0) * SwerveConstants::ROTATION_MAX_SPEED_RPS};
     }
 
-    if (state.startButtonPressed){
+    if (driverController->GetStartButtonPressed()) {
         // x0y0 = frc::Pose2d(8.514_m, 1.771_m, frc::Rotation2d(182.1_deg));
 
         // goZeroZero = frc::TrajectoryGenerator::GenerateTrajectory(

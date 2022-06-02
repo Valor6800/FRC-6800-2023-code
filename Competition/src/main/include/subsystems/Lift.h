@@ -2,7 +2,7 @@
 
 #include "ValorSubsystem.h"
 #include "Constants.h"
-#include <frc/XboxController.h>
+#include "ValorGamepad.h"
 #include <rev/CANSparkMax.h>
 
 #include "ValorSubsystem.h"
@@ -26,7 +26,7 @@ public:
     Lift();
 
     void init();
-    void setController(frc::XboxController *controller);
+    void setController(ValorGamepad *controller);
 
     void assessInputs();
     void analyzeDashboard();
@@ -67,16 +67,6 @@ public:
         LiftRotateState liftstateRotate;
         LiftAutomationState liftStateAutomation;
 
-        bool dPadUpPressed;
-        bool dPadDownPressed;
-        bool dPadLeftPressed;
-        bool dPadRightPressed;
-
-        bool leftTriggerPressed;
-        bool rightTriggerPressed;
-
-        double rightStickY;
-
         double powerRetract;
         double powerExtend;
         double powerMain;
@@ -93,7 +83,7 @@ public:
     void setupCommands();
 
 private:
-    frc::XboxController *operatorController;
+    ValorGamepad *operatorController;
 
     WPI_TalonFX leadMainMotor;
 

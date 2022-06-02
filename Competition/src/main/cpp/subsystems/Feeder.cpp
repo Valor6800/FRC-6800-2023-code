@@ -56,7 +56,7 @@ void Feeder::init()
     
 }
 
-void Feeder::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
+void Feeder::setControllers(ValorGamepad *controllerO, ValorGamepad *controllerD)
 {
     driverController = controllerD;
     operatorController = controllerO;
@@ -68,34 +68,18 @@ void Feeder::assessInputs()
     {
         return;
     }
-
-    // driver inputs
-  
-    state.driver_leftBumperPressed = driverController->GetLeftBumper();
-    state.driver_rightBumperPressed = driverController->GetRightBumper();
-
-    state.driver_rightTriggerPressed = driverController->GetRightTriggerAxis() > OIConstants::kDeadBandTrigger;
-    state.driver_leftTriggerPressed = driverController->GetLeftTriggerAxis() > OIConstants::kDeadBandTrigger;
-
-
-    // operator inputs
-
-    state.operator_leftBumperPressed = operatorController->GetLeftBumper();
         
-    if (state.driver_rightTriggerPressed || state.operator_leftBumperPressed) {
+    if (driverController->rightTrigger() || operatorController->GetLeftBumper()) {
         state.feederState = FeederState::FEEDER_SHOOT; //intake and feeder run
         state.spiked = false;
     }
-    else if (state.driver_leftBumperPressed) {
+    else if (driverController->GetLeftBumper()) {
         state.feederState = FeederState::FEEDER_REVERSE;
         state.spiked = false;
     }
-    else if (state.driver_rightBumperPressed) {
+    else if (driverController->GetRightBumper()) {
         state.feederState = FeederState::FEEDER_REGULAR_INTAKE; //standard intake
     }
-    // else if (state.driver_leftTriggerPressed) {
-    //     state.feederState = FeederState::FEEDER_CURRENT_INTAKE; //includes current/banner sensing
-    // }
     else {
         state.feederState = FeederState::FEEDER_DISABLE;
     }

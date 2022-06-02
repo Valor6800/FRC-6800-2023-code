@@ -9,9 +9,8 @@
 
 #include "ValorSubsystem.h"
 #include "Constants.h"
-#include <deque>
+#include "ValorGamepad.h"
 
-#include <frc/XboxController.h>
 #include <ctre/Phoenix.h>
 #include <frc/DigitalInput.h>
 
@@ -24,7 +23,7 @@ public:
     Feeder();
 
     void init();
-    void setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD);
+    void setControllers(ValorGamepad *controllerO, ValorGamepad *controllerD);
 
     void assessInputs();
     void analyzeDashboard();
@@ -42,16 +41,6 @@ public:
     
     struct x
     {
-        bool driver_rightBumperPressed;
-
-        bool operator_bButtonPressed;
-        bool operator_aButtonPressed;
-
-        bool driver_leftBumperPressed;
-        bool operator_leftBumperPressed;
-
-        bool driver_rightTriggerPressed;
-        bool driver_leftTriggerPressed;
 
         bool bannerTripped;
         bool previousBanner;
@@ -81,8 +70,8 @@ public:
 void resetDeque();
 
 private:
-    frc::XboxController *driverController;
-    frc::XboxController *operatorController;
+    ValorGamepad *driverController;
+    ValorGamepad *operatorController;
 
     WPI_TalonFX motor_intake;
     WPI_TalonFX motor_stage;

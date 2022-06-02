@@ -17,7 +17,7 @@
 #include "subsystems/Feeder.h"
 #include "subsystems/Lift.h"
 #include "subsystems/TurretTracker.h"
-#include <frc/XboxController.h>
+#include "ValorGamepad.h"
 
 #ifndef ROBOT_CONTAINER_H
 #define ROBOT_CONTAINER_H
@@ -27,8 +27,8 @@ class RobotContainer {
         RobotContainer();
         frc2::Command* GetAutonomousCommand();
 
-        frc::XboxController m_GamepadDriver{OIConstants::GAMEPAD_BASE_LOCATION};
-        frc::XboxController m_GamepadOperator{OIConstants::GAMEPAD_OPERATOR_LOCATION};
+        ValorGamepad m_GamepadDriver{OIConstants::GAMEPAD_BASE_LOCATION};
+        ValorGamepad m_GamepadOperator{OIConstants::GAMEPAD_OPERATOR_LOCATION};
 
         Drivetrain m_drivetrain;
         Shooter m_shooter;

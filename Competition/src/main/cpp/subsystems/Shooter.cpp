@@ -150,7 +150,7 @@ void Shooter::resetEncoder(){
     hoodEncoder.SetPosition(0);
 }
 
-void Shooter::setControllers(frc::XboxController *controllerO, frc::XboxController *controllerD)
+void Shooter::setControllers(ValorGamepad *controllerO, ValorGamepad *controllerD)
 {
     operatorController = controllerO;
     driverController = controllerD;
@@ -167,49 +167,30 @@ void Shooter::assessInputs()
     {
         return;
     }
-    state.startButton = operatorController->GetStartButtonPressed();
-    state.backButton = operatorController->GetBackButtonPressed(); 
-    state.rightBumper = operatorController->GetRightBumper();
-    state.leftStickX = -operatorController->GetLeftX();
-    state.aButton = operatorController->GetAButtonPressed();
-    state.yButton = operatorController->GetYButton();
-    state.xButtonPressed = operatorController->GetXButtonPressed();
-    state.bButton = operatorController->GetBButtonPressed();
-    state.driverLeftTrigger = driverController->GetLeftTriggerAxis() > 0.9;
-    state.driverDPadUp = driverController->GetPOV() == OIConstants::dpadUp;
-    state.driverBButton = driverController->GetBButton();
     
     //Turret
-    if (std::abs(state.leftStickX) > ShooterConstants::kDeadband) {
+    if (operatorController->leftStickXActive()) {
         state.turretState = TurretState::TURRET_MANUAL; // Operator control
     }
-    else if (state.yButton || state.driverBButton) {
+    else if (operatorController->GetYButton() || driverController->GetBButton()) {
         state.turretState = TurretState::TURRET_HOME_MID;
     }
     else if (!table->GetBoolean("Pit Disable", false)){
         state.turretState = TurretState::TURRET_TRACK;
     }
 
-    //Hood
+    //Hood & Flywheel
     
-    if(state.aButton){
+    if(operatorController->GetAButtonPressed()){
         state.hoodState = HoodState::HOOD_DOWN; // Low position
-    }
-    else if(state.xButtonPressed){
-        state.hoodState = HoodState::HOOD_POOP;
-    }
-    else if (state.bButton){
-        state.hoodState = HoodState::HOOD_TRACK; // High position
-    }
-
-    //Flywheel
-    if (state.aButton){
         state.flywheelState = FlywheelState::FLYWHEEL_DEFAULT; // Lower speed
     }
-    else if (state.xButtonPressed){
+    else if(operatorController->GetXButtonPressed()){
+        state.hoodState = HoodState::HOOD_POOP;
         state.flywheelState = FlywheelState::FLYWHEEL_POOP;
     }
-    else if (state.bButton){
+    else if (operatorController->GetBButtonPressed()){
+        state.hoodState = HoodState::HOOD_TRACK; // High position
         state.flywheelState = FlywheelState::FLYWHEEL_TRACK; // Higher speed
     }
 
@@ -290,8 +271,6 @@ void Shooter::analyzeDashboard()
 
     table->PutNumber("Turret Output", state.turretOutput);
 
-    table->PutNumber("left stick x", state.leftStickX);
-
     table->PutNumber("flywheel power", state.flywheelHigh);
     table->PutNumber("hood high", state.hoodHigh);
 
@@ -330,12 +309,7 @@ void Shooter::assignOutputs()
     //MANUAL
     state.turretTarget = 0;
     if (state.turretState == TurretState::TURRET_MANUAL) {
-        state.turretOutput = std::pow(state.leftStickX, 3) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
-
-        // Minimum power deadband
-        if (std::abs(state.leftStickX) < ShooterConstants::pDeadband) {
-            state.turretOutput = 0;
-        }
+        state.turretOutput = operatorController->leftStickX(3) * ShooterConstants::TURRET_SPEED_MULTIPLIER;
         if( (turretEncoder.GetPosition() > 160 && state.turretOutput > ShooterConstants::pDeadband) ||
          (turretEncoder.GetPosition() < 20 && state.turretOutput < -1 * ShooterConstants::pDeadband) ){
             state.turretOutput = 0;

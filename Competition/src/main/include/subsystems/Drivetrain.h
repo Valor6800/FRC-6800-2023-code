@@ -10,11 +10,11 @@
 #include "ValorSubsystem.h"
 #include "Constants.h"
 #include "ValorSwerve.h"
+#include "ValorGamepad.h"
 #include <vector>
 
 #include "AHRS.h"
 #include "ctre/phoenix/sensors/WPI_Pigeon2.h"
-#include <frc/XboxController.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include <frc/DutyCycleEncoder.h>
@@ -45,7 +45,7 @@ public:
     ~Drivetrain();
 
     void init();
-    void setController(frc::XboxController *controller);
+    void setController(ValorGamepad *controller);
 
     void assessInputs();
     void analyzeDashboard();
@@ -55,23 +55,7 @@ public:
 
     struct x
     {
-        double leftStickX;
-        double leftStickY;
-        double rightStickX;
-        double rightStickY;
-
-        bool backButtonPressed;
-        bool startButtonPressed;
         bool stickPressed;
-
-        bool bButtonPressed;
-        bool aButtonPressed;
-        bool xButtonPressed;
-        bool yButtonPressed;
-
-        bool dPadUpPressed;
-        bool dPadDownPressed;
-
         bool tracking;
 
         bool saveToFileDebouncer;
@@ -156,7 +140,7 @@ private:
 
     void configSwerveModule(int);
 
-    frc::XboxController *driverController;
+    ValorGamepad *driverController;
 
     std::vector<ValorSwerve *> swerveModules;
     std::vector<WPI_TalonFX *> azimuthMotors;
