@@ -10,8 +10,8 @@
 #include "ValorSubsystem.h"
 #include "Constants.h"
 #include "ValorGamepad.h"
+#include "controllers/ValorFalconController.h"
 
-#include <ctre/Phoenix.h>
 #include <frc/DigitalInput.h>
 
 #ifndef FEEDER_H
@@ -73,14 +73,12 @@ private:
     ValorGamepad *driverController;
     ValorGamepad *operatorController;
 
-    WPI_TalonFX motor_intake;
-    WPI_TalonFX motor_stage;
+    ValorFalconController intakeController;
+    ValorFalconController stageController;
 
     frc::DigitalInput banner;
 
     void calcCurrent();
-    
-    
 
 };
 

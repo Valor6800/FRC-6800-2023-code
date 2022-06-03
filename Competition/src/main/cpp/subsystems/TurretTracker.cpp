@@ -47,7 +47,7 @@ void TurretTracker::enableWrapAround(){
 void TurretTracker::assignOutputs() {
 
     double tv = shooter->state.tv;
-    double turretPos = shooter->turretEncoder.GetPosition();
+    double turretPos = shooter->turretController.getPosition();
     double robotHeading = drivetrain->getPose_m().Rotation().Degrees().to<double>();
     double x = drivetrain->getPose_m().X().to<double>();
     double y = drivetrain->getPose_m().Y().to<double>();

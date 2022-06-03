@@ -3,15 +3,13 @@
 #include "ValorSubsystem.h"
 #include "Constants.h"
 #include "ValorGamepad.h"
-#include <rev/CANSparkMax.h>
+#include "controllers/ValorFalconController.h"
+#include "controllers/ValorNeoController.h"
 
-#include "ValorSubsystem.h"
-#include "Constants.h"
-#include <ctre/Phoenix.h>
 #include <vector>
 
+#include <ctre/Phoenix.h>
 #include <rev/CANSparkMax.h>
-#include <rev/CANEncoder.h>
 
 #include <frc2/command/FunctionalCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
@@ -85,18 +83,11 @@ public:
 private:
     ValorGamepad *operatorController;
 
-    WPI_TalonFX leadMainMotor;
-
-    WPI_TalonFX followMainMotor;
-    
-    rev::CANSparkMax rotateMotor;
-
-    rev::SparkMaxPIDController rotateMotorPidController = rotateMotor.GetPIDController();
-
-    rev::SparkMaxRelativeEncoder rotateEncoder = rotateMotor.GetEncoder();
-
     frc2::SequentialCommandGroup liftSequenceUp;
     frc2::SequentialCommandGroup liftSequenceDown;
+
+    ValorFalconController leadMotorController;
+    ValorNeoController rotateMotorController;
 };
 
 #endif

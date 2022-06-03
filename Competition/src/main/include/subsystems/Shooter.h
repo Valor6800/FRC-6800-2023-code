@@ -12,10 +12,10 @@
 #include "ValorSwerve.h"
 #include "Drivetrain.h"
 #include "ValorGamepad.h"
-#include <vector>
+#include "controllers/ValorFalconController.h"
+#include "controllers/ValorNeoController.h"
 
-#include <rev/CANSparkMax.h>
-#include <rev/CANEncoder.h>
+#include <vector>
 
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/shuffleboard/ShuffleboardLayout.h>
@@ -43,15 +43,11 @@ public:
     void assignOutputs();
 
     void resetState();
-    void resetEncoder();
-
-
 
      double getTargetTics(double, double, double, double, double, double, double);
      double convertTargetTics(double, double);
 
      void setLimelight(int pipeline);
-     void setPIDProfile(int slotID);
 
      void assignTurret(double tg);
 
@@ -110,11 +106,6 @@ public:
           int pipeline;
           int LoBFZoom;
 
-          double hoodB_1x;
-          double powerB_1x;
-          double hoodB_2x;
-          double powerB_2x;
-
           double powerC_1x;
           double hoodC_1x;
           double powerC_2x;
@@ -127,15 +118,9 @@ public:
 
      void limelightTrack(bool track);
 
-     WPI_TalonFX flywheel_lead;
-
-     rev::CANSparkMax turret;
-     rev::SparkMaxRelativeEncoder turretEncoder = turret.GetEncoder();
-     rev::SparkMaxPIDController turretPidController = turret.GetPIDController();
-
-     rev::CANSparkMax hood;
-     rev::SparkMaxRelativeEncoder hoodEncoder = hood.GetEncoder();
-     rev::SparkMaxPIDController hoodPidController = hood.GetPIDController();
+     ValorFalconController shooterController;
+     ValorNeoController turretController;
+     ValorNeoController hoodController;
 
      ValorGamepad *operatorController;
      ValorGamepad *driverController;
