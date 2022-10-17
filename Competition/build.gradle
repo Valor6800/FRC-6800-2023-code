@@ -2,6 +2,7 @@ plugins {
     id "cpp"
     id "google-test-test-suite"
     id "edu.wpi.first.GradleRIO" version "2022.4.1"
+    id "org.ysb33r.doxygen" version "0.7.0"
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -95,5 +96,39 @@ model {
             wpi.cpp.deps.wpilib(it)
             wpi.cpp.deps.googleTest(it)
         }
+    }
+}
+
+doxygen  {
+    
+    group = 'Custom 6800 Tasks'
+    project_name 'Valor 6800'
+    project_number 1.0
+
+    generate_html true
+    generate_latex false
+    markdown_support true
+    autolink_support true
+    generate_treeview true
+    source_tooltips true
+    recursive true
+    strip_code_comments true
+    alphabetical_index true
+    extension_mapping 'inc=C++'
+    warn_if_undocumented false
+    disable_index false
+    full_sidebar false
+    html_stylesheet new File(projectDir,'doxygen-awesome-css/doxygen-awesome.css')
+                             
+    source 'src/main/include'
+    source 'README.md'
+
+    use_mdfile_as_mainpage 'README.md'
+
+    outputDir 'docs/'
+
+    executables {
+        doxygen version : '1.8.18',
+        baseURI : 'https://frcmaven.wpi.edu/artifactory/generic-release-mirror/doxygen'
     }
 }
