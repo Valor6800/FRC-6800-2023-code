@@ -12,6 +12,10 @@
 #ifndef VALORGAMEPAD_H
 #define VALORGAMEPAD_H
 
+/**
+ * @brief Fill this out
+ * 
+ */
 class ValorGamepad : public frc::XboxController
 {
 public:

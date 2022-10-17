@@ -1,7 +1,11 @@
-# Making Your First Pull Request
+# Valor 6800 - 2023 Code Repository
+
+[![Build Status](https://dev.azure.com/mray190/ViperbotsValor6800/_apis/build/status/Valor6800.FRC-6800-2023-code?branchName=dev)](https://dev.azure.com/mray190/ViperbotsValor6800/_build/latest?definitionId=5&branchName=dev)
+
+## Making Your First Pull Request
 Here's the jist:  When you write a new feature, you're going to make a branch that's just for that feature.  You're going to make a branch off `dev`, write some code, commit it to your branch, test the code, make changes, commit it to your branch, etc until you're satisfied with your code.  When you're satisfied with your code, you're going to make a "pull request" against `dev`.  A "pull request" is like saying "hey Kyle, you should accept these changes as your own".  Generally, after you merge your PR, you'll close your branch. Over the season, you'll make a dozen-ish branches.
 
-## Cloning the Repo
+### Cloning the Repo
 Go to https://github.com/Valor6800/FRC-6800-2023-code.  See the green box in the upper right that says `Clone or download`?  Yeah that.  Click that.  See the URL in the box? Click the little pastebin icon to the right of it. You should see a popup that says `copied` once you click it.  See it?  Good.
 
 Open terminal on your computer.  Where do you want to keep your repository?  Probably your home dir.  If you want to keep your repository somewhere else, cd to that location.
@@ -14,7 +18,7 @@ Type `cd FRC-6800-2023-code`. This will change your current directory to FRC-680
 
 Type `ls`.  What do you see?  Probably docs, lib, src, third_party, tools, Dockerfile, install.sh, README.md, StyleGuide.md, WORKSPACE.  I would hope so at least... these are the files in the repo.  Good stuff.
 
-## Make a Branch
+### Make a Branch
 There's a handful of ways to make a new branch.  Here's my favorite:
 
 ```
@@ -30,7 +34,7 @@ In general, you're going to be branching off of dev.  This means that when your 
 
 So you ran the command above and it did two things.  The first thing it did was create your branch for you.  The second thing it did was `checkout` that branch.  When you checkout a branch, git changes all the files in your filesystem to match whatever files exist in the branch.  They're probably mostly the same, but they won't be the same in a second.
 
-## Compiling
+### Compiling
 Alright you just changed the source code.  Did you break the world?  Let's check.  This step may take up to 5 minutes the first time you do it.  After you do it the first time it should be almost instantaneous.  Gradle is good stuff.
 
 Type the following to compile the robot code:
@@ -44,7 +48,7 @@ If you wanted to download this to the robot and test it there, you would type th
 
 I don't think we changed enough to merit testing on the robot...
 
-## Commiting
+### Commiting
 Did the build pass?  Good stuff!  Let's commit our changes.
 
 Just out of curiosity, type `git status`.  What does it say?  I bet it says something like "blah blah blah you have 1 change not staged for commit blah blah blah".  That's git-language for "You edited this file but you haven't added it to a commit yet so I don't know what you're up to".
@@ -57,24 +61,24 @@ Let's commit!  Type `git commit`.  The first time you do this it might ask you t
 
 Make sure you read the output of every git command.  What's it saying?  Did it work?  Move on to the next step.  Did it not work?  Read the error and see why git is angry.  If you need help, don't be afraid to ask.
 
-## Push
+### Push
 Type `git push origin <YOUR BRANCH NAME>`
 
 Git will probably ask you to give a username and password.  This is the username and password combo that you use to log into github.com.
 
 This step takes the commit that you made and sends it up to the github server.
 
-## Make a PR
+### Make a PR
 Open your favorite web browser (unless it's IE6) and go to https://github.com/Valor6800/FRC-6800-2023-code.  That's a short enough url that you should memorize it eventually.  You will probably see a link that says `New pull request`.  Click that link.  Make sure that the pull request is against `dev` and not `master`.
 
 Write a short summary of what your branch is all about and click the big green button.
 
-## Waiting for Approval
+### Waiting for Approval
 Once you submit your PR, a mentor must approve your changes before they are merged.
 
 A mentor may request that you make changes before your branch gets merged in.  If that's the case, don't worry.  Edit the file again, make whatever changes you need to make, do the `./gradlew build` thing, do the `git add` thing, do the `git commit` thing, do the `git push` thing, etc.  Once you push, your pull request on github will automatically be updated.
 
-## Merge and Close Branch
+### Merge and Close Branch
 Once everything is good and free of errors :fire:, a mentor will approve your pull request.  When this happens you get to click the big green `MERGE` button.  If you're done with your branch (you are probably done with your branch), delete it.
 
 Questions? Slack a mentor
