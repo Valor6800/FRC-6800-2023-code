@@ -34,6 +34,7 @@
 #include <frc2/command/InstantCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/WaitCommand.h>
+#include <frc/TimedRobot.h>
 
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
@@ -41,7 +42,7 @@
 class Drivetrain : public ValorSubsystem
 {
 public:
-    Drivetrain();
+    Drivetrain(frc::TimedRobot *);
     ~Drivetrain();
 
     void init();

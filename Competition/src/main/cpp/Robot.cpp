@@ -7,16 +7,17 @@
 
 #include "Robot.h"
 
-
-
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
+Robot::Robot() : drivetrain(this)
+{
+    frc::TimedRobot();
+}
+
 void Robot::RobotInit() {
-    //m_container.m_drivetrain.resetState();
-    // m_container.m_drivetrain.setKF();
-    // m_container.m_drivetrain.pullSwerveModuleZeroReference();
-    m_container.m_shooter.resetState();
+    drivetrain.setController(&gamepadDriver);
+    drivetrain.resetState();
 }
 
 /**
@@ -35,79 +36,42 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
  * robot is disabled.
  */
 void Robot::DisabledInit() {
-    m_container.m_feeder.robotMode = ValorSubsystem::RobotMode::DISABLED;
-    m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::DISABLED;
-    m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::DISABLED;
-    m_container.m_turretTracker.robotMode = ValorSubsystem::RobotMode::DISABLED;
-    m_container.m_lift.robotMode = ValorSubsystem::RobotMode::DISABLED; //just added, not tested
-
-    m_container.m_shooter.resetState();
-    m_container.m_drivetrain.resetState();
-    m_container.m_lift.resetState();
-    m_container.m_turretTracker.resetState();
-    //m_container.m_feeder.resetState(); //just added, not tested
-
-    m_container.m_drivetrain.setMotorMode(false);
-
-    //m_container.m_drivetrain.pullSwerveModuleZeroReference();
+    drivetrain.resetState();
+    drivetrain.setMotorMode(false);
 }
 
-void Robot::DisabledPeriodic() {}
+void Robot::DisabledPeriodic()
+{
+
+}
 
 /**
  * This autonomous runs the autonomous command selected by your {@link
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-    m_container.m_drivetrain.setMotorMode(true);
+    drivetrain.setMotorMode(true);
+    drivetrain.pullSwerveModuleZeroReference();
 
-    //might need to add back
-    m_container.m_shooter.resetState();
-
-    m_autonomousCommand = m_container.GetAutonomousCommand();
-    if (m_autonomousCommand != nullptr) {
-        m_autonomousCommand->Schedule();
+    if (autoCommand != nullptr) {
+        autoCommand->Schedule();
     }
-
-    m_container.m_feeder.robotMode = ValorSubsystem::RobotMode::AUTO;
-    m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::AUTO;
-    m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::AUTO;
-    m_container.m_lift.robotMode = ValorSubsystem::RobotMode::AUTO;
-    m_container.m_turretTracker.robotMode = ValorSubsystem::RobotMode::AUTO;
-    m_container.m_turretTracker.disableWrapAround();
-
-    m_container.m_drivetrain.pullSwerveModuleZeroReference();
 }
 
-void Robot::AutonomousPeriodic() {
+void Robot::AutonomousPeriodic()
+{
 
 }
 
 void Robot::TeleopInit() {
-    m_container.m_drivetrain.setMotorMode(false);
+    drivetrain.setMotorMode(false);
 
-
-    if (m_autonomousCommand != nullptr) {
-        m_autonomousCommand->Cancel();
-        m_autonomousCommand = nullptr;
+    if (autoCommand != nullptr) {
+        autoCommand->Cancel();
+        autoCommand = nullptr;
     }
 
-    m_container.m_shooter.setLimelight(0);
-
-    m_container.m_feeder.robotMode = ValorSubsystem::RobotMode::TELEOP;
-    m_container.m_drivetrain.robotMode = ValorSubsystem::RobotMode::TELEOP;
-    m_container.m_shooter.robotMode = ValorSubsystem::RobotMode::TELEOP;
-    m_container.m_shooter.state.turretState = m_container.m_shooter.TURRET_TRACK;
-    m_container.m_shooter.state.hoodState = m_container.m_shooter.HOOD_TRACK;
-    m_container.m_shooter.state.flywheelState = m_container.m_shooter.FLYWHEEL_TRACK;
-
-    m_container.m_lift.robotMode = ValorSubsystem::RobotMode::TELEOP;
-    m_container.m_turretTracker.robotMode = ValorSubsystem::RobotMode::TELEOP; 
-    m_container.m_turretTracker.enableWrapAround();
-
 }
-
-
 
 /**
  * This function is called periodically during operator control.

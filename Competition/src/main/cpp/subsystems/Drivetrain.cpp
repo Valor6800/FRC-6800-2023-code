@@ -14,7 +14,7 @@
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <iostream>
 
-Drivetrain::Drivetrain() : ValorSubsystem(),
+Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot),
                            driverController(NULL),
                            pigeon(DriveConstants::PIGEON_CAN, "baseCAN"),
                            kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),

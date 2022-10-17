@@ -10,13 +10,14 @@
 #include <frc/TimedRobot.h>
 #include <frc2/command/Command.h>
 
-#include "RobotContainer.h"
-
-#ifndef ROBOT_H
-#define ROBOT_H
+#include "Constants.h"
+#include "ValorGamepad.h"
+#include "subsystems/Drivetrain.h"
 
 class Robot : public frc::TimedRobot {
     public:
+        Robot();
+
         void RobotInit() override;
         void RobotPeriodic() override;
         void DisabledInit() override;
@@ -26,11 +27,12 @@ class Robot : public frc::TimedRobot {
         void TeleopInit() override;
         void TeleopPeriodic() override;
         void TestPeriodic() override;
-
+        
     private:
-        frc2::Command* m_autonomousCommand = nullptr;
+        ValorGamepad gamepadDriver{OIConstants::GAMEPAD_BASE_LOCATION};
+        ValorGamepad gamepadOperator{OIConstants::GAMEPAD_OPERATOR_LOCATION};
 
-        RobotContainer m_container;
+        frc2::Command* autoCommand = nullptr;
+
+        Drivetrain drivetrain;
 };
-
-#endif
