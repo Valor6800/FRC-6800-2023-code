@@ -13,8 +13,8 @@ jobs:
    steps:
     - task: Gradle@2
       inputs:
-        workingDirectory: './Competition'
-        gradleWrapperFile: './Competition/gradlew'
+        workingDirectory: '.'
+        gradleWrapperFile: './gradlew'
         gradleOptions: '-Xmx3072m'
         publishJUnitResults: false
         testResultsFiles: '**/TEST-*.xml'
