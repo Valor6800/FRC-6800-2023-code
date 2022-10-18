@@ -43,6 +43,18 @@ void ValorNeoController::setLimits(int reverse, int forward)
     motor->SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, reverse);
 }
 
+void ValorNeoController::setForwardLimit(int forward)
+{
+    motor->EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
+    motor->SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, forward);
+}
+
+void ValorNeoController::setReverseLimit(int reverse)
+{
+    motor->EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
+    motor->SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, reverse);
+}
+
 void ValorNeoController::setPIDF(ValorPIDF pidf, int slot)
 {
     pidController.SetP(pidf.P, slot);
