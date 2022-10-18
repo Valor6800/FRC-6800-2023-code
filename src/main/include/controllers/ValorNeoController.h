@@ -32,6 +32,8 @@ public:
     
     void setPIDF(ValorPIDF pidf, int slot);
     void setLimits(int reverse, int forward);
+    void setForwardLimit(int forward);
+    void setReverseLimit(int reverse);
     void setRange(int slot, double min, double max);
 
     void setConversion(double);

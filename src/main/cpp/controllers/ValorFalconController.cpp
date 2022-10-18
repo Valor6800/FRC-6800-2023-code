@@ -54,6 +54,18 @@ void ValorFalconController::setLimits(int reverse, int forward)
     motor->ConfigReverseSoftLimitEnable(true);
 }
 
+void ValorFalconController::setForwardLimit(int forward)
+{
+    motor->ConfigForwardSoftLimitThreshold(forward);
+    motor->ConfigForwardSoftLimitEnable(true);
+}
+
+void ValorFalconController::setReverseLimit(int reverse)
+{
+    motor->ConfigReverseSoftLimitThreshold(reverse);
+    motor->ConfigReverseSoftLimitEnable(true);
+}
+
 void ValorFalconController::setPIDF(ValorPIDF pidf, int slot)
 {
     motor->Config_kP(slot, pidf.P);

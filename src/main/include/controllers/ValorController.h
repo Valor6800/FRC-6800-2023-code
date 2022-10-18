@@ -198,6 +198,9 @@ public:
      */
     virtual void setLimits(int reverse, int forward) = 0;
 
+    virtual void setForwardLimit(int forward) = 0;
+    virtual void setReverseLimit(int reverse) = 0;
+
     /**
      * @brief Set the power range of the motor
      * 
