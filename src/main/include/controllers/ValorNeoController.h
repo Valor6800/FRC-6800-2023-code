@@ -43,4 +43,6 @@ public:
 private:
     rev::SparkMaxPIDController pidController;
     rev::SparkMaxRelativeEncoder encoder;
+
+    int currentPidSlot;
 };

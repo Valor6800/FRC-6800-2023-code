@@ -9,6 +9,7 @@ ValorNeoController::ValorNeoController(int canID,
     encoder(motor->GetEncoder())
 {
     motor = new rev::CANSparkMax{canID, rev::CANSparkMax::MotorType::kBrushless};
+    currentPidSlot = 0;
     init();
 }
 
@@ -116,6 +117,7 @@ void ValorNeoController::setPosition(double position)
 
 void ValorNeoController::setProfile(int profile)
 {
+    currentPidSlot = profile;
 }
 
 /**
@@ -123,7 +125,7 @@ void ValorNeoController::setProfile(int profile)
  */
 void ValorNeoController::setSpeed(double speed)
 {
-    pidController.SetReference(speed, rev::CANSparkMax::ControlType::kSmartVelocity);
+    pidController.SetReference(speed, rev::ControlType::kSmartVelocity, currentPidSlot);
 }
 
 void ValorNeoController::setPower(double speed)
