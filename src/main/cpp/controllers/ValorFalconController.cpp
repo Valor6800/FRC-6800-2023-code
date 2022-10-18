@@ -48,8 +48,8 @@ void ValorFalconController::setupFollower(int canID)
 void ValorFalconController::setLimits(int reverse, int forward)
 {
     //@TODO this is wrong! Needs to be converted from units to raw units
-    motor->ConfigForwardSoftLimitThreshold(reverse);
-    motor->ConfigReverseSoftLimitThreshold(forward);
+    motor->ConfigForwardSoftLimitThreshold(forward);
+    motor->ConfigReverseSoftLimitThreshold(reverse);
     motor->ConfigForwardSoftLimitEnable(true);
     motor->ConfigReverseSoftLimitEnable(true);
 }
