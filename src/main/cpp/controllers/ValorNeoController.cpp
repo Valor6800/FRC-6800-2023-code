@@ -73,6 +73,11 @@ void ValorNeoController::setRange(int slot, double min, double max)
     pidController.SetOutputRange(min, max, slot);
 }
 
+double ValorNeoController::getCurrent()
+{
+    return motor->GetOutputCurrent();
+}
+
 /**
  * Get the position in units (specified by conversion)
  */

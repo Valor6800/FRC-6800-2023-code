@@ -69,6 +69,14 @@ void ValorFalconController::setConversion(double _conversion)
     conversion = _conversion;
 }
 
+double ValorFalconController::getCurrent()
+{
+    return motor->GetOutputCurrent();
+}
+
+/**
+ * Get the position in units (specified by conversion)
+ */
 double ValorFalconController::getPosition()
 {
     return motor->GetSelectedSensorPosition() * conversion / FALCON_TICKS_PER_REV;

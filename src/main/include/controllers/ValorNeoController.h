@@ -21,6 +21,7 @@ public:
     void init();
     void reset();
 
+    double getCurrent();
     double getPosition();
     double getSpeed();
     void setPosition(double);
