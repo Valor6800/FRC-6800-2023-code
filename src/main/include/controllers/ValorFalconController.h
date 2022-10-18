@@ -23,6 +23,8 @@ public:
 
     double getPosition();
     double getSpeed();
+    double getCurrent();
+    
     void setPosition(double);
     void setSpeed(double);
     void setPower(double);

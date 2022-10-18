@@ -109,6 +109,8 @@ public:
      */
     virtual double getPosition() = 0;
 
+    virtual double getCurrent() = 0;
+
     /**
      * @brief Get the motors speed
      * 
