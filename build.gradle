@@ -118,7 +118,8 @@ doxygen  {
     warn_if_undocumented false
     disable_index false
     full_sidebar false
-    html_stylesheet new File(projectDir,'doxygen-awesome-css/doxygen-awesome.css')
+    inherit_docs true
+    html_extra_stylesheet new File(projectDir,'doxygen-awesome-css/doxygen-awesome.css')
                              
     source 'src/main/include'
     source 'README.md'

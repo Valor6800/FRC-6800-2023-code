@@ -3,7 +3,8 @@
 #define CACHE_SIZE 20
 #define DEFAULT_SPIKE_VALUE 22
 
-ValorCurrentSensor::ValorCurrentSensor() :
+ValorCurrentSensor::ValorCurrentSensor(frc::TimedRobot *_robot) :
+    ValorSensor(_robot),
     spikedSetpoint(DEFAULT_SPIKE_VALUE)
 {
     reset();
