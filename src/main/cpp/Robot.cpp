@@ -10,7 +10,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
-Robot::Robot() : drivetrain(this)
+Robot::Robot() : drivetrain(this), testSubsystem(this)
 {
     frc::TimedRobot();
 }
@@ -18,6 +18,8 @@ Robot::Robot() : drivetrain(this)
 void Robot::RobotInit() {
     drivetrain.setController(&gamepadDriver);
     drivetrain.resetState();
+
+    testSubsystem.setControllers(&gamepadDriver, &gamepadOperator);
 }
 
 /**
@@ -38,6 +40,8 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
 void Robot::DisabledInit() {
     drivetrain.resetState();
     drivetrain.setMotorMode(false);
+
+    testSubsystem.resetState();
 }
 
 void Robot::DisabledPeriodic()
