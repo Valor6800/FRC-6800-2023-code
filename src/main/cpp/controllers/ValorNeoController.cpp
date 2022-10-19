@@ -1,10 +1,10 @@
 #include "controllers/ValorNeoController.h"
 
 ValorNeoController::ValorNeoController(int canID,
-                                       rev::CANSparkMax::IdleMode _mode,
-                                       bool _inverted,
-                                       const std::__cxx11::string &canbus) :
-    ValorController(_mode, _inverted),
+                                       rev::CANSparkMax::IdleMode mode,
+                                       bool inverted,
+                                       std::string canbus) :
+    ValorController(canID, mode, inverted, canbus),
     pidController(motor->GetPIDController()),
     encoder(motor->GetEncoder())
 {
@@ -18,7 +18,8 @@ void ValorNeoController::init()
     motor->SetInverted(inverted);
     motor->SetIdleMode(mode);
     setRange(0,-1,1);
-    setPIDF(0, motionPIDF);
+    ValorPIDF motionPIDF;
+    setPIDF(motionPIDF, 0);
     reset();
 }
 
@@ -42,19 +43,17 @@ void ValorNeoController::setLimits(int reverse, int forward)
     motor->SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, reverse);
 }
 
-void ValorNeoController::setPIDF(int slot, PIDF pidf)
+void ValorNeoController::setPIDF(ValorPIDF pidf, int slot)
 {
-    ValorController::setPIDF(pidf);
-
-    pidController.SetP(motionPIDF.P, slot);
-    pidController.SetI(motionPIDF.I, slot);
-    pidController.SetD(motionPIDF.D, slot);
-    pidController.SetFF(motionPIDF.F, slot);
+    pidController.SetP(pidf.P, slot);
+    pidController.SetI(pidf.I, slot);
+    pidController.SetD(pidf.D, slot);
+    pidController.SetFF(pidf.F, slot);
     pidController.SetIZone(0, slot);
 
     pidController.SetSmartMotionMaxVelocity(pidf.velocity, slot);
     pidController.SetSmartMotionMaxAccel(pidf.acceleration, slot);
-    pidController.SetSmartMotionAllowedClosedLoopError(motionPIDF.error, slot);
+    pidController.SetSmartMotionAllowedClosedLoopError(pidf.error, slot);
 }
 
 /**
@@ -95,7 +94,7 @@ double ValorNeoController::getSpeed()
  */
 void ValorNeoController::setPosition(double position)
 {
-    pidController.SetReference(position, rev::ControlType::kSmartMotion);
+    pidController.SetReference(position, rev::CANSparkMax::ControlType::kSmartMotion);
 }
 
 void ValorNeoController::setProfile(int profile)
@@ -107,7 +106,7 @@ void ValorNeoController::setProfile(int profile)
  */
 void ValorNeoController::setSpeed(double speed)
 {
-    pidController.SetReference(speed, rev::ControlType::kSmartVelocity);
+    pidController.SetReference(speed, rev::CANSparkMax::ControlType::kSmartVelocity);
 }
 
 void ValorNeoController::setPower(double speed)

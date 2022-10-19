@@ -11,14 +11,12 @@
 
 #include <rev/CANSparkMax.h>
 #include <rev/CANEncoder.h>
-
-#ifndef VALORNEOCONTROLLER_H
-#define VALORNEOCONTROLLER_H
+#include <string>
 
 class ValorNeoController : public ValorController<rev::CANSparkMax, rev::CANSparkMax::IdleMode>
 {
 public:
-    ValorNeoController(int, rev::CANSparkMax::IdleMode, bool, const std::__cxx11::string &canbus = "");
+    ValorNeoController(int, rev::CANSparkMax::IdleMode, bool, std::string canbus = "");
 
     void init();
     void reset();
@@ -31,7 +29,7 @@ public:
     
     void setupFollower(int);
     
-    void setPIDF(int slot, PIDF pidf);
+    void setPIDF(ValorPIDF pidf, int slot);
     void setLimits(int reverse, int forward);
     void setRange(int slot, double min, double max);
 
@@ -43,5 +41,3 @@ private:
     rev::SparkMaxPIDController pidController;
     rev::SparkMaxRelativeEncoder encoder;
 };
-
-#endif

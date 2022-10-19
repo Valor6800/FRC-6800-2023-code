@@ -3,10 +3,10 @@
 #define FALCON_TICKS_PER_REV 2048
 
 ValorFalconController::ValorFalconController(int canID,
-                                             NeutralMode _mode,
-                                             bool _inverted,
-                                             const std::__cxx11::string &canbus) :
-    ValorController(_mode, _inverted),
+                                             NeutralMode mode,
+                                             bool inverted,
+                                             std::string canbus) :
+    ValorController(canID, mode, inverted, canbus),
     conversion(1)
 {
     motor = new WPI_TalonFX{canID, canbus};
@@ -28,7 +28,8 @@ void ValorFalconController::init()
     motor->ConfigAllowableClosedloopError(0, 0);
     motor->Config_IntegralZone(0, 0);
     
-    setPIDF(0, motionPIDF);
+    ValorPIDF motionPIDF;
+    setPIDF(motionPIDF, 0);
     reset();
 }
 
@@ -46,21 +47,21 @@ void ValorFalconController::setupFollower(int canID)
 
 void ValorFalconController::setLimits(int reverse, int forward)
 {
+    //@TODO this is wrong! Needs to be converted from units to raw units
     motor->ConfigForwardSoftLimitThreshold(reverse);
     motor->ConfigReverseSoftLimitThreshold(forward);
     motor->ConfigForwardSoftLimitEnable(true);
     motor->ConfigReverseSoftLimitEnable(true);
 }
 
-void ValorFalconController::setPIDF(int slot, PIDF pidf)
+void ValorFalconController::setPIDF(ValorPIDF pidf, int slot)
 {
-    ValorController::setPIDF(pidf);
-    motor->Config_kP(slot, motionPIDF.P);
-    motor->Config_kI(slot, motionPIDF.I);
-    motor->Config_kD(slot, motionPIDF.D);
-    motor->Config_kF(slot, motionPIDF.F);
-    motor->ConfigMotionCruiseVelocity(motionPIDF.velocity);
-    motor->ConfigMotionAcceleration(motionPIDF.acceleration);
+    motor->Config_kP(slot, pidf.P);
+    motor->Config_kI(slot, pidf.I);
+    motor->Config_kD(slot, pidf.D);
+    motor->Config_kF(slot, pidf.F);
+    motor->ConfigMotionCruiseVelocity(pidf.velocity);
+    motor->ConfigMotionAcceleration(pidf.acceleration);
 }
 
 void ValorFalconController::setConversion(double _conversion)
@@ -68,17 +69,11 @@ void ValorFalconController::setConversion(double _conversion)
     conversion = _conversion;
 }
 
-/**
- * Get the position in units (specified by conversion)
- */
 double ValorFalconController::getPosition()
 {
     return motor->GetSelectedSensorPosition() * conversion / FALCON_TICKS_PER_REV;
 }
 
-/**
- * Get the speed in units per second (specified by conversion)
- */
 double ValorFalconController::getSpeed()
 {
     return motor->GetSelectedSensorVelocity() * 10 * conversion / FALCON_TICKS_PER_REV;
@@ -89,17 +84,11 @@ void ValorFalconController::setRange(int slot, double min, double max)
     
 }
 
-/**
- * Set the position in units (specified by conversion). Example: inches
- */
 void ValorFalconController::setPosition(double position)
 {
     motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV);
 }
 
-/**
- * Set the speed in units per second (specified by conversion). Example: inches per second
- */
 void ValorFalconController::setSpeed(double speed)
 {
     motor->Set(ControlMode::Velocity, speed / 10 / conversion * FALCON_TICKS_PER_REV);

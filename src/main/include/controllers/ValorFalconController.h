@@ -11,14 +11,12 @@
 
 #include <ctre/Phoenix.h>
 #include <ctre/phoenix/motorcontrol/NeutralMode.h>
-
-#ifndef VALORFALCONCONTROLLER_H
-#define VALORFALCONCONTROLLER_H
+#include <string>
 
 class ValorFalconController : public ValorController<WPI_TalonFX, NeutralMode>
 {
 public:
-    ValorFalconController(int, NeutralMode, bool, const std::__cxx11::string &canbus = "");
+    ValorFalconController(int _canID, NeutralMode _mode, bool _inverted, std::string _canbus = "");
 
     void init();
     void reset();
@@ -31,7 +29,7 @@ public:
 
     void setupFollower(int);
     
-    void setPIDF(int slot, PIDF pidf);
+    void setPIDF(ValorPIDF pidf, int slot);
     void setLimits(int reverse, int forward);
     void setRange(int slot, double min, double max);
     
@@ -39,9 +37,12 @@ public:
 
     void setProfile(int slot);
 
+    /**
+     * @brief Prevent the motor from traveling backwards
+     * 
+     * Restrict the motor from going backwards
+     */
     void preventBackwards();
 private:
     double conversion;
 };
-
-#endif
