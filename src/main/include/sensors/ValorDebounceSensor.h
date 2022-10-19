@@ -42,21 +42,21 @@ public:
      * 
      * @param _lambda Function to run when an edge has been detected
      */
-    void setEdge(std::function<void()> _lambda);
+    void setEdgeCallback(std::function<void()> _lambda);
 
     /**
      * @brief Setup a lambda function to detect a rising edge of the sensor
      * 
      * @param _lambda Function to run when a rising edge has been detected
      */
-    void setRisingEdge(std::function<void()> _lambda);
+    void setRisingEdgeCallback(std::function<void()> _lambda);
 
     /**
      * @brief Setup a lambda function to detect a falling edge of the sensor
      * 
      * @param _lambda Function to run when a falling edge has been detected
      */
-    void setFallingEdge(std::function<void()> _lambda);
+    void setFallingEdgeCallback(std::function<void()> _lambda);
 
 private:
 

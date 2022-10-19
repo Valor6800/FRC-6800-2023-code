@@ -43,12 +43,11 @@ public:
     void reset();
 
     /**
-     * @brief Identify when the current has risen above a certain threshold
+     * @brief Setup a lambda function to identify when the current has risen above a certain threshold
      * 
-     * @return true The average current in recent history have spiked above the set threshold
-     * @return false The average current in recent history is below the set threshold
+     * @param _lambda Function to run when a current spike has been detected
      */
-    bool spiked();
+    void setSpikeCallback(std::function<void()> _lambda);
 
     /**
      * @brief Set the threshold to identify when current is spiked or not
@@ -58,6 +57,8 @@ public:
     void setSpikeSetpoint(double threshold);
 
 private:
+    std::function<void()> spikeCallback;
+
     void calculate();
 
     std::deque<double> cache;

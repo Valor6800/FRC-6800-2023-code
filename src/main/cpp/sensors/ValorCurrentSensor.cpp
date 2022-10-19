@@ -15,8 +15,9 @@ void ValorCurrentSensor::setSpikeSetpoint(double _setpoint)
     spikedSetpoint = _setpoint;
 }
 
-bool ValorCurrentSensor::spiked() {
-    return currState > spikedSetpoint;
+void ValorCurrentSensor::setSpikeCallback(std::function<void()> _lambda)
+{
+    spikeCallback = _lambda;
 }
 
 void ValorCurrentSensor::reset() {
@@ -29,6 +30,7 @@ void ValorCurrentSensor::reset() {
 }
 
 void ValorCurrentSensor::calculate() {
+    prevState = currState;
     cache.pop_front();
     cache.push_back(getSensor());
 
@@ -39,5 +41,6 @@ void ValorCurrentSensor::calculate() {
     }
 
     currState = sum / CACHE_SIZE;
-    prevState = currState;
+    if (currState > spikedSetpoint)
+        spikeCallback();
 }

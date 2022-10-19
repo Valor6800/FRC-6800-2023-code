@@ -11,17 +11,17 @@ void ValorDebounceSensor::reset()
     currState = false;
 }
 
-void ValorDebounceSensor::setEdge(std::function<void()> _lambda)
+void ValorDebounceSensor::setEdgeCallback(std::function<void()> _lambda)
 {
     edge = _lambda;
 }
 
-void ValorDebounceSensor::setRisingEdge(std::function<void()> _lambda)
+void ValorDebounceSensor::setRisingEdgeCallback(std::function<void()> _lambda)
 {
     risingEdge = _lambda;
 }
 
-void ValorDebounceSensor::setFallingEdge(std::function<void()> _lambda)
+void ValorDebounceSensor::setFallingEdgeCallback(std::function<void()> _lambda)
 {
     fallingEdge = _lambda;
 }
