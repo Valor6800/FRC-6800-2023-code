@@ -3,13 +3,16 @@
 #define FALCON_TICKS_PER_REV 2048
 
 ValorFalconController::ValorFalconController(int canID,
-                                             NeutralMode mode,
-                                             bool inverted,
+                                             NeutralMode _mode,
+                                             bool _inverted,
                                              std::string canbus) :
-    ValorController(canID, mode, inverted, canbus),
-    conversion(1)
+    ValorController(new WPI_TalonFX{canID, canbus}),
+    conversion(1),
+    inverted(_inverted),
+    mode(_mode)
+
 {
-    motor = new WPI_TalonFX{canID, canbus};
+    //motor = new WPI_TalonFX{canID, canbus};
     init();
 }
 

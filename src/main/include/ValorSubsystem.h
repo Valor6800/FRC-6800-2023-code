@@ -156,7 +156,7 @@ class ValorSubsystem : public frc2::Subsystem {
     private:
         
         void Periodic()
-        {
+        {       
             if (robot->IsTeleop())
                 assessInputs();
 

@@ -8,11 +8,7 @@
 #pragma once
 
 #include "ValorSubsystem.h"
-#include "Constants.h"
 #include "ValorGamepad.h"
-
-#include "sensors/ValorCurrentSensor.h"
-#include "sensors/ValorDebounceSensor.h"
 
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
@@ -23,7 +19,7 @@ public:
     TestSubsystem(frc::TimedRobot *_robot);
 
     void init();
-    void setControllers(ValorGamepad *controllerO, ValorGamepad *controllerD);
+    void setControllers(ValorGamepad *controllerO);
 
     void assessInputs();
     void analyzeDashboard();
@@ -49,8 +45,7 @@ public:
     } state;
 
 private:
-    ValorGamepad *driverController;
     ValorGamepad *operatorController;
 
-    ValorFalconController testMotorController;
+    ValorNeoController testMotorController;
 };

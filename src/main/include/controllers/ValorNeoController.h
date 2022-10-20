@@ -13,7 +13,7 @@
 #include <rev/CANEncoder.h>
 #include <string>
 
-class ValorNeoController : public ValorController<rev::CANSparkMax, rev::CANSparkMax::IdleMode>
+class ValorNeoController : public ValorController<rev::CANSparkMax>
 {
 public:
     ValorNeoController(int, rev::CANSparkMax::IdleMode, bool, std::string canbus = "");
@@ -43,6 +43,9 @@ public:
 private:
     rev::SparkMaxPIDController pidController;
     rev::SparkMaxRelativeEncoder encoder;
+
+    bool inverted;
+    rev::CANSparkMax::IdleMode mode;
 
     int currentPidSlot;
 };

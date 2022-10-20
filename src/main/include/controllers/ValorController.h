@@ -13,7 +13,6 @@
 /**
  * @brief Abstract class that all Valor controllers's should implement
  * @tparam T Motor data type
- * @tparam U Motor neutral type (aka. brake vs coast)
  * 
  * To make developer's lives easier and to prevent any mistakes in a quick build season,
  * ValorController is used to organize code and abstract a lot of the base code that is often
@@ -30,7 +29,7 @@
  * public class ValorFalconController : public ValorController<WPI_TalonFX, NeutralMode> { };
  * \endcode
  */
-template <class T, class U>
+template <class T>
 class ValorController
 {
 public:
@@ -43,11 +42,8 @@ public:
      * @param _mode What mode to use for the motor (usually brake or coast)
      * @param _inverted If the motor is inverted or not
      */
-    ValorController(int _canID, U _mode, bool _inverted, std::string _canbus = "") :
-        canID(_canID),
-        mode(_mode),
-        inverted(_inverted),
-        canbus(_canbus) {}
+    ValorController(T* _motor) :
+        motor(_motor) {}
 
     /**
      * @brief Destroy the Valor Controller object
@@ -241,11 +237,6 @@ public:
     virtual void setProfile(int slot) = 0;
 
 protected:
-
-    int canID;
-    U mode;
-    bool inverted;
-    std::__cxx11::string canbus;
 
     T* motor;
     T* followerMotor;
