@@ -30,12 +30,11 @@ class Robot : public frc::TimedRobot {
         void TestPeriodic() override;
         
     private:
-        ValorGamepad gamepadDriver{OIConstants::GAMEPAD_BASE_LOCATION};
         ValorGamepad gamepadOperator{OIConstants::GAMEPAD_OPERATOR_LOCATION};
 
         frc2::Command* autoCommand = nullptr;
 
-        Drivetrain drivetrain;
+        //Drivetrain drivetrain;
         TestSubsystem testSubsystem;
 
 };

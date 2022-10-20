@@ -1,14 +1,16 @@
 #include "controllers/ValorNeoController.h"
 
 ValorNeoController::ValorNeoController(int canID,
-                                       rev::CANSparkMax::IdleMode mode,
-                                       bool inverted,
+                                       rev::CANSparkMax::IdleMode _mode,
+                                       bool _inverted,
                                        std::string canbus) :
-    ValorController(canID, mode, inverted, canbus),
+    ValorController(new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless)),
     pidController(motor->GetPIDController()),
-    encoder(motor->GetEncoder())
+    encoder(motor->GetEncoder()),
+    mode(_mode),
+    inverted(_inverted)
 {
-    motor = new rev::CANSparkMax{canID, rev::CANSparkMax::MotorType::kBrushless};
+    // motor = new rev::CANSparkMax{};
     currentPidSlot = 0;
     init();
 }

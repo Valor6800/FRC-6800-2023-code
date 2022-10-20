@@ -13,13 +13,12 @@
 #include <iostream>
 
 #define TEST_CONVERSION_FACTOR 1.0
-#define TEST_CAN_ID 5
-#define TEST_FOLLOWER_CAN_ID 6
+#define TEST_CAN_ID 9
+#define TEST_FOLLOWER_CAN_ID 10
 
 TestSubsystem::TestSubsystem(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "TestSubsystem"),
-                           driverController(NULL),
                            operatorController(NULL),
-                           testMotorController(TEST_CAN_ID, Coast, false)
+                           testMotorController(TEST_CAN_ID, rev::CANSparkMax::IdleMode::kCoast, false)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -47,15 +46,14 @@ void TestSubsystem::init()
     resetState();
 }
 
-void TestSubsystem::setControllers(ValorGamepad *controllerO, ValorGamepad *controllerD)
+void TestSubsystem::setControllers(ValorGamepad *controllerO)
 {
-    driverController = controllerD;
     operatorController = controllerO;
 }
 
 void TestSubsystem::assessInputs()
 {
-    if (!driverController)
+    if (!operatorController)
     {
         return;
     }
@@ -79,6 +77,8 @@ void TestSubsystem::analyzeDashboard()
     table->PutNumber("Test Motor Position", testMotorController.getPosition());
     table->PutNumber("Test Motor Speed", testMotorController.getSpeed());
     table->PutNumber("Test Motor Current", testMotorController.getCurrent());
+
+    table->PutNumber("Test Subsystem State", state.testSubsystemState);
     
     state.testPositionTarget = table->GetNumber("Test Position Target", 0);
     state.testPowerTarget = table->GetNumber("Test Power Target", 0);
