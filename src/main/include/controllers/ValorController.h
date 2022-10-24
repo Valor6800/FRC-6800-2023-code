@@ -26,7 +26,7 @@
  * 
  * Usage:
  * \code {.cpp}
- * public class ValorFalconController : public ValorController<WPI_TalonFX, NeutralMode> { };
+ * public class ValorFalconController : public ValorController<WPI_TalonFX> { };
  * \endcode
  */
 template <class T>
@@ -37,10 +37,7 @@ public:
     /**
      * @brief Construct a new Valor Controller object
      * 
-     * @param _canID The CAN ID of the motor that will be controlled
-     * @param _canbus The name of the CAN bus the motor will be connected to
-     * @param _mode What mode to use for the motor (usually brake or coast)
-     * @param _inverted If the motor is inverted or not
+     * @param _motor The motor that will be controlled. Setup by the implemented class
      */
     ValorController(T* _motor) :
         motor(_motor) {}
@@ -105,6 +102,13 @@ public:
      */
     virtual double getPosition() = 0;
 
+    /**
+     * @brief Get the motors output current
+     * 
+     * Get the instantaneous amperage of the motor that the controller owns
+     * 
+     * @return double Instantaneous amperage of the motor
+     */
     virtual double getCurrent() = 0;
 
     /**
@@ -182,20 +186,42 @@ public:
     virtual void setPIDF(ValorPIDF pidf, int slot = 0) = 0;
 
     /**
-     * @brief Set soft limits for the motor
+     * @brief Set both soft limits for the motor
      * 
      * Soft limits restrict the reverse and forward direction to a certain range.
      * Units by default are in rotations of the motor shaft.
      * 
-     * To be defined by the implemented ValorController class
+     * Calls out to the pure virtual functions @link setForwardLimit @endlink
+     * and @link setReverseLimit @endlink
      * 
      * @param reverse The reverse soft limit
      * @param forward The forward soft limit
      */
-    virtual void setLimits(int reverse, int forward) = 0;
+    void setLimits(int reverse, int forward)
+    {
+        setForwardLimit(forward);
+        setReverseLimit(reverse);
+    }
 
-    virtual void setForwardLimit(int forward) = 0;
-    virtual void setReverseLimit(int reverse) = 0;
+    /**
+     * @brief Set the forward soft limit for the motor
+     * 
+     * Soft limits restrict the reverse and forward direction to a certain range.
+     * Units by default are in rotations of the motor shaft.
+     * 
+     * @param forward The forward soft limit
+     */
+    virtual void setForwardLimit(double forward) = 0;
+
+    /**
+     * @brief Set the reverse soft limit for the motor
+     * 
+     * Soft limits restrict the reverse and reverse direction to a certain range.
+     * Units by default are in rotations of the motor shaft.
+     * 
+     * @param reverse The reverse soft limit
+     */
+    virtual void setReverseLimit(double reverse) = 0;
 
     /**
      * @brief Set the power range of the motor
@@ -217,7 +243,12 @@ public:
      * Used to convert between rotations and whatever units the developer requires.
      * Say the developer wants to control the motor in degrees, and there is a 5:1 gearbox on the motor.
      * Then the conversion factor would be (360.0 / 5 ), which says for every 5 rotations of the motor,
-     * that yeilds 360 degrees
+     * that yields 360 degrees.
+     * 
+     * Any easy way to find this conversion factor is through dimensional analysis:
+     * X motor rotations | 1 output rotation | 360 degrees 
+     * ------------------|-------------------|-------------
+     *          -        | 5 motor rotations | 1 output rotation
      * 
      * To be defined by the implemented ValorController class
      * 

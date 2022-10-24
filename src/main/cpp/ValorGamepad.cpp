@@ -1,6 +1,6 @@
 #include "ValorGamepad.h"
 
-#include <math.h>
+#include <cmath>
 
 #define DPAD_UP 0
 #define DPAD_DOWN 180

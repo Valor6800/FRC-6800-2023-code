@@ -8,11 +8,9 @@ ValorFalconController::ValorFalconController(int canID,
                                              std::string canbus) :
     ValorController(new WPI_TalonFX{canID, canbus}),
     conversion(1),
-    inverted(_inverted),
-    mode(_mode)
-
+    mode(_mode),
+    inverted(_inverted)
 {
-    //motor = new WPI_TalonFX{canID, canbus};
     init();
 }
 
@@ -48,24 +46,17 @@ void ValorFalconController::setupFollower(int canID)
     followerMotor->SetNeutralMode(mode);
 }
 
-void ValorFalconController::setLimits(int reverse, int forward)
+void ValorFalconController::setForwardLimit(double forward)
 {
-    //@TODO this is wrong! Needs to be converted from units to raw units
-    motor->ConfigForwardSoftLimitThreshold(forward);
-    motor->ConfigReverseSoftLimitThreshold(reverse);
-    motor->ConfigForwardSoftLimitEnable(true);
-    motor->ConfigReverseSoftLimitEnable(true);
-}
-
-void ValorFalconController::setForwardLimit(int forward)
-{
-    motor->ConfigForwardSoftLimitThreshold(forward);
+    double rawForward = forward / conversion * FALCON_TICKS_PER_REV;
+    motor->ConfigForwardSoftLimitThreshold(rawForward);
     motor->ConfigForwardSoftLimitEnable(true);
 }
 
-void ValorFalconController::setReverseLimit(int reverse)
+void ValorFalconController::setReverseLimit(double reverse)
 {
-    motor->ConfigReverseSoftLimitThreshold(reverse);
+    double rawReverse = reverse / conversion * FALCON_TICKS_PER_REV;
+    motor->ConfigReverseSoftLimitThreshold(rawReverse);
     motor->ConfigReverseSoftLimitEnable(true);
 }
 

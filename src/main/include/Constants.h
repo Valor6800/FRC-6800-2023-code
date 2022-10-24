@@ -7,9 +7,17 @@
 
 #pragma once
 
+#include <cmath>
+#include <iostream>
+// When trying to compile against other targets for simulation, cmath doesn't include M_PI
+//   Therefore if not defined, define M_PI for use on other targets
+#ifndef M_PI
+#define M_PI (3.14159265358979323846264338327950288)
+#endif
+
 #include <frc/kinematics/DifferentialDriveKinematics.h>
 #include <frc/trajectory/constraint/DifferentialDriveVoltageConstraint.h>
-#include <cmath>
+
 
 /**
  * The Constants header provides a convenient place for teams to hold robot-wide
@@ -109,13 +117,6 @@ namespace SwerveConstants {
     constexpr static double KP = 0.2; //.2
     constexpr static double KI = 0.0; //0
     constexpr static double KD = 0.1; //.1
-}
-
-namespace ShooterConstants{
-    constexpr static double falconMaxRPM = 6380;
-    constexpr static double falconGearRatio = 1;
-
-    constexpr static double ticsPerRev = 2048;
 }
 
 namespace DIOPorts {

@@ -32,9 +32,8 @@ public:
     void setupFollower(int);
     
     void setPIDF(ValorPIDF pidf, int slot);
-    void setLimits(int reverse, int forward);
-    void setForwardLimit(int forward);
-    void setReverseLimit(int reverse);
+    void setForwardLimit(double forward);
+    void setReverseLimit(double reverse);
     void setRange(int slot, double min, double max);
     
     void setConversion(double);
@@ -49,9 +48,8 @@ public:
     void preventBackwards();
 private:
 
-    bool inverted;
-    
-    NeutralMode mode;
-
     double conversion;
+    NeutralMode mode;
+    bool inverted;
+
 };

@@ -11,6 +11,7 @@
 
 #include "subsystems/TestSubsystem.h"
 #include <iostream>
+#include "frc/smartdashboard/SmartDashboard.h"
 
 #define TEST_CONVERSION_FACTOR 1.0
 #define TEST_CAN_ID 9
@@ -22,6 +23,17 @@ TestSubsystem::TestSubsystem(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
+}
+
+
+void TestSubsystem::InitSendable(wpi::SendableBuilder& builder)
+{
+    builder.SetSmartDashboardType("double");
+    builder.AddDoubleProperty(
+        "value",
+        [this] { return state.testSubsystemState; },
+        nullptr
+    );
 }
 
 void TestSubsystem::init()
@@ -39,9 +51,9 @@ void TestSubsystem::init()
     
     //testMotorController.setProfile(int slot);
 
-    table->PutNumber("Test Position Target", 0);
-    table->PutNumber("Test Speed Target", 0);
-    table->PutNumber("Test Power Target", 0);
+    table->PutNumber("Test Position Target", 5);
+    table->PutNumber("Test Speed Target", 2);
+    table->PutNumber("Test Power Target", 0.5);
     
     resetState();
 }
