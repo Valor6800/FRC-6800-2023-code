@@ -30,10 +30,10 @@ void ValorNeoController::reset()
     encoder.SetPosition(0);
 }
 
-void ValorNeoController::setupFollower(int canID)
+void ValorNeoController::setupFollower(int canID, bool followerInverted)
 {
     followerMotor = new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless);
-    followerMotor->Follow(*motor);
+    followerMotor->Follow(*motor, followerInverted);
     followerMotor->SetIdleMode(mode);
 }
 
@@ -121,7 +121,7 @@ void ValorNeoController::setSpeed(double speed)
     pidController.SetReference(speed, rev::CANSparkMax::ControlType::kSmartVelocity, currentPidSlot);
 }
 
-void ValorNeoController::setPower(double speed)
+void ValorNeoController::setPower(double power)
 {
-    motor->Set(speed);
+    motor->Set(power);
 }

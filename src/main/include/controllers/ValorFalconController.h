@@ -29,7 +29,7 @@ public:
     void setSpeed(double);
     void setPower(double);
 
-    void setupFollower(int);
+    void setupFollower(int, bool = false);
     
     void setPIDF(ValorPIDF pidf, int slot);
     void setForwardLimit(double forward);
