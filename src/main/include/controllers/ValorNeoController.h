@@ -31,9 +31,8 @@ public:
     void setupFollower(int);
     
     void setPIDF(ValorPIDF pidf, int slot);
-    void setLimits(int reverse, int forward);
-    void setForwardLimit(int forward);
-    void setReverseLimit(int reverse);
+    void setForwardLimit(double forward);
+    void setReverseLimit(double reverse);
     void setRange(int slot, double min, double max);
 
     void setConversion(double);
@@ -44,8 +43,8 @@ private:
     rev::SparkMaxPIDController pidController;
     rev::SparkMaxRelativeEncoder encoder;
 
-    bool inverted;
     rev::CANSparkMax::IdleMode mode;
+    bool inverted;
 
     int currentPidSlot;
 };

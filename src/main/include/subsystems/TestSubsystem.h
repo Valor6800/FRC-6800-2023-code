@@ -12,14 +12,19 @@
 
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
+#include <wpi/sendable/Sendable.h>
+#include <wpi/sendable/SendableBuilder.h>
+#include <wpi/sendable/SendableHelper.h>
 
-class TestSubsystem : public ValorSubsystem
+class TestSubsystem : public ValorSubsystem, public wpi::Sendable, public wpi::SendableHelper<TestSubsystem>
 {
 public:
     TestSubsystem(frc::TimedRobot *_robot);
 
     void init();
     void setControllers(ValorGamepad *controllerO);
+    
+    void InitSendable(wpi::SendableBuilder& builder);
 
     void assessInputs();
     void analyzeDashboard();

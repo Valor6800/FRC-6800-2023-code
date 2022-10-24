@@ -55,7 +55,7 @@ class ValorSubsystem : public frc2::Subsystem {
          * @param name A human readable name of the subsystem 
          */
         ValorSubsystem(frc::TimedRobot *_robot, const char* name) :
-            robot(_robot)
+            robot(_robot), subsystemName(name)
         {
             table = nt::NetworkTableInstance::GetDefault().GetTable(name);
             init();
@@ -153,6 +153,9 @@ class ValorSubsystem : public frc2::Subsystem {
          */
         std::shared_ptr<nt::NetworkTable> table;
 
+        frc::TimedRobot *robot;
+        const char* subsystemName;
+
     private:
         
         void Periodic()
@@ -165,6 +168,4 @@ class ValorSubsystem : public frc2::Subsystem {
             if (!robot->IsDisabled())
                 assignOutputs();
         }
-
-        frc::TimedRobot *robot;
 };

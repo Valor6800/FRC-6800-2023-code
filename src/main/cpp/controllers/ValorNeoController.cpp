@@ -8,10 +8,9 @@ ValorNeoController::ValorNeoController(int canID,
     pidController(motor->GetPIDController()),
     encoder(motor->GetEncoder()),
     mode(_mode),
-    inverted(_inverted)
+    inverted(_inverted),
+    currentPidSlot(0)
 {
-    // motor = new rev::CANSparkMax{};
-    currentPidSlot = 0;
     init();
 }
 
@@ -38,21 +37,13 @@ void ValorNeoController::setupFollower(int canID)
     followerMotor->SetIdleMode(mode);
 }
 
-void ValorNeoController::setLimits(int reverse, int forward)
-{
-    motor->EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
-    motor->SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, forward);
-    motor->EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
-    motor->SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, reverse);
-}
-
-void ValorNeoController::setForwardLimit(int forward)
+void ValorNeoController::setForwardLimit(double forward)
 {
     motor->EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, true);
     motor->SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kForward, forward);
 }
 
-void ValorNeoController::setReverseLimit(int reverse)
+void ValorNeoController::setReverseLimit(double reverse)
 {
     motor->EnableSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, true);
     motor->SetSoftLimit(rev::CANSparkMax::SoftLimitDirection::kReverse, reverse);
@@ -127,7 +118,7 @@ void ValorNeoController::setProfile(int profile)
  */
 void ValorNeoController::setSpeed(double speed)
 {
-    pidController.SetReference(speed, rev::ControlType::kSmartVelocity, currentPidSlot);
+    pidController.SetReference(speed, rev::CANSparkMax::ControlType::kSmartVelocity, currentPidSlot);
 }
 
 void ValorNeoController::setPower(double speed)
