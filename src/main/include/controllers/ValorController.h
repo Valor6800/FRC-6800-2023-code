@@ -172,8 +172,8 @@ public:
      * 
      * @param canID The CAN ID of the follower motor
      */
-    virtual void setupFollower(int canID) = 0;
-
+    virtual void setupFollower(int canID, bool followerInverted = false) = 0;
+    
     /**
      * @brief Change the PIDF values for the motor
      * 
