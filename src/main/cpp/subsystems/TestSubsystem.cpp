@@ -13,7 +13,7 @@
 #include <iostream>
 #include "frc/smartdashboard/SmartDashboard.h"
 
-#define TEST_CONVERSION_FACTOR 1.0
+#define TEST_CONVERSION_FACTOR 1.0 * 360
 #define TEST_CAN_ID 9
 #define TEST_FOLLOWER_CAN_ID 10
 
@@ -41,7 +41,7 @@ void TestSubsystem::init()
 
     testMotorController.setConversion(TEST_CONVERSION_FACTOR);
 
-    //testMotorController.setupFollower(TEST_FOLLOWER_CAN_ID);
+    testMotorController.setupFollower(TEST_FOLLOWER_CAN_ID);
     
     //testMotorController.setPIDF(int slot, PIDF pidf);
     //testMotorController.setLimits(int reverse, int forward);
@@ -107,10 +107,10 @@ void TestSubsystem::assignOutputs()
         testMotorController.setPower(state.testPowerTarget);
     }
     else if (state.testSubsystemState == TestSubsystemState::TOPOSITION) {
-        testMotorController.setPower(state.testPositionTarget);
+        testMotorController.setPosition(state.testPositionTarget);
     }
     else if (state.testSubsystemState == TestSubsystemState::TOSPEED) {
-        testMotorController.setPower(state.testSpeedTarget);
+        testMotorController.setSpeed(state.testSpeedTarget);
     }
 }
 

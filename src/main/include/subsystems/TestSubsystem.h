@@ -43,9 +43,9 @@ public:
     {
         TestSubsystemState testSubsystemState;
 
-        int testPositionTarget;
-        int testSpeedTarget;
-        int testPowerTarget;
+        double testPositionTarget;
+        double testSpeedTarget;
+        double testPowerTarget;
 
     } state;
 
