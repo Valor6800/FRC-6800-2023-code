@@ -10,7 +10,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
-Robot::Robot() : /*drivetrain(this),*/ testSubsystem(this)
+Robot::Robot() /*: drivetrain(this),*/
 {
     frc::TimedRobot();
 }
@@ -19,7 +19,6 @@ void Robot::RobotInit() {
     // drivetrain.setController(&gamepadDriver);
     // drivetrain.resetState();
 
-    testSubsystem.setControllers(&gamepadOperator);
 }
 
 /**
