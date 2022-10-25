@@ -52,5 +52,5 @@ public:
 private:
     ValorGamepad *operatorController;
 
-    ValorNeoController testMotorController;
+    ValorFalconController testMotorController;
 };
