@@ -43,7 +43,9 @@ void ValorFalconController::setupFollower(int canID, bool followerInverted)
 {
     followerMotor = new WPI_TalonFX(canID);
     followerMotor->Follow(*motor);
-    !motor->GetInverted() ? followerMotor->SetInverted(true) : followerMotor->SetInverted(false);
+    if (followerInverted) {
+        followerMotor->SetInverted(!motor->GetInverted());
+    }
     followerMotor->SetNeutralMode(mode);
 }
 
