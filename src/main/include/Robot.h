@@ -30,9 +30,10 @@ class Robot : public frc::TimedRobot {
         
     private:
         ValorGamepad gamepadOperator{OIConstants::GAMEPAD_OPERATOR_LOCATION};
+        ValorGamepad gamepadDriver{OIConstants::GAMEPAD_BASE_LOCATION};
 
         frc2::Command* autoCommand = nullptr;
 
-        //Drivetrain drivetrain;
+        Drivetrain drivetrain;
 
 };
