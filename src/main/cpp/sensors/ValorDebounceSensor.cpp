@@ -30,10 +30,10 @@ void ValorDebounceSensor::calculate()
 {
     prevState = currState;
     currState = getSensor();
-    if (currState != prevState)
+    if (currState != prevState && edge)
         edge();
-    if (currState && !prevState)
+    if (currState && !prevState && risingEdge)
         risingEdge();
-    if (!currState && prevState)
+    if (!currState && prevState && fallingEdge)
         fallingEdge();
 }
