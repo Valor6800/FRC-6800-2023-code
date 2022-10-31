@@ -15,14 +15,14 @@
 
 #define TEST_CONVERSION_FACTOR 1.0 * 360
 
-#define TEST_CAN_ID 9
-#define TEST_FOLLOWER_CAN_ID 11
+#define TEST_CAN_ID 10
+#define TEST_FOLLOWER_CAN_ID 9
 
 #define LIMIT_SWITCH_DIO_PORT 0
 
 TestSubsystem::TestSubsystem(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "TestSubsystem"),
                            operatorController(NULL),
-                           testMotorController(TEST_CAN_ID, Coast, false),
+                           testMotorController(TEST_CAN_ID, rev::CANSparkMax::IdleMode::kCoast, false),
                            limitOne(_robot),
                            limitSwitch(LIMIT_SWITCH_DIO_PORT)
 {
@@ -46,7 +46,7 @@ void TestSubsystem::init()
 
    testMotorController.setConversion(TEST_CONVERSION_FACTOR);
 
-    testMotorController.setupFollower(TEST_FOLLOWER_CAN_ID);
+    //testMotorController.setupFollower(TEST_FOLLOWER_CAN_ID);
     
     //testMotorController.setPIDF(int slot, PIDF pidf);
     //testMotorController.setLimits(int reverse, int forward);
@@ -62,8 +62,14 @@ void TestSubsystem::init()
 
     limitOne.setGetter([this]() { return limitSwitch.Get(); });
     
-    limitOne.setFallingEdgeCallback([this]() {
+    limitOne.setRisingEdgeCallback([this]() {
+        std::cout << "meow" << std::endl;
         state.testSubsystemState = TestSubsystemState::TOPOWER;
+    });
+
+    limitOne.setFallingEdgeCallback([this]() {
+        std::cout << "meow" << std::endl;
+        state.testSubsystemState = TestSubsystemState::DISABLED;
     });
     
     resetState();
@@ -81,18 +87,18 @@ void TestSubsystem::assessInputs()
         return;
     }
         
-    if (operatorController->GetAButton()) {
-        state.testSubsystemState = TestSubsystemState::TOPOWER;
-    }
-    else if (operatorController->GetBButton()) {
-        state.testSubsystemState = TestSubsystemState::TOPOSITION;
-    }
-    else if (operatorController->GetXButton()) {
-        state.testSubsystemState = TestSubsystemState::TOSPEED;
-    }
-    else {
-        state.testSubsystemState = TestSubsystemState::DISABLED;
-    }
+    // if (operatorController->GetAButton()) {
+    //     state.testSubsystemState = TestSubsystemState::TOPOWER;
+    // }
+    // else if (operatorController->GetBButton()) {
+    //     state.testSubsystemState = TestSubsystemState::TOPOSITION;
+    // }
+    // else if (operatorController->GetXButton()) {
+    //     state.testSubsystemState = TestSubsystemState::TOSPEED;
+    // }
+    // else {
+    //     state.testSubsystemState = TestSubsystemState::DISABLED;
+    // }
 }
 
 void TestSubsystem::analyzeDashboard()

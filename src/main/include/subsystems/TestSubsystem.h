@@ -56,7 +56,7 @@ public:
 private:
     ValorGamepad *operatorController;
 
-    ValorFalconController testMotorController;
+    ValorNeoController testMotorController;
 
     frc::DigitalInput limitSwitch;
     ValorDebounceSensor limitOne;
