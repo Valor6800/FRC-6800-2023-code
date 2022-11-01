@@ -35,5 +35,4 @@ class Robot : public frc::TimedRobot {
         frc2::Command* autoCommand = nullptr;
 
         Drivetrain drivetrain;
-
 };
