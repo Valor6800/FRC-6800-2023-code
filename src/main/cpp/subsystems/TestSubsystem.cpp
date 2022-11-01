@@ -63,12 +63,10 @@ void TestSubsystem::init()
     limitOne.setGetter([this]() { return limitSwitch.Get(); });
     
     limitOne.setRisingEdgeCallback([this]() {
-        std::cout << "meow" << std::endl;
         state.testSubsystemState = TestSubsystemState::TOPOWER;
     });
 
     limitOne.setFallingEdgeCallback([this]() {
-        std::cout << "meow" << std::endl;
         state.testSubsystemState = TestSubsystemState::DISABLED;
     });
     
