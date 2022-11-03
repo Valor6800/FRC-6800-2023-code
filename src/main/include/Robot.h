@@ -10,9 +10,15 @@
 #include <frc/TimedRobot.h>
 #include <frc2/command/Command.h>
 
+#include <frc/DriverStation.h>
+#include <frc/DataLogManager.h>
+
 #include "Constants.h"
 #include "ValorGamepad.h"
+
 #include "subsystems/Drivetrain.h"
+#include "subsystems/TestSubsystem.h"
+
 
 class Robot : public frc::TimedRobot {
     public:
@@ -30,9 +36,10 @@ class Robot : public frc::TimedRobot {
         
     private:
         ValorGamepad gamepadOperator{OIConstants::GAMEPAD_OPERATOR_LOCATION};
-        ValorGamepad gamepadDriver{OIConstants::GAMEPAD_BASE_LOCATION};
+        //ValorGamepad gamepadDriver{OIConstants::GAMEPAD_BASE_LOCATION};
 
         frc2::Command* autoCommand = nullptr;
 
-        Drivetrain drivetrain;
+        //Drivetrain drivetrain;
+        TestSubsystem testSubsystem;
 };

@@ -10,14 +10,18 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
-Robot::Robot() : drivetrain(this)
+Robot::Robot() : testSubsystem(this) //drivetrain(this)
 {
     frc::TimedRobot();
 }
 
 void Robot::RobotInit() {
-    drivetrain.setController(&gamepadDriver);
-    drivetrain.resetState();
+    // drivetrain.setController(&gamepadDriver);
+    // drivetrain.resetState();
+
+    testSubsystem.setControllers(&gamepadOperator);
+
+    frc::DataLogManager::Start();
 
 }
 
@@ -37,8 +41,8 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
  * robot is disabled.
  */
 void Robot::DisabledInit() {
-    drivetrain.resetState();
-    drivetrain.setMotorMode(false);
+    // drivetrain.resetState();
+    // drivetrain.setMotorMode(false);
 
 }
 
@@ -52,8 +56,8 @@ void Robot::DisabledPeriodic()
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
-    drivetrain.setMotorMode(true);
-    drivetrain.pullSwerveModuleZeroReference();
+    // drivetrain.setMotorMode(true);
+    // drivetrain.pullSwerveModuleZeroReference();
 
     if (autoCommand != nullptr) {
         autoCommand->Schedule();
@@ -66,7 +70,7 @@ void Robot::AutonomousPeriodic()
 }
 
 void Robot::TeleopInit() {
-    drivetrain.setMotorMode(false);
+    // drivetrain.setMotorMode(false);
 
     if (autoCommand != nullptr) {
         autoCommand->Cancel();
