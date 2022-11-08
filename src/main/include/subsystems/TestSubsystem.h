@@ -28,7 +28,7 @@ public:
     void init();
     void setControllers(ValorGamepad *controllerO);
     
-    void InitSendable(wpi::SendableBuilder& builder);
+    void InitSendable(wpi::SendableBuilder& builder) override;
 
     void assessInputs();
     void analyzeDashboard();

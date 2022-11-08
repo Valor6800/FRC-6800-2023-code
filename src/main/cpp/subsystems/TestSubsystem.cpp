@@ -15,7 +15,7 @@
 
 #define TEST_CONVERSION_FACTOR 1.0 * 360
 
-#define TEST_CAN_ID 10
+#define TEST_CAN_ID 9
 #define TEST_FOLLOWER_CAN_ID 11
 
 #define LIMIT_SWITCH_DIO_PORT 0
@@ -23,7 +23,7 @@
 TestSubsystem::TestSubsystem(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "TestSubsystem"),
                            operatorController(NULL),
                            testMotorController(TEST_CAN_ID, rev::CANSparkMax::IdleMode::kCoast, false),
-                           limitOne(_robot),
+                           limitOne(_robot, "test limit"),
                            limitSwitch(LIMIT_SWITCH_DIO_PORT)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
