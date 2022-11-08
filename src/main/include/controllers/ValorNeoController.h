@@ -15,7 +15,7 @@
 #include <rev/CANEncoder.h>
 #include <string>
 
-class ValorNeoController : public ValorController<rev::CANSparkMax>
+class ValorNeoController : public ValorController<rev::CANSparkMax>, public wpi::Sendable, public wpi::SendableHelper<ValorNeoController>
 {
 public:
     ValorNeoController(int, rev::CANSparkMax::IdleMode, bool, std::string canbus = "");
@@ -40,6 +40,8 @@ public:
     void setConversion(double);
 
     void setProfile(int slot);
+
+    void InitSendable(wpi::SendableBuilder& builder) override;
     
 private:
     rev::SparkMaxPIDController pidController;

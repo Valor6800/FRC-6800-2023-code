@@ -9,6 +9,7 @@ ValorCurrentSensor::ValorCurrentSensor(frc::TimedRobot *_robot, const char* _nam
     cacheSize(CACHE_SIZE)
 {
     reset();
+
     wpi::SendableRegistry::AddLW(this, "ValorCurrentSensor", sensorName);
 }
 
@@ -56,13 +57,19 @@ void ValorCurrentSensor::InitSendable(wpi::SendableBuilder& builder)
 {
     builder.SetSmartDashboardType("Susbsystem");
     builder.AddDoubleProperty(
-        "currentState", [this] { return currState; }, nullptr);
+        "Current State", 
+        [this] { return currState; },
+        nullptr);
     builder.AddDoubleProperty(
-        "previousState", [this] { return prevState; }, nullptr);
+        "Previous State",
+        [this] { return prevState; },
+        nullptr);
     builder.AddDoubleProperty(
-        "spikedSetpoint", [this] { return spikedSetpoint; },
-      [this](double spikedSetpointSet) { setSpikeSetpoint(spikedSetpointSet); });
+        "Spiked Setpoint",
+        [this] { return spikedSetpoint; },
+        [this](double spikedSetpointSet) { setSpikeSetpoint(spikedSetpointSet); });
     builder.AddDoubleProperty(
-        "cacheSize", [this] { return cacheSize; },
-      [this](double cacheSizeSet) { setCacheSize(cacheSizeSet); });
+        "Cache Size",
+        [this] { return cacheSize; },
+        [this](double cacheSizeSet) { setCacheSize(cacheSizeSet); });
 }

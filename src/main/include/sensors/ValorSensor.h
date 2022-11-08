@@ -60,7 +60,7 @@ public:
      * @param _robot Pass in the Robot reference so the calculate method can be auto-scheduled
      * @param name A human readable name of the sensor 
      */
-    ValorSensor(frc::TimedRobot *_robot,  const char* name) : robot(_robot), sensorName(name)
+    ValorSensor(frc::TimedRobot *_robot,  const char* name) : robot(_robot), sensorName(name) {}
     
     /**
      * @brief Reset the sensor state

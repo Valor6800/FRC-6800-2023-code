@@ -10,6 +10,10 @@
 #include "ValorPIDF.h"
 #include <string>
 
+#include <wpi/sendable/Sendable.h>
+#include <wpi/sendable/SendableBuilder.h>
+#include <wpi/sendable/SendableHelper.h>
+
 /**
  * @brief Abstract class that all Valor controllers's should implement
  * @tparam T Motor data type

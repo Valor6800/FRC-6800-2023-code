@@ -45,7 +45,11 @@ void ValorDebounceSensor::InitSendable(wpi::SendableBuilder& builder)
 {
     builder.SetSmartDashboardType("Susbsystem");
     builder.AddBooleanProperty(
-        "currentState", [this] { return currState; }, nullptr);
+        "Current State",
+        [this] { return currState; },
+        nullptr);
     builder.AddBooleanProperty(
-        "previousState", [this] { return prevState; }, nullptr);
+        "Previous State",
+        [this] { return prevState; },
+        nullptr);
 }

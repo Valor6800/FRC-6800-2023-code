@@ -23,6 +23,8 @@ void ValorNeoController::init()
     ValorPIDF motionPIDF;
     setPIDF(motionPIDF, 0);
     reset();
+
+    wpi::SendableRegistry::AddLW(this, "ValorNeoController", "ID " + std::to_string(motor->GetDeviceId()));
 }
 
 void ValorNeoController::reset()
@@ -124,4 +126,25 @@ void ValorNeoController::setSpeed(double speed)
 void ValorNeoController::setPower(double power)
 {
     motor->Set(power);
+}
+
+void ValorNeoController::InitSendable(wpi::SendableBuilder& builder)
+{
+    builder.SetSmartDashboardType("Susbsystem");
+    builder.AddDoubleProperty(
+        "Amps", 
+        [this] { return getCurrent(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Position", 
+        [this] { return getPosition(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Speed", 
+        [this] { return getSpeed(); },
+        nullptr);
+    builder.AddBooleanProperty(
+        "Inverted", 
+        [this] { return inverted; },
+        nullptr);
 }
