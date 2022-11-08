@@ -3,11 +3,18 @@
 #define CACHE_SIZE 20
 #define DEFAULT_SPIKE_VALUE 22
 
-ValorCurrentSensor::ValorCurrentSensor(frc::TimedRobot *_robot) :
-    ValorSensor(_robot),
-    spikedSetpoint(DEFAULT_SPIKE_VALUE)
+ValorCurrentSensor::ValorCurrentSensor(frc::TimedRobot *_robot, const char* _name) :
+    ValorSensor(_robot, _name),
+    spikedSetpoint(DEFAULT_SPIKE_VALUE),
+    cacheSize(CACHE_SIZE)
 {
     reset();
+    wpi::SendableRegistry::AddLW(this, "ValorCurrentSensor", sensorName);
+}
+
+void ValorCurrentSensor::setCacheSize(double _threshold)
+{
+    cacheSize = _threshold;
 }
 
 void ValorCurrentSensor::setSpikeSetpoint(double _setpoint)
@@ -43,4 +50,19 @@ void ValorCurrentSensor::calculate() {
     currState = sum / CACHE_SIZE;
     if (currState > spikedSetpoint)
         spikeCallback();
+}
+
+void ValorCurrentSensor::InitSendable(wpi::SendableBuilder& builder)
+{
+    builder.SetSmartDashboardType("Susbsystem");
+    builder.AddDoubleProperty(
+        "currentState", [this] { return currState; }, nullptr);
+    builder.AddDoubleProperty(
+        "previousState", [this] { return prevState; }, nullptr);
+    builder.AddDoubleProperty(
+        "spikedSetpoint", [this] { return spikedSetpoint; },
+      [this](double spikedSetpointSet) { setSpikeSetpoint(spikedSetpointSet); });
+    builder.AddDoubleProperty(
+        "cacheSize", [this] { return cacheSize; },
+      [this](double cacheSizeSet) { setCacheSize(cacheSizeSet); });
 }

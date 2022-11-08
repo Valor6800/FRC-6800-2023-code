@@ -8,8 +8,6 @@
 #pragma once
 
 #include "sensors/ValorSensor.h"
-#include <frc/TimedRobot.h>
-#include <functional>
 
 /**
  * @brief Sensor - debouncing and identifying rising/falling edges of boolean inputs
@@ -24,7 +22,7 @@
  * sure that if an edge triggers multiple times in a very quick amount of time, it only
  * counts as a single rising or falling edge.
  */
-class ValorDebounceSensor : public ValorSensor<bool>
+class ValorDebounceSensor : public ValorSensor<bool>, public wpi::Sendable, public wpi::SendableHelper<ValorDebounceSensor>
 {
 public:
 
@@ -33,7 +31,7 @@ public:
      * 
      * @param _robot Pass in the Robot reference so the calculate method can be auto-scheduled
      */
-    ValorDebounceSensor(frc::TimedRobot *_robot);
+    ValorDebounceSensor(frc::TimedRobot *_robot, const char* _name);
     
     void reset();
 
@@ -57,6 +55,8 @@ public:
      * @param _lambda Function to run when a falling edge has been detected
      */
     void setFallingEdgeCallback(std::function<void()> _lambda);
+
+    void InitSendable(wpi::SendableBuilder& builder) override;
 
 private:
 

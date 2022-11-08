@@ -1,8 +1,10 @@
 #include "sensors/ValorDebounceSensor.h"
 
-ValorDebounceSensor::ValorDebounceSensor(frc::TimedRobot *_robot) : ValorSensor(_robot)
+ValorDebounceSensor::ValorDebounceSensor(frc::TimedRobot *_robot, const char* _name) : ValorSensor(_robot, _name)
 {
     reset();
+
+    wpi::SendableRegistry::AddLW(this, "ValorDebounceSensor", sensorName);
 }
 
 void ValorDebounceSensor::reset()
@@ -36,4 +38,14 @@ void ValorDebounceSensor::calculate()
         risingEdge();
     if (!currState && prevState && fallingEdge)
         fallingEdge();
+}
+
+
+void ValorDebounceSensor::InitSendable(wpi::SendableBuilder& builder)
+{
+    builder.SetSmartDashboardType("Susbsystem");
+    builder.AddBooleanProperty(
+        "currentState", [this] { return currState; }, nullptr);
+    builder.AddBooleanProperty(
+        "previousState", [this] { return prevState; }, nullptr);
 }

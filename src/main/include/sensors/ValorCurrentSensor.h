@@ -8,7 +8,6 @@
 #pragma once
 
 #include "sensors/ValorSensor.h"
-#include <frc/TimedRobot.h>
 #include <deque>
 
 /**
@@ -29,7 +28,7 @@
  * data from the beginning. This allows us to keep track of the last X amount of data and see
  * the history of the array.
  */
-class ValorCurrentSensor : public ValorSensor<double>
+class ValorCurrentSensor : public ValorSensor<double>, public wpi::Sendable, public wpi::SendableHelper<ValorCurrentSensor>
 {
 public:
 
@@ -38,7 +37,7 @@ public:
      * 
      * @param _robot Pass in the Robot reference so the calculate method can be auto-scheduled
      */
-    ValorCurrentSensor(frc::TimedRobot *_robot);
+    ValorCurrentSensor(frc::TimedRobot *_robot, const char* _name);
 
     void reset();
 
@@ -56,6 +55,10 @@ public:
      */
     void setSpikeSetpoint(double threshold);
 
+    void setCacheSize(double threshold);
+
+    void InitSendable(wpi::SendableBuilder& builder) override;
+
 private:
     std::function<void()> spikeCallback;
 
@@ -64,4 +67,5 @@ private:
     std::deque<double> cache;
 
     double spikedSetpoint;
+    double cacheSize;
 };
