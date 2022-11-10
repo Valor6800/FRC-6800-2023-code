@@ -67,6 +67,8 @@ void ValorFalconController::setReverseLimit(double reverse)
 
 void ValorFalconController::setPIDF(ValorPIDF pidf, int slot)
 {
+    PIDFslots[slot] = pidf;
+
     motor->Config_kP(slot, pidf.P);
     motor->Config_kI(slot, pidf.I);
     motor->Config_kD(slot, pidf.D);

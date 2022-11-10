@@ -10,9 +10,13 @@
 #include "ValorPIDF.h"
 #include <string>
 
+#include <unordered_map>
+
 #include <wpi/sendable/Sendable.h>
 #include <wpi/sendable/SendableBuilder.h>
 #include <wpi/sendable/SendableHelper.h>
+
+#include <frc/smartdashboard/SmartDashboard.h>
 
 /**
  * @brief Abstract class that all Valor controllers's should implement
@@ -276,4 +280,5 @@ protected:
     T* motor;
     T* followerMotor;
 
+    std::unordered_map<int, ValorPIDF> PIDFslots{};
 };

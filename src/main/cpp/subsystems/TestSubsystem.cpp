@@ -24,7 +24,8 @@ TestSubsystem::TestSubsystem(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "
                            operatorController(NULL),
                            testMotorController(TEST_CAN_ID, rev::CANSparkMax::IdleMode::kCoast, false),
                            limitOne(_robot, "test limit"),
-                           limitSwitch(LIMIT_SWITCH_DIO_PORT)
+                           limitSwitch(LIMIT_SWITCH_DIO_PORT),
+                           testCurrentSensor(_robot, "test current sensor")
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -33,9 +34,9 @@ TestSubsystem::TestSubsystem(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "
 
 void TestSubsystem::InitSendable(wpi::SendableBuilder& builder)
 {
-    builder.SetSmartDashboardType("double");
+    builder.SetSmartDashboardType("Susbsystem");
     builder.AddDoubleProperty(
-        "value",
+        "State",
         [this] { return state.testSubsystemState; },
         nullptr
     );
@@ -61,6 +62,10 @@ void TestSubsystem::init()
     table->PutNumber("Test Power Target", 0.5);
 
     limitOne.setGetter([this]() { return limitSwitch.Get(); });
+
+    testCurrentSensor.setSpikeSetpoint(2.0);
+
+    testCurrentSensor.setGetter([this]() { return testMotorController.getCurrent(); });
     
     limitOne.setRisingEdgeCallback([this]() {
         state.testSubsystemState = TestSubsystemState::TOPOWER;
@@ -71,6 +76,8 @@ void TestSubsystem::init()
     });
     
     resetState();
+
+    wpi::SendableRegistry::AddLW(this, "ValorSubsystem", subsystemName);
 }
 
 void TestSubsystem::setControllers(ValorGamepad *controllerO)

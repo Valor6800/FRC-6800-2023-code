@@ -7,11 +7,19 @@
 
 #pragma once
 
+#include <wpi/sendable/Sendable.h>
+#include <wpi/sendable/SendableBuilder.h>
+#include <wpi/sendable/SendableHelper.h>
+
 /**
  * @brief Container to hold PID and feed forward values for the motor controller
  */
-struct ValorPIDF
+class ValorPIDF : public wpi::Sendable, public wpi::SendableHelper<ValorPIDF>
 {
+public:
+    ValorPIDF();/*(int _motorId, int _slot) : motorId(_motorId), slot(_slot) {}*/
+
+    void InitSendable(wpi::SendableBuilder& builder) override;
     /// Proportion control of the feedback term
     double P = 0.1;
     /// Integral control of the feedback term
@@ -26,4 +34,9 @@ struct ValorPIDF
     double acceleration = 150000;
     /// Minimum error threshold
     double error = 0.5; 
+    
+    //protected:
+        // int motorId;
+
+        // int slot;
 };

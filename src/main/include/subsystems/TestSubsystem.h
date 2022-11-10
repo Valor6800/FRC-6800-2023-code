@@ -14,6 +14,7 @@
 #include "controllers/ValorNeoController.h"
 
 #include "sensors/ValorDebounceSensor.h"
+#include "sensors/ValorCurrentSensor.h"
 #include <frc/DigitalInput.h>
 
 #include <wpi/sendable/Sendable.h>
@@ -60,4 +61,6 @@ private:
 
     frc::DigitalInput limitSwitch;
     ValorDebounceSensor limitOne;
+
+    ValorCurrentSensor testCurrentSensor;
 };

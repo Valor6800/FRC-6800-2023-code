@@ -53,6 +53,11 @@ void ValorNeoController::setReverseLimit(double reverse)
 
 void ValorNeoController::setPIDF(ValorPIDF pidf, int slot)
 {
+    PIDFslots[slot] = pidf;
+
+    //wpi::SendableRegistry::AddChild(this, &pidf);
+    frc::SmartDashboard::PutData("pidf", &pidf);
+    
     pidController.SetP(pidf.P, slot);
     pidController.SetI(pidf.I, slot);
     pidController.SetD(pidf.D, slot);
