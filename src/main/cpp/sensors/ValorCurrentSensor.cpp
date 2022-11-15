@@ -30,7 +30,7 @@ void ValorCurrentSensor::setSpikeCallback(std::function<void()> _lambda)
 
 void ValorCurrentSensor::reset() {
     cache.clear();
-    for (int i = 0; i < CACHE_SIZE; i++) {
+    for (int i = 0; i < cacheSize; i++) {
         cache.push_back(0);
     }
     prevState = 0;
@@ -44,13 +44,16 @@ void ValorCurrentSensor::calculate() {
 
     // Calculate average current over the cache size, or circular buffer window
     double sum = 0;
-    for (int i = 0; i < CACHE_SIZE; i++) {
+    for (int i = 0; i < cacheSize; i++) {
         sum += cache.at(i);
     }
 
-    currState = sum / CACHE_SIZE;
-    if (currState > spikedSetpoint)
-        spikeCallback();
+    currState = sum / cacheSize;
+    if (currState > spikedSetpoint) {
+        if (spikeCallback) {
+            spikeCallback();
+        }
+    }
 }
 
 void ValorCurrentSensor::InitSendable(wpi::SendableBuilder& builder)
@@ -67,9 +70,13 @@ void ValorCurrentSensor::InitSendable(wpi::SendableBuilder& builder)
     builder.AddDoubleProperty(
         "Spiked Setpoint",
         [this] { return spikedSetpoint; },
-        [this](double spikedSetpointSet) { setSpikeSetpoint(spikedSetpointSet); });
+        nullptr/*[this](double spikedSetpointSet) { setSpikeSetpoint(spikedSetpointSet); }*/);
     builder.AddDoubleProperty(
         "Cache Size",
         [this] { return cacheSize; },
-        [this](double cacheSizeSet) { setCacheSize(cacheSizeSet); });
+        nullptr/*[this](double cacheSizeSet) { cacheSize = cacheSizeSet; }*/);
+    builder.AddBooleanProperty(
+        "Spiked",
+        [this] { return (currState > spikedSetpoint); },
+        nullptr);
 }

@@ -16,7 +16,7 @@
 #define TEST_CONVERSION_FACTOR 1.0 * 360
 
 #define TEST_CAN_ID 9
-#define TEST_FOLLOWER_CAN_ID 11
+#define TEST_FOLLOWER_CAN_ID 10
 
 #define LIMIT_SWITCH_DIO_PORT 0
 
@@ -63,7 +63,7 @@ void TestSubsystem::init()
 
     limitOne.setGetter([this]() { return limitSwitch.Get(); });
 
-    testCurrentSensor.setSpikeSetpoint(2.0);
+    //testCurrentSensor.setSpikeSetpoint(2.0);
 
     testCurrentSensor.setGetter([this]() { return testMotorController.getCurrent(); });
     
