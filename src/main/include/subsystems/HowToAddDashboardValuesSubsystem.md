@@ -1,18 +1,18 @@
 # How to Add Dashboard Values to a Susbsytem
 
-##Step 1: in the header, extend Sendable and SendableHelper:
+## Step 1: in the header, extend Sendable and SendableHelper:
 
-    'class NameOfSubsystem : public ValorSusbsystem, public wpi::Sendable, public wpi::SendableHelper<NameOfSubsystem>'
+    ' class NameOfSubsystem : public ValorSusbsystem, public wpi::Sendable, public wpi::SendableHelper<NameOfSubsystem> '
 
-==Don't forget to change NameOfSubsystem to the name of YOUR subsystem== 
-
-
-##Step 2: in the header, in public, create the decleration for the InitSendable function:
-
-    'void InitSendable(wpi::SendableBuilder& builder) override;'
+== Don't forget to change NameOfSubsystem to the name of YOUR subsystem == 
 
 
-##Step 3: in the cpp, create the definition for the InitSendable function:
+## Step 2: in the header, in public, create the decleration for the InitSendable function:
+
+    ' void InitSendable(wpi::SendableBuilder& builder) override; '
+
+
+## Step 3: in the cpp, create the definition for the InitSendable function:
 
     ```
     void NameOfSubsystem::InitSendable(wpi::SendableBuilder& builder)
@@ -22,9 +22,9 @@
     ```
 
 
-##Step 4: add values through addProperty in InitSendable. ==Replace NameOfValue with a string and value with your chosen property type.==
+## Step 4: add values through addProperty in InitSendable. ==Replace NameOfValue with a string and value with your chosen property type.==
 
-###For a Double:
+### For a Double:
 
     ```
     builder.AddDoubleProperty(
@@ -34,7 +34,7 @@
     );
     ```
 
-###For a Boolean:
+### For a Boolean:
 
     ```
     builder.AddBooleanProperty(
@@ -44,7 +44,7 @@
     );
     ```
 
-###For a String:
+### For a String:
 
     ```
 	builder.AddStringProperty(
@@ -54,7 +54,7 @@
     );
     ```
 
-###For a Double Array:
+### For a Double Array:
 
     ```
     builder.AddDoubleArrayProperty(
@@ -64,7 +64,7 @@
     );
     ```
 
-###For a Boolean Array:
+### For a Boolean Array:
 
     ```
     builder.AddBooleanArrayProperty(
@@ -74,7 +74,7 @@
     );
     ```
 
-###For a StringArray:
+### For a StringArray:
 
     ```
 	builder.AddStringArrayProperty(
