@@ -13,6 +13,10 @@
 #include <networktables/NetworkTable.h>
 #include <frc/TimedRobot.h>
 
+#include <wpi/sendable/Sendable.h>
+#include <wpi/sendable/SendableBuilder.h>
+#include <wpi/sendable/SendableHelper.h>
+
 /**
  * @brief Abstract class that all Valor subsystem's should implement
  * 

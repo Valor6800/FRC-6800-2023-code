@@ -17,10 +17,6 @@
 #include "sensors/ValorCurrentSensor.h"
 #include <frc/DigitalInput.h>
 
-#include <wpi/sendable/Sendable.h>
-#include <wpi/sendable/SendableBuilder.h>
-#include <wpi/sendable/SendableHelper.h>
-
 class TestSubsystem : public ValorSubsystem, public wpi::Sendable, public wpi::SendableHelper<TestSubsystem>
 {
 public:
