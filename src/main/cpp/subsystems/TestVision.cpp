@@ -1,9 +1,5 @@
 #include "subsystems/TestVision.h"
 #define LimelightHeight 1.0
-
-TestVision::TestVision(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "TestVision") {
-    // frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
-}
     
 void TestVision::init() {
             

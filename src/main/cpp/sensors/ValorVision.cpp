@@ -5,11 +5,6 @@
 
 #define ROBOTHEIGHT 20.0
 
-
-ValorVision::ValorVision()
-{
-}
-
 void ValorVision::reset()
 {
     frc::Transform2d pose;

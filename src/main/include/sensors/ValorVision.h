@@ -8,7 +8,7 @@
 class ValorVision : public ValorSensor<photonlib::PhotonPipelineResult>
 {
     public:
-    ValorVision();
+    ValorVision(frc::TimedRobot *_robot) : ValorSensor(_robot){}
     void reset();
     void calculate();
     void aim();

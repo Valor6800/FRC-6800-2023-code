@@ -9,7 +9,7 @@
 class TestVision : public ValorSubsystem {
     public:
 
-    TestVision(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "TestVision"){}
+    TestVision(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "TestVision"), vision(_robot) {}
     void init();
 
     void assessInputs();
