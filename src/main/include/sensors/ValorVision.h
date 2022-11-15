@@ -5,12 +5,7 @@
 #include <photonlib/PhotonCamera.h>
 #include <photonlib/PhotonUtils.h>
 
-#include <networktables/NetworkTableEntry.h>
-#include <networktables/NetworkTableInstance.h>
-#include <frc/smartdashboard/SmartDashboard.h>
-#include "networktables/NetworkTable.h"
-
-class ValorVision : public ValorSensor<wpi::span<const photonlib::PhotonTrackedTarget>>
+class ValorVision : public ValorSensor<photonlib::PhotonPipelineResult>
 {
     public:
     ValorVision();
@@ -21,9 +16,9 @@ class ValorVision : public ValorSensor<wpi::span<const photonlib::PhotonTrackedT
 
     frc::Pose2d getPose{};
     std::shared_ptr<nt::NetworkTable> photonTable;
+    frc::Translation2d finalPose{};
 
     private:
     photonlib::PhotonCamera camera{"valorVision"};
-    frc::Translation3d finalPose{};
     
 };

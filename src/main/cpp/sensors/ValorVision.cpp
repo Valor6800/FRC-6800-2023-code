@@ -21,7 +21,7 @@ void ValorVision::calculate() {
     double y = 5;
     double z = 1;
 
-    auto returnPose = getSensor();
+    auto returnPose = getSensor().GetTargets();
 
     double angle;
     double returnx = (double) returnPose[0].GetAlternateCameraToTarget().X();
@@ -59,7 +59,7 @@ void ValorVision::calculate() {
         finaly = y - magnitude * sin(angle - atan(returnx/returny));
     }
 
-    finalPose = frc::Translation3d((units::meter_t) finalx, (units::meter_t) finaly, (units::meter_t) finalz);
+    finalPose = frc::Translation2d((units::meter_t) finalx, (units::meter_t) finaly);
 }
 
 void aim() {
