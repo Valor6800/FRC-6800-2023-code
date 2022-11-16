@@ -4,7 +4,7 @@
 
     ' class NameOfSubsystem : public ValorSusbsystem, public wpi::Sendable, public wpi::SendableHelper<NameOfSubsystem> '
 
-== Don't forget to change NameOfSubsystem to the name of YOUR subsystem == 
+**Don't forget to change NameOfSubsystem to the name of YOUR subsystem**
 
 
 ## Step 2: in the header, in public, create the decleration for the InitSendable function:
