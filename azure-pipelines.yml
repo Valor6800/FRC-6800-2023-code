@@ -1,0 +1,37 @@
+resources:
+  containers:
+  - container: wpilib2023
+    image: wpilib/roborio-cross-ubuntu:2023-22.04
+
+jobs:
+ - job: build_check
+   pool:
+     vmImage: 'Ubuntu 22.04'
+   container: wpilib2023
+   steps:
+    - task: Gradle@2
+      inputs:
+        workingDirectory: '.'
+        gradleWrapperFile: './gradlew'
+        gradleOptions: '-Xmx3072m'
+        publishJUnitResults: false
+        testResultsFiles: '**/TEST-*.xml'
+        tasks: 'build'
+ - job: doxygen
+   pool:
+    vmImage: 'Ubuntu 22.04'
+   container: wpilib2023
+   steps:
+    - checkout: self
+      submodules: true
+    - task: Gradle@2
+      inputs:
+        workingDirectory: '.'
+        gradleWrapperFile: './gradlew'
+        gradleOptions: '-Xmx3072m'
+        tasks: 'doxygen'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        artifactName: 'doxygen'
+        pathtoPublish: docs/html
+        replaceExistingArchive: true
