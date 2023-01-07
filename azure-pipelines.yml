@@ -6,7 +6,7 @@ resources:
 jobs:
  - job: build_check
    pool:
-     vmImage: 'Ubuntu 22.04'
+     vmImage: 'ubuntu-22.04'
    container: wpilib2023
    steps:
     - task: Gradle@2
@@ -19,9 +19,13 @@ jobs:
         tasks: 'build'
  - job: doxygen
    pool:
-    vmImage: 'Ubuntu 22.04'
+    vmImage: 'ubuntu-22.04'
    container: wpilib2023
    steps:
+    - script: |
+        sudo apt-get update
+        sudo apt-get install libtinfo5
+      displayName: 'Dep install'
     - checkout: self
       submodules: true
     - task: Gradle@2
