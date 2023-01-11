@@ -32,7 +32,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
                         kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
-                        odometry(kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad})
+                        estimator(kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad})
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -154,14 +154,15 @@ void Drivetrain::analyzeDashboard()
         state.saveToFileDebouncer = false;
     }
 
-    odometry.Update(getPigeon(),
-                    {
-                        swerveModules[0]->getModulePosition(),
-                        swerveModules[1]->getModulePosition(),
-                        swerveModules[2]->getModulePosition(),
-                        swerveModules[3]->getModulePosition()
-                    });
-
+    estimator.UpdateWithTime(frc::Timer::GetFPGATimestamp(),
+                            getPigeon(),
+                            {
+                                swerveModules[0]->getModulePosition(),
+                                swerveModules[1]->getModulePosition(),
+                                swerveModules[2]->getModulePosition(),
+                                swerveModules[3]->getModulePosition()
+                            });
+    // estimator.AddVisionMeasurement()
 }
 
 void Drivetrain::assignOutputs()
@@ -201,7 +202,7 @@ frc::SwerveDriveKinematics<4>& Drivetrain::getKinematics()
 
 frc::Pose2d Drivetrain::getPose_m()
 {
-    return odometry.GetPose();
+    return estimator.GetEstimatedPosition();
 }
 
 void Drivetrain::resetGyro(){
@@ -212,7 +213,7 @@ void Drivetrain::resetGyro(){
 
 void Drivetrain::resetOdometry(frc::Pose2d pose)
 {
-    odometry.ResetPosition(getPigeon(),
+    estimator.ResetPosition(getPigeon(),
                             { 
                                 swerveModules[0]->getModulePosition(),
                                 swerveModules[1]->getModulePosition(),
@@ -255,7 +256,7 @@ wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::velocit
     frc::ChassisSpeeds chassisSpeeds = isFOC ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx_mps,
                                                                                            vy_mps,
                                                                                            omega_radps,
-                                                                                           odometry.GetPose().Rotation())
+                                                                                           estimator.GetEstimatedPosition().Rotation())
                                              : frc::ChassisSpeeds{vx_mps, vy_mps, omega_radps};
     auto states = kinematics.ToSwerveModuleStates(chassisSpeeds);
     kinematics.DesaturateWheelSpeeds(&states, units::velocity::meters_per_second_t{driveMaxSpeed});

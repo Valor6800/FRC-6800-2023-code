@@ -17,9 +17,10 @@
 #include "AHRS.h"
 #include "ctre/phoenix/sensors/WPI_Pigeon2.h"
 #include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/kinematics/SwerveDriveOdometry.h>
+#include <frc/estimator/SwerveDrivePoseEstimator.h>
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <frc/DutyCycleEncoder.h>
+#include <frc/Timer.h>
 
 #include <frc/geometry/Translation2d.h>
 #include <frc/geometry/Pose2d.h>
@@ -41,6 +42,7 @@
 #include <frc/TimedRobot.h>
 
 #define MODULE_DIFF 0.248f
+#define SWERVE_COUNT 4
 
 /**
  * @brief Subsystem - Drivetrain
@@ -125,7 +127,7 @@ public:
       * Directly set the swerve modules to the specified states
       * @param desiredStates the desired swerve module states
       */
-     void setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates);
+     void setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT> desiredStates);
 
      void resetGyro();
 
@@ -176,7 +178,7 @@ public:
       * Returns the kinematics object in use by the swerve drive
       * @return kinematics object
       */
-     frc::SwerveDriveKinematics<4>& getKinematics();
+     frc::SwerveDriveKinematics<SWERVE_COUNT>& getKinematics();
 
 private:
      double driveMaxSpeed;
@@ -184,7 +186,7 @@ private:
      double autoMaxSpeed;
      double autoMaxAccel;
 
-     wpi::array<frc::SwerveModuleState, 4> getModuleStates(units::velocity::meters_per_second_t,
+     wpi::array<frc::SwerveModuleState, SWERVE_COUNT> getModuleStates(units::velocity::meters_per_second_t,
                                                            units::velocity::meters_per_second_t,
                                                            units::angular_velocity::radians_per_second_t,
                                                            bool);
@@ -206,13 +208,13 @@ private:
                                                                        swerveModuleDiff * DriveConstants::MODULE_DIFF_YS[2]},
                                                     frc::Translation2d{swerveModuleDiff * DriveConstants::MODULE_DIFF_XS[3],
                                                                        swerveModuleDiff * DriveConstants::MODULE_DIFF_YS[3]}};
-     wpi::array<frc::SwerveModulePosition, 4> initPositions{frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)},
+     wpi::array<frc::SwerveModulePosition, SWERVE_COUNT> initPositions{frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)},
                                                             frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)},
                                                             frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)},
                                                             frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)}};
 
      WPI_Pigeon2 pigeon;
 
-     frc::SwerveDriveKinematics<4> kinematics;
-     frc::SwerveDriveOdometry<4> odometry;
+     frc::SwerveDriveKinematics<SWERVE_COUNT> kinematics;
+     frc::SwerveDrivePoseEstimator<SWERVE_COUNT> estimator;
 };
