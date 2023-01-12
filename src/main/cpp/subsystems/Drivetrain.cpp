@@ -32,7 +32,9 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
                         kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
-                        estimator(kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad})
+                        estimator(kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad}),
+                        config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
+                        thetaController{DriveConstants::KPT, DriveConstants::KIT, DriveConstants::KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{SwerveConstants::AUTO_MAX_ROTATION_RPS}, units::angular_acceleration::radians_per_second_squared_t{SwerveConstants::AUTO_MAX_ROTATION_ACCEL_RPSS})}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -88,6 +90,7 @@ void Drivetrain::resetState()
 
 void Drivetrain::init()
 {
+    limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     pigeon.Calibrate();    
 
     for (int i = 0; i < 4; i++)
@@ -98,7 +101,7 @@ void Drivetrain::init()
     table->PutBoolean("Save Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
 
-    resetState();
+    resetState();   
 }
 
 std::vector<ValorSwerve<Drivetrain::SwerveAzimuthMotor, Drivetrain::SwerveDriveMotor> *> Drivetrain::getSwerveModules()
@@ -142,6 +145,7 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
     table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
+    table->PutNumber("Detecting value",limeTable->GetNumber("tv", 0));
 
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
@@ -162,7 +166,26 @@ void Drivetrain::analyzeDashboard()
                                 swerveModules[2]->getModulePosition(),
                                 swerveModules[3]->getModulePosition()
                             });
-    // estimator.AddVisionMeasurement()
+
+    if (limeTable->GetNumber("tv", 0) == 1.0){
+        double x = limeTable->GetNumber("tx", 0), y = limeTable->GetNumber("ty", 0);
+        double angle = limeTable->GetNumber("ts", 0);
+        frc::Pose2d botpose = translatePoseToCorner(
+            frc::Pose2d{
+                units::meter_t(x), 
+                units::meter_t(y), 
+                units::degree_t(angle)
+            }
+        );
+        estimator.AddVisionMeasurement(
+            botpose,  
+            frc::Timer::GetFPGATimestamp()
+        );
+
+        if (operatorGamepad->GetAButton()){
+            resetOdometry(botpose);
+        }
+    }
 }
 
 void Drivetrain::assignOutputs()
@@ -187,6 +210,29 @@ void Drivetrain::assignOutputs()
         pullSwerveModuleZeroReference();
     }
     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+
+    if (operatorGamepad->GetBButtonPressed()){
+        cmdGoToTag = new frc2::SwerveControllerCommand<4>(
+            frc::TrajectoryGenerator::GenerateTrajectory(
+                getPose_m(),
+                {},
+                tags[0],
+                config
+            ),
+            [&] () { return getPose_m(); },
+            getKinematics(),
+            frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+            frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+            thetaController,
+            [this] (auto states) { setModuleStates(states); },
+            {this} //used to be "drivetrain"
+        );
+        cmdGoToTag->Schedule();
+    }
+
+    if (operatorGamepad->leftStickYActive() || operatorGamepad->leftStickXActive() || operatorGamepad->rightStickXActive()){
+        cmdGoToTag->Cancel();
+    }
 }
 
 void Drivetrain::pullSwerveModuleZeroReference(){
@@ -271,3 +317,9 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredSt
         swerveModules[i]->setDesiredState(desiredStates[i], true);
     }
 }
+
+
+frc::Pose2d Drivetrain::translatePoseToCorner(frc::Pose2d tagPose){
+    return tagPose + frc::Transform2d{frc::Translation2d{-16.535_m / 2, -8_m / 2}, 0_deg};
+}
+// 16.535_m / 2, 8_m / 2, 0_deg
