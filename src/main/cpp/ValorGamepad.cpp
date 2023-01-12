@@ -30,7 +30,7 @@ void ValorGamepad::setDeadbandY(double deadband)
 
 double ValorGamepad::deadband(double input, double deadband, int polynomial)
 {
-    return std::fabs(input) > deadband ? std::pow(input, polynomial) : 0;
+    return std::fabs(input) > deadband ? copysign(std::pow(std::abs(input), polynomial), input) : 0;
 }
 
 double ValorGamepad::leftStickX(int polynomial)

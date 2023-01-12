@@ -9,8 +9,8 @@
 
 #define MOTOR_FREE_SPEED 6380.0
 #define WHEEL_DIAMETER_M 0.1016
-#define DRIVE_GEAR_RATIO 12.8
-#define AZIMUTH_GEAR_RATIO 5.14
+#define DRIVE_GEAR_RATIO 5.14
+#define AZIMUTH_GEAR_RATIO 12.8
 #define AUTO_SPEED_MUL 0.75
 #define ROT_SPEED_MUL 1
 #define ROT_SPEED_SLOW_MUL 0.5
@@ -161,6 +161,11 @@ void Drivetrain::analyzeDashboard()
                         swerveModules[2]->getModulePosition(),
                         swerveModules[3]->getModulePosition()
                     });
+
+    table->PutNumber("Module 0 Azi", swerveModules[0]->getAzimuthPosition().Degrees().to<double>());
+    table->PutNumber("Module 1 Azi", swerveModules[1]->getAzimuthPosition().Degrees().to<double>());
+    table->PutNumber("Module 2 Azi", swerveModules[2]->getAzimuthPosition().Degrees().to<double>());
+    table->PutNumber("Module 3 Azi", swerveModules[3]->getAzimuthPosition().Degrees().to<double>());
 }
 
 void Drivetrain::assignOutputs()
