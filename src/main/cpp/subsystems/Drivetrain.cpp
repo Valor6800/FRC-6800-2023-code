@@ -333,6 +333,6 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredSt
 
 
 frc::Pose2d Drivetrain::translatePoseToCorner(frc::Pose2d tagPose){
-    return tagPose + frc::Transform2d{frc::Translation2d{+16.535_m / 2, +8_m / 2}, tagPose.Rotation().Degrees()};
+    return frc::Pose2d{tagPose.X() + 16.535_m / 2, tagPose.Y() + 8_m / 2, tagPose.Rotation().Degrees()};
 }
 // 16.535_m / 2, 8_m / 2, 0_deg
