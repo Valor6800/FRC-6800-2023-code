@@ -130,3 +130,7 @@ void ValorNeoController::setPower(double power)
 {
     motor->Set(power);
 }
+
+void ValorNeoController::setMotorMode(rev::CANSparkMax::IdleMode mode){
+    motor->SetIdleMode(mode);
+}

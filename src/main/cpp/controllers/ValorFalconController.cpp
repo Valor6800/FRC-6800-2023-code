@@ -129,3 +129,7 @@ void ValorFalconController::preventBackwards()
 {
     motor->ConfigPeakOutputReverse(0);
 }
+
+void ValorFalconController::setMotorMode(NeutralMode mode){
+    motor->SetNeutralMode(mode);
+}

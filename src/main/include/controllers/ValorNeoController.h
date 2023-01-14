@@ -43,6 +43,7 @@ public:
     void setConversion(double);
 
     void setProfile(int slot);
+    void setMotorMode(rev::CANSparkMax::IdleMode mode);
     
 private:
     rev::SparkMaxPIDController pidController;

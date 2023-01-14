@@ -18,6 +18,7 @@ Robot::Robot() : drivetrain(this)
 void Robot::RobotInit() {
     drivetrain.setGamepads(&gamepadOperator, &gamepadDriver);
     drivetrain.resetState();
+    drivetrain.setDriveMotorModeTo(NeutralMode::Coast);
 }
 
 /**
@@ -36,6 +37,8 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
  * robot is disabled.
  */
 void Robot::DisabledInit() {
+    frc2::CommandScheduler::GetInstance().CancelAll();
+    drivetrain.cancelCmdGoToTag();
 }
 
 void Robot::DisabledPeriodic()
