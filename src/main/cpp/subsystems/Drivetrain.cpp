@@ -23,6 +23,10 @@
 #define AZIMUTH_K_VEL 17000.0f
 #define AZIMUTH_K_ACC_MUL 20.0f
 
+#define TXRANGE  30.0f
+#define KLIME 0.4f
+#define KPIGEON 2.0f
+
 #define DRIVETRAIN_CAN_BUS "baseCAN"
 
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
@@ -103,6 +107,7 @@ void Drivetrain::init()
     state.saveToFileDebouncer = false;
 
     resetState();   
+    trackingID = 0;
 }
 
 std::vector<ValorSwerve<Drivetrain::SwerveAzimuthMotor, Drivetrain::SwerveDriveMotor> *> Drivetrain::getSwerveModules()
@@ -138,6 +143,23 @@ void Drivetrain::assessInputs()
     state.rot = driverGamepad->rightStickX(3);
     state.slowDown = driverGamepad->GetAButton();
     state.startButton = driverGamepad->GetStartButtonPressed();
+
+    if (driverGamepad->GetXButton())
+    {
+        if (trackingID == 0)
+        {
+            trackingID = limeTable->GetNumber("tid", 0);
+        }
+        state.limecentering = true;
+    }
+    else
+    {
+        if (trackingID != 0)
+        {
+            trackingID = 0;
+        }
+        state.limecentering = false;
+    }
 }
 
 void Drivetrain::analyzeDashboard()
@@ -220,22 +242,10 @@ void Drivetrain::assignOutputs()
     units::velocity::meters_per_second_t ySpeedMPS = units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed};
     units::angular_velocity::radians_per_second_t rotRPS = units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed};
 
-    if (state.slowDown) {
-        double magnitude = std::sqrt(std::pow(state.xSpeed, 2) + std::pow(state.ySpeed, 2));
-        double x = state.xSpeed / magnitude;
-        double y = state.ySpeed / magnitude;
-        xSpeedMPS = units::velocity::meters_per_second_t{x};
-        ySpeedMPS = units::velocity::meters_per_second_t{y};
-        if(state.rot != 0){
-            int sign = std::signbit(state.rot) == 0 ? 1 : -1;
-            rotRPS = sign * units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed * ROT_SPEED_SLOW_MUL};
-        }
-    }
-
+    
     if (state.startButton) {
         pullSwerveModuleZeroReference();
     }
-    drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 
     if (driverGamepad->GetBButtonPressed()){
         setDriveMotorModeTo(NeutralMode::Brake);
@@ -256,11 +266,41 @@ void Drivetrain::assignOutputs()
             {this} //used to be "drivetrain"
         );   
         cmdGoToTag->Schedule();
+    } else if (state.limecentering){
+        double xdir, ydir, rot;
+        
+        if (trackingID == limeTable->GetNumber("tid", 0)){
+            ydir = limeTable->GetNumber("tx",0) / TXRANGE * KLIME;
+            rot = (180 - getPose_m().Rotation().Degrees().to<double>());
+            if (rot > 180){ // Assuming pigeon returns -180 to 180
+                rot -= 360;
+            }
+            rot *= (KPIGEON/180);
+            rotRPS = units::angular_velocity::radians_per_second_t{rot * rotMaxSpeed};
+
+            ydir *= driveMaxSpeed;
+            ySpeedMPS = units::velocity::meters_per_second_t{ydir};
+            drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+        } 
+    } else if (state.slowDown) {
+        double magnitude = std::sqrt(std::pow(state.xSpeed, 2) + std::pow(state.ySpeed, 2));
+        double x = state.xSpeed / magnitude;
+        double y = state.ySpeed / magnitude;
+        xSpeedMPS = units::velocity::meters_per_second_t{x};
+        ySpeedMPS = units::velocity::meters_per_second_t{y};
+        if(state.rot != 0){
+            int sign = std::signbit(state.rot) == 0 ? 1 : -1;
+            rotRPS = sign * units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed * ROT_SPEED_SLOW_MUL};
+        }
+        drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+    } else{
+        drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
     }
 
     if (driverGamepad->leftStickYActive() || driverGamepad->leftStickXActive() || driverGamepad->rightStickXActive()){
         cancelCmdGoToTag();
     }
+
 }
 
 void Drivetrain::cancelCmdGoToTag(){
