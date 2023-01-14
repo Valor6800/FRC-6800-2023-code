@@ -13,6 +13,7 @@
 #include "Constants.h"
 #include "ValorGamepad.h"
 #include "subsystems/Drivetrain.h"
+#include "ValorAuto.h"
 
 class Robot : public frc::TimedRobot {
     public:
@@ -35,4 +36,5 @@ class Robot : public frc::TimedRobot {
         frc2::Command* autoCommand = nullptr;
 
         Drivetrain drivetrain;
+        ValorAuto autonomous;
 };
