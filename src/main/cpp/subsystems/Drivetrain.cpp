@@ -7,26 +7,26 @@
 #include "subsystems/Drivetrain.h"
 #include <iostream>
 
-#define MOTOR_FREE_SPEED 6380.0
-#define WHEEL_DIAMETER_M 0.1016
-#define DRIVE_GEAR_RATIO 5.14
-#define AZIMUTH_GEAR_RATIO 12.8
-#define AUTO_SPEED_MUL 0.75
-#define ROT_SPEED_MUL 1
-#define ROT_SPEED_SLOW_MUL 0.5
+#define MOTOR_FREE_SPEED 6380.0f
+#define WHEEL_DIAMETER_M 0.1016f
+#define DRIVE_GEAR_RATIO 5.14f
+#define AZIMUTH_GEAR_RATIO 12.8f
+#define AUTO_SPEED_MUL 0.75f
+#define ROT_SPEED_MUL 1.0f
+#define ROT_SPEED_SLOW_MUL 0.5f
 
-#define AZIMUTH_K_P 0.2
-#define AZIMUTH_K_I 0.0
-#define AZIMUTH_K_D 0.1
-#define AZIMUTH_K_F 0.05
+#define AZIMUTH_K_P 0.2f
+#define AZIMUTH_K_I 0.0f
+#define AZIMUTH_K_D 0.1f
+#define AZIMUTH_K_F 0.05f
 
-#define AZIMUTH_K_VEL 17000.0
-#define AZIMUTH_K_ACC_MUL 20.0
+#define AZIMUTH_K_VEL 17000.0f
+#define AZIMUTH_K_ACC_MUL 20.0f
 
 #define DRIVETRAIN_CAN_BUS "baseCAN"
 
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
-                        driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
+                        driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
                         autoMaxSpeed(driveMaxSpeed),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
@@ -162,27 +162,23 @@ void Drivetrain::analyzeDashboard()
                         swerveModules[3]->getModulePosition()
                     });
 
-    table->PutNumber("Module 0 Azi", swerveModules[0]->getAzimuthPosition().Degrees().to<double>());
-    table->PutNumber("Module 1 Azi", swerveModules[1]->getAzimuthPosition().Degrees().to<double>());
-    table->PutNumber("Module 2 Azi", swerveModules[2]->getAzimuthPosition().Degrees().to<double>());
-    table->PutNumber("Module 3 Azi", swerveModules[3]->getAzimuthPosition().Degrees().to<double>());
 }
 
 void Drivetrain::assignOutputs()
 {    
-    units::meters_per_second_t xSpeedMPS = units::meters_per_second_t{state.xSpeed * driveMaxSpeed};
-    units::meters_per_second_t ySpeedMPS = units::meters_per_second_t{state.ySpeed * driveMaxSpeed};
-    units::radians_per_second_t rotRPS = units::radians_per_second_t{state.rot * rotMaxSpeed};
+    units::velocity::meters_per_second_t xSpeedMPS = units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed};
+    units::velocity::meters_per_second_t ySpeedMPS = units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed};
+    units::angular_velocity::radians_per_second_t rotRPS = units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed};
 
     if (state.slowDown) {
         double magnitude = std::sqrt(std::pow(state.xSpeed, 2) + std::pow(state.ySpeed, 2));
         double x = state.xSpeed / magnitude;
         double y = state.ySpeed / magnitude;
-        xSpeedMPS = units::meters_per_second_t{x};
-        ySpeedMPS = units::meters_per_second_t{y};
+        xSpeedMPS = units::velocity::meters_per_second_t{x};
+        ySpeedMPS = units::velocity::meters_per_second_t{y};
         if(state.rot != 0){
             int sign = std::signbit(state.rot) == 0 ? 1 : -1;
-            rotRPS = units::radians_per_second_t{state.rot * rotMaxSpeed * ROT_SPEED_SLOW_MUL};
+            rotRPS = sign * units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed * ROT_SPEED_SLOW_MUL};
         }
     }
 
@@ -239,7 +235,7 @@ void Drivetrain::resetDriveEncoders()
     }
 }
 
-void Drivetrain::drive(units::meters_per_second_t vx_mps, units::meters_per_second_t vy_mps, units::radians_per_second_t omega_radps, bool isFOC)
+void Drivetrain::drive(units::velocity::meters_per_second_t vx_mps, units::velocity::meters_per_second_t vy_mps, units::angular_velocity::radians_per_second_t omega_radps, bool isFOC)
 {
     auto states = getModuleStates(vx_mps,
                                   vy_mps,
@@ -251,9 +247,9 @@ void Drivetrain::drive(units::meters_per_second_t vx_mps, units::meters_per_seco
     }
 }
 
-wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::meters_per_second_t vx_mps,
-                                                                  units::meters_per_second_t vy_mps,
-                                                                  units::radians_per_second_t omega_radps,
+wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::velocity::meters_per_second_t vx_mps,
+                                                                  units::velocity::meters_per_second_t vy_mps,
+                                                                  units::angular_velocity::radians_per_second_t omega_radps,
                                                                   bool isFOC)
 {
     frc::ChassisSpeeds chassisSpeeds = isFOC ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx_mps,
@@ -262,13 +258,13 @@ wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::meters_
                                                                                            odometry.GetPose().Rotation())
                                              : frc::ChassisSpeeds{vx_mps, vy_mps, omega_radps};
     auto states = kinematics.ToSwerveModuleStates(chassisSpeeds);
-    kinematics.DesaturateWheelSpeeds(&states, units::meters_per_second_t{driveMaxSpeed});
+    kinematics.DesaturateWheelSpeeds(&states, units::velocity::meters_per_second_t{driveMaxSpeed});
     return states;
 }
 
 void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates)
 {
-    kinematics.DesaturateWheelSpeeds(&desiredStates, units::meters_per_second_t{driveMaxSpeed});
+    kinematics.DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{driveMaxSpeed});
     for (int i = 0; i < 4; i++)
     {
         swerveModules[i]->setDesiredState(desiredStates[i], true);

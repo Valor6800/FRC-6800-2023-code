@@ -41,7 +41,7 @@ frc::SwerveModulePosition ValorSwerve<AzimuthMotor, DriveMotor>::getModulePositi
 template<class AzimuthMotor, class DriveMotor>
 frc::SwerveModuleState ValorSwerve<AzimuthMotor, DriveMotor>::getState()
 {
-    return frc::SwerveModuleState{units::meters_per_second_t{driveMotor->getSpeed()}, getAzimuthPosition()};
+    return frc::SwerveModuleState{units::velocity::meters_per_second_t{driveMotor->getSpeed()}, getAzimuthPosition()};
 }
 
 template<class AzimuthMotor, class DriveMotor>
@@ -49,7 +49,7 @@ void ValorSwerve<AzimuthMotor, DriveMotor>::setDesiredState(frc::SwerveModuleSta
 {
 
     // Deadband
-    if (desiredState.speed < units::meters_per_second_t{DRIVE_DEADBAND}) {
+    if (desiredState.speed < units::velocity::meters_per_second_t{DRIVE_DEADBAND}) {
         setDriveOpenLoop(0);
         return;
     }
