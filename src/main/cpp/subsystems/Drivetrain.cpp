@@ -146,6 +146,16 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
     table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
     table->PutNumber("Detecting value",limeTable->GetNumber("tv", 0));
+    if (limeTable->GetNumber("tv", 0)){
+        std::vector<double> poseArray = limeTable->GetNumberArray("botpose", std::span<const double>());
+        // table->PutNumberArray("Received pose array", std::span{poseArray.data(), poseArray.size()});
+        table->PutNumber("Received dX", poseArray[0]);
+        table->PutNumber("Received dY", poseArray[1]);
+    }
+    frc::Pose2d testPose = translatePoseToCorner(frc::Pose2d{0_m, 0_m, 90_deg});
+    table->PutNumber("Test transform x", testPose.X().to<double>());
+    table->PutNumber("Test transform y", testPose.Y().to<double>());
+   
 
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
@@ -168,8 +178,9 @@ void Drivetrain::analyzeDashboard()
                             });
 
     if (limeTable->GetNumber("tv", 0) == 1.0){
-        double x = limeTable->GetNumber("tx", 0), y = limeTable->GetNumber("ty", 0);
-        double angle = limeTable->GetNumber("ts", 0);
+        std::vector<double> poseArray = limeTable->GetNumberArray("botpose", std::span<const double>());
+        double x = poseArray[0], y = poseArray[1];
+        double angle = poseArray[5];
         frc::Pose2d botpose = translatePoseToCorner(
             frc::Pose2d{
                 units::meter_t(x), 
@@ -177,6 +188,8 @@ void Drivetrain::analyzeDashboard()
                 units::degree_t(angle)
             }
         );
+        table->PutNumber("Theoretical X", botpose.X().to<double>());
+        table->PutNumber("Theoretical Y", botpose.Y().to<double>());
         estimator.AddVisionMeasurement(
             botpose,  
             frc::Timer::GetFPGATimestamp()
@@ -216,7 +229,7 @@ void Drivetrain::assignOutputs()
             frc::TrajectoryGenerator::GenerateTrajectory(
                 getPose_m(),
                 {},
-                tags[0],
+                tags[0] + frc::Transform2d{frc::Translation2d{1_m, 0_m}, 0_deg},
                 config
             ),
             [&] () { return getPose_m(); },
@@ -320,6 +333,6 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredSt
 
 
 frc::Pose2d Drivetrain::translatePoseToCorner(frc::Pose2d tagPose){
-    return tagPose + frc::Transform2d{frc::Translation2d{-16.535_m / 2, -8_m / 2}, 0_deg};
+    return tagPose + frc::Transform2d{frc::Translation2d{+16.535_m / 2, +8_m / 2}, tagPose.Rotation().Degrees()};
 }
 // 16.535_m / 2, 8_m / 2, 0_deg

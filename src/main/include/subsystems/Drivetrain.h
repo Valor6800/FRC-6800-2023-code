@@ -222,7 +222,7 @@ private:
      frc::ProfiledPIDController<units::radians> thetaController;
 
      frc::Pose2d translatePoseToCorner(frc::Pose2d);
-     std::map<int, frc::Pose2d> tags = {{0, frc::Pose2d{0_m, 0_m, 0_deg}}};
+     std::map<int, frc::Pose2d> tags = {{8, frc::Pose2d{1.02743_m, 1.071626_m, 0_deg}}};
 
      frc2::SwerveControllerCommand<4> *cmdGoToTag;
 
