@@ -23,6 +23,7 @@
 
 #include <frc/geometry/Translation2d.h>
 #include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Rotation2d.h>
 #include <frc/kinematics/DifferentialDriveWheelSpeeds.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
 #include <frc/kinematics/DifferentialDriveKinematics.h>
@@ -39,7 +40,7 @@
 #include <frc2/command/WaitCommand.h>
 #include <frc/TimedRobot.h>
 
-#define MODULE_DIFF 0.248
+#define MODULE_DIFF 0.248f
 
 /**
  * @brief Subsystem - Drivetrain
@@ -118,7 +119,7 @@ public:
       * @param omega_radps the desired rotational velocity component in radians per second
       * @param isFOC true if driving field oriented
       */
-     void drive(units::meters_per_second_t vx_mps, units::meters_per_second_t vy_mps, units::radians_per_second_t omega_radps, bool isFOC);
+     void drive(units::velocity::meters_per_second_t vx_mps, units::velocity::meters_per_second_t vy_mps, units::angular_velocity::radians_per_second_t omega_radps, bool isFOC);
 
      /**
       * Directly set the swerve modules to the specified states
@@ -183,9 +184,9 @@ private:
      double autoMaxSpeed;
      double autoMaxAccel;
 
-     wpi::array<frc::SwerveModuleState, 4> getModuleStates(units::meters_per_second_t,
-                                                           units::meters_per_second_t,
-                                                           units::radians_per_second_t,
+     wpi::array<frc::SwerveModuleState, 4> getModuleStates(units::velocity::meters_per_second_t,
+                                                           units::velocity::meters_per_second_t,
+                                                           units::angular_velocity::radians_per_second_t,
                                                            bool);
 
      void configSwerveModule(int);

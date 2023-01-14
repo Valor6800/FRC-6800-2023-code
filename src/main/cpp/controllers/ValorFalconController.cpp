@@ -117,7 +117,7 @@ void ValorFalconController::setSpeed(double speed)
 
 void ValorFalconController::setPower(double speed)
 {
-    motor->Set(speed);
+    motor->Set(ControlMode::PercentOutput, speed);
 }
 
 void ValorFalconController::setProfile(int profile)
