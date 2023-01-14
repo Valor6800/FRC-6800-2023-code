@@ -114,6 +114,7 @@ public:
           
           bool saveToFileDebouncer;
 
+          bool limecentering;
      } state;
 
      /**
@@ -185,6 +186,7 @@ public:
      void cancelCmdGoToTag();
      void setDriveMotorModeTo(NeutralMode);
 
+     int trackingID;
 private:
      double driveMaxSpeed;
      double rotMaxSpeed;
