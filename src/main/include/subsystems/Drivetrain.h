@@ -41,6 +41,8 @@
 #include <frc2/command/WaitCommand.h>
 #include <frc/TimedRobot.h>
 
+#include <ctre/phoenix/motorcontrol/NeutralMode.h>
+
 #define MODULE_DIFF 0.248f
 #define SWERVE_COUNT 4
 
@@ -180,6 +182,9 @@ public:
       */
      frc::SwerveDriveKinematics<SWERVE_COUNT>& getKinematics();
 
+     void cancelCmdGoToTag();
+     void setDriveMotorModeTo(NeutralMode);
+
 private:
      double driveMaxSpeed;
      double rotMaxSpeed;
@@ -219,10 +224,12 @@ private:
      frc::SwerveDrivePoseEstimator<SWERVE_COUNT> estimator;
 
      frc::TrajectoryConfig config;
+     frc::TrajectoryConfig reverseConfig;
+
      frc::ProfiledPIDController<units::radians> thetaController;
 
      frc::Pose2d translatePoseToCorner(frc::Pose2d);
-     std::map<int, frc::Pose2d> tags = {{8, frc::Pose2d{1.02743_m, 1.071626_m, 0_deg}}};
+     std::map<int, frc::Pose2d> tags = {{5, frc::Pose2d{0.36195_m, 6.749796_m, 0_deg}}, {8, frc::Pose2d{1.02743_m, 1.071626_m, 0_deg}}};
 
      frc2::SwerveControllerCommand<4> *cmdGoToTag;
 

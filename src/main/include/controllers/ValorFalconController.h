@@ -48,6 +48,8 @@ public:
      * Restrict the motor from going backwards
      */
     void preventBackwards();
+
+    void setMotorMode(NeutralMode mode);
 private:
 
     double conversion;

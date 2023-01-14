@@ -34,6 +34,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
                         estimator(kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad}),
                         config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
+                        reverseConfig(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
                         thetaController{DriveConstants::KPT, DriveConstants::KIT, DriveConstants::KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{SwerveConstants::AUTO_MAX_ROTATION_RPS}, units::angular_acceleration::radians_per_second_squared_t{SwerveConstants::AUTO_MAX_ROTATION_ACCEL_RPSS})}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
@@ -146,12 +147,13 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
     table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
     table->PutNumber("Detecting value",limeTable->GetNumber("tv", 0));
+    /*
     if (limeTable->GetNumber("tv", 0)){
         std::vector<double> poseArray = limeTable->GetNumberArray("botpose", std::span<const double>());
         // table->PutNumberArray("Received pose array", std::span{poseArray.data(), poseArray.size()});
-        table->PutNumber("Received dX", poseArray[0]);
-        table->PutNumber("Received dY", poseArray[1]);
-    }
+        // table->PutNumber("Received dX", poseArray[0]);
+        // table->PutNumber("Received dY", poseArray[1]);
+    }*/
     frc::Pose2d testPose = translatePoseToCorner(frc::Pose2d{0_m, 0_m, 90_deg});
     table->PutNumber("Test transform x", testPose.X().to<double>());
     table->PutNumber("Test transform y", testPose.Y().to<double>());
@@ -179,26 +181,37 @@ void Drivetrain::analyzeDashboard()
 
     if (limeTable->GetNumber("tv", 0) == 1.0){
         std::vector<double> poseArray = limeTable->GetNumberArray("botpose", std::span<const double>());
-        double x = poseArray[0], y = poseArray[1];
-        double angle = poseArray[5];
-        frc::Pose2d botpose = translatePoseToCorner(
-            frc::Pose2d{
-                units::meter_t(x), 
-                units::meter_t(y), 
-                units::degree_t(angle)
-            }
-        );
-        table->PutNumber("Theoretical X", botpose.X().to<double>());
-        table->PutNumber("Theoretical Y", botpose.Y().to<double>());
-        estimator.AddVisionMeasurement(
-            botpose,  
-            frc::Timer::GetFPGATimestamp()
-        );
+        table->PutNumber("pose array size", poseArray.size());
+        if (poseArray.size() >= 6){
+            double x = poseArray[0], y = poseArray[1];
+            double angle = poseArray[5];
+            frc::Pose2d botpose = translatePoseToCorner(
+                frc::Pose2d{
+                    units::meter_t(x), 
+                    units::meter_t(y), 
+                    units::degree_t(angle)
+                }
+            );
+            table->PutNumber("Theoretical X", botpose.X().to<double>());
+            table->PutNumber("Theoretical Y", botpose.Y().to<double>());
+            estimator.AddVisionMeasurement(
+                botpose,  
+                frc::Timer::GetFPGATimestamp()
+            );
 
-        if (operatorGamepad->GetAButton()){
-            resetOdometry(botpose);
+            if (operatorGamepad->GetAButton()){
+                resetOdometry(botpose);
+            }
         }
     }
+}
+
+frc::Pose2d translatePoseBy(frc::Pose2d pose, frc::Translation2d translation){
+    return frc::Pose2d{pose.X() + translation.X(), pose.Y() + translation.Y(), pose.Rotation()};
+}
+
+frc::Pose2d translateAndRotatePoseBy(frc::Pose2d pose, frc::Pose2d addPose){
+    return frc::Pose2d{pose.X() + addPose.X(), pose.Y() + addPose.Y(), pose.Rotation().Degrees() + addPose.Rotation().Degrees()};
 }
 
 void Drivetrain::assignOutputs()
@@ -224,13 +237,15 @@ void Drivetrain::assignOutputs()
     }
     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 
-    if (operatorGamepad->GetBButtonPressed()){
+    if (driverGamepad->GetBButtonPressed()){
+        setDriveMotorModeTo(NeutralMode::Brake);
         cmdGoToTag = new frc2::SwerveControllerCommand<4>(
             frc::TrajectoryGenerator::GenerateTrajectory(
-                getPose_m(),
-                {},
-                tags[0] + frc::Transform2d{frc::Translation2d{1_m, 0_m}, 0_deg},
-                config
+                {
+                    getPose_m(),
+                    translateAndRotatePoseBy(tags[5], frc::Pose2d{1_m, 0_m, 180_deg})
+                },
+                reverseConfig
             ),
             [&] () { return getPose_m(); },
             getKinematics(),
@@ -239,13 +254,19 @@ void Drivetrain::assignOutputs()
             thetaController,
             [this] (auto states) { setModuleStates(states); },
             {this} //used to be "drivetrain"
-        );
+        );   
         cmdGoToTag->Schedule();
     }
 
-    if (operatorGamepad->leftStickYActive() || operatorGamepad->leftStickXActive() || operatorGamepad->rightStickXActive()){
-        cmdGoToTag->Cancel();
+    if (driverGamepad->leftStickYActive() || driverGamepad->leftStickXActive() || driverGamepad->rightStickXActive()){
+        cancelCmdGoToTag();
     }
+}
+
+void Drivetrain::cancelCmdGoToTag(){
+    cmdGoToTag->Cancel();
+    // delete cmdGoToTag;
+    setDriveMotorModeTo(NeutralMode::Coast);
 }
 
 void Drivetrain::pullSwerveModuleZeroReference(){
@@ -323,7 +344,7 @@ wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::velocit
 }
 
 void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates)
-{
+{ 
     kinematics.DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{driveMaxSpeed});
     for (int i = 0; i < 4; i++)
     {
@@ -333,6 +354,12 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredSt
 
 
 frc::Pose2d Drivetrain::translatePoseToCorner(frc::Pose2d tagPose){
-    return frc::Pose2d{tagPose.X() + 16.535_m / 2, tagPose.Y() + 8_m / 2, tagPose.Rotation().Degrees()};
+    return frc::Pose2d{tagPose.X() + 16.535_m / 2, tagPose.Y() + 8_m / 2, tagPose.Rotation()};
 }
 // 16.535_m / 2, 8_m / 2, 0_deg
+
+void Drivetrain::setDriveMotorModeTo(NeutralMode mode){
+    for (int i = 0; i < driveControllers.size(); i ++){
+        driveControllers[i]->setMotorMode(mode);
+    }
+}
