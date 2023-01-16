@@ -214,13 +214,18 @@ void Drivetrain::analyzeDashboard()
                     units::degree_t(angle)
                 }
             );
-            table->PutNumber("Theoretical X", botpose.X().to<double>());
-            table->PutNumber("Theoretical Y", botpose.Y().to<double>());
-            // estimator.AddVisionMeasurement(
-            //     botpose,  
-            //     frc::Timer::GetFPGATimestamp()
-            // );
 
+            frc::Transform2d poseDifs = botpose - getPose_m();
+            double difMag = sqrt(poseDifs.X().to<double>() * poseDifs.X().to<double>() + poseDifs.Y().to<double>() * poseDifs.Y().to<double>());
+            if (difMag < 1){
+                table->PutNumber("Theoretical X", botpose.X().to<double>());
+                table->PutNumber("Theoretical Y", botpose.Y().to<double>());
+                estimator.AddVisionMeasurement(
+                    botpose,  
+                    frc::Timer::GetFPGATimestamp()
+                );
+            }
+            
             if (operatorGamepad->GetAButton()){
                 resetOdometry(botpose);
             }
