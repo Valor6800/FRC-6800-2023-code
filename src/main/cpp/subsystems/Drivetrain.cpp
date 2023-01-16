@@ -73,7 +73,11 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         estimator(NULL),
                         config(NULL),
                         thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})},
+<<<<<<< HEAD
                         swerveNoError(true)
+=======
+                        vision(robot)
+>>>>>>> a02ada8 (added limeTable network table to vision instead of Drivetrain)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -147,7 +151,6 @@ void Drivetrain::resetState()
 
 void Drivetrain::init()
 {
-    limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     pigeon.Calibrate();    
 
     initPositions.fill(frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)});
@@ -221,6 +224,31 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
+    table->PutNumber("Robot X", getPose_m().X().to<double>());
+    table->PutNumber("Robot Y", getPose_m().Y().to<double>());
+    table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
+    table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
+    table->PutNumber("Detecting value",vision.visionSensor.tv);
+    /*
+    if (limeTable->GetNumber("tv", 0)){
+        std::vector<double> poseArray = limeTable->GetNumberArray("botpose", std::span<const double>());
+        // table->PutNumberArray("Received pose array", std::span{poseArray.data(), poseArray.size()});
+        // table->PutNumber("Received dX", poseArray[0]);
+        // table->PutNumber("Received dY", poseArray[1]);
+    }*/
+    frc::Pose2d testPose = translatePoseToCorner(frc::Pose2d{0_m, 0_m, 90_deg});
+    table->PutNumber("Test transform x", testPose.X().to<double>());
+    table->PutNumber("Test transform y", testPose.Y().to<double>());
+   
+
+    table->PutNumber("Module 0 Mag Count", azimuthControllers[0]->getAbsEncoderPosition());
+    table->PutNumber("Module 0 Azi Pos", swerveModules[0]->getAzimuthPosition().Degrees().to<double>() / 360);
+    table->PutNumber("Module 1 Mag Count", swerveModules[1]->getMagEncoderCount());
+    table->PutNumber("Module 1 Azi Pos", swerveModules[1]->getAzimuthPosition().Degrees().to<double>() / 360);
+    table->PutNumber("Module 2 Mag Count", swerveModules[2]->getMagEncoderCount());
+    table->PutNumber("Module 2 Azi Pos", swerveModules[2]->getAzimuthPosition().Degrees().to<double>() / 360);
+    table->PutNumber("Module 3 Mag Count", swerveModules[3]->getMagEncoderCount());
+    table->PutNumber("Module 3 Azi Pos", swerveModules[3]->getAzimuthPosition().Degrees().to<double>() / 360);
 
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {

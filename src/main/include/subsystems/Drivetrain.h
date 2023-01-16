@@ -14,6 +14,7 @@
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
 #include "controllers/ValorPIDF.h"
+#include "subsystems/TestVision.h"
 
 #include "AHRS.h"
 #include "ctre/phoenix/sensors/WPI_Pigeon2.h"
@@ -99,6 +100,8 @@ public:
       * * Resetting the drivetrain state
       */
      void init();
+
+     
 
      void assessInputs();
      void analyzeDashboard();
