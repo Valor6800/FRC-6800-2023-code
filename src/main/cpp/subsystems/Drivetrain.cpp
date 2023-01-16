@@ -194,10 +194,10 @@ void Drivetrain::analyzeDashboard()
             );
             table->PutNumber("Theoretical X", botpose.X().to<double>());
             table->PutNumber("Theoretical Y", botpose.Y().to<double>());
-            estimator.AddVisionMeasurement(
-                botpose,  
-                frc::Timer::GetFPGATimestamp()
-            );
+            // estimator.AddVisionMeasurement(
+            //     botpose,  
+            //     frc::Timer::GetFPGATimestamp()
+            // );
 
             if (operatorGamepad->GetAButton()){
                 resetOdometry(botpose);
