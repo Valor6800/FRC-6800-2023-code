@@ -15,19 +15,15 @@
 
 #include <units/length.h>
 
-class ValorVision : public ValorSensor<std::shared_ptr<nt::NetworkTable>>
+class ValorVision : public ValorSensor<frc::Pose2d>
 {
     public:
     ValorVision(frc::TimedRobot *_robot) : ValorSensor(_robot){
-        
+
     }
     void reset();
     void calculate();
     void aim();
-
-    frc::Pose2d getPose{};
-    // std::shared_ptr<nt::NetworkTable> photonTable;
-    frc::Translation2d finalPose{};
 
     const units::radian_t CAMERA_PITCH = 0_deg;
     const units::centimeter_t GOAL_RANGE_CENTIMETERS = 161_cm;

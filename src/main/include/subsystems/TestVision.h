@@ -16,6 +16,8 @@ class TestVision : public ValorSubsystem {
 
     void resetState();
 
+    frc::Pose2d visionRobotPose;
+
     ValorVision visionSensor;
     std::shared_ptr<nt::NetworkTable> visionTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
 };

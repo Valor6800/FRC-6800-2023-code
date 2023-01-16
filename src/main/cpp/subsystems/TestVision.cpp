@@ -4,7 +4,7 @@
 void TestVision::init() {
             
         visionSensor.setGetter([this] () {
-            return visionTable;
+            return visionRobotPose;
         });
 }
 
@@ -25,11 +25,13 @@ void TestVision::analyzeDashboard() {
     // photonTable->PutNumber("Return Y Coordinate", vision.finalPose.Y().to<double>());
     // photonTable->PutNumber("Return Z Coordinate", LimelightHeight);
     
-    visionSensor.robotPose = visionTable->GetNumberArray("botpose",std::span<const double>());
+    visionRobotPose.X() = static_cast<units::meter_t>(visionTable->GetNumberArray("botpose",std::span<const double>())[0]);
+    visionRobotPose.Y() = static_cast<units::meter_t>(visionTable->GetNumberArray("botpose",std::span<const double>())[1]);
+    visionRobotPose.Rotation().Degrees() = static_cast<units::degree_t>(visionTable->GetNumberArray("botpose",std::span<const double>())[5]);
+    visionSensor.robotPose = visionTable->GetNumberArray("botpose", std::span<const double>());
     visionSensor.tv = visionTable->GetNumber("tv", 0);
     visionSensor.tid = visionTable->GetNumber("tid",0);
-    visionSensor.tx = visionTable->GetNumber("tx",0x1B32F);
-    visionSensor.ty = visionTable->GetNumber("ty",0x1B32F);
+
     
 
 }
