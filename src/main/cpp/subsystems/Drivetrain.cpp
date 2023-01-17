@@ -103,6 +103,9 @@ void Drivetrain::init()
         configSwerveModule(i);
     }
 
+    table->PutNumber("Real-estimated pose delta cap", 5);
+    table->PutNumber("Vision doubt", 3.0);
+
     table->PutBoolean("Save Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
 
@@ -169,17 +172,6 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
     table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
     table->PutNumber("Detecting value",limeTable->GetNumber("tv", 0));
-    /*
-    if (limeTable->GetNumber("tv", 0)){
-        std::vector<double> poseArray = limeTable->GetNumberArray("botpose", std::span<const double>());
-        // table->PutNumberArray("Received pose array", std::span{poseArray.data(), poseArray.size()});
-        // table->PutNumber("Received dX", poseArray[0]);
-        // table->PutNumber("Received dY", poseArray[1]);
-    }*/
-    frc::Pose2d testPose = translatePoseToCorner(frc::Pose2d{0_m, 0_m, 90_deg});
-    table->PutNumber("Test transform x", testPose.X().to<double>());
-    table->PutNumber("Test transform y", testPose.Y().to<double>());
-   
 
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
@@ -215,14 +207,27 @@ void Drivetrain::analyzeDashboard()
                 }
             );
 
+            frc::Pose2d thetalessBotpose = frc::Pose2d{
+                botpose.X(),
+                botpose.Y(),
+                getPose_m().Rotation()
+            };
+
             frc::Transform2d poseDifs = botpose - getPose_m();
             double difMag = sqrt(poseDifs.X().to<double>() * poseDifs.X().to<double>() + poseDifs.Y().to<double>() * poseDifs.Y().to<double>());
-            if (difMag < 1){
+            
+            table->PutNumber("Theoretical to current pose delta", difMag);
+            if (difMag < table->GetNumber("Real-estimated pose delta cap", 5.0)){
                 table->PutNumber("Theoretical X", botpose.X().to<double>());
                 table->PutNumber("Theoretical Y", botpose.Y().to<double>());
+
+                double visionDoubt = table->GetNumber("Vision doubt", 3.0);
+
+                // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset
                 estimator.AddVisionMeasurement(
-                    botpose,  
-                    frc::Timer::GetFPGATimestamp()
+                    thetalessBotpose,  
+                    frc::Timer::GetFPGATimestamp(),
+                    {visionDoubt, visionDoubt, visionDoubt}
                 );
             }
             
@@ -253,57 +258,57 @@ void Drivetrain::assignOutputs()
     }
 
     if (driverGamepad->GetBButtonPressed()){
-        setDriveMotorModeTo(NeutralMode::Brake);
-        cmdGoToTag = new frc2::SwerveControllerCommand<4>(
-            frc::TrajectoryGenerator::GenerateTrajectory(
-                {
-                    getPose_m(),
-                    translateAndRotatePoseBy(tags[5], frc::Pose2d{1_m, 0_m, 180_deg})
-                },
-                reverseConfig
-            ),
-            [&] () { return getPose_m(); },
-            getKinematics(),
-            frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-            frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-            thetaController,
-            [this] (auto states) { setModuleStates(states); },
-            {this} //used to be "drivetrain"
-        );   
-        cmdGoToTag->Schedule();
+        // setDriveMotorModeTo(NeutralMode::Brake);
+        // cmdGoToTag = new frc2::SwerveControllerCommand<4>(
+        //     frc::TrajectoryGenerator::GenerateTrajectory(
+        //         {
+        //             getPose_m(),
+        //             translateAndRotatePoseBy(tags[5], frc::Pose2d{1_m, 0_m, 180_deg})
+        //         },
+        //         reverseConfig
+        //     ),
+        //     [&] () { return getPose_m(); },
+        //     getKinematics(),
+        //     frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
+        //     frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        //     thetaController,
+        //     [this] (auto states) { setModuleStates(states); },
+        //     {this} //used to be "drivetrain"
+        // );   
+        // cmdGoToTag->Schedule();
     } else if (state.limecentering){
-        double xdir, ydir, rot;
+        // double xdir, ydir, rot;
         
-        if (trackingID == limeTable->GetNumber("tid", 0)){
-            ydir = limeTable->GetNumber("tx",0) / TXRANGE * KLIME;
-            rot = (180 - getPose_m().Rotation().Degrees().to<double>());
-            if (rot > 180){ // Assuming pigeon returns -180 to 180
-                rot -= 360;
-            }
-            rot *= (KPIGEON/180);
-            rotRPS = units::angular_velocity::radians_per_second_t{rot * rotMaxSpeed};
+        // if (trackingID == limeTable->GetNumber("tid", 0)){
+        //     ydir = limeTable->GetNumber("tx",0) / TXRANGE * KLIME;
+        //     rot = (180 - getPose_m().Rotation().Degrees().to<double>());
+        //     if (rot > 180){ // Assuming pigeon returns -180 to 180
+        //         rot -= 360;
+        //     }
+        //     rot *= (KPIGEON/180);
+        //     rotRPS = units::angular_velocity::radians_per_second_t{rot * rotMaxSpeed};
 
-            ydir *= driveMaxSpeed;
-            ySpeedMPS = units::velocity::meters_per_second_t{ydir};
-            drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
-        } 
+        //     ydir *= driveMaxSpeed;
+        //     ySpeedMPS = units::velocity::meters_per_second_t{ydir};
+        //     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+        // } 
     } else if (state.slowDown) {
-        double magnitude = std::sqrt(std::pow(state.xSpeed, 2) + std::pow(state.ySpeed, 2));
-        double x = state.xSpeed / magnitude;
-        double y = state.ySpeed / magnitude;
-        xSpeedMPS = units::velocity::meters_per_second_t{x};
-        ySpeedMPS = units::velocity::meters_per_second_t{y};
-        if(state.rot != 0){
-            int sign = std::signbit(state.rot) == 0 ? 1 : -1;
-            rotRPS = sign * units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed * ROT_SPEED_SLOW_MUL};
-        }
-        drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+        // double magnitude = std::sqrt(std::pow(state.xSpeed, 2) + std::pow(state.ySpeed, 2));
+        // double x = state.xSpeed / magnitude;
+        // double y = state.ySpeed / magnitude;
+        // xSpeedMPS = units::velocity::meters_per_second_t{x};
+        // ySpeedMPS = units::velocity::meters_per_second_t{y};
+        // if(state.rot != 0){
+        //     int sign = std::signbit(state.rot) == 0 ? 1 : -1;
+        //     rotRPS = sign * units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed * ROT_SPEED_SLOW_MUL};
+        // }
+        // drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
     } else{
         drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
     }
 
     if (driverGamepad->leftStickYActive() || driverGamepad->leftStickXActive() || driverGamepad->rightStickXActive()){
-        cancelCmdGoToTag();
+        // cancelCmdGoToTag();
     }
 
 }
