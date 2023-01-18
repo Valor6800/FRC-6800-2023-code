@@ -19,7 +19,6 @@ void Robot::RobotInit() {
     drivetrain.setGamepads(&gamepadOperator, &gamepadDriver);
     drivetrain.resetState();
     drivetrain.setDriveMotorModeTo(NeutralMode::Coast);
-
     autonomous.fillAutoList();
 }
 
@@ -67,6 +66,8 @@ void Robot::AutonomousPeriodic()
 }
 
 void Robot::TeleopInit() {
+    drivetrain.pullSwerveModuleZeroReference();
+
     if (autoCommand != nullptr) {
         autoCommand->Cancel();
         autoCommand = nullptr;
