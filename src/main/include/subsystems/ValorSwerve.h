@@ -75,24 +75,17 @@ public:
 
     /**
      * Loads the current azimuth absolute encoder reference position and sets selected sensor encoder
+     * @return if the mag encoder was successfully 
      */
-    void loadAndSetAzimuthZeroReference();
+    bool loadAndSetAzimuthZeroReference();
 
     frc::Rotation2d getAzimuthPosition();
 
     void setAzimuthPosition(frc::Rotation2d angle);
 
     /**
-     * Convert mag encoder ticks to azimuth encoder ticks
-     * 
-     * @param magTicks mag encoder ticks in relation to the mag encoder
-     * @return encoder ticks in relation to the azimuth motor
-     */
-    int convertMagEncoderToAzimuthEncoder(float magTicks);
-
-    /**
-     * Get the encoder ticks reported by the mag encoder
-     * @return encoder ticks reported by the mag encoder
+     * Get the encoder position reported by the mag encoder
+     * @return encoder position reported by the mag encoder
      */
     int getMagEncoderCount();
 

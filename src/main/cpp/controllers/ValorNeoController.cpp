@@ -100,7 +100,7 @@ double ValorNeoController::getSpeed()
     return encoder.GetVelocity();
 }
 
-void ValorNeoController::setEncoderPosition(double position, int slot)
+void ValorNeoController::setEncoderPosition(double position)
 {
     encoder.SetPosition(position);
 }
