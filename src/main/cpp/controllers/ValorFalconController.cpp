@@ -38,9 +38,9 @@ void ValorFalconController::reset()
     motor->SetSelectedSensorPosition(0);
 }
 
-void ValorFalconController::setEncoderPosition(double position, int slot)
+void ValorFalconController::setEncoderPosition(double position)
 {
-    motor->SetSelectedSensorPosition(position, 0);
+    motor->SetSelectedSensorPosition(position / conversion * FALCON_TICKS_PER_REV, 0);
 }
 
 void ValorFalconController::setupFollower(int canID, bool followerInverted)

@@ -27,7 +27,7 @@ public:
     double getPosition();
     double getSpeed();
 
-    void setEncoderPosition(double position, int slot);
+    void setEncoderPosition(double position);
 
     void setPosition(double);
     void setSpeed(double);

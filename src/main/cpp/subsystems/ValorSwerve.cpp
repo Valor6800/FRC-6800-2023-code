@@ -7,6 +7,7 @@
 #include <iostream>
 
 #define DRIVE_DEADBAND 0.05f
+#define MAG_ENCODER_TICKS_PER_REV 4096.0f
 
 // Explicit template instantiation
 // This is needed for linking
@@ -89,42 +90,37 @@ void ValorSwerve<AzimuthMotor, DriveMotor>::storeAzimuthZeroReference()
 }
 
 template<class AzimuthMotor, class DriveMotor>
-void ValorSwerve<AzimuthMotor, DriveMotor>::loadAndSetAzimuthZeroReference()
+bool ValorSwerve<AzimuthMotor, DriveMotor>::loadAndSetAzimuthZeroReference()
 {
-    std::ifstream infile("/home/lvuser/SwerveModule.wheel." + std::to_string(wheelIdx) + ".txt");
-    if (!infile.good())
-        return;
+    // Read the encoder position. If the encoder position isn't returned, set the position to what the wheels
+    //   are currently. The pit crew sets the wheels straight in pre-match setup. They should be close enough
+    //   if the mag encoders aren't working.
+    //   Protects against issues as seen in: https://www.youtube.com/watch?v=MGxpWNcv-VM
+    double currPos = getMagEncoderCount() / MAG_ENCODER_TICKS_PER_REV;
+    if (currPos == 0) {
+        azimuthMotor->setEncoderPosition(0);
+        return false;
+    }
 
-    std::string line;
-    std::getline(infile, line);
+    std::ifstream infile("/home/lvuser/SwerveModule.wheel." + std::to_string(wheelIdx) + ".txt");
+    if (!infile.good()) {
+        azimuthMotor->setEncoderPosition(0);
+        return false;
+    }
 
     // Encoder position for the mag encoder read from storage
+    std::string line;
+    std::getline(infile, line);
     int storedMagEncoderTicks = atoi(line.c_str());
+    infile.close();
 
-    // Difference in mag encoder ticks to re-zero the module
-    int delta = getMagEncoderCount() - storedMagEncoderTicks;
-
-    // Mod division by 2048 (resolution of the mag encoder) to get remainder.
-    // Then, convert mag encoder to azimuth ticks
-    // int azimuthSetpoint = convertMagEncoderToAzimuthEncoder(fmod(delta, SwerveConstants::MAG_COUNTS_PER_REV));
-    //issue: mag encoder tics don't keep increasing forever, they "wrap around" and reset back to 0
-    //so, modding doesn't really help anything because the falcon encoder could have been spun around 10 times
-    //line below might fix burn out issue
-    //azimuthSetpoint = fmod(azimuthSetpoint, SwerveConstants::AZIMUTH_COUNTS_PER_REV / SwerveConstants::AZIMUTH_GEAR_RATIO);
-
-    // Set the azimuth offset to the calculated setpoint (which will take over in teleop)
-    azimuthMotor->setPosition(0);
-    //std::cout << "pulled pospition from file" << std::endl;
+    // Difference in position to re-zero the module
+    double savedPos = storedMagEncoderTicks / MAG_ENCODER_TICKS_PER_REV;
+    // Get the remainder of the delta so the encoder can wrap
+    double pos = fmod(currPos - savedPos, 1);
+    azimuthMotor->setEncoderPosition(pos);
+    return true;
 }
-
-// int ValorSwerve::convertMagEncoderToAzimuthEncoder(float magTicks)
-// {
-//     //GetDistance is 4096 ticks per rotation
-//     //Azimuth ticks per rotation is 2048
-//     //Therefore divide mag encoder by 2 to sync azimuth and mag encoder
-//     //The mag encoder is not geared. Therefore take the gear ratio into account to match the azimuth gearing
-//     return (magTicks * 0.5f / SwerveConstants::AZIMUTH_GEAR_RATIO);
-// }
 
 template<class AzimuthMotor, class DriveMotor>
 int ValorSwerve<AzimuthMotor, DriveMotor>::getMagEncoderCount()

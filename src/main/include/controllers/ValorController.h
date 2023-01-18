@@ -123,7 +123,7 @@ public:
      */
     virtual double getSpeed() = 0;
     
-    virtual void setEncoderPosition(double position, int slot = 0) = 0;
+    virtual void setEncoderPosition(double position) = 0;
 
     /**
      * @brief Send the motor to a specific position
