@@ -1,5 +1,5 @@
 #include "ValorSubsystem.h"
-#include "sensors/ValorVision.h"
+#include "sensors/ValorVisionSensor.h"
 
 #include "frc/smartdashboard/Smartdashboard.h"
 
@@ -18,6 +18,6 @@ class TestVision : public ValorSubsystem {
 
     frc::Pose2d visionRobotPose;
 
-    ValorVision visionSensor;
-    std::shared_ptr<nt::NetworkTable> visionTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+    ValorVisionSensor visionSensor;
+    std::shared_ptr<nt::NetworkTable> visionTable;
 };

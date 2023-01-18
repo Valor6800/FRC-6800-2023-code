@@ -15,21 +15,15 @@
 
 #include <units/length.h>
 
-class ValorVision : public ValorSensor<frc::Pose2d>
+class ValorVisionSensor : public ValorSensor<frc::Pose2d>
 {
     public:
-    ValorVision(frc::TimedRobot *_robot) : ValorSensor(_robot){
+    ValorVisionSensor(frc::TimedRobot *_robot) : ValorSensor(_robot){
 
     }
     void reset();
     void calculate();
     void aim();
-
-    const units::radian_t CAMERA_PITCH = 0_deg;
-    const units::centimeter_t GOAL_RANGE_CENTIMETERS = 161_cm;
-
-    const double P_GAIN = 0.1;
-    const double D_GAIN = 0.0;
 
     int tv;
     int tid;

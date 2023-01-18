@@ -73,11 +73,8 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         estimator(NULL),
                         config(NULL),
                         thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})},
-<<<<<<< HEAD
-                        swerveNoError(true)
-=======
+                        swerveNoError(true),
                         vision(robot)
->>>>>>> a02ada8 (added limeTable network table to vision instead of Drivetrain)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -151,6 +148,7 @@ void Drivetrain::resetState()
 
 void Drivetrain::init()
 {
+    vision.visionTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     pigeon.Calibrate();    
 
     initPositions.fill(frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)});
@@ -224,6 +222,13 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
+    vision.visionRobotPose.X() = static_cast<units::meter_t>(vision.visionTable->GetNumberArray("botpose",std::span<const double>())[0]);
+    vision.visionRobotPose.Y() = static_cast<units::meter_t>(vision.visionTable->GetNumberArray("botpose",std::span<const double>())[1]);
+    vision.visionRobotPose.Rotation().Degrees() = static_cast<units::degree_t>(vision.visionTable->GetNumberArray("botpose",std::span<const double>())[5]);
+    vision.visionSensor.robotPose = vision.visionTable->GetNumberArray("botpose", std::span<const double>());
+    vision.visionSensor.tv = vision.visionTable->GetNumber("tv", 0);
+    vision.visionSensor.tid = vision.visionTable->GetNumber("tid",0);
+
     table->PutNumber("Robot X", getPose_m().X().to<double>());
     table->PutNumber("Robot Y", getPose_m().Y().to<double>());
     table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());

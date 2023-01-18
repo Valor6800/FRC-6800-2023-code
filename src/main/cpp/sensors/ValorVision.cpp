@@ -1,16 +1,16 @@
-#include "sensors/ValorVision.h"
+#include "sensors/ValorVisionSensor.h"
 
 #include <math.h>
 
 
 #define ROBOTHEIGHT 20.0
 
-void ValorVision::reset()
+void ValorVisionSensor::reset()
 {
     frc::Transform2d pose;
 }
 
-void ValorVision::calculate() {
+void ValorVisionSensor::calculate() {
     //-> Chin Math? <-
     // double x = 5;
     // double y = 5;
@@ -57,7 +57,7 @@ void ValorVision::calculate() {
     // finalPose = frc::Translation2d((units::meter_t) finalx, (units::meter_t) finaly);
 }
 
-void ValorVision::aim() {
+void ValorVisionSensor::aim() {
     //Get in range of target
     auto result = getSensor();
 
