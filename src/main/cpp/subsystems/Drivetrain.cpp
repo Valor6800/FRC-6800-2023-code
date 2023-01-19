@@ -222,18 +222,21 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
-    vision.visionRobotPose.X() = static_cast<units::meter_t>(vision.visionTable->GetNumberArray("botpose",std::span<const double>())[0]);
-    vision.visionRobotPose.Y() = static_cast<units::meter_t>(vision.visionTable->GetNumberArray("botpose",std::span<const double>())[1]);
-    vision.visionRobotPose.Rotation().Degrees() = static_cast<units::degree_t>(vision.visionTable->GetNumberArray("botpose",std::span<const double>())[5]);
     vision.visionSensor.robotPose = vision.visionTable->GetNumberArray("botpose", std::span<const double>());
     vision.visionSensor.tv = vision.visionTable->GetNumber("tv", 0);
     vision.visionSensor.tid = vision.visionTable->GetNumber("tid",0);
 
-    table->PutNumber("Robot X", getPose_m().X().to<double>());
-    table->PutNumber("Robot Y", getPose_m().Y().to<double>());
-    table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
-    table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
-    table->PutNumber("Detecting value",vision.visionSensor.tv);
+    vision.visionRobotPose = frc::Pose2d{
+        static_cast<units::meter_t>(vision.visionSensor.robotPose[0]),
+        static_cast<units::meter_t>(vision.visionSensor.robotPose[1]),
+        static_cast<units::degree_t>(vision.visionSensor.robotPose[5])
+    };
+
+    // table->PutNumber("Robot X", getPose_m().X().to<double>());
+    // table->PutNumber("Robot Y", getPose_m().Y().to<double>());
+    // table->PutNumber("Robot Theta", getPose_m().Rotation().Degrees().to<double>());
+    // table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
+    // table->PutNumber("Detecting value",vision.visionSensor.tv);
     /*
     if (limeTable->GetNumber("tv", 0)){
         std::vector<double> poseArray = limeTable->GetNumberArray("botpose", std::span<const double>());
@@ -241,9 +244,9 @@ void Drivetrain::analyzeDashboard()
         // table->PutNumber("Received dX", poseArray[0]);
         // table->PutNumber("Received dY", poseArray[1]);
     }*/
-    frc::Pose2d testPose = translatePoseToCorner(frc::Pose2d{0_m, 0_m, 90_deg});
-    table->PutNumber("Test transform x", testPose.X().to<double>());
-    table->PutNumber("Test transform y", testPose.Y().to<double>());
+    // frc::Pose2d testPose = translatePoseToCorner(frc::Pose2d{0_m, 0_m, 90_deg});
+    // table->PutNumber("Test transform x", testPose.X().to<double>());
+    // table->PutNumber("Test transform y", testPose.Y().to<double>());
    
 
     table->PutNumber("Module 0 Mag Count", azimuthControllers[0]->getAbsEncoderPosition());
