@@ -186,18 +186,28 @@ void ValorSwerve<AzimuthMotor, DriveMotor>::InitSendable(wpi::SendableBuilder& b
         [this] { return getMagEncoderCount() / MAG_ENCODER_TICKS_PER_REV; },
         nullptr
     );
-    // @todo AddRawProperty must take in a byte[]. Figure out how to convert from SwerveModulePosition & SwerveModuleState. add AddRawProperty in markdown file
-
-    // builder.AddRawProperty
-    // (
-    //     "state",
-    //     [this] { return std::byte[](getState()); },
-    //     nullptr
-    // );
-    // builder.AddRawProperty
-    // (
-    //     "position",
-    //     [this] { return std::byte[](getModulePosition()); },
-    //     nullptr
-    // );
+    builder.AddDoubleProperty
+    (
+        "state: angle",
+        [this] { return getState().angle; },
+        nullptr
+    );
+    builder.AddDoubleProperty
+    (
+        "state: speed",
+        [this] { return getState().speed; },
+        nullptr
+    );
+    builder.AddDoubleProperty
+    (
+        "position: angle",
+        [this] { return getModulePosition().angle; },
+        nullptr
+    );
+    builder.AddDoubleProperty
+    (
+        "position: distance",
+        [this] { return getModulePosition().distance; },
+        nullptr
+    );
 }
