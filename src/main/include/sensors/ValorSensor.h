@@ -115,7 +115,7 @@ public:
      * 
      * @return T Returns the sensor object
      */
-    T getSensor() { return sensorLambda ? sensorLambda() : 0; }
+    T getSensor() { return sensorLambda ? sensorLambda() : T(); }
 
 protected:
 
