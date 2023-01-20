@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <cmath>
 #include <iostream>
+#include <string>
 
 #define DRIVE_DEADBAND 0.05f
 #define MAG_ENCODER_TICKS_PER_REV 4096.0f
@@ -29,6 +30,8 @@ ValorSwerve<AzimuthMotor, DriveMotor>::ValorSwerve(AzimuthMotor* _azimuthMotor,
     else if (_wheelLocation.X() > units::meter_t{0} && _wheelLocation.Y() < units::meter_t{0}) wheelIdx = 1;
     else if (_wheelLocation.X() < units::meter_t{0} && _wheelLocation.Y() > units::meter_t{0}) wheelIdx = 2;
     else wheelIdx = 3;
+
+    wpi::SendableRegistry::AddLW(this, "Swerve", "Module " + std::to_string(wheelIdx));
 }
     
 template<class AzimuthMotor, class DriveMotor>
@@ -172,4 +175,29 @@ template<class AzimuthMotor, class DriveMotor>
 void ValorSwerve<AzimuthMotor, DriveMotor>::setDriveClosedLoop(double mps)
 {
     driveMotor->setSpeed(mps);
+}
+
+template<class AzimuthMotor, class DriveMotor>
+void ValorSwerve<AzimuthMotor, DriveMotor>::InitSendable(wpi::SendableBuilder& builder)
+{
+    builder.SetSmartDashboardType("Susbsystem");
+    builder.AddDoubleProperty(
+        "magEncoderRotatons",
+        [this] { return getMagEncoderCount() / MAG_ENCODER_TICKS_PER_REV; },
+        nullptr
+    );
+    // @todo AddRawProperty must take in a byte[]. Figure out how to convert from SwerveModulePosition & SwerveModuleState. add AddRawProperty in markdown file
+
+    // builder.AddRawProperty
+    // (
+    //     "state",
+    //     [this] { return std::byte[](getState()); },
+    //     nullptr
+    // );
+    // builder.AddRawProperty
+    // (
+    //     "position",
+    //     [this] { return std::byte[](getModulePosition()); },
+    //     nullptr
+    // );
 }
