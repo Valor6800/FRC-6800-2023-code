@@ -105,6 +105,8 @@ public:
 
      void resetState();
 
+     void InitSendable(wpi::SendableBuilder& builder);
+
      struct x
      {
           double xSpeed;

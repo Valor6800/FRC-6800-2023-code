@@ -10,16 +10,20 @@
 #include "ctre/phoenix/led/TwinkleAnimation.h"
 #include "ctre/phoenix/led/TwinkleOffAnimation.h"
 
+#include <string>
+
 #define VALOR_GOLD 0xEEA800
 
 ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int _canID, std::string _canbus) :
-    ValorSensor(_robot),
+    ValorSensor(_robot, std::string("ID ").append(std::to_string(_canID)).c_str()),
     candle(_canID, _canbus),
     ledCount(_ledCount),
     currentColor(toRGB(VALOR_GOLD)),
     activeAnimation(NULL),
     activeAnimationType(AnimationType::None)
 {
+    wpi::SendableRegistry::AddLW(this, "ValorDebounceSensor", sensorName);
+
     reset();
 
     ctre::phoenix::led::CANdleConfiguration config;
@@ -112,4 +116,17 @@ void ValorCANdleSensor::reset()
 
 void ValorCANdleSensor::calculate()
 {
+}
+
+void ValorCANdleSensor::InitSendable(wpi::SendableBuilder& builder)
+{
+    builder.SetSmartDashboardType("Subsystem");
+    builder.AddDoubleProperty(
+        "Current State", 
+        [this] { return prevState; },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Current State", 
+        [this] { return currState; },
+        nullptr);
 }

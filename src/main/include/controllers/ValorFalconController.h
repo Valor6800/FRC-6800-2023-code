@@ -50,6 +50,9 @@ public:
     void preventBackwards();
 
     void setMotorMode(NeutralMode mode);
+
+    void InitSendable(wpi::SendableBuilder& builder);
+
 private:
 
     double conversion;

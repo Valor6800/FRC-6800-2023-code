@@ -244,3 +244,68 @@ Elevarm::Positions Elevarm::reverseKinematics(frc::Pose3d pose, ElevarmSolutions
 
     return Positions(height,theta * 180.0 / M_PI);
 }
+
+void Elevarm::InitSendable(wpi::SendableBuilder& builder)
+    {
+        builder.SetSmartDashboardType("Subsystem");
+
+        builder.AddDoubleProperty(
+            "Previous State Piece",
+            [this] { return previousState.pieceState; },
+            nullptr
+        );
+
+        builder.AddDoubleProperty(
+            "Previous State Position",
+            [this] { return previousState.positionState; },
+            nullptr
+        );
+
+        builder.AddDoubleProperty(
+            "Previous State Direction",
+            [this] { return previousState.directionState; },
+            nullptr
+        );
+
+        builder.AddDoubleProperty(
+            "Previous State Target Height",
+            [this]{ return previousState.targetPose.h; },
+            nullptr
+        );
+
+         builder.AddDoubleProperty(
+            "Previous State Target Theta",
+            [this]{ return previousState.targetPose.theta; },
+            nullptr
+        );
+
+        builder.AddDoubleProperty(
+            "Future State Piece",
+            [this] { return futureState.pieceState; },
+            nullptr
+        );
+
+        builder.AddDoubleProperty(
+            "Future State Position",
+            [this] { return futureState.positionState; },
+            nullptr
+        );
+
+        builder.AddDoubleProperty(
+            "Future State Direction",
+            [this] { return futureState.directionState; },
+            nullptr
+        );
+
+        builder.AddDoubleProperty(
+            "Future State Target Height",
+            [this]{ return futureState.targetPose.h; },
+            nullptr
+        );
+
+         builder.AddDoubleProperty(
+            "Future State Target Theta",
+            [this]{ return futureState.targetPose.theta; },
+            nullptr
+        );
+    }

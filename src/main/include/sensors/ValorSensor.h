@@ -10,6 +10,10 @@
 #include <functional>
 #include <frc/TimedRobot.h>
 
+#include <wpi/sendable/Sendable.h>
+#include <wpi/sendable/SendableBuilder.h>
+#include <wpi/sendable/SendableHelper.h>
+
 /**
  * @brief Abstract class that all Valor sensors's should implement
  * @tparam T Sensor data type
@@ -46,7 +50,7 @@
  * \endcode
  */
 template <class T>
-class ValorSensor
+class ValorSensor : public wpi::Sendable, public wpi::SendableHelper<ValorSensor<T>>
 {
 public:
 
@@ -55,7 +59,7 @@ public:
      * 
      * @param _robot Pass in the Robot reference so the calculate method can be auto-scheduled
      */
-    ValorSensor(frc::TimedRobot *_robot) : robot(_robot) {}
+    ValorSensor(frc::TimedRobot *_robot, const char *_name) : robot(_robot), sensorName(_name) {}
     
     /**
      * @brief Reset the sensor state
@@ -117,6 +121,8 @@ public:
      */
     T getSensor() { return sensorLambda ? sensorLambda() : T(); }
 
+    virtual void InitSendable(wpi::SendableBuilder& builder) = 0;
+
 protected:
 
     /**
@@ -153,6 +159,8 @@ protected:
      * @brief Holds the previous sensor state
      */
     T prevState;
+
+    const char* sensorName;
 
 private:
     frc::TimedRobot *robot;

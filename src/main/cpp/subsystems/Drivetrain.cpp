@@ -164,6 +164,7 @@ void Drivetrain::init()
 
     table->PutNumber("pipeline", 0);
 
+    //wpi::SendableRegistry::AddLW(this, "ValorSubsystem", "Drivetrain");
 }
 
 std::vector<ValorSwerve<Drivetrain::SwerveAzimuthMotor, Drivetrain::SwerveDriveMotor> *> Drivetrain::getSwerveModules()
@@ -473,3 +474,39 @@ void Drivetrain::setXMode(){
     azimuthControllers[3]->setPosition(std::round(azimuthControllers[3]->getPosition()) - 0.375);
    setDriveMotorModeTo(rev::CANSparkMax::IdleMode::kCoast);
 }
+
+void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
+    {
+        builder.SetSmartDashboardType("Subsystem");
+
+        builder.AddDoubleProperty(
+            "xSpeed",
+            [this] { return state.xSpeed; },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "ySpeed",
+            [this] { return state.ySpeed; },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "rotSpeed",
+            [this] { return state.rot; },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "x",
+            [this] { return getPose_m().X().to<double>(); },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "y",
+            [this] { return getPose_m().Y().to<double>(); },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "theta",
+            [this] { return getPose_m().Rotation().Degrees().to<double>(); },
+            nullptr
+        );
+    }

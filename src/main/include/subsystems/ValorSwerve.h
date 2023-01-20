@@ -12,6 +12,10 @@
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
 
+#include <wpi/sendable/Sendable.h>
+#include <wpi/sendable/SendableBuilder.h>
+#include <wpi/sendable/SendableHelper.h>
+
 /**
  * @brief ValorSwerve
  * @tparam AzimuthMotor Azimuth motor on the swerve module (Neo or Falcon)
@@ -23,9 +27,9 @@
  * \endcode
  */
 template<class AzimuthMotor, class DriveMotor>
-class ValorSwerve
+class ValorSwerve: public wpi::Sendable, public wpi::SendableHelper<ValorSwerve<AzimuthMotor, DriveMotor>>
 {
-public:
+public: 
 
     ValorSwerve(AzimuthMotor* _azimuthMotor,
                 DriveMotor* _driveMotor,
@@ -88,6 +92,8 @@ public:
      * @return encoder position reported by the mag encoder
      */
     int getMagEncoderCount();
+
+    void InitSendable(wpi::SendableBuilder& builder) override;
 
 private:
 

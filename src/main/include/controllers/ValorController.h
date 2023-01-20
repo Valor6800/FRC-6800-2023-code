@@ -10,6 +10,10 @@
 #include "ValorPIDF.h"
 #include <string>
 
+#include <wpi/sendable/Sendable.h>
+#include <wpi/sendable/SendableBuilder.h>
+#include <wpi/sendable/SendableHelper.h>
+
 /**
  * @brief Abstract class that all Valor controllers's should implement
  * @tparam T Motor data type
@@ -30,7 +34,7 @@
  * \endcode
  */
 template <class T>
-class ValorController
+class ValorController : public wpi::Sendable, public wpi::SendableHelper<ValorController<T>>
 {
 public:
 
@@ -268,9 +272,10 @@ public:
      * @param slot Which profile to turn active
      */
     virtual void setProfile(int slot) = 0;
+
+    virtual void InitSendable(wpi::SendableBuilder& builder) = 0;
 protected:
 
     T* motor;
     T* followerMotor;
-
 };

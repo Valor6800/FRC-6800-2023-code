@@ -3,7 +3,7 @@
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
                             intakeMotor(CANIDs::INTAKE_LEAD_CAN, rev::CANSparkMax::IdleMode::kCoast, false),
-                            currySensor(_robot),
+                            currySensor(_robot, subsystemName),
                             intakeSpeed(-1),
                             outtakeSpeed(1),
                             outtakeConeSpeed(-0.5),
@@ -91,3 +91,15 @@ void Intake::assignOutputs()
         intakeMotor.setPower(intakeSpeed);
     }
 }
+
+void Intake::InitSendable(wpi::SendableBuilder& builder)
+    {
+        builder.SetSmartDashboardType("Subsystem");
+
+        builder.AddDoubleProperty(
+            "Intake State",
+            [this]{ return state.intakeState; },
+            nullptr
+        );
+
+    }
