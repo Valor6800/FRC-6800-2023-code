@@ -31,6 +31,8 @@ void ValorFalconController::init()
     ValorPIDF motionPIDF;
     setPIDF(motionPIDF, 0);
     reset();
+
+    wpi::SendableRegistry::AddLW(this, "ValorFalconController", "ID " + std::to_string(motor->GetDeviceID()));
 }
 
 void ValorFalconController::reset()
@@ -132,4 +134,25 @@ void ValorFalconController::preventBackwards()
 
 void ValorFalconController::setMotorMode(NeutralMode mode){
     motor->SetNeutralMode(mode);
+}
+
+void ValorFalconController::InitSendable(wpi::SendableBuilder& builder)
+{
+    builder.SetSmartDashboardType("Susbsystem");
+    builder.AddDoubleProperty(
+        "Amps", 
+        [this] { return getCurrent(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Position", 
+        [this] { return getPosition(); },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Speed", 
+        [this] { return getSpeed(); },
+        nullptr);
+    builder.AddBooleanProperty(
+        "Inverted", 
+        [this] { return inverted; },
+        nullptr);
 }

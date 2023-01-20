@@ -13,7 +13,7 @@
 #include <ctre/phoenix/motorcontrol/NeutralMode.h>
 #include <string>
 
-class ValorFalconController : public ValorController<WPI_TalonFX>
+class ValorFalconController : public ValorController<WPI_TalonFX>, public wpi::Sendable, public wpi::SendableHelper<ValorFalconController>
 {
 public:
     ValorFalconController(int _canID, NeutralMode _mode, bool _inverted, std::string _canbus = "");
@@ -50,6 +50,9 @@ public:
     void preventBackwards();
 
     void setMotorMode(NeutralMode mode);
+
+    void InitSendable(wpi::SendableBuilder& builder) override;
+
 private:
 
     double conversion;

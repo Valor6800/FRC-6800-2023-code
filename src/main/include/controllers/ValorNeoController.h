@@ -16,7 +16,7 @@
 #include <rev/SparkMaxAbsoluteEncoder.h>
 #include <string>
 
-class ValorNeoController : public ValorController<rev::CANSparkMax>
+class ValorNeoController : public ValorController<rev::CANSparkMax>, public wpi::Sendable, public wpi::SendableHelper<ValorNeoController>
 {
 public:
     ValorNeoController(int, rev::CANSparkMax::IdleMode, bool, std::string canbus = "");
@@ -47,6 +47,8 @@ public:
     void setMotorMode(rev::CANSparkMax::IdleMode mode);
 
     double getAbsEncoderPosition();
+    
+    void InitSendable(wpi::SendableBuilder& builder) override;
     
 private:
     rev::SparkMaxPIDController pidController;
