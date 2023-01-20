@@ -33,7 +33,7 @@ public:
      * 
      * @param _robot Pass in the Robot reference so the calculate method can be auto-scheduled
      */
-    ValorDebounceSensor(frc::TimedRobot *_robot);
+    ValorDebounceSensor(frc::TimedRobot *_robot, const char* name);
     
     void reset();
 
@@ -57,6 +57,8 @@ public:
      * @param _lambda Function to run when a falling edge has been detected
      */
     void setFallingEdgeCallback(std::function<void()> _lambda);
+
+    void InitSendable(wpi::SendableBuilder& builder) override;
 
 private:
 

@@ -108,6 +108,8 @@ public:
      */
     void reset();
 
+    void InitSendable(wpi::SendableBuilder& builder) override;
+
 private:
     ctre::phoenix::led::CANdle candle;
     int ledCount;

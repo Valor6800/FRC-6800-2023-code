@@ -53,6 +53,8 @@ public:
 
      void resetState();
 
+     void InitSendable(wpi::SendableBuilder& builder);
+
     struct Positions {
         Positions() {
             Positions(0,0);
@@ -108,6 +110,7 @@ public:
      
      // First in the pair returns the height in meters and second returns the rotation in degrees
      Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
+
 
 private:
      ValorNeoController carriageMotors;

@@ -38,7 +38,7 @@ public:
      * 
      * @param _robot Pass in the Robot reference so the calculate method can be auto-scheduled
      */
-    ValorCurrentSensor(frc::TimedRobot *_robot);
+    ValorCurrentSensor(frc::TimedRobot *_robot, const char *_name);
 
     void reset();
 
@@ -56,6 +56,8 @@ public:
      */
     void setSpikeSetpoint(double threshold);
 
+    void InitSendable(wpi::SendableBuilder& builder) override;
+
 private:
     std::function<void()> spikeCallback;
 
@@ -64,4 +66,5 @@ private:
     std::deque<double> cache;
 
     double spikedSetpoint;
+    double cacheSize;
 };

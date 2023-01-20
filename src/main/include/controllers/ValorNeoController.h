@@ -48,6 +48,8 @@ public:
 
     double getAbsEncoderPosition();
     
+    void InitSendable(wpi::SendableBuilder& builder) override;
+    
 private:
     rev::SparkMaxPIDController pidController;
     rev::SparkMaxRelativeEncoder encoder;
