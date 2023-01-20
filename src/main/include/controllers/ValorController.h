@@ -34,7 +34,7 @@
  * \endcode
  */
 template <class T>
-class ValorController
+class ValorController : public wpi::Sendable, public wpi::SendableHelper<ValorController<T>>
 {
 public:
 
@@ -272,6 +272,8 @@ public:
      * @param slot Which profile to turn active
      */
     virtual void setProfile(int slot) = 0;
+
+    virtual void InitSendable(wpi::SendableBuilder& builder) = 0;
 protected:
 
     T* motor;

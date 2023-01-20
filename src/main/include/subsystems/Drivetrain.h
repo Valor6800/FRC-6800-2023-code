@@ -54,7 +54,7 @@
  * Subsystem responsible for driving the robot chassis, and housing all the logic to control the
  * 4 swerve modules on the robot.
  */
-class Drivetrain : public ValorSubsystem, public wpi::Sendable, public wpi::SendableHelper<Drivetrain>
+class Drivetrain : public ValorSubsystem
 {
 public:
 
@@ -105,7 +105,7 @@ public:
 
      void resetState();
 
-     void InitSendable(wpi::SendableBuilder& builder) override;
+     void InitSendable(wpi::SendableBuilder& builder);
 
      struct x
      {

@@ -8,11 +8,18 @@
 #pragma once
 
 #include <frc2/command/SubsystemBase.h>
+
 #include <networktables/NetworkTableEntry.h>
 #include <networktables/NetworkTableInstance.h>
 #include <networktables/NetworkTable.h>
+
 #include <frc/TimedRobot.h>
+
 #include "ValorGamepad.h"
+
+#include <wpi/sendable/Sendable.h>
+#include <wpi/sendable/SendableBuilder.h>
+#include <wpi/sendable/SendableHelper.h>
 
 /**
  * @brief Abstract class that all Valor subsystem's should implement
@@ -41,7 +48,7 @@
  * Descriptions for each function and their intent is listed in the function description
  * 
  */
-class ValorSubsystem : public frc2::Subsystem {
+class ValorSubsystem : public frc2::Subsystem, public wpi::Sendable, public wpi::SendableHelper<ValorSubsystem> {
     public:
 
         /**
@@ -151,6 +158,8 @@ class ValorSubsystem : public frc2::Subsystem {
             operatorGamepad = _operatorGamepad;
             driverGamepad = _driverGamepad;
         }
+
+        virtual void InitSendable(wpi::SendableBuilder& builder) = 0;
     
     protected:
 
