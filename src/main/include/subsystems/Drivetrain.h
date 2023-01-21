@@ -255,8 +255,8 @@ private:
 
      WPI_Pigeon2 pigeon;
 
-     frc::SwerveDriveKinematics<SWERVE_COUNT> kinematics;
-     frc::SwerveDrivePoseEstimator<SWERVE_COUNT> estimator;
+     frc::SwerveDriveKinematics<SWERVE_COUNT> * kinematics;
+     frc::SwerveDrivePoseEstimator<SWERVE_COUNT> * estimator;
 
      frc::TrajectoryConfig config;
      frc::TrajectoryConfig reverseConfig;
