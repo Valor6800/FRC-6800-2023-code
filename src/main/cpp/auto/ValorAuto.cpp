@@ -13,8 +13,8 @@
 #include <frc2/command/CommandBase.h>
 
 frc::TrajectoryConfig ValorAuto::config(
-    units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS},
-    units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS});
+    units::velocity::meters_per_second_t{AUTO_MAX_SPEED_MPS},
+    units::acceleration::meters_per_second_squared_t{AUTO_MAX_ACCEL_MPS});
 
 ValorAuto::ValorAuto(Drivetrain *_drivetrain) :
     drivetrain(_drivetrain)
@@ -44,8 +44,8 @@ frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(f
         trajectory,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
-        frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
+        frc2::PIDController(KPX, KIX, KDX),
+        frc2::PIDController(KPY, KIY, KDY),
         thetaController,
         [this] (auto states) { drivetrain->setModuleStates(states); },
         {drivetrain}

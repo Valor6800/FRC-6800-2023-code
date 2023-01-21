@@ -46,6 +46,41 @@
 #define MODULE_DIFF 0.248f
 #define SWERVE_COUNT 4
 
+#define MODULE_DIFF_XS {1, 1, -1, -1} //1, 1, -1, -1
+#define MODULE_DIFF_YS {1, -1, 1, -1} //-1, 1, -1, 1
+
+#define KPX 0.5f //.75
+#define KIX 0.0f //0
+#define KDX 0.0f //.1
+
+#define KPY 0.5f //.75
+#define KIY 0.0f //0
+#define KDY 0.0f //.1
+
+#define AZIMUTH_K_P 0.2f
+#define AZIMUTH_K_I 0.0f
+#define AZIMUTH_K_D 0.1f
+#define AZIMUTH_K_F 0.05f
+
+#define AZIMUTH_K_VEL 17000.0f
+#define AZIMUTH_K_ACC_MUL 20.0f
+
+#define MOTOR_FREE_SPEED 6380.0f
+#define WHEEL_DIAMETER_M 0.1016f
+#define DRIVE_GEAR_RATIO 5.14f
+#define AZIMUTH_GEAR_RATIO 12.8f
+#define AUTO_SPEED_MUL 0.75f
+#define ROT_SPEED_MUL 1.0f
+#define ROT_SPEED_SLOW_MUL 0.5f
+
+#define DRIVE_MAX_SPEED_MPS MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI
+#define AUTO_MAX_SPEED_MPS DRIVE_MAX_SPEED_MPS
+#define AUTO_MAX_ACCEL_MPS AUTO_MAX_SPEED_MPS * .6
+
+#define ROTATION_MAX_SPEED_RPS 4 * M_PI
+#define AUTO_MAX_ROTATION_RPS ROTATION_MAX_SPEED_RPS
+#define AUTO_MAX_ROTATION_ACCEL_RPS AUTO_MAX_ROTATION_RPS * .5
+
 /**
  * @brief Subsystem - Drivetrain
  * 
@@ -203,7 +238,7 @@ private:
                                                            units::angular_velocity::radians_per_second_t,
                                                            bool);
 
-     
+
 
      void configSwerveModule(int);
 
