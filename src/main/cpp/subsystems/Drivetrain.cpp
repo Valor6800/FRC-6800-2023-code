@@ -7,22 +7,6 @@
 #include "subsystems/Drivetrain.h"
 #include <iostream>
 
-#define MOTOR_FREE_SPEED 6380.0f
-#define WHEEL_DIAMETER_M 0.1016f
-#define DRIVE_GEAR_RATIO 5.14f
-#define AZIMUTH_GEAR_RATIO 12.8f
-#define AUTO_SPEED_MUL 0.75f
-#define ROT_SPEED_MUL 1.0f
-#define ROT_SPEED_SLOW_MUL 0.5f
-
-#define AZIMUTH_K_P 0.2f
-#define AZIMUTH_K_I 0.0f
-#define AZIMUTH_K_D 0.1f
-#define AZIMUTH_K_F 0.05f
-
-#define AZIMUTH_K_VEL 17000.0f
-#define AZIMUTH_K_ACC_MUL 20.0f
-
 #define TXRANGE  30.0f
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
@@ -39,9 +23,9 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         initPositions(wpi::empty_array),
                         kinematics(motorLocations),
                         estimator(kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad}),
-                        config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
-                        reverseConfig(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
-                        thetaController{DriveConstants::KPT, DriveConstants::KIT, DriveConstants::KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{SwerveConstants::AUTO_MAX_ROTATION_RPS}, units::angular_acceleration::radians_per_second_squared_t{SwerveConstants::AUTO_MAX_ROTATION_ACCEL_RPSS})}
+                        config(units::velocity::meters_per_second_t{AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{AUTO_MAX_ACCEL_MPS}),
+                        reverseConfig(units::velocity::meters_per_second_t{AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{AUTO_MAX_ACCEL_MPS}),
+                        thetaController{AZIMUTH_K_P, AZIMUTH_K_I, AZIMUTH_K_D, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{AUTO_MAX_ROTATION_RPS}, units::angular_acceleration::radians_per_second_squared_t{AUTO_MAX_ROTATION_ACCEL_RPS})}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -60,8 +44,12 @@ Drivetrain::~Drivetrain()
 
 void Drivetrain::configSwerveModule(int i)
 {
-    motorLocations[i] = frc::Translation2d{swerveModuleDiff * DriveConstants::MODULE_DIFF_XS[i],
-                                           swerveModuleDiff * DriveConstants::MODULE_DIFF_YS[i]};
+
+   int MDX[] = MODULE_DIFF_XS;
+   int MDY[] = MODULE_DIFF_YS;
+
+    motorLocations[i] = frc::Translation2d{swerveModuleDiff * MDX[i],
+                                           swerveModuleDiff * MDY[i]};
 
     ValorPIDF azimuthPID;
     azimuthPID.velocity = AZIMUTH_K_VEL;

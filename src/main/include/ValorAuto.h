@@ -47,12 +47,12 @@ class ValorAuto {
         std::vector<ValorAutoAction> autoActions;
 
         frc::ProfiledPIDController<units::radians> thetaController{
-                DriveConstants::KPT,
-                DriveConstants::KIT,
-                DriveConstants::KDT,
+                AZIMUTH_K_P,
+                AZIMUTH_K_I,
+                AZIMUTH_K_D,
                 frc::ProfiledPIDController<units::radians>::Constraints(
-                    units::angular_velocity::radians_per_second_t{SwerveConstants::AUTO_MAX_ROTATION_RPS},
-                    units::angular_acceleration::radians_per_second_squared_t{SwerveConstants::AUTO_MAX_ROTATION_ACCEL_RPSS})
+                    units::angular_velocity::radians_per_second_t{AUTO_MAX_ROTATION_RPS},
+                    units::angular_acceleration::radians_per_second_squared_t{AUTO_MAX_ROTATION_ACCEL_RPS})
         };
 
         std::map<std::string, frc::Translation2d> points;
