@@ -37,7 +37,7 @@ class ValorAuto {
     protected:
 
         frc::Trajectory createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed = false);
-        frc2::SwerveControllerCommand<4> createTrajectoryCommand(frc::Trajectory);
+        frc2::SwerveControllerCommand<SWERVE_COUNT> createTrajectoryCommand(frc::Trajectory);
 
         void readAuto(std::string);
 
