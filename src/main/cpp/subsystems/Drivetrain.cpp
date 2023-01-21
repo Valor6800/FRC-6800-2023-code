@@ -21,8 +21,8 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
                         motorLocations(wpi::empty_array),
                         initPositions(wpi::empty_array),
-                        kinematics(motorLocations),
-                        estimator(kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad}),
+                        kinematics(NULL),
+                        estimator(NULL),
                         config(units::velocity::meters_per_second_t{AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{AUTO_MAX_ACCEL_MPS}),
                         reverseConfig(units::velocity::meters_per_second_t{AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{AUTO_MAX_ACCEL_MPS}),
                         thetaController{AZIMUTH_K_P, AZIMUTH_K_I, AZIMUTH_K_D, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{AUTO_MAX_ROTATION_RPS}, units::angular_acceleration::radians_per_second_squared_t{AUTO_MAX_ROTATION_ACCEL_RPS})}
@@ -40,6 +40,9 @@ Drivetrain::~Drivetrain()
         delete driveControllers[i];
         delete swerveModules[i];
     }
+
+    delete kinematics;
+    delete estimator;
 }
 
 void Drivetrain::configSwerveModule(int i)
@@ -98,7 +101,8 @@ void Drivetrain::init()
         configSwerveModule(i);
     }
 
-    kinematics = frc::SwerveDriveKinematics<SWERVE_COUNT>(motorLocations);
+    kinematics = new frc::SwerveDriveKinematics<SWERVE_COUNT>(motorLocations);
+    estimator = new frc::SwerveDrivePoseEstimator<SWERVE_COUNT>(*kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad});
 
     table->PutNumber("Real-estimated pose delta cap", 5);
     table->PutNumber("Vision doubt", 3.0);
@@ -176,7 +180,7 @@ void Drivetrain::analyzeDashboard()
         state.saveToFileDebouncer = false;
     }
 
-    estimator.UpdateWithTime(frc::Timer::GetFPGATimestamp(),
+    estimator->UpdateWithTime(frc::Timer::GetFPGATimestamp(),
                             getPigeon(),
                             {
                                 swerveModules[0]->getModulePosition(),
@@ -216,7 +220,7 @@ void Drivetrain::analyzeDashboard()
                 double visionDoubt = table->GetNumber("Vision doubt", 3.0);
 
                 // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset
-                estimator.AddVisionMeasurement(
+                estimator->AddVisionMeasurement(
                     thetalessBotpose,  
                     frc::Timer::GetFPGATimestamp(),
                     {visionDoubt, visionDoubt, visionDoubt}
@@ -275,12 +279,12 @@ void Drivetrain::pullSwerveModuleZeroReference(){
 
 frc::SwerveDriveKinematics<SWERVE_COUNT>& Drivetrain::getKinematics()
 {
-    return kinematics;
+    return *kinematics;
 }
 
 frc::Pose2d Drivetrain::getPose_m()
 {
-    return estimator.GetEstimatedPosition();
+    return estimator->GetEstimatedPosition();
 }
 
 void Drivetrain::resetGyro(){
@@ -299,7 +303,7 @@ void Drivetrain::resetOdometry(frc::Pose2d pose)
         modulePositions[i] = swerveModules[i]->getModulePosition();
     }
 
-    estimator.ResetPosition(getPigeon(), modulePositions, pose);
+    estimator->ResetPosition(getPigeon(), modulePositions, pose);
 }
 
 frc::Rotation2d Drivetrain::getPigeon() 
@@ -335,16 +339,16 @@ wpi::array<frc::SwerveModuleState, SWERVE_COUNT> Drivetrain::getModuleStates(uni
     frc::ChassisSpeeds chassisSpeeds = isFOC ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx_mps,
                                                                                            vy_mps,
                                                                                            omega_radps,
-                                                                                           estimator.GetEstimatedPosition().Rotation())
+                                                                                           estimator->GetEstimatedPosition().Rotation())
                                              : frc::ChassisSpeeds{vx_mps, vy_mps, omega_radps};
-    auto states = kinematics.ToSwerveModuleStates(chassisSpeeds);
-    kinematics.DesaturateWheelSpeeds(&states, units::velocity::meters_per_second_t{driveMaxSpeed});
+    auto states = kinematics->ToSwerveModuleStates(chassisSpeeds);
+    kinematics->DesaturateWheelSpeeds(&states, units::velocity::meters_per_second_t{driveMaxSpeed});
     return states;
 }
 
 void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT> desiredStates)
 { 
-    kinematics.DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{driveMaxSpeed});
+    kinematics->DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{driveMaxSpeed});
     for (int i = 0; i < SWERVE_COUNT; i++)
     {
         swerveModules[i]->setDesiredState(desiredStates[i], true);
