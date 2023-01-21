@@ -17,6 +17,9 @@
 #include "ValorAuto.h"
 #include "subsystems/Intake.h"
 
+#include <frc/DriverStation.h>
+#include <frc/DataLogManager.h>
+
 class Robot : public frc::TimedRobot {
     public:
         Robot();

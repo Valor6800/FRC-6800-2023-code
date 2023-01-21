@@ -164,6 +164,7 @@ void Drivetrain::init()
 
     table->PutNumber("pipeline", 0);
 
+    //wpi::SendableRegistry::AddLW(this, "ValorSubsystem", "Drivetrain");
 }
 
 std::vector<ValorSwerve<Drivetrain::SwerveAzimuthMotor, Drivetrain::SwerveDriveMotor> *> Drivetrain::getSwerveModules()

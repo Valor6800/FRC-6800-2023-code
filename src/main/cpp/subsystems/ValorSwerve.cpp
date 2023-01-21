@@ -189,25 +189,25 @@ void ValorSwerve<AzimuthMotor, DriveMotor>::InitSendable(wpi::SendableBuilder& b
     builder.AddDoubleProperty
     (
         "state: angle",
-        [this] { return getState().angleto<double>(); },
+        [this] { return getState().angle.Degrees().template to<double>(); },
         nullptr
     );
     builder.AddDoubleProperty
     (
         "state: speed",
-        [this] { return getState().speed.to<double>(); },
+        [this] { return getState().speed.template to<double>(); },
         nullptr
     );
     builder.AddDoubleProperty
     (
         "position: angle",
-        [this] { return getModulePosition().angleto<double>(); },
+        [this] { return getModulePosition().angle.Degrees().template to<double>(); },
         nullptr
     );
     builder.AddDoubleProperty
     (
         "position: distance",
-        [this] { return getModulePosition().distanceto<double>(); },
+        [this] { return getModulePosition().distance.template to<double>(); },
         nullptr
     );
 }
