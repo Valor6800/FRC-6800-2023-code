@@ -10,7 +10,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
-Robot::Robot() : drivetrain(this), autonomous(&drivetrain)
+Robot::Robot() : drivetrain(this), intake(this), autonomous(&drivetrain, &intake)
 {
     frc::TimedRobot();
 }
