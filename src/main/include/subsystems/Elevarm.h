@@ -14,7 +14,9 @@
 
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
-
+#include <frc/trajectory/Trajectory.h>
+#include <frc/geometry/Pose3d.h>
+#include <frc/geometry/Rotation3d.h>
 
 /**
  * @brief Subsystem - Elevarm
@@ -53,6 +55,7 @@ public:
 
      void resetState();
 
+
      enum ElevarmPieceState {
         ELEVARM_CONE,
         ELEVARM_CUBE
@@ -71,21 +74,35 @@ public:
         ELEVARM_HIGH
     };
 
+    enum ElevarmSolutions {
+        ELEVARM_A,
+        ELEVARM_B,
+        ELEVARM_C,
+        ELEVARM_D,
+        
+    };
+
      struct x
      {
           ElevarmPieceState pieceState;
           ElevarmDirectionState directionState;
           ElevarmPositionState positionState;
           
-
      } futureState, previousState;
 
-  
+       
+     ElevarmSolutions solutionsEnum;
+
+     // First in the pair returns the height in meters and second returns the rotation in degrees
+     std::pair<double, double> reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
+
 
      
 private:
-     ValorNeoController carriageMain;
-     ValorNeoController carriageFollow;
-     ValorNeoController armRotate;
+     ValorNeoController carriageMotors;
+     ValorNeoController armRotateMotor;
+     std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose3d>>> posMap;
+     frc::Pose3d stowPos;
+
 
 };
