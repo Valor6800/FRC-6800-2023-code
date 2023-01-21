@@ -14,7 +14,7 @@
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
 #include "controllers/ValorPIDF.h"
-#include "subsystems/TestVision.h"
+#include "sensors/ValorVisionSensor.h"
 
 #include "AHRS.h"
 #include "ctre/phoenix/sensors/WPI_Pigeon2.h"
@@ -267,6 +267,12 @@ private:
      ValorPIDF xPIDF;
      ValorPIDF yPIDF;
      ValorPIDF thetaPIDF;
+
+     frc::Pose2d translatePoseToCorner(frc::Pose2d);
+
+     ValorVisionSensor vision;
+
+     frc2::SwerveControllerCommand<4> *cmdGoToTag;
 
      std::shared_ptr<nt::NetworkTable> limeTable;
 

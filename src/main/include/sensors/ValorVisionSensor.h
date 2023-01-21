@@ -24,11 +24,14 @@ class ValorVisionSensor : public ValorSensor<frc::Pose2d>
     void reset();
     void calculate();
     void aim();
-
+    void translatePoseToCorner(frc::Pose2d tagPose);
+    
     int tv;
     int tid;
     double tx, ty;
-    std::vector<double> robotPose;
+    frc::Pose2d botpose;
+    frc::Pose2d visionRobotPose;
+    std::vector<double> robotPoseList;
 
     std::map<int, frc::Pose2d> tags = {
         {1, frc::Pose2d{15.513558_m, 1.071626_m, 0_deg}},
@@ -41,7 +44,7 @@ class ValorVisionSensor : public ValorSensor<frc::Pose2d>
         {8, frc::Pose2d{1.02743_m, 1.071626_m, 0_deg}},
     }; //When selecting an index subtract 1 from the tag id.
 
-    
+    std::shared_ptr<nt::NetworkTable> visionTable;
     
 
     private:

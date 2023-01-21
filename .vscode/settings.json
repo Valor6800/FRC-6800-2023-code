@@ -99,6 +99,19 @@
     "xstddef": "cpp",
     "xstring": "cpp",
     "xtr1common": "cpp",
-    "xutility": "cpp"
+    "xutility": "cpp",
+    "__bit_reference": "cpp",
+    "__bits": "cpp",
+    "__config": "cpp",
+    "__debug": "cpp",
+    "__errc": "cpp",
+    "__locale": "cpp",
+    "__mutex_base": "cpp",
+    "__nullptr": "cpp",
+    "__split_buffer": "cpp",
+    "__string": "cpp",
+    "__threading_support": "cpp",
+    "__tuple": "cpp",
+    "locale": "cpp"
   }
 }

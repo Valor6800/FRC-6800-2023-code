@@ -149,6 +149,7 @@ void Drivetrain::resetState()
 void Drivetrain::init()
 {
     vision.visionTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+
     pigeon.Calibrate();    
 
     initPositions.fill(frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)});
@@ -222,15 +223,10 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
-    vision.visionSensor.robotPose = vision.visionTable->GetNumberArray("botpose", std::span<const double>());
-    vision.visionSensor.tv = vision.visionTable->GetNumber("tv", 0);
-    vision.visionSensor.tid = vision.visionTable->GetNumber("tid",0);
-
-    vision.visionRobotPose = frc::Pose2d{
-        static_cast<units::meter_t>(vision.visionSensor.robotPose[0]),
-        static_cast<units::meter_t>(vision.visionSensor.robotPose[1]),
-        static_cast<units::degree_t>(vision.visionSensor.robotPose[5])
-    };
+   
+    // vision.visionRobotPose.X() = static_cast<units::meter_t>(vision.visionSensor.robotPose[0]);
+    // vision.visionRobotPose.Y() = static_cast<units::meter_t>(vision.visionSensor.robotPose[1]);
+    // vision.visionRobotPose.Rotation().Degrees() = static_cast<units::degree_t>(vision.visionSensor.robotPose[5]);
 
     // table->PutNumber("Robot X", getPose_m().X().to<double>());
     // table->PutNumber("Robot Y", getPose_m().Y().to<double>());
@@ -316,6 +312,7 @@ void Drivetrain::analyzeDashboard()
             }
         }
     }
+    
 }
 
 void Drivetrain::assignOutputs()
