@@ -74,7 +74,8 @@ void ValorNeoController::setConversion(double _conversion)
     conversion = _conversion;
     encoder.SetPositionConversionFactor(conversion);
     // convert from minutes to seconds for velocity
-    encoder.SetVelocityConversionFactor(conversion / 60.0);
+    encoder.SetVelocityConversionFactor(_conversion / 60.0);
+   
 }
 
 void ValorNeoController::setRange(int slot, double min, double max)
