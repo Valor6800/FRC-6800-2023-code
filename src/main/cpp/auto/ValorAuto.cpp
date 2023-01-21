@@ -12,8 +12,8 @@
 
 #include <frc2/command/CommandBase.h>
 
-ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake) :
-    drivetrain(_drivetrain), intake(_intake)
+ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
+    drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
 {
     drivetrain->getTrajectoryConfig().SetKinematics(*drivetrain->getKinematics());
 

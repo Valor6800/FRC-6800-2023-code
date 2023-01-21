@@ -13,6 +13,7 @@
 #include "Constants.h"
 #include "ValorGamepad.h"
 #include "subsystems/Drivetrain.h"
+#include "subsystems/Elevarm.h"
 #include "ValorAuto.h"
 #include "subsystems/Intake.h"
 
@@ -38,5 +39,6 @@ class Robot : public frc::TimedRobot {
 
         Drivetrain drivetrain;
         Intake intake;
+        Elevarm elevarm;
         ValorAuto autonomous;
 };

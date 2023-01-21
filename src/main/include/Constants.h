@@ -51,4 +51,7 @@ namespace CANIDs {
     constexpr static int PIGEON_CAN = 61;
     constexpr static int INTAKE_LEAD_CAN = 12;
     constexpr static int INTAKE_FOLLOW_CAN = 13;
+    constexpr static int CARRIAGE_MAIN = 9;
+    constexpr static int CARRIAGE_FOLLOW = 10;
+    constexpr static int ARM_ROTATE = 11;
 }
