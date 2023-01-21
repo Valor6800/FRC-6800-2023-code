@@ -38,9 +38,9 @@ std::vector<std::string> listDirectory(std::string path_name){
     return files;
 }
 
-frc2::SwerveControllerCommand<4> ValorAuto::createTrajectoryCommand(frc::Trajectory trajectory)
+frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(frc::Trajectory trajectory)
 {
-    return frc2::SwerveControllerCommand<4>(
+    return frc2::SwerveControllerCommand<SWERVE_COUNT>(
         trajectory,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
