@@ -153,7 +153,9 @@ void Drivetrain::init()
     thetaPIDF.F = KFT;
 
     table->PutNumber("Real-estimated pose delta cap", 5);
-    table->PutNumber("Vision doubt", 3.0);
+    table->PutNumber("Base vision doubt", 3.0);
+    table->PutNumber("Scalar vision doubt", 0.7);
+    table->PutNumber("Squared vision doubt", 0);
 
     table->PutBoolean("Save Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
@@ -257,15 +259,23 @@ void Drivetrain::analyzeDashboard()
                 getPose_m().Rotation()
             };
 
-            frc::Transform2d poseDifs = botpose - getPose_m();
-            double difMag = sqrt(poseDifs.X().to<double>() * poseDifs.X().to<double>() + poseDifs.Y().to<double>() * poseDifs.Y().to<double>());
+            double difMag = (botpose - getPose_m()).Translation().Norm().to<double>();
             
             table->PutNumber("Theoretical to current pose delta", difMag);
             if (difMag < table->GetNumber("Real-estimated pose delta cap", 5.0)){
                 table->PutNumber("Theoretical X", botpose.X().to<double>());
                 table->PutNumber("Theoretical Y", botpose.Y().to<double>());
 
-                double visionDoubt = table->GetNumber("Vision doubt", 3.0);
+                double distanceToTag = (
+                    getPose_m() - tags[(int)limeTable->GetNumber("tid", 0)]
+                ).Translation().Norm().to<double>();
+
+                double visionDoubt = 
+                table->GetNumber("Base vision doubt", 3.0) +
+                table->GetNumber("Scalar vision doubt", 0.7) * distanceToTag + 
+                table->GetNumber("Squared vision doubt", 0) * distanceToTag * distanceToTag;
+
+                table->PutNumber("Current vision doubt", visionDoubt);
 
                 // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset
                 estimator->AddVisionMeasurement(
