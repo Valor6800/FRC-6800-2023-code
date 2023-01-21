@@ -35,7 +35,9 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         autoMaxSpeed(driveMaxSpeed),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
-                        kinematics(motorLocations[0], motorLocations[1], motorLocations[2], motorLocations[3]),
+                        motorLocations(wpi::empty_array),
+                        initPositions(wpi::empty_array),
+                        kinematics(motorLocations),
                         estimator(kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad}),
                         config(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
                         reverseConfig(units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS}),
@@ -47,7 +49,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
 
 Drivetrain::~Drivetrain()
 {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < SWERVE_COUNT; i++)
     {
         delete magEncoders[i];
         delete azimuthControllers[i];
@@ -58,6 +60,9 @@ Drivetrain::~Drivetrain()
 
 void Drivetrain::configSwerveModule(int i)
 {
+    motorLocations[i] = frc::Translation2d{swerveModuleDiff * DriveConstants::MODULE_DIFF_XS[i],
+                                           swerveModuleDiff * DriveConstants::MODULE_DIFF_YS[i]};
+
     ValorPIDF azimuthPID;
     azimuthPID.velocity = AZIMUTH_K_VEL;
     azimuthPID.acceleration = azimuthPID.velocity * AZIMUTH_K_ACC_MUL;
@@ -98,10 +103,14 @@ void Drivetrain::init()
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     pigeon.Calibrate();    
 
-    for (int i = 0; i < 4; i++)
+    initPositions.fill(frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)});
+
+    for (int i = 0; i < SWERVE_COUNT; i++)
     {
         configSwerveModule(i);
     }
+
+    kinematics = frc::SwerveDriveKinematics<SWERVE_COUNT>(motorLocations);
 
     table->PutNumber("Real-estimated pose delta cap", 5);
     table->PutNumber("Vision doubt", 3.0);
@@ -276,7 +285,7 @@ void Drivetrain::pullSwerveModuleZeroReference(){
     }
 }
 
-frc::SwerveDriveKinematics<4>& Drivetrain::getKinematics()
+frc::SwerveDriveKinematics<SWERVE_COUNT>& Drivetrain::getKinematics()
 {
     return kinematics;
 }
@@ -294,14 +303,15 @@ void Drivetrain::resetGyro(){
 
 void Drivetrain::resetOdometry(frc::Pose2d pose)
 {
-    estimator.ResetPosition(getPigeon(),
-                            { 
-                                swerveModules[0]->getModulePosition(),
-                                swerveModules[1]->getModulePosition(),
-                                swerveModules[2]->getModulePosition(),
-                                swerveModules[3]->getModulePosition()
-                            },
-                            pose);
+
+    wpi::array<frc::SwerveModulePosition, SWERVE_COUNT> modulePositions = wpi::array<frc::SwerveModulePosition, SWERVE_COUNT>(wpi::empty_array);
+
+    for (size_t i = 0; i < swerveModules.size(); i++)
+    {
+        modulePositions[i] = swerveModules[i]->getModulePosition();
+    }
+
+    estimator.ResetPosition(getPigeon(), modulePositions, pose);
 }
 
 frc::Rotation2d Drivetrain::getPigeon() 
@@ -329,7 +339,7 @@ void Drivetrain::drive(units::velocity::meters_per_second_t vx_mps, units::veloc
     }
 }
 
-wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::velocity::meters_per_second_t vx_mps,
+wpi::array<frc::SwerveModuleState, SWERVE_COUNT> Drivetrain::getModuleStates(units::velocity::meters_per_second_t vx_mps,
                                                                   units::velocity::meters_per_second_t vy_mps,
                                                                   units::angular_velocity::radians_per_second_t omega_radps,
                                                                   bool isFOC)
@@ -344,10 +354,10 @@ wpi::array<frc::SwerveModuleState, 4> Drivetrain::getModuleStates(units::velocit
     return states;
 }
 
-void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, 4> desiredStates)
+void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT> desiredStates)
 { 
     kinematics.DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{driveMaxSpeed});
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < SWERVE_COUNT; i++)
     {
         swerveModules[i]->setDesiredState(desiredStates[i], true);
     }

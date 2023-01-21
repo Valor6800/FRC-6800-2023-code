@@ -203,6 +203,8 @@ private:
                                                            units::angular_velocity::radians_per_second_t,
                                                            bool);
 
+     
+
      void configSwerveModule(int);
 
      std::vector<ValorSwerve<SwerveAzimuthMotor, SwerveDriveMotor> *> swerveModules;
@@ -212,18 +214,9 @@ private:
      std::vector<frc::DutyCycleEncoder*> magEncoders;
      units::meter_t swerveModuleDiff = units::meter_t(MODULE_DIFF);
 
-     std::vector<frc::Translation2d> motorLocations{frc::Translation2d{swerveModuleDiff * DriveConstants::MODULE_DIFF_XS[0],
-                                                                       swerveModuleDiff * DriveConstants::MODULE_DIFF_YS[0]},
-                                                    frc::Translation2d{swerveModuleDiff * DriveConstants::MODULE_DIFF_XS[1],
-                                                                       swerveModuleDiff * DriveConstants::MODULE_DIFF_YS[1]},
-                                                    frc::Translation2d{swerveModuleDiff * DriveConstants::MODULE_DIFF_XS[2],
-                                                                       swerveModuleDiff * DriveConstants::MODULE_DIFF_YS[2]},
-                                                    frc::Translation2d{swerveModuleDiff * DriveConstants::MODULE_DIFF_XS[3],
-                                                                       swerveModuleDiff * DriveConstants::MODULE_DIFF_YS[3]}};
-     wpi::array<frc::SwerveModulePosition, SWERVE_COUNT> initPositions{frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)},
-                                                            frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)},
-                                                            frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)},
-                                                            frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)}};
+     wpi::array<frc::Translation2d, SWERVE_COUNT> motorLocations;
+
+     wpi::array<frc::SwerveModulePosition, SWERVE_COUNT> initPositions;
 
      WPI_Pigeon2 pigeon;
 
