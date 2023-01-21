@@ -14,6 +14,9 @@
 #include <wpi/ghc/filesystem.hpp>
 
 #include <frc2/command/CommandBase.h>
+#include <frc/DriverStation.h>
+
+#define ROOT_AUTO_PATH (std::string)"/home/lvuser/auto/"
 
 ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
     drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
@@ -343,16 +346,24 @@ std::string makeFriendlyName(std::string filename){
     return n_name;
 }
 
-frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto()
-{
-    readPointsCSV("/home/lvuser/test_points.csv");
-    precompileActions("/home/lvuser/actions/");
+frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue){
+        readPointsCSV(ROOT_AUTO_PATH + "points/blue_points.csv");
+    }
+    else {
+        readPointsCSV(ROOT_AUTO_PATH + "points/red_points.csv");
+    }
+    
+    precompileActions(ROOT_AUTO_PATH + "actions/");
 
     return makeAuto(m_chooser.GetSelected());
 }
 
 void ValorAuto::fillAutoList(){
-    std::string autos_path = "/home/lvuser/auto_csvs/";
+    auto inst = nt::NetworkTableInstance::GetDefault();
+    auto table = inst.GetTable("Drivetrain");
+
+    std::string autos_path = ROOT_AUTO_PATH + "autos/";
     std::vector<std::string> avAutos = listDirectory(autos_path);
     for (std::string a: avAutos){
         m_chooser.AddOption(makeFriendlyName(a), a);
