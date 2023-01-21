@@ -14,6 +14,7 @@
 #include "ValorGamepad.h"
 #include "subsystems/Drivetrain.h"
 #include "ValorAuto.h"
+#include "subsystems/Intake.h"
 
 class Robot : public frc::TimedRobot {
     public:
@@ -36,5 +37,6 @@ class Robot : public frc::TimedRobot {
         frc2::Command* autoCommand = nullptr;
 
         Drivetrain drivetrain;
+        Intake intake;
         ValorAuto autonomous;
 };
