@@ -211,6 +211,8 @@ public:
      units::velocity::meters_per_second_t ySpeedMPS;
      units::angular_velocity::radians_per_second_t rotRPS;
 
+     frc::Pose2d visionPose;
+
 private:
      double driveMaxSpeed;
      double rotMaxSpeed;

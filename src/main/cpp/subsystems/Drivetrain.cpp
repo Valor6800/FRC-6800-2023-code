@@ -11,17 +11,17 @@
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
 
-#define KPX 0.5f //.75
-#define KIX 0.0f //0
-#define KDX 0.0f //.1
+#define KPX 2.5f //0.5
+#define KIX 0.0f //0.0
+#define KDX 0.0f //0.0
 #define KFX 0.0f
 
-#define KPY 0.5f //.75
-#define KIY 0.0f //0
-#define KDY 0.0f //.1
-#define KFY 0.0f
+#define KPY 13.75f //0.5
+#define KIY 0.0f //0.0
+#define KDY 0.0f //0.0
+#define KFY 0.0f//0.0
 
-#define KPT 4.0f
+#define KPT 8.0f //4.0
 #define KIT 0.0f
 #define KDT 0.0f
 #define KFT 0.0f
@@ -36,10 +36,10 @@
 
 #define MOTOR_FREE_SPEED 6380.0f
 #define WHEEL_DIAMETER_M 0.1016f
-#define DRIVE_GEAR_RATIO 5.51f
-#define AZIMUTH_GEAR_RATIO 13.37f
-#define AUTO_SPEED_MUL 0.75f
-#define ROT_SPEED_MUL 2.0f
+#define DRIVE_GEAR_RATIO 5.14f
+#define AZIMUTH_GEAR_RATIO 12.8f
+#define AUTO_SPEED_MUL 0.375f * 1
+#define ROT_SPEED_MUL 1.0f
 
 #define MODULE_DIFF_XS {1, 1, -1, -1}
 #define MODULE_DIFF_YS {1, -1, -1, 1}
@@ -50,7 +50,7 @@
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
-                        autoMaxSpeed(driveMaxSpeed),
+                        autoMaxSpeed(driveMaxSpeed * 1),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         rotMaxAccel(rotMaxSpeed * 0.5),
                         pigeon(CANIDs::PIGEON_CAN, PIGEON_CAN_BUS),
@@ -59,7 +59,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         kinematics(NULL),
                         estimator(NULL),
                         config(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel}),
-                        thetaController{thetaPIDF.P, thetaPIDF.I, thetaPIDF.D, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})}
+                        thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -154,7 +154,9 @@ void Drivetrain::init()
     thetaPIDF.F = KFT;
 
     table->PutNumber("Real-estimated pose delta cap", 5);
-    table->PutNumber("Vision doubt", 3.0);
+    table->PutNumber("Base vision doubt", 3.0);
+    table->PutNumber("Scalar vision doubt", 0.7);
+    table->PutNumber("Squared vision doubt", 0);
 
     table->PutBoolean("Save Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
@@ -164,6 +166,7 @@ void Drivetrain::init()
 
     table->PutNumber("pipeline", 0);
 
+    visionPose = getPose_m();
 }
 
 std::vector<ValorSwerve<Drivetrain::SwerveAzimuthMotor, Drivetrain::SwerveDriveMotor> *> Drivetrain::getSwerveModules()
@@ -253,31 +256,41 @@ void Drivetrain::analyzeDashboard()
                 }
             );
 
+            visionPose = botpose;
+
             frc::Pose2d thetalessBotpose = frc::Pose2d{
                 botpose.X(),
                 botpose.Y(),
                 getPose_m().Rotation()
             };
 
-            frc::Transform2d poseDifs = botpose - getPose_m();
-            double difMag = sqrt(poseDifs.X().to<double>() * poseDifs.X().to<double>() + poseDifs.Y().to<double>() * poseDifs.Y().to<double>());
+            double difMag = (botpose - getPose_m()).Translation().Norm().to<double>();
             
             table->PutNumber("Theoretical to current pose delta", difMag);
             if (difMag < table->GetNumber("Real-estimated pose delta cap", 5.0)){
                 table->PutNumber("Theoretical X", botpose.X().to<double>());
                 table->PutNumber("Theoretical Y", botpose.Y().to<double>());
 
-                double visionDoubt = table->GetNumber("Vision doubt", 3.0);
+                double distanceToTag = (
+                    getPose_m() - tags[(int)limeTable->GetNumber("tid", 0)]
+                ).Translation().Norm().to<double>();
+
+                double visionDoubt = 
+                table->GetNumber("Base vision doubt", 3.0) +
+                table->GetNumber("Scalar vision doubt", 0.7) * distanceToTag + 
+                table->GetNumber("Squared vision doubt", 0) * distanceToTag * distanceToTag;
+
+                table->PutNumber("Current vision doubt", visionDoubt);
 
                 // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset
-                estimator->AddVisionMeasurement(
-                    thetalessBotpose,  
-                    frc::Timer::GetFPGATimestamp(),
-                    {visionDoubt, visionDoubt, visionDoubt}
-                );
+                // estimator->AddVisionMeasurement(
+                //     thetalessBotpose,  
+                //     frc::Timer::GetFPGATimestamp(),
+                //     {visionDoubt, visionDoubt, visionDoubt}
+                // );
             }
             
-            if (operatorGamepad->GetAButton()){
+            if (driverGamepad->GetAButton()){
                 resetOdometry(botpose);
             }
         }
@@ -402,10 +415,10 @@ wpi::array<frc::SwerveModuleState, SWERVE_COUNT> Drivetrain::getModuleStates(uni
 
 void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT> desiredStates)
 { 
-    kinematics->DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{driveMaxSpeed});
+    kinematics->DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{autoMaxSpeed});
     for (int i = 0; i < SWERVE_COUNT; i++)
     {
-        swerveModules[i]->setDesiredState(desiredStates[i], true);
+        swerveModules[i]->setDesiredState(desiredStates[i], false);
     }
 }
 
