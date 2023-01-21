@@ -26,6 +26,7 @@
 #define TXRANGE  30.0f
 #define KLIME 0.4f
 #define KPIGEON 2.0f
+#define KLIMELIGHT -29.8f
 
 #define DRIVETRAIN_CAN_BUS "baseCAN"
 
@@ -111,6 +112,8 @@ void Drivetrain::init()
 
     resetState();   
     trackingID = 0;
+
+    table->PutNumber("pipeline", 0);
 }
 
 std::vector<ValorSwerve<Drivetrain::SwerveAzimuthMotor, Drivetrain::SwerveDriveMotor> *> Drivetrain::getSwerveModules()
@@ -146,6 +149,7 @@ void Drivetrain::assessInputs()
     state.rot = driverGamepad->rightStickX(3);
     state.slowDown = driverGamepad->GetAButton();
     state.startButton = driverGamepad->GetStartButtonPressed();
+    state.limehoming = driverGamepad->GetYButton();
 
     if (driverGamepad->GetXButton())
     {
@@ -313,7 +317,10 @@ void Drivetrain::assignOutputs()
         //     rotRPS = sign * units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed * ROT_SPEED_SLOW_MUL};
         // }
         // drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
-    } else{
+    } else if (state.limehoming){
+        limelightHoming();
+    } else {
+        limeTable->PutNumber("pipeline", 0);
         drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
     }
 
@@ -421,5 +428,14 @@ frc::Pose2d Drivetrain::translatePoseToCorner(frc::Pose2d tagPose){
 void Drivetrain::setDriveMotorModeTo(NeutralMode mode){
     for (int i = 0; i < driveControllers.size(); i ++){
         driveControllers[i]->setMotorMode(mode);
+    }
+}
+
+void Drivetrain::limelightHoming(){
+    limeTable->PutNumber("pipeline", 1);
+    if (limeTable->GetNumber("tv", 0) == 1){
+        drive(units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed}, units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed}, units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) * rotMaxSpeed) / KLIMELIGHT), true);
+    } else{
+    drive(units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed}, units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed}, units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed}, true);
     }
 }

@@ -115,6 +115,7 @@ public:
           bool saveToFileDebouncer;
 
           bool limecentering;
+          bool limehoming;
      } state;
 
      /**
@@ -185,6 +186,7 @@ public:
 
      void cancelCmdGoToTag();
      void setDriveMotorModeTo(NeutralMode);
+     void limelightHoming();
 
      int trackingID;
 private:
