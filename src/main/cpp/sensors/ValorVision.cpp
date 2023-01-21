@@ -10,24 +10,34 @@ void ValorVisionSensor::reset()
     setGetter([this] () {
             return visionRobotPose;
         });
+    visionTable->PutNumber("getpipe", 0);
 }
-
 void ValorVisionSensor::calculate() {
-    tv = visionTable->GetNumber("tv", 0);
-    if (tv == 1){
-        robotPoseList = visionTable->GetNumberArray("botpose", std::span<const double>());
-        tid = visionTable->GetNumber("tid",0);
+    if (visionTable->GetNumber("getpipe", 0) == 0){
+        tx = 0;
+        tv = visionTable->GetNumber("tv", 0);
+        if (tv == 1){
+            robotPoseList = visionTable->GetNumberArray("botpose", std::span<const double>());
+            tid = visionTable->GetNumber("tid",0);
 
-        if (robotPoseList.size() >= 6){
-            visionRobotPose = frc::Pose2d(
-                static_cast<units::meter_t>(robotPoseList[0]),
-                static_cast<units::meter_t>(robotPoseList[1]),
-                static_cast<units::degree_t>(robotPoseList[5])
-            );
-            translatePoseToCorner(visionRobotPose);
+            if (robotPoseList.size() >= 6){
+                visionRobotPose = frc::Pose2d(
+                    static_cast<units::meter_t>(robotPoseList[0]),
+                    static_cast<units::meter_t>(robotPoseList[1]),
+                    static_cast<units::degree_t>(robotPoseList[5])
+                );
+                translatePoseToCorner(visionRobotPose);
+            }
+        } else {
+            robotPoseList = std::vector<double>();
         }
-    } else {
-        robotPoseList = std::vector<double>();
+    } else if (visionTable->GetNumber("getpipe", 0) == 1) {
+        tv = visionTable->GetNumber("tv", 0);
+        if (tv == 1){
+            tx = visionTable -> GetNumber("tx", 0);
+        } else {
+            tx = 0;
+        }
     }
 
     //-> Chin Math? <-

@@ -149,6 +149,7 @@ void Drivetrain::resetState()
 void Drivetrain::init()
 {
     vision.visionTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
+    vision.visionTable->PutNumber("getpipe", 0);
 
     pigeon.Calibrate();    
 
