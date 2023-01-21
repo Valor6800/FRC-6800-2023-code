@@ -18,14 +18,14 @@ void ValorVisionSensor::calculate() {
         robotPoseList = visionTable->GetNumberArray("botpose", std::span<const double>());
         tid = visionTable->GetNumber("tid",0);
 
-        visionRobotPose = frc::Pose2d(
-            static_cast<units::meter_t>(robotPoseList[0]),
-            static_cast<units::meter_t>(robotPoseList[1]),
-            static_cast<units::degree_t>(robotPoseList[5])
-        );
-
-        translatePoseToCorner(visionRobotPose);
-
+        if (robotPoseList.size() >= 6){
+            visionRobotPose = frc::Pose2d(
+                static_cast<units::meter_t>(robotPoseList[0]),
+                static_cast<units::meter_t>(robotPoseList[1]),
+                static_cast<units::degree_t>(robotPoseList[5])
+            );
+            translatePoseToCorner(visionRobotPose);
+        }
     } else {
         robotPoseList = std::vector<double>();
     }
@@ -85,3 +85,5 @@ void ValorVisionSensor::aim() {
 void ValorVisionSensor::translatePoseToCorner(frc::Pose2d tagPose){
     botpose = frc::Pose2d{tagPose.X() + 16.535_m / 2, tagPose.Y() + 8_m / 2, tagPose.Rotation()};
 }
+
+
