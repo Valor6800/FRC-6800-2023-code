@@ -12,15 +12,19 @@
 
 #include "Constants.h"
 #include "ValorGamepad.h"
+
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Elevarm.h"
-#include "ValorAuto.h"
 #include "subsystems/Intake.h"
 
 #include <frc/DriverStation.h>
 #include <frc/DataLogManager.h>
 
 #include <frc/livewindow/LiveWindow.h>
+
+#include "ValorAuto.h"
+
+#include <fstream>
 
 class Robot : public frc::TimedRobot {
     public:
@@ -46,4 +50,6 @@ class Robot : public frc::TimedRobot {
         Intake intake;
         Elevarm elevarm;
         ValorAuto autonomous;
+
+        std::ofstream outfile;
 };

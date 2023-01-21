@@ -10,6 +10,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
+#include <ctime>
+
 Robot::Robot() : drivetrain(this), intake(this), elevarm(this), autonomous(&drivetrain, &intake, &elevarm)
 {
     frc::TimedRobot();
@@ -44,6 +46,7 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
  */
 void Robot::DisabledInit() {
     drivetrain.cancelCmdGoToTag();
+    outfile.close();
 }
 
 void Robot::DisabledPeriodic()
@@ -67,27 +70,29 @@ void Robot::AutonomousInit() {
     }
 }
 
-void Robot::AutonomousPeriodic()
-{
-
+void Robot::AutonomousPeriodic(){
 }
 
 void Robot::TeleopInit() {
     drivetrain.pullSwerveModuleZeroReference();
+<<<<<<< HEAD
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Coast);
 
+=======
+    drivetrain.setDriveMotorModeTo(NeutralMode::Coast);
+>>>>>>> 3a31786 (Decrease vision trust with distance, make motors use brake during auto)
 
     if (autoCommand != nullptr) {
         autoCommand->Cancel();
         autoCommand = nullptr;
     }
-
 }
 
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+}
 
 /**
  * This function is called periodically during test mode.

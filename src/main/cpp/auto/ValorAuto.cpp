@@ -1,5 +1,6 @@
 #include "ValorAuto.h"
 #include "Constants.h"
+
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,12 +9,21 @@
 #include <map>
 #include <functional>
 #include <vector>
+#include <string>
+
 #include <wpi/ghc/filesystem.hpp>
 
 #include <frc2/command/CommandBase.h>
 
+<<<<<<< HEAD
 ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
     drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
+=======
+#define TRANS_VELOCITY 4.952f
+
+ValorAuto::ValorAuto(Drivetrain *_drivetrain) :
+    drivetrain(_drivetrain)
+>>>>>>> 8db941e (Decrease vision trust with distance, make motors use brake during auto)
 {
     drivetrain->getTrajectoryConfig().SetKinematics(*drivetrain->getKinematics());
 
@@ -48,9 +58,13 @@ frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(f
     );
 }
 
-frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed)
+frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed, double start_vel=0, double end_vel=0)
 {
-    drivetrain->getTrajectoryConfig().SetReversed(reversed);
+    frc::TrajectoryConfig & config = drivetrain->getTrajectoryConfig();
+    config.SetReversed(reversed);
+    config.SetStartVelocity(units::meters_per_second_t{start_vel});
+    config.SetEndVelocity(units::meters_per_second_t{end_vel});
+    
     return frc::TrajectoryGenerator::GenerateTrajectory(poses, drivetrain->getTrajectoryConfig());
 }
 
@@ -88,10 +102,17 @@ void ValorAuto::readPointsCSV(std::string filename){
 }
 
 frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
-    auto inst = nt::NetworkTableInstance::GetDefault();
-    // for debugging
-    // table->putString
-    auto table = inst.GetTable("datatable");
+    std::unordered_map<ValorAutoAction::Type, std::string> commandToStringMap = {
+        {ValorAutoAction::NONE, "none"},
+        {ValorAutoAction::TIME, "time"},
+        {ValorAutoAction::STATE, "state"},
+        {ValorAutoAction::TRAJECTORY, "trajectory"},
+        {ValorAutoAction::RESET_ODOM, "reset_odom"},
+        {ValorAutoAction::ACTION, "action"},
+        {ValorAutoAction::SPLIT, "split"}
+    };
+    
+    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("Auto");
     frc2::SequentialCommandGroup *cmdGroup = new frc2::SequentialCommandGroup();
 
     std::ifstream infile(filename); 
@@ -101,26 +122,50 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
     std::string line;
 
+    std::vector<ValorAutoAction> actions;
+    while (std::getline(infile, line)){
+        actions.push_back(ValorAutoAction(line, &points));
+    }
+
     // Stores trajectory poses until a non-trajectory command is run,
     // in which case poses stored here are compiled into a single trajectory
     // and placed into the command group, and then this is reset
     std::vector<frc::Pose2d> trajPoses = {};
     bool trajReversed = false;
+    frc::Rotation2d last_angle;
 
-    while (std::getline(infile, line)){
-        ValorAutoAction action(line, &points);
+    for (int i = 0; i < actions.size(); i ++){
+        table->PutString("Action " + std::to_string(i), commandToStringMap[actions[i].type]);
+        ValorAutoAction & action = actions[i];
         if (action.type == ValorAutoAction::Type::TRAJECTORY){
             if (trajPoses.size() == 0){ // starting a new trajectory, set poses inside to stored action.start and action.end
+                action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
                 trajPoses = {action.start, action.end};
                 trajReversed = action.reversed;
+                last_angle = trajPoses.back().Rotation();
             }
             else {
                 // Create a new trajectory with each switch of normal <-> reversed, as they use different configs
                 if (action.reversed != trajReversed){ 
-                    cmdGroup->AddCommands(createTrajectoryCommand(createTrajectory(trajPoses, trajReversed)));
+                    if (trajPoses.size() > 0)
+                        last_angle = trajPoses.back().Rotation();
+
+                    double s_vel = 0, e_vel = 0;
+                    i--;
+                    if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
+                        s_vel = TRANS_VELOCITY;
+                    if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT && actions[i + 2].type == ValorAutoAction::TRAJECTORY && actions[i + 2].reversed == actions[i].reversed)
+                        e_vel = TRANS_VELOCITY;
+                    i++;
+                    
+                    frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
+
+                    cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
                     trajPoses.clear();
+
+                    action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
                     trajPoses = {action.start, action.end};
-                    trajReversed = action.reversed;         
+                    trajReversed = action.reversed;
                 }
                 else {
                     trajPoses.push_back(action.end);
@@ -129,8 +174,20 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
         }
         else {
             if (trajPoses.size() != 0){
-                cmdGroup->AddCommands(createTrajectoryCommand(createTrajectory(trajPoses, trajReversed)));
-                trajPoses.empty();
+                if (trajPoses.size() > 0)
+                    last_angle = trajPoses.back().Rotation();
+
+                double s_vel = 0, e_vel = 0;
+                i--;
+                if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
+                    s_vel = TRANS_VELOCITY;
+                if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT && actions[i + 2].type == ValorAutoAction::TRAJECTORY && actions[i + 2].reversed == actions[i].reversed)
+                    e_vel = TRANS_VELOCITY;
+                i++;
+
+                frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
+                cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
+                trajPoses.clear();
             }
 
             if (action.type == ValorAutoAction::Type::STATE){
@@ -156,6 +213,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                         }
                     )
                 );
+                last_angle = action.start.Rotation();
             }
             else if (action.type == ValorAutoAction::Type::ACTION){
                 /*
@@ -220,7 +278,13 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     }
 
     if (trajPoses.size() != 0){
-        cmdGroup->AddCommands(createTrajectoryCommand(createTrajectory(trajPoses, trajReversed)));
+        int i = actions.size() - 1;
+        double s_vel = 0, e_vel = 0;
+        if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
+            s_vel = TRANS_VELOCITY;
+        
+        frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
+        cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
         trajPoses.empty();
     }
 
@@ -269,9 +333,8 @@ std::string makeFriendlyName(std::string filename){
     return n_name;
 }
 
-frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
-    auto inst = nt::NetworkTableInstance::GetDefault();
-    auto table = inst.GetTable("datatable");
+frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto()
+{
     readPointsCSV("/home/lvuser/test_points.csv");
     precompileActions("/home/lvuser/actions/");
 

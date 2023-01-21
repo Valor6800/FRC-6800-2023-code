@@ -22,7 +22,8 @@ struct ValorAutoAction {
         STATE,
         TRAJECTORY,
         RESET_ODOM,
-        ACTION
+        ACTION,
+        SPLIT
     } type;
 
     enum Error {
