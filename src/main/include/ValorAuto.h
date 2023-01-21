@@ -1,4 +1,5 @@
 #include "subsystems/Drivetrain.h"
+#include "subsystems/Elevarm.h"
 #include "ValorAutoAction.h"
 
 #include <frc/trajectory/Trajectory.h>
@@ -28,7 +29,7 @@ struct UsableCommand{
 
 class ValorAuto {
     public:
-        ValorAuto(Drivetrain*);
+        ValorAuto(Drivetrain*, Elevarm*);
         void readPointsCSV(std::string);
         frc2::SequentialCommandGroup* makeAuto(std::string);
         void precompileActions(std::string);
@@ -49,6 +50,7 @@ class ValorAuto {
 
         std::map<std::string, frc::Translation2d> points;
         Drivetrain *drivetrain;
+        Elevarm *elevarm;
         frc::SendableChooser<std::string> m_chooser;
 
         // std::map<std::string, std::vector<UsableCommand> > precompiledActions;
