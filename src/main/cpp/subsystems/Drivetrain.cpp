@@ -24,7 +24,6 @@
 #define AZIMUTH_K_ACC_MUL 20.0f
 
 #define TXRANGE  30.0f
-#define KLIME 0.4f
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
 
@@ -147,26 +146,8 @@ void Drivetrain::assessInputs()
     state.xSpeed = driverGamepad->leftStickY(2);
     state.ySpeed = driverGamepad->leftStickX(2);
     state.rot = driverGamepad->rightStickX(3);
-    state.slowDown = driverGamepad->GetAButton();
     state.startButton = driverGamepad->GetStartButtonPressed();
     state.limehoming = driverGamepad->GetYButton();
-
-    if (driverGamepad->GetXButton())
-    {
-        if (trackingID == 0)
-        {
-            trackingID = limeTable->GetNumber("tid", 0);
-        }
-        state.limecentering = true;
-    }
-    else
-    {
-        if (trackingID != 0)
-        {
-            trackingID = 0;
-        }
-        state.limecentering = false;
-    }
 }
 
 void Drivetrain::analyzeDashboard()
@@ -262,72 +243,25 @@ frc::Pose2d translateAndRotatePoseBy(frc::Pose2d pose, frc::Pose2d addPose){
 
 void Drivetrain::assignOutputs()
 {    
-    units::velocity::meters_per_second_t xSpeedMPS = units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed};
-    units::velocity::meters_per_second_t ySpeedMPS = units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed};
-    units::angular_velocity::radians_per_second_t rotRPS = units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed};
+    xSpeedMPS = units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed};
+    ySpeedMPS = units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed};
+    rotRPS = units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed};
 
     
     if (state.startButton) {
         pullSwerveModuleZeroReference();
     }
 
-    if (driverGamepad->GetBButtonPressed()){
-        // setDriveMotorModeTo(NeutralMode::Brake);
-        // cmdGoToTag = new frc2::SwerveControllerCommand<4>(
-        //     frc::TrajectoryGenerator::GenerateTrajectory(
-        //         {
-        //             getPose_m(),
-        //             translateAndRotatePoseBy(tags[5], frc::Pose2d{1_m, 0_m, 180_deg})
-        //         },
-        //         reverseConfig
-        //     ),
-        //     [&] () { return getPose_m(); },
-        //     getKinematics(),
-        //     frc2::PIDController(DriveConstants::KPX, DriveConstants::KIX, DriveConstants::KDX),
-        //     frc2::PIDController(DriveConstants::KPY, DriveConstants::KIY, DriveConstants::KDY),
-        //     thetaController,
-        //     [this] (auto states) { setModuleStates(states); },
-        //     {this} //used to be "drivetrain"
-        // );   
-        // cmdGoToTag->Schedule();
-    } else if (state.limecentering){
-        // double xdir, ydir, rot;
-        
-        // if (trackingID == limeTable->GetNumber("tid", 0)){
-        //     ydir = limeTable->GetNumber("tx",0) / TXRANGE * KLIME;
-        //     rot = (180 - getPose_m().Rotation().Degrees().to<double>());
-        //     if (rot > 180){ // Assuming pigeon returns -180 to 180
-        //         rot -= 360;
-        //     }
-        //     rot *= (KPIGEON/180);
-        //     rotRPS = units::angular_velocity::radians_per_second_t{rot * rotMaxSpeed};
-
-        //     ydir *= driveMaxSpeed;
-        //     ySpeedMPS = units::velocity::meters_per_second_t{ydir};
-        //     drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
-        // } 
-    } else if (state.slowDown) {
-        // double magnitude = std::sqrt(std::pow(state.xSpeed, 2) + std::pow(state.ySpeed, 2));
-        // double x = state.xSpeed / magnitude;
-        // double y = state.ySpeed / magnitude;
-        // xSpeedMPS = units::velocity::meters_per_second_t{x};
-        // ySpeedMPS = units::velocity::meters_per_second_t{y};
-        // if(state.rot != 0){
-        //     int sign = std::signbit(state.rot) == 0 ? 1 : -1;
-        //     rotRPS = sign * units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed * ROT_SPEED_SLOW_MUL};
-        // }
-        // drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
-    } else if (state.limehoming){
+    if (state.limehoming){
         limelightHoming();
     } else {
-        limeTable->PutNumber("pipeline", 0);
-        drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+        limeTable->PutNumber("pipeline", 0);    
     }
 
     if (driverGamepad->leftStickYActive() || driverGamepad->leftStickXActive() || driverGamepad->rightStickXActive()){
         // cancelCmdGoToTag();
     }
-
+    drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
 }
 
 void Drivetrain::cancelCmdGoToTag(){
@@ -434,8 +368,6 @@ void Drivetrain::setDriveMotorModeTo(NeutralMode mode){
 void Drivetrain::limelightHoming(){
     limeTable->PutNumber("pipeline", 1);
     if (limeTable->GetNumber("tv", 0) == 1){
-        drive(units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed}, units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed}, units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) * rotMaxSpeed) / KLIMELIGHT), true);
-    } else{
-    drive(units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed}, units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed}, units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed}, true);
+        rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) * rotMaxSpeed) / KLIMELIGHT);
     }
 }
