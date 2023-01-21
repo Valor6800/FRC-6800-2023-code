@@ -109,12 +109,10 @@ public:
           double ySpeed;
           double rot;
 
-          double slowDown;
           bool startButton;
           
           bool saveToFileDebouncer;
 
-          bool limecentering;
           bool limehoming;
      } state;
 
@@ -189,6 +187,11 @@ public:
      void limelightHoming();
 
      int trackingID;
+
+     units::velocity::meters_per_second_t xSpeedMPS;
+     units::velocity::meters_per_second_t ySpeedMPS;
+     units::angular_velocity::radians_per_second_t rotRPS;
+
 private:
      double driveMaxSpeed;
      double rotMaxSpeed;
