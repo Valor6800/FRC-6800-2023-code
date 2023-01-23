@@ -56,8 +56,8 @@ frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(f
         trajectory,
         [&] () { return drivetrain->getPose_m(); },
         drivetrain->getKinematics(),
-        frc2::PIDController(KPX, KIX, KDX),
-        frc2::PIDController(KPY, KIY, KDY),
+        frc2::PIDController(drivetrain->getXPIDF().P, drivetrain->getXPIDF().I, drivetrain->getXPIDF().D),
+        frc2::PIDController(drivetrain->getYPIDF().P, drivetrain->getYPIDF().I, drivetrain->getYPIDF().D),
         *thetaController,
         [this] (auto states) { drivetrain->setModuleStates(states); },
         {drivetrain}

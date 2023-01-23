@@ -13,6 +13,7 @@
 #include <vector>
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
+#include "controllers/ValorPIDF.h"
 
 #include "AHRS.h"
 #include "ctre/phoenix/sensors/WPI_Pigeon2.h"
@@ -45,33 +46,6 @@
 
 #define MODULE_DIFF 0.248f
 #define SWERVE_COUNT 4
-
-#define MODULE_DIFF_XS {1, 1, -1, -1}
-#define MODULE_DIFF_YS {1, -1, 1, -1}
-
-#define KPX 0.5f //.75
-#define KIX 0.0f //0
-#define KDX 0.0f //.1
-
-#define KPY 0.5f //.75
-#define KIY 0.0f //0
-#define KDY 0.0f //.1
-
-#define AZIMUTH_K_P 0.2f
-#define AZIMUTH_K_I 0.0f
-#define AZIMUTH_K_D 0.1f
-#define AZIMUTH_K_F 0.05f
-
-#define AZIMUTH_K_VEL 17000.0f
-#define AZIMUTH_K_ACC_MUL 20.0f
-
-#define MOTOR_FREE_SPEED 6380.0f
-#define WHEEL_DIAMETER_M 0.1016f
-#define DRIVE_GEAR_RATIO 5.14f
-#define AZIMUTH_GEAR_RATIO 12.8f
-#define AUTO_SPEED_MUL 0.75f
-#define ROT_SPEED_MUL 1.0f
-#define ROT_SPEED_SLOW_MUL 0.5f
 
 /**
  * @brief Subsystem - Drivetrain
@@ -221,6 +195,10 @@ public:
 
      frc::ProfiledPIDController<units::angle::radians> getThetaController();
 
+     ValorPIDF getXPIDF();
+     ValorPIDF getYPIDF();
+
+
      int trackingID;
 
      units::velocity::meters_per_second_t xSpeedMPS;
@@ -263,6 +241,9 @@ private:
      frc::TrajectoryConfig reverseConfig;
 
      frc::ProfiledPIDController<units::radians> thetaController;
+
+     ValorPIDF xPIDF;
+     ValorPIDF yPIDF;
 
      frc::Pose2d translatePoseToCorner(frc::Pose2d);
      std::map<int, frc::Pose2d> tags = {{5, frc::Pose2d{0.36195_m, 6.749796_m, 0_deg}}, {8, frc::Pose2d{1.02743_m, 1.071626_m, 0_deg}}};
