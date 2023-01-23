@@ -18,14 +18,15 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
                         autoMaxSpeed(driveMaxSpeed),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
+                        rotMaxAccel(rotMaxSpeed * 0.5),
                         pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
                         motorLocations(wpi::empty_array),
                         initPositions(wpi::empty_array),
                         kinematics(NULL),
                         estimator(NULL),
-                        config(units::velocity::meters_per_second_t{AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{AUTO_MAX_ACCEL_MPS}),
-                        reverseConfig(units::velocity::meters_per_second_t{AUTO_MAX_SPEED_MPS}, units::acceleration::meters_per_second_squared_t{AUTO_MAX_ACCEL_MPS}),
-                        thetaController{AZIMUTH_K_P, AZIMUTH_K_I, AZIMUTH_K_D, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{AUTO_MAX_ROTATION_RPS}, units::angular_acceleration::radians_per_second_squared_t{AUTO_MAX_ROTATION_ACCEL_RPS})}
+                        config(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel}),
+                        reverseConfig(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel}),
+                        thetaController{AZIMUTH_K_P, AZIMUTH_K_I, AZIMUTH_K_D, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -372,4 +373,28 @@ void Drivetrain::limelightHoming(){
     if (limeTable->GetNumber("tv", 0) == 1){
         rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) * rotMaxSpeed) / KLIMELIGHT);
     }
+}
+
+double Drivetrain::getDriveMaxSpeed() {
+    return driveMaxSpeed;
+}
+
+double Drivetrain::getAutoMaxSpeed() {
+    return autoMaxSpeed;
+}
+
+double Drivetrain::getAutoMaxAcceleration() {
+    return autoMaxAccel;
+}
+
+double Drivetrain::getRotationMaxSpeed() {
+    return rotMaxSpeed;
+}
+
+double Drivetrain::getRotationMaxAcceleration() {
+    return rotMaxAccel;
+}
+
+frc::ProfiledPIDController<units::angle::radians> Drivetrain::getThetaController() {
+    return thetaController;
 }
