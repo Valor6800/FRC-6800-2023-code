@@ -11,6 +11,35 @@
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
 
+#define KPX 0.5f //.75
+#define KIX 0.0f //0
+#define KDX 0.0f //.1
+#define KFX 0.0f
+
+#define KPY 0.5f //.75
+#define KIY 0.0f //0
+#define KDY 0.0f //.1
+#define KFY 0.0f
+
+
+#define AZIMUTH_K_P 0.2f
+#define AZIMUTH_K_I 0.0f
+#define AZIMUTH_K_D 0.1f
+#define AZIMUTH_K_F 0.05f
+
+#define AZIMUTH_K_VEL 17000.0f
+#define AZIMUTH_K_ACC_MUL 20.0f
+
+#define MOTOR_FREE_SPEED 6380.0f
+#define WHEEL_DIAMETER_M 0.1016f
+#define DRIVE_GEAR_RATIO 5.14f
+#define AZIMUTH_GEAR_RATIO 12.8f
+#define AUTO_SPEED_MUL 0.75f
+#define ROT_SPEED_MUL 1.0f
+
+#define MODULE_DIFF_XS {1, 1, -1, -1}
+#define MODULE_DIFF_YS {1, -1, 1, -1}
+
 #define DRIVETRAIN_CAN_BUS "baseCAN"
 
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
@@ -104,6 +133,16 @@ void Drivetrain::init()
 
     kinematics = new frc::SwerveDriveKinematics<SWERVE_COUNT>(motorLocations);
     estimator = new frc::SwerveDrivePoseEstimator<SWERVE_COUNT>(*kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad});
+
+    xPIDF.P = KPX;
+    xPIDF.I = KIX;
+    xPIDF.D = KDX;
+    xPIDF.F = KFX;
+
+    yPIDF.P = KPY;
+    yPIDF.I = KIY;
+    yPIDF.D = KDY;
+    yPIDF.F = KFY;
 
     table->PutNumber("Real-estimated pose delta cap", 5);
     table->PutNumber("Vision doubt", 3.0);
@@ -397,4 +436,12 @@ double Drivetrain::getRotationMaxAcceleration() {
 
 frc::ProfiledPIDController<units::angle::radians> Drivetrain::getThetaController() {
     return thetaController;
+}
+
+ValorPIDF Drivetrain::getXPIDF() {
+    return xPIDF;
+}
+
+ValorPIDF Drivetrain::getYPIDF() {
+    return yPIDF;
 }
