@@ -46,8 +46,8 @@
 #define MODULE_DIFF 0.248f
 #define SWERVE_COUNT 4
 
-#define MODULE_DIFF_XS {1, 1, -1, -1} //1, 1, -1, -1
-#define MODULE_DIFF_YS {1, -1, 1, -1} //-1, 1, -1, 1
+#define MODULE_DIFF_XS {1, 1, -1, -1}
+#define MODULE_DIFF_YS {1, -1, 1, -1}
 
 #define KPX 0.5f //.75
 #define KIX 0.0f //0
@@ -72,14 +72,6 @@
 #define AUTO_SPEED_MUL 0.75f
 #define ROT_SPEED_MUL 1.0f
 #define ROT_SPEED_SLOW_MUL 0.5f
-
-#define DRIVE_MAX_SPEED_MPS MOTOR_FREE_SPEED / 60.0 * DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI
-#define AUTO_MAX_SPEED_MPS DRIVE_MAX_SPEED_MPS
-#define AUTO_MAX_ACCEL_MPS AUTO_MAX_SPEED_MPS * .6
-
-#define ROTATION_MAX_SPEED_RPS 4 * M_PI
-#define AUTO_MAX_ROTATION_RPS ROTATION_MAX_SPEED_RPS
-#define AUTO_MAX_ROTATION_ACCEL_RPS AUTO_MAX_ROTATION_RPS * .5
 
 /**
  * @brief Subsystem - Drivetrain
@@ -221,6 +213,14 @@ public:
      void setDriveMotorModeTo(NeutralMode);
      void limelightHoming();
 
+     double getDriveMaxSpeed();
+     double getAutoMaxSpeed();
+     double getAutoMaxAcceleration();
+     double getRotationMaxSpeed();
+     double getRotationMaxAcceleration();
+
+     frc::ProfiledPIDController<units::angle::radians> getThetaController();
+
      int trackingID;
 
      units::velocity::meters_per_second_t xSpeedMPS;
@@ -232,6 +232,7 @@ private:
      double rotMaxSpeed;
      double autoMaxSpeed;
      double autoMaxAccel;
+     double rotMaxAccel;
 
      wpi::array<frc::SwerveModuleState, SWERVE_COUNT> getModuleStates(units::velocity::meters_per_second_t,
                                                            units::velocity::meters_per_second_t,

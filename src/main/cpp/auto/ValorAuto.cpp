@@ -12,18 +12,30 @@
 
 #include <frc2/command/CommandBase.h>
 
-frc::TrajectoryConfig ValorAuto::config(
-    units::velocity::meters_per_second_t{AUTO_MAX_SPEED_MPS},
-    units::acceleration::meters_per_second_squared_t{AUTO_MAX_ACCEL_MPS});
-
 ValorAuto::ValorAuto(Drivetrain *_drivetrain) :
-    drivetrain(_drivetrain)
+    drivetrain(_drivetrain),
+    config(NULL),
+    thetaController(nullptr)
+    // config(units::velocity::meters_per_second_t(drivetrain->getAutoMaxSpeed()), 
+    //        units::acceleration::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration())),
+    // thetaController(drivetrain->getThetaController())
 {
-    ValorAuto::config.SetKinematics(drivetrain->getKinematics());
+    config = new frc::TrajectoryConfig(units::velocity::meters_per_second_t(drivetrain->getAutoMaxSpeed()), 
+           units::acceleration::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration()));
+    
+    thetaController = new frc::ProfiledPIDController<units::angle::radians>(drivetrain->getThetaController());
+
+    config->SetKinematics(drivetrain->getKinematics());
 
     // @TODO look at angle wrapping and modding
-    thetaController.EnableContinuousInput(units::radian_t(-M_PI),
+    thetaController->EnableContinuousInput(units::radian_t(-M_PI),
                                           units::radian_t(M_PI));
+}
+
+ValorAuto::~ValorAuto()
+{
+    delete config;
+    delete thetaController;
 }
 
 // directory_iterator doesn't exist in vanilla c++11, luckily wpilib has it in their library
@@ -46,7 +58,7 @@ frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(f
         drivetrain->getKinematics(),
         frc2::PIDController(KPX, KIX, KDX),
         frc2::PIDController(KPY, KIY, KDY),
-        thetaController,
+        *thetaController,
         [this] (auto states) { drivetrain->setModuleStates(states); },
         {drivetrain}
     );
@@ -54,8 +66,8 @@ frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(f
 
 frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed)
 {
-    ValorAuto::config.SetReversed(reversed);
-    return frc::TrajectoryGenerator::GenerateTrajectory(poses, config);
+    ValorAuto::config->SetReversed(reversed);
+    return frc::TrajectoryGenerator::GenerateTrajectory(poses, *config);
 }
 
 /* Read in the points from a CSV file.
