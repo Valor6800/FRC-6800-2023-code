@@ -273,8 +273,11 @@ private:
      ValorVisionSensor vision;
 
      frc2::SwerveControllerCommand<4> *cmdGoToTag;
+<<<<<<< HEAD
 
      std::shared_ptr<nt::NetworkTable> limeTable;
 
      bool swerveNoError;
+=======
+>>>>>>> 4c65194 (merged origin dev and made limelighthoming use visionSensor class)
 };

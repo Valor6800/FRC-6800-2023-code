@@ -10,7 +10,7 @@ void ValorVisionSensor::reset()
     setGetter([this] () {
             return visionRobotPose;
         });
-    visionTable->PutNumber("getpipe", 0);
+    visionTable->PutNumber("pipeline", 0);
 }
 void ValorVisionSensor::calculate() {
     if (visionTable->GetNumber("getpipe", 0) == 0){
