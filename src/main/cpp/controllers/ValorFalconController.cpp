@@ -73,8 +73,8 @@ void ValorFalconController::setPIDF(ValorPIDF pidf, int slot)
     motor->Config_kI(slot, pidf.I);
     motor->Config_kD(slot, pidf.D);
     motor->Config_kF(slot, pidf.F);
-    motor->ConfigMotionCruiseVelocity(pidf.velocity);
-    motor->ConfigMotionAcceleration(pidf.acceleration);
+    motor->ConfigMotionCruiseVelocity(pidf.velocity * 10.0 * FALCON_TICKS_PER_REV / conversion);
+    motor->ConfigMotionAcceleration(pidf.acceleration * 10.0 * FALCON_TICKS_PER_REV / conversion);
 }
 
 void ValorFalconController::setConversion(double _conversion)

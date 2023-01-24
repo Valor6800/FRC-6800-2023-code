@@ -53,4 +53,6 @@ private:
     bool inverted;
 
     int currentPidSlot;
+
+    double conversion;
 };

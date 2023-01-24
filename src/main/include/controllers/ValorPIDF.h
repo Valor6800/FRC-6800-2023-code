@@ -20,10 +20,10 @@ struct ValorPIDF
     double D = 0.0;
     /// Feedforward term
     double F = 0.05;
-    /// Max velocity: revolutions per 100ms
-    double velocity = 15000;
-    /// Max acceleration: revolutions per 100ms^2
-    double acceleration = 150000;
+    /// Max velocity: revolutions per 1s
+    double velocity = 1500;
+    /// Max acceleration: revolutions per 1ms^2
+    double acceleration = 15000;
     /// Minimum error threshold
     double error = 0.5; 
 };

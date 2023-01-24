@@ -31,7 +31,7 @@
 #define AZIMUTH_K_D 0.1f
 #define AZIMUTH_K_F 0.05f
 
-#define AZIMUTH_K_VEL 17000.0f
+#define AZIMUTH_K_VEL 6.48498535156f
 #define AZIMUTH_K_ACC_MUL 20.0f
 
 #define MOTOR_FREE_SPEED 6380.0f

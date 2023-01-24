@@ -9,7 +9,8 @@ ValorNeoController::ValorNeoController(int canID,
     encoder(motor->GetEncoder()),
     mode(_mode),
     inverted(_inverted),
-    currentPidSlot(0)
+    currentPidSlot(0),
+    conversion(1)
 {
     init();
 }
@@ -57,8 +58,8 @@ void ValorNeoController::setPIDF(ValorPIDF pidf, int slot)
     pidController.SetFF(pidf.F, slot);
     pidController.SetIZone(0, slot);
 
-    pidController.SetSmartMotionMaxVelocity(pidf.velocity, slot);
-    pidController.SetSmartMotionMaxAccel(pidf.acceleration, slot);
+    pidController.SetSmartMotionMaxVelocity(pidf.velocity * 60.0 / conversion, slot);
+    pidController.SetSmartMotionMaxAccel(pidf.acceleration * 60.0 / conversion, slot);
     pidController.SetSmartMotionAllowedClosedLoopError(pidf.error, slot);
 }
 
@@ -67,11 +68,12 @@ void ValorNeoController::setPIDF(ValorPIDF pidf, int slot)
  * Converts between your desired units and rotations of the neo motor shaft (includes gear ratio)
  * @param conversion Conversion rate for position
  */
-void ValorNeoController::setConversion(double conversion)
+void ValorNeoController::setConversion(double _conversion)
 {
-    encoder.SetPositionConversionFactor(conversion);
+    encoder.SetPositionConversionFactor(_conversion);
     // convert from minutes to seconds for velocity
-    encoder.SetVelocityConversionFactor(conversion / 60.0);
+    encoder.SetVelocityConversionFactor(_conversion / 60.0);
+    conversion = _conversion;
 }
 
 void ValorNeoController::setRange(int slot, double min, double max)
