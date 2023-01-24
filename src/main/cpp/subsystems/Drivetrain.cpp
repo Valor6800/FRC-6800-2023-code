@@ -21,6 +21,10 @@
 #define KDY 0.0f //.1
 #define KFY 0.0f
 
+#define KPT 4.0f
+#define KIT 0.0f
+#define KDT 0.0f
+#define KFT 0.0f
 
 #define AZIMUTH_K_P 0.2f
 #define AZIMUTH_K_I 0.0f
@@ -54,8 +58,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         kinematics(NULL),
                         estimator(NULL),
                         config(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel}),
-                        reverseConfig(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel}),
-                        thetaController{AZIMUTH_K_P, AZIMUTH_K_I, AZIMUTH_K_D, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})}
+                        thetaController{thetaPIDF.P, thetaPIDF.I, thetaPIDF.D, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -143,6 +146,11 @@ void Drivetrain::init()
     yPIDF.I = KIY;
     yPIDF.D = KDY;
     yPIDF.F = KFY;
+
+    thetaPIDF.P = KPT;
+    thetaPIDF.I = KIT;
+    thetaPIDF.D = KDT;
+    thetaPIDF.F = KFT;
 
     table->PutNumber("Real-estimated pose delta cap", 5);
     table->PutNumber("Vision doubt", 3.0);
@@ -317,9 +325,9 @@ void Drivetrain::pullSwerveModuleZeroReference(){
     }
 }
 
-frc::SwerveDriveKinematics<SWERVE_COUNT>& Drivetrain::getKinematics()
+frc::SwerveDriveKinematics<SWERVE_COUNT>* Drivetrain::getKinematics()
 {
-    return *kinematics;
+    return kinematics;
 }
 
 frc::Pose2d Drivetrain::getPose_m()
@@ -434,14 +442,18 @@ double Drivetrain::getRotationMaxAcceleration() {
     return rotMaxAccel;
 }
 
-frc::ProfiledPIDController<units::angle::radians> Drivetrain::getThetaController() {
+frc::ProfiledPIDController<units::angle::radians> & Drivetrain::getThetaController() {
     return thetaController;
+}
+
+frc::TrajectoryConfig & Drivetrain::getTrajectoryConfig() {
+    return config;
 }
 
 ValorPIDF Drivetrain::getXPIDF() {
     return xPIDF;
 }
 
-ValorPIDF Drivetrain::getYPIDF() {
+ValorPIDF  Drivetrain::getYPIDF() {
     return yPIDF;
 }

@@ -181,7 +181,7 @@ public:
       * Returns the kinematics object in use by the swerve drive
       * @return kinematics object
       */
-     frc::SwerveDriveKinematics<SWERVE_COUNT>& getKinematics();
+     frc::SwerveDriveKinematics<SWERVE_COUNT>* getKinematics();
 
      void cancelCmdGoToTag();
      void setDriveMotorModeTo(NeutralMode);
@@ -193,11 +193,13 @@ public:
      double getRotationMaxSpeed();
      double getRotationMaxAcceleration();
 
-     frc::ProfiledPIDController<units::angle::radians> getThetaController();
+     frc::ProfiledPIDController<units::angle::radians> & getThetaController();
 
      ValorPIDF getXPIDF();
      ValorPIDF getYPIDF();
+     ValorPIDF getThetaPIDF();
 
+     frc::TrajectoryConfig & getTrajectoryConfig();
 
      int trackingID;
 
@@ -238,12 +240,12 @@ private:
      frc::SwerveDrivePoseEstimator<SWERVE_COUNT> * estimator;
 
      frc::TrajectoryConfig config;
-     frc::TrajectoryConfig reverseConfig;
 
      frc::ProfiledPIDController<units::radians> thetaController;
 
      ValorPIDF xPIDF;
      ValorPIDF yPIDF;
+     ValorPIDF thetaPIDF;
 
      frc::Pose2d translatePoseToCorner(frc::Pose2d);
      std::map<int, frc::Pose2d> tags = {{5, frc::Pose2d{0.36195_m, 6.749796_m, 0_deg}}, {8, frc::Pose2d{1.02743_m, 1.071626_m, 0_deg}}};

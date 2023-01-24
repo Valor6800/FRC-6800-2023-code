@@ -35,13 +35,6 @@ class ValorAuto {
         void fillAutoList();
         frc2::SequentialCommandGroup* getCurrentAuto();
 
-    /**
-      * @brief Destroy the ValorAuto object
-      * 
-      * ValorAuto objects have member objects on the heap - need a destructor to take care of memory on destruction
-      */
-     ~ValorAuto();
-
     protected:
 
         frc::Trajectory createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed = false);
@@ -51,13 +44,8 @@ class ValorAuto {
 
     private:
 
-        units::velocity::meters_per_second_t * driveMaxSpeed;
-
-        frc::TrajectoryConfig * config;
 
         std::vector<ValorAutoAction> autoActions;
-
-        frc::ProfiledPIDController<units::radians> * thetaController;
 
         std::map<std::string, frc::Translation2d> points;
         Drivetrain *drivetrain;
