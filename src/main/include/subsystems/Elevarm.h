@@ -71,7 +71,8 @@ public:
         ELEVARM_GROUND,
         ELEVARM_PLAYER,
         ELEVARM_MID,
-        ELEVARM_HIGH
+        ELEVARM_HIGH,
+        ELEVARM_MANUAL
     };
 
     enum ElevarmSolutions {
@@ -87,6 +88,10 @@ public:
           ElevarmPieceState pieceState;
           ElevarmDirectionState directionState;
           ElevarmPositionState positionState;
+
+          
+
+
           
      } futureState, previousState;
 
@@ -103,6 +108,8 @@ private:
      ValorNeoController armRotateMotor;
      std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose3d>>> posMap;
      frc::Pose3d stowPos;
-
+     
+     double manualMaxCarriageSpeed;
+     double manualMaxArmSpeed;
 
 };

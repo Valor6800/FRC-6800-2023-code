@@ -8,10 +8,10 @@
 #include <iostream>
 
 
-#define ROTATE_GEAR_RATIO 12.0f
-#define ROTATE_OUTPUT_DIAMETER 0.1f //get value from cad
+#define ROTATE_GEAR_RATIO 143.73f
+#define ROTATE_OUTPUT_DIAMETER 0.1334516f
 #define CARRIAGE_GEAR_RATIO 4.0f
-#define CARRAIAGE_OUTPUT_DIAMETER 0.1f //get value from cad
+#define CARRAIAGE_OUTPUT_DIAMETER 0.0363728f
 #define CARRIAGE_UPPER_LIMIT 1.0f
 #define CARRIAGE_LOWER_LIMIT 0.0f
 #define ROTATE_FORWARD_LIMIT 180.0f
@@ -51,7 +51,9 @@
 
 Elevarm::Elevarm(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Elevarm"),                        
                             carriageMotors(CANIDs::CARRIAGE_MAIN, rev::CANSparkMax::IdleMode::kBrake, false),
-                            armRotateMotor(CANIDs::ARM_ROTATE, rev::CANSparkMax::IdleMode::kBrake, false)
+                            armRotateMotor(CANIDs::ARM_ROTATE, rev::CANSparkMax::IdleMode::kBrake, false),
+                            manualMaxArmSpeed(1.0),
+                            manualMaxCarriageSpeed(1.0)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -70,6 +72,9 @@ void Elevarm::resetState()
 
 void Elevarm::init()
 {
+    operatorGamepad->setDeadbandY(0.05);
+    
+    
     ValorPIDF carriagePID;
     carriagePID.velocity = CARRIAGE_K_VEL;
     carriagePID.acceleration = carriagePID.velocity * CARRIAGE_K_ACC_MUL;
@@ -99,6 +104,8 @@ void Elevarm::init()
     armRotateMotor.setPIDF(rotatePID, 0);
 
 
+
+
     frc::Pose3d stowPos = frc::Pose3d(0.0_m,  0.0_m, (units::meter_t) D_CARRIAGE_MAX_TRAVEL_M, frc::Rotation3d());
 
 
@@ -124,14 +131,18 @@ void Elevarm::init()
 
     table->PutNumber("Carriage Encoder Value", carriageMotors.getPosition());
     table->PutNumber("Arm rotate Encoder Value", armRotateMotor.getPosition());
+    table->PutNumber("Carriage Max Manual Speed", manualMaxCarriageSpeed);
+    table->PutNumber("Arm Rotate Max Manual Speed", manualMaxArmSpeed);
+
 
     resetState();
 }
 
 void Elevarm::assessInputs()
 {
-    
-    if (operatorGamepad->GetAButton() || operatorGamepad->DPadDown()){
+    if (operatorGamepad->leftStickYActive() || operatorGamepad->rightStickYActive()) {
+        futureState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
+    } else if (operatorGamepad->GetAButton() || operatorGamepad->DPadDown()){
         futureState.positionState = ElevarmPositionState::ELEVARM_GROUND;
     } else if(operatorGamepad->GetXButton() || operatorGamepad->DPadLeft()){
         futureState.positionState = ElevarmPositionState::ELEVARM_PLAYER;
@@ -140,7 +151,9 @@ void Elevarm::assessInputs()
     } else if(operatorGamepad->GetBButton() || operatorGamepad->DPadRight()){
         futureState.positionState = ElevarmPositionState::ELEVARM_MID;
     } else {
-        futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+        if (!previousState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
+            futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+        } 
     }
 
     if (operatorGamepad->DPadUp() || operatorGamepad->DPadDown() 
@@ -156,10 +169,12 @@ void Elevarm::assessInputs()
         futureState.directionState = ElevarmDirectionState::ELEVARM_FRONT;
     }
 
+
 }
 void Elevarm::analyzeDashboard()
 {
-    
+    manualMaxCarriageSpeed = table->GetNumber("Carriage Max Manual Speed", 1.0);
+    manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", 1.0);
 
 }
 
@@ -167,35 +182,39 @@ void Elevarm::assignOutputs()
 {    
     std::pair<double,double> targetPose;
 
-    if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW) {
-        targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_D);
+    if (futureState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
+        carriageMotors.setPower(operatorGamepad->leftStickY() * manualMaxCarriageSpeed);
+        armRotateMotor.setPower(operatorGamepad->rightStickY() * manualMaxArmSpeed);
+        previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
     } else {
-        if (futureState.directionState == previousState.directionState) {
-            if (futureState.directionState == ElevarmDirectionState::ELEVARM_BACK) {
-                if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID) {
-                    solutionsEnum = ElevarmSolutions::ELEVARM_C;
-                } else {
-                    solutionsEnum = ElevarmSolutions::ELEVARM_D;
-                }
-            } else {
-                if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID) {
-                    solutionsEnum = ElevarmSolutions::ELEVARM_A;
-                } else {
-                    solutionsEnum = ElevarmSolutions::ELEVARM_B;
-                }
-            }
-        } else if (futureState.directionState != previousState.directionState) {
+        if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW) {
             targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_D);
-        } else
-        targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], solutionsEnum);
+        } else {
+            if (futureState.directionState == previousState.directionState) {
+                if (futureState.directionState == ElevarmDirectionState::ELEVARM_BACK) {
+                    if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID) {
+                        solutionsEnum = ElevarmSolutions::ELEVARM_C;
+                    } else {
+                        solutionsEnum = ElevarmSolutions::ELEVARM_D;
+                    }
+                } else {
+                    if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID) {
+                        solutionsEnum = ElevarmSolutions::ELEVARM_A;
+                    } else {
+                        solutionsEnum = ElevarmSolutions::ELEVARM_B;
+                    }
+                }
+            } else if (futureState.directionState != previousState.directionState) {
+                targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_D);
+            } else
+            targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], solutionsEnum);
+        }
+        carriageMotors.setPosition(targetPose.first);
+        armRotateMotor.setPosition(targetPose.second);
+
+        previousState = ((std::abs(carriageMotors.getPosition() - targetPose.first)  <= PREVIOUS_HEIGHT_DEADBAND) && 
+        (std::abs(armRotateMotor.getPosition() - targetPose.second) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
     }
-
-    carriageMotors.setPosition(targetPose.first);
-    armRotateMotor.setPosition(targetPose.second);
-
-    previousState = ((std::abs(carriageMotors.getPosition() - targetPose.first)  <= PREVIOUS_HEIGHT_DEADBAND) && 
-    (std::abs(armRotateMotor.getPosition() - targetPose.second) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
-
 
 
 }
