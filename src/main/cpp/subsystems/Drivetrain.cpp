@@ -11,17 +11,17 @@
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
 
-#define KPX 0.5f //.75
-#define KIX 0.0f //0
-#define KDX 0.0f //.1
+#define KPX 2.5f //0.5
+#define KIX 0.0f //0.0
+#define KDX 0.0f //0.0
 #define KFX 0.0f
 
-#define KPY 0.5f //.75
-#define KIY 0.0f //0
-#define KDY 0.0f //.1
-#define KFY 0.0f
+#define KPY 2.5f //0.5
+#define KIY 0.0f //0.0
+#define KDY 0.0f //0.0
+#define KFY 0.0f//0.0
 
-#define KPT 4.0f
+#define KPT 8.0f //4.0
 #define KIT 0.0f
 #define KDT 0.0f
 #define KFT 0.0f
@@ -38,7 +38,7 @@
 #define WHEEL_DIAMETER_M 0.1016f
 #define DRIVE_GEAR_RATIO 5.14f
 #define AZIMUTH_GEAR_RATIO 12.8f
-#define AUTO_SPEED_MUL 0.75f
+#define AUTO_SPEED_MUL 0.375f
 #define ROT_SPEED_MUL 1.0f
 
 #define MODULE_DIFF_XS {1, 1, -1, -1}
@@ -58,7 +58,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         kinematics(NULL),
                         estimator(NULL),
                         config(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel}),
-                        thetaController{thetaPIDF.P, thetaPIDF.I, thetaPIDF.D, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})}
+                        thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})}
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -406,10 +406,10 @@ wpi::array<frc::SwerveModuleState, SWERVE_COUNT> Drivetrain::getModuleStates(uni
 
 void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT> desiredStates)
 { 
-    kinematics->DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{driveMaxSpeed});
+    kinematics->DesaturateWheelSpeeds(&desiredStates, units::velocity::meters_per_second_t{autoMaxSpeed});
     for (int i = 0; i < SWERVE_COUNT; i++)
     {
-        swerveModules[i]->setDesiredState(desiredStates[i], true);
+        swerveModules[i]->setDesiredState(desiredStates[i], false);
     }
 }
 
