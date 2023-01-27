@@ -140,6 +140,9 @@ void Elevarm::init()
 
 void Elevarm::assessInputs()
 {
+    if (!operatorGamepad) return;
+
+
     if (operatorGamepad->leftStickYActive() || operatorGamepad->rightStickYActive()) {
         futureState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
     } else if (operatorGamepad->GetAButton() || operatorGamepad->DPadDown()){
