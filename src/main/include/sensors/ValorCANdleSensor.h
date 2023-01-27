@@ -32,6 +32,7 @@ public:
      * @brief Declares the type of animation to apply.
      */
     enum AnimationType {
+        None,
         ColorFlow,
         Fire,
         Larson,
@@ -86,6 +87,7 @@ public:
      * @param color The color to change all the LEDs to. Will clear the previous animation
      */
     void setColor(int color);
+    void setColor(int r, int g, int b);
 
     /**
      * @brief Set the animation the LEDs should follow
@@ -112,6 +114,7 @@ private:
     RGBColor currentColor;
 
     ctre::phoenix::led::Animation *activeAnimation;
+    AnimationType activeAnimationType;
 
     void calculate();
 };
