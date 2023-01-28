@@ -46,7 +46,7 @@ namespace DIOPorts {
 }
 
 namespace CANIDs {
-    constexpr static int DRIVE_CANS[4] = {1, 3, 5, 7};
-    constexpr static int AZIMUTH_CANS[4] = {2, 4, 6, 8};
+    constexpr static int DRIVE_CANS[4] = {2, 4, 6, 8};
+    constexpr static int AZIMUTH_CANS[4] = {1, 3, 5, 7};
     constexpr static int PIGEON_CAN = 61;
 }
