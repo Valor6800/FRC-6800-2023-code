@@ -43,8 +43,9 @@
 #include <frc/TimedRobot.h>
 
 #include <ctre/phoenix/motorcontrol/NeutralMode.h>
+#include <rev/CANSparkMax.h>
 
-#define MODULE_DIFF 0.248f
+#define MODULE_DIFF 0.168f
 #define SWERVE_COUNT 4
 
 /**
@@ -63,7 +64,7 @@ public:
       * * ValorFalconController
       * * ValorNeoController
       */
-     typedef ValorFalconController SwerveDriveMotor;
+     typedef ValorNeoController SwerveDriveMotor;
 
      /**
       * @brief Quick way to select the azimuth motor controller
@@ -71,7 +72,7 @@ public:
       * * ValorFalconController
       * * ValorNeoController
       */
-     typedef ValorFalconController SwerveAzimuthMotor;
+     typedef ValorNeoController SwerveAzimuthMotor;
 
      /**
       * @brief Construct a new Drivetrain object
@@ -184,7 +185,7 @@ public:
      frc::SwerveDriveKinematics<SWERVE_COUNT>* getKinematics();
 
      void cancelCmdGoToTag();
-     void setDriveMotorModeTo(NeutralMode);
+     void setDriveMotorModeTo(rev::CANSparkMax::IdleMode);
      void limelightHoming();
 
      double getDriveMaxSpeed();

@@ -13,6 +13,7 @@
 
 #include <rev/CANSparkMax.h>
 #include <rev/CANEncoder.h>
+#include <rev/SparkMaxAbsoluteEncoder.h>
 #include <string>
 
 class ValorNeoController : public ValorController<rev::CANSparkMax>
@@ -44,10 +45,13 @@ public:
 
     void setProfile(int slot);
     void setMotorMode(rev::CANSparkMax::IdleMode mode);
+
+    double getAbsEncoderPosition();
     
 private:
     rev::SparkMaxPIDController pidController;
     rev::SparkMaxRelativeEncoder encoder;
+    rev::SparkMaxAbsoluteEncoder extEncoder;
 
     rev::CANSparkMax::IdleMode mode;
     bool inverted;

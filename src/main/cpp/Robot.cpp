@@ -18,7 +18,7 @@ Robot::Robot() : drivetrain(this), autonomous(&drivetrain)
 void Robot::RobotInit() {
     drivetrain.setGamepads(&gamepadOperator, &gamepadDriver);
     drivetrain.resetState();
-    drivetrain.setDriveMotorModeTo(NeutralMode::Coast);
+    drivetrain.setDriveMotorModeTo(rev::CANSparkMax::IdleMode::kCoast);
     autonomous.fillAutoList();
 }
 
