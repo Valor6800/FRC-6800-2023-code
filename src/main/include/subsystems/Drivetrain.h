@@ -116,6 +116,7 @@ public:
           bool saveToFileDebouncer;
 
           bool limehoming;
+          bool xPose;
      } state;
 
      /**
@@ -201,6 +202,8 @@ public:
      ValorPIDF getThetaPIDF();
 
      frc::TrajectoryConfig & getTrajectoryConfig();
+     void setXMode();
+
 
      int trackingID;
 

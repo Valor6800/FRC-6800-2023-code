@@ -163,6 +163,7 @@ void Drivetrain::init()
     trackingID = 0;
 
     table->PutNumber("pipeline", 0);
+
 }
 
 std::vector<ValorSwerve<Drivetrain::SwerveAzimuthMotor, Drivetrain::SwerveDriveMotor> *> Drivetrain::getSwerveModules()
@@ -198,6 +199,7 @@ void Drivetrain::assessInputs()
     state.rot = driverGamepad->rightStickX(3);
     state.startButton = driverGamepad->GetStartButtonPressed();
     state.limehoming = driverGamepad->GetYButton();
+    state.xPose = operatorGamepad->GetXButton();
 }
 
 void Drivetrain::analyzeDashboard()
@@ -216,7 +218,6 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Module 2 Azi Pos", swerveModules[2]->getAzimuthPosition().Degrees().to<double>() / 360);
     table->PutNumber("Module 3 Mag Count", swerveModules[3]->getMagEncoderCount());
     table->PutNumber("Module 3 Azi Pos", swerveModules[3]->getAzimuthPosition().Degrees().to<double>() / 360);
-
 
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
@@ -301,17 +302,21 @@ void Drivetrain::assignOutputs()
     if (state.startButton) {
         pullSwerveModuleZeroReference();
     }
-
-    if (state.limehoming){
-        limelightHoming();
+    if (state.xPose){
+        setXMode();
     } else {
-        limeTable->PutNumber("pipeline", 0);    
-    }
+        if (state.limehoming){
+            limelightHoming();
+        } else {
+            limeTable->PutNumber("pipeline", 0);    
+        }
 
-    if (driverGamepad->leftStickYActive() || driverGamepad->leftStickXActive() || driverGamepad->rightStickXActive()){
-        // cancelCmdGoToTag();
+        if (driverGamepad->leftStickYActive() || driverGamepad->leftStickXActive() || driverGamepad->rightStickXActive()){
+            // cancelCmdGoToTag();
+        }
+        drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
     }
-    drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
+    
 }
 
 void Drivetrain::cancelCmdGoToTag(){
@@ -457,4 +462,14 @@ ValorPIDF Drivetrain::getXPIDF() {
 
 ValorPIDF  Drivetrain::getYPIDF() {
     return yPIDF;
+}
+
+void Drivetrain::setXMode(){
+    drive(static_cast<units::velocity::meters_per_second_t>(0),static_cast<units::velocity::meters_per_second_t>(0),static_cast<units::angular_velocity::radians_per_second_t>(0),true);
+    setDriveMotorModeTo(rev::CANSparkMax::IdleMode::kBrake);
+    azimuthControllers[0]->setPosition(std::round(azimuthControllers[0]->getPosition()) + 0.125);
+    azimuthControllers[1]->setPosition(std::round(azimuthControllers[1]->getPosition()) + 0.375);
+    azimuthControllers[2]->setPosition(std::round(azimuthControllers[2]->getPosition()) - 0.125);
+    azimuthControllers[3]->setPosition(std::round(azimuthControllers[3]->getPosition()) - 0.375);
+   setDriveMotorModeTo(rev::CANSparkMax::IdleMode::kCoast);
 }
