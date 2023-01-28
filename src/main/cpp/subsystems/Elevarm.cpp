@@ -72,7 +72,6 @@ void Elevarm::resetState()
 
 void Elevarm::init()
 {
-    operatorGamepad->setDeadbandY(0.05);
     
     
     ValorPIDF carriagePID;
@@ -140,7 +139,9 @@ void Elevarm::init()
 
 void Elevarm::assessInputs()
 {
+    if (!driverGamepad) return;
     if (!operatorGamepad) return;
+
 
 
     if (operatorGamepad->leftStickYActive() || operatorGamepad->rightStickYActive()) {

@@ -12,10 +12,6 @@
 
 #include <frc2/command/CommandBase.h>
 
-frc::TrajectoryConfig ValorAuto::config(
-    units::velocity::meters_per_second_t{SwerveConstants::AUTO_MAX_SPEED_MPS},
-    units::acceleration::meters_per_second_squared_t{SwerveConstants::AUTO_MAX_ACCEL_MPSS});
-
 ValorAuto::ValorAuto(Drivetrain *_drivetrain, Elevarm *_elevarm) :
     drivetrain(_drivetrain), elevarm(_elevarm)
 {
