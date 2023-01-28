@@ -16,7 +16,7 @@
 #define KDX 0.0f //0.0
 #define KFX 0.0f
 
-#define KPY 2.5f //0.5
+#define KPY 13.75f //0.5
 #define KIY 0.0f //0.0
 #define KDY 0.0f //0.0
 #define KFY 0.0f//0.0
@@ -49,7 +49,7 @@
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
-                        autoMaxSpeed(driveMaxSpeed),
+                        autoMaxSpeed(driveMaxSpeed * 0.75),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         rotMaxAccel(rotMaxSpeed * 0.5),
                         pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
@@ -285,7 +285,7 @@ void Drivetrain::analyzeDashboard()
                 );
             }
             
-            if (operatorGamepad->GetAButton()){
+            if (driverGamepad->GetAButton()){
                 resetOdometry(botpose);
             }
         }

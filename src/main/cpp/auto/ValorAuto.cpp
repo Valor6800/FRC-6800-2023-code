@@ -1,5 +1,6 @@
 #include "ValorAuto.h"
 #include "Constants.h"
+
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +9,8 @@
 #include <map>
 #include <functional>
 #include <vector>
+#include <string>
+
 #include <wpi/ghc/filesystem.hpp>
 
 #include <frc2/command/CommandBase.h>
@@ -48,9 +51,11 @@ frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(f
     );
 }
 
-frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed)
+frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed, )
 {
-    drivetrain->getTrajectoryConfig().SetReversed(reversed);
+    frc::TrajectoryConfig & config = drivetrain->getTrajectoryConfig();
+    config.SetReversed(reversed);
+    
     return frc::TrajectoryGenerator::GenerateTrajectory(poses, drivetrain->getTrajectoryConfig());
 }
 
@@ -87,11 +92,20 @@ void ValorAuto::readPointsCSV(std::string filename){
     }
 }
 
+void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
+    std::ofstream outfile("/home/lvuser/trajectory" + std::to_string(i) + ".csv");
+    if (!outfile.good()){
+        return;
+    }
+
+    std::vector<frc::Trajectory::State> states = trajectory.States();
+    for (frc::Trajectory::State state: states){
+        outfile << std::to_string(state.t.to<double>()) + "," + std::to_string(state.pose.X().to<double>()) + "," + std::to_string(state.pose.Y().to<double>()) + "," + std::to_string(state.pose.Rotation().Degrees().to<double>()) + "," + std::to_string(state.acceleration.to<double>()) + "\n";
+    }
+}
+
 frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
-    auto inst = nt::NetworkTableInstance::GetDefault();
-    // for debugging
-    // table->putString
-    auto table = inst.GetTable("datatable");
+    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("Auto");
     frc2::SequentialCommandGroup *cmdGroup = new frc2::SequentialCommandGroup();
 
     std::ifstream infile(filename); 
@@ -106,21 +120,41 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     // and placed into the command group, and then this is reset
     std::vector<frc::Pose2d> trajPoses = {};
     bool trajReversed = false;
+    frc::Rotation2d last_angle;
+
+    int traj_count = 0;
 
     while (std::getline(infile, line)){
         ValorAutoAction action(line, &points);
         if (action.type == ValorAutoAction::Type::TRAJECTORY){
             if (trajPoses.size() == 0){ // starting a new trajectory, set poses inside to stored action.start and action.end
+                action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
                 trajPoses = {action.start, action.end};
                 trajReversed = action.reversed;
+                // table->PutNumber("Trajectory " + std::to_string(traj_count) + " start angle", last_angle.Degrees().to<double>());
+                last_angle = trajPoses.back().Rotation();
             }
             else {
                 // Create a new trajectory with each switch of normal <-> reversed, as they use different configs
                 if (action.reversed != trajReversed){ 
-                    cmdGroup->AddCommands(createTrajectoryCommand(createTrajectory(trajPoses, trajReversed)));
+                    // std::vector<double> angles;
+                    // for (frc::Pose2d pose: trajPoses){
+                    //     angles.push_back(pose.Rotation().Degrees().to<double>());
+                    // }
+                    // table->PutNumberArray("Trajectory " + std::to_string(traj_count), angles);
+
+                    if (trajPoses.size() > 0)
+                        last_angle = trajPoses.back().Rotation();
+                    frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed);
+                    // createTrajectoryDebugFile(trajectory, traj_count);
+                    traj_count ++;
+                    cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
                     trajPoses.clear();
+
+                    action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
                     trajPoses = {action.start, action.end};
-                    trajReversed = action.reversed;         
+                    // table->PutNumber("Trajectory " + std::to_string(traj_count) + " start angle", last_angle.Degrees().to<double>());
+                    trajReversed = action.reversed;
                 }
                 else {
                     trajPoses.push_back(action.end);
@@ -129,8 +163,20 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
         }
         else {
             if (trajPoses.size() != 0){
-                cmdGroup->AddCommands(createTrajectoryCommand(createTrajectory(trajPoses, trajReversed)));
-                trajPoses.empty();
+                // std::vector<double> angles;
+                // for (frc::Pose2d pose: trajPoses){
+                //     angles.push_back(pose.Rotation().Degrees().to<double>());
+                // }
+                // table->PutNumberArray("Trajectory " + std::to_string(traj_count), angles);
+
+                if (trajPoses.size() > 0)
+                    last_angle = trajPoses.back().Rotation();
+
+                frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed);
+                // createTrajectoryDebugFile(trajectory, traj_count);
+                traj_count ++;
+                cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
+                trajPoses.clear();
             }
 
             if (action.type == ValorAutoAction::Type::STATE){
@@ -156,6 +202,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                         }
                     )
                 );
+                last_angle = action.start.Rotation();
             }
             else if (action.type == ValorAutoAction::Type::ACTION){
                 /*
@@ -220,9 +267,20 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     }
 
     if (trajPoses.size() != 0){
-        cmdGroup->AddCommands(createTrajectoryCommand(createTrajectory(trajPoses, trajReversed)));
+        // std::vector<double> angles;
+        // for (frc::Pose2d pose: trajPoses){
+        //     angles.push_back(pose.Rotation().Degrees().to<double>());
+        // }
+        // table->PutNumberArray("Trajectory " + std::to_string(traj_count), angles);
+        
+        frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed);
+        // createTrajectoryDebugFile(trajectory, traj_count);
+        traj_count ++;
+        cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
         trajPoses.empty();
     }
+
+    table->PutNumber("trajectory count", traj_count);
 
     return cmdGroup;
 }
@@ -269,9 +327,8 @@ std::string makeFriendlyName(std::string filename){
     return n_name;
 }
 
-frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
-    auto inst = nt::NetworkTableInstance::GetDefault();
-    auto table = inst.GetTable("datatable");
+frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto()
+{
     readPointsCSV("/home/lvuser/test_points.csv");
     precompileActions("/home/lvuser/actions/");
 

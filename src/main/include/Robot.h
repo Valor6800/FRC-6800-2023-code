@@ -14,6 +14,7 @@
 #include "ValorGamepad.h"
 #include "subsystems/Drivetrain.h"
 #include "ValorAuto.h"
+#include <fstream>
 
 class Robot : public frc::TimedRobot {
     public:
@@ -37,4 +38,6 @@ class Robot : public frc::TimedRobot {
 
         Drivetrain drivetrain;
         ValorAuto autonomous;
+
+        std::ofstream outfile;
 };

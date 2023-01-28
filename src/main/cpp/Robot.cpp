@@ -10,6 +10,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/CommandScheduler.h>
 
+#include <ctime>
+
 Robot::Robot() : drivetrain(this), autonomous(&drivetrain)
 {
     frc::TimedRobot();
@@ -38,7 +40,9 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
  * robot is disabled.
  */
 void Robot::DisabledInit() {
+    drivetrain.setDriveMotorModeTo(NeutralMode::Brake);
     drivetrain.cancelCmdGoToTag();
+    outfile.close();
 }
 
 void Robot::DisabledPeriodic()
@@ -59,11 +63,16 @@ void Robot::AutonomousInit() {
     if (autoCommand != nullptr) {
         autoCommand->Schedule();
     }
+
+    outfile.open("/home/lvuser/poseLog" + std::to_string(time(0)) + ".csv");
 }
 
-void Robot::AutonomousPeriodic()
-{
+std::string makePoseLog(frc::Pose2d pose){
+    return std::to_string(frc::Timer::GetFPGATimestamp().to<double>()) + "," + std::to_string(pose.X().to<double>()) + "," + std::to_string(pose.Y().to<double>()) + "," + std::to_string(pose.Rotation().Degrees().to<double>()) + "\n";
+}
 
+void Robot::AutonomousPeriodic(){
+    outfile << makePoseLog(drivetrain.getPose_m());
 }
 
 void Robot::TeleopInit() {
@@ -74,13 +83,13 @@ void Robot::TeleopInit() {
         autoCommand->Cancel();
         autoCommand = nullptr;
     }
-
 }
 
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+}
 
 /**
  * This function is called periodically during test mode.
