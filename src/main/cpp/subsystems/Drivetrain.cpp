@@ -199,7 +199,7 @@ void Drivetrain::assessInputs()
     state.rot = driverGamepad->rightStickX(3);
     state.startButton = driverGamepad->GetStartButtonPressed();
     state.limehoming = driverGamepad->GetYButton();
-    state.xPose = operatorGamepad->GetXButton();
+    state.xPose = driverGamepad->GetXButton();
 }
 
 void Drivetrain::analyzeDashboard()
