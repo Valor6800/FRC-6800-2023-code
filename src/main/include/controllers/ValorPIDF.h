@@ -19,7 +19,7 @@ struct ValorPIDF
     /// Derivative control of the feedback term
     double D = 0.0;
     /// Feedforward term
-    double F = 0.05;
+    double F = 0.000244;
     /// Max velocity: revolutions per 1s
     double velocity = 1500;
     /// Max acceleration: revolutions per 1ms^2

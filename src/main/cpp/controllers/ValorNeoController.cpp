@@ -70,10 +70,11 @@ void ValorNeoController::setPIDF(ValorPIDF pidf, int slot)
  */
 void ValorNeoController::setConversion(double _conversion)
 {
+    conversion = _conversion;
     encoder.SetPositionConversionFactor(_conversion);
     // convert from minutes to seconds for velocity
     encoder.SetVelocityConversionFactor(_conversion / 60.0);
-    conversion = _conversion;
+   
 }
 
 void ValorNeoController::setRange(int slot, double min, double max)

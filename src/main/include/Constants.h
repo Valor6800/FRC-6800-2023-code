@@ -50,8 +50,8 @@ namespace CANIDs {
     constexpr static int AZIMUTH_CANS[4] = {2, 4, 6, 8};
     constexpr static int PIGEON_CAN = 61;
 
-    constexpr static int CARRIAGE_MAIN = 11;
-    constexpr static int CARRIAGE_FOLLOW = 12;
-    constexpr static int ARM_ROTATE = 13;
+    constexpr static int CARRIAGE_MAIN = 16;
+    constexpr static int CARRIAGE_FOLLOW = 17;
+    constexpr static int ARM_ROTATE = 15;
 }
 

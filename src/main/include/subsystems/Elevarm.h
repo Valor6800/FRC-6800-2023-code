@@ -89,10 +89,6 @@ public:
           ElevarmDirectionState directionState;
           ElevarmPositionState positionState;
 
-          
-
-
-          
      } futureState, previousState;
 
        
@@ -111,5 +107,7 @@ private:
      
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;
+     std::pair<double, double> targetPose;
+
 
 };

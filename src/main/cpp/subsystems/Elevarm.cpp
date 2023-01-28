@@ -12,26 +12,26 @@
 #define ROTATE_OUTPUT_DIAMETER 0.1334516f
 #define CARRIAGE_GEAR_RATIO 4.0f
 #define CARRAIAGE_OUTPUT_DIAMETER 0.0363728f
-#define CARRIAGE_UPPER_LIMIT 1.0f
+#define CARRIAGE_UPPER_LIMIT 1.0f 
 #define CARRIAGE_LOWER_LIMIT 0.0f
 #define ROTATE_FORWARD_LIMIT 180.0f
-#define ROTATE_REVERSE_LIMIT 180.0f
+#define ROTATE_REVERSE_LIMIT -180.0f
 
 #define CARRIAGE_K_F 0.05f  
 #define CARRIAGE_K_P 0.1f
 #define CARRIAGE_K_I 0.0f
 #define CARRIAGE_K_D 0.0f
-#define CARRIAGE_K_ 0.0f
-#define CARRIAGE_K_VEL 0.0f
-#define CARRIAGE_K_ACC_MUL 0.0f
+#define CARRIAGE_K_ERROR 0.01f
+#define CARRIAGE_K_VEL 0.2f
+#define CARRIAGE_K_ACC_MUL 1.0f
 
 #define ROTATE_K_F 0.0000753f
 #define ROTATE_K_P 5e-5f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
-#define ROTATE_K_ 0.0f
-#define ROTATE_K_VEL 0.0f
-#define ROTATE_K_ACC_MUL 0.0f
+#define ROTATE_K_ERROR 0.2f
+#define ROTATE_K_VEL 0.2f
+#define ROTATE_K_ACC_MUL 1.0f
 
 #define PREVIOUS_HEIGHT_DEADBAND 0.01f
 #define PREVIOUS_ROTATION_DEADBAND 0.5f
@@ -43,17 +43,18 @@
 
 #define D_CARRIAGE_JOINT_OFFSET 0.0724154f
 #define D_CARRIAGE_FLOOR_OFFSET 0.02345502f
-#define D_CARRIAGE_MAX_TRAVEL_M 1.0668f
+#define D_CARRIAGE_STOW 0.75f
 
 #define SCORING_HEIGHT_OFFSET_M 0.0508f
 
 
 
 Elevarm::Elevarm(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Elevarm"),                        
-                            carriageMotors(CANIDs::CARRIAGE_MAIN, rev::CANSparkMax::IdleMode::kBrake, false),
-                            armRotateMotor(CANIDs::ARM_ROTATE, rev::CANSparkMax::IdleMode::kBrake, false),
+                            carriageMotors(CANIDs::CARRIAGE_MAIN, rev::CANSparkMax::IdleMode::kBrake, true),
+                            armRotateMotor(CANIDs::ARM_ROTATE, rev::CANSparkMax::IdleMode::kBrake, true),
                             manualMaxArmSpeed(1.0),
-                            manualMaxCarriageSpeed(1.0)
+                            manualMaxCarriageSpeed(1.0),
+                            targetPose(0.0,0.0)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -71,9 +72,7 @@ void Elevarm::resetState()
 }
 
 void Elevarm::init()
-{
-    
-    
+{ 
     ValorPIDF carriagePID;
     carriagePID.velocity = CARRIAGE_K_VEL;
     carriagePID.acceleration = carriagePID.velocity * CARRIAGE_K_ACC_MUL;
@@ -81,6 +80,7 @@ void Elevarm::init()
     carriagePID.P = CARRIAGE_K_P;
     carriagePID.I = CARRIAGE_K_I;
     carriagePID.D = CARRIAGE_K_D;
+    carriagePID.error = CARRIAGE_K_ERROR;
     
     ValorPIDF rotatePID;
     rotatePID.velocity = ROTATE_K_VEL;
@@ -89,15 +89,16 @@ void Elevarm::init()
     rotatePID.P = ROTATE_K_P;
     rotatePID.I = ROTATE_K_I;
     rotatePID.D = ROTATE_K_D;
+    rotatePID.error = ROTATE_K_ERROR; 
     
     
     carriageMotors.setConversion(1 / CARRIAGE_GEAR_RATIO * M_PI * CARRAIAGE_OUTPUT_DIAMETER);
     carriageMotors.setForwardLimit(CARRIAGE_UPPER_LIMIT);
     carriageMotors.setReverseLimit(CARRIAGE_LOWER_LIMIT);
     carriageMotors.setPIDF(carriagePID, 0);
-    carriageMotors.setupFollower(12, false);
+    carriageMotors.setupFollower(CANIDs::CARRIAGE_FOLLOW, false);
 
-    armRotateMotor.setConversion(1 / ROTATE_GEAR_RATIO * M_PI * ROTATE_OUTPUT_DIAMETER);
+    armRotateMotor.setConversion(1 / (ROTATE_GEAR_RATIO * M_PI * ROTATE_OUTPUT_DIAMETER));
     armRotateMotor.setForwardLimit(ROTATE_FORWARD_LIMIT);
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
     armRotateMotor.setPIDF(rotatePID, 0);
@@ -105,7 +106,7 @@ void Elevarm::init()
 
 
 
-    frc::Pose3d stowPos = frc::Pose3d(0.0_m,  0.0_m, (units::meter_t) D_CARRIAGE_MAX_TRAVEL_M, frc::Rotation3d());
+    frc::Pose3d stowPos = frc::Pose3d(-0.1_m,  0.0_m, (units::meter_t) D_CARRIAGE_STOW, frc::Rotation3d());
 
 
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] == frc::Pose3d( 0.408_m,  0.0_m,  0.0_m, frc::Rotation3d() );
@@ -128,8 +129,7 @@ void Elevarm::init()
 
 
 
-    table->PutNumber("Carriage Encoder Value", carriageMotors.getPosition());
-    table->PutNumber("Arm rotate Encoder Value", armRotateMotor.getPosition());
+    
     table->PutNumber("Carriage Max Manual Speed", manualMaxCarriageSpeed);
     table->PutNumber("Arm Rotate Max Manual Speed", manualMaxArmSpeed);
 
@@ -139,11 +139,6 @@ void Elevarm::init()
 
 void Elevarm::assessInputs()
 {
-    if (!driverGamepad) return;
-    if (!operatorGamepad) return;
-
-
-
     if (operatorGamepad->leftStickYActive() || operatorGamepad->rightStickYActive()) {
         futureState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
     } else if (operatorGamepad->GetAButton() || operatorGamepad->DPadDown()){
@@ -155,7 +150,7 @@ void Elevarm::assessInputs()
     } else if(operatorGamepad->GetBButton() || operatorGamepad->DPadRight()){
         futureState.positionState = ElevarmPositionState::ELEVARM_MID;
     } else {
-        if (!previousState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
+        if (previousState.positionState != ElevarmPositionState::ELEVARM_MANUAL) {
             futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
         } 
     }
@@ -175,24 +170,37 @@ void Elevarm::assessInputs()
 
 
 }
+
 void Elevarm::analyzeDashboard()
 {
     manualMaxCarriageSpeed = table->GetNumber("Carriage Max Manual Speed", 1.0);
     manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", 1.0);
+    table->PutNumber("Carriage Encoder Value", carriageMotors.getPosition());
+    table->PutNumber("Arm rotate Encoder Value", armRotateMotor.getPosition());
+    table->PutNumber("EA position state", futureState.positionState);
+    table->PutNumber("EA piece state", futureState.pieceState);
+    table->PutNumber("EA direction state", futureState.directionState);
+    table->PutNumber("EA solution state", solutionsEnum);
+    table->PutNumber("EA position PREV state", previousState.positionState);
+    table->PutNumber("EA piece PREV state", previousState.pieceState);
+    table->PutNumber("EA direction PREV state", previousState.directionState);
+    table->PutNumber("target height", targetPose.first);
+    table->PutNumber("target rotation", targetPose.second);
+    table->PutNumber("theta", reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], solutionsEnum).second);
+    table->PutNumber("height", reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], solutionsEnum).first);
 
 }
 
 void Elevarm::assignOutputs()
 {    
-    std::pair<double,double> targetPose;
-
     if (futureState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
         carriageMotors.setPower(operatorGamepad->leftStickY() * manualMaxCarriageSpeed);
         armRotateMotor.setPower(operatorGamepad->rightStickY() * manualMaxArmSpeed);
         previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
     } else {
         if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW) {
-            targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_D);
+            solutionsEnum = ElevarmSolutions::ELEVARM_D;
+            targetPose = reverseKinematics(stowPos, solutionsEnum);
         } else {
             if (futureState.directionState == previousState.directionState) {
                 if (futureState.directionState == ElevarmDirectionState::ELEVARM_BACK) {
@@ -209,12 +217,18 @@ void Elevarm::assignOutputs()
                     }
                 }
             } else if (futureState.directionState != previousState.directionState) {
-                targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_D);
+                solutionsEnum = ElevarmSolutions::ELEVARM_D;
+                targetPose = reverseKinematics(stowPos, solutionsEnum);
             } else
             targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], solutionsEnum);
         }
+
+        
+
+        
         carriageMotors.setPosition(targetPose.first);
         armRotateMotor.setPosition(targetPose.second);
+
 
         previousState = ((std::abs(carriageMotors.getPosition() - targetPose.first)  <= PREVIOUS_HEIGHT_DEADBAND) && 
         (std::abs(armRotateMotor.getPosition() - targetPose.second) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
@@ -232,5 +246,5 @@ std::pair<double, double> Elevarm::reverseKinematics(frc::Pose3d pose, ElevarmSo
     double h = pose.Z().to<double>() - D_CARRIAGE_JOINT_OFFSET - D_CARRIAGE_FLOOR_OFFSET + (arms * X_ARM_LENGTH) * std::sqrt(1 - std::pow(((pose.X().to<double>() + X_BUMPER_WIDTH + X_HALF_WIDTH - (direction * X_CARRIAGE_OFFSET) ) / X_ARM_LENGTH) , 2.0 ));
     double r = direction * std::asin((pose.X().to<double>() + X_BUMPER_WIDTH + X_HALF_WIDTH - (direction * X_CARRIAGE_OFFSET) ) / X_ARM_LENGTH );
  
-    return std::pair(h, r);
+    return std::pair<double, double> (h,r);
 }
