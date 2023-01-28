@@ -240,7 +240,6 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
-
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
         for (ValorSwerve<SwerveAzimuthMotor, SwerveDriveMotor> *module : swerveModules)

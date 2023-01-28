@@ -89,6 +89,8 @@ public:
     void setColor(int color);
     void setColor(int r, int g, int b);
 
+    void setRangeLED(int value, int startindex, int endindex);
+
     /**
      * @brief Set the animation the LEDs should follow
      * 

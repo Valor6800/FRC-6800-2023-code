@@ -16,6 +16,7 @@
 #include "subsystems/Drivetrain.h"
 #include "subsystems/Elevarm.h"
 #include "subsystems/Intake.h"
+#include "subsystems/LED.h"
 
 #include <frc/DriverStation.h>
 #include <frc/DataLogManager.h>
@@ -50,6 +51,7 @@ class Robot : public frc::TimedRobot {
         Drivetrain drivetrain;
         Intake intake;
         Elevarm elevarm;
+        LED led;
         ValorAuto autonomous;
 
         std::ofstream outfile;

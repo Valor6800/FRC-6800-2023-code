@@ -349,6 +349,7 @@ void Elevarm::assignOutputs()
         carriageMotors.setPower(carriageStallPower);
         armRotateMotor.setPower(0);
     }
+
 }
 double Elevarm::minAngle(bool isFront)
 {

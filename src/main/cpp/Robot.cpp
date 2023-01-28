@@ -12,7 +12,7 @@
 
 #include <ctime>
 
-Robot::Robot() : drivetrain(this), intake(this), elevarm(this, &intake), autonomous(&drivetrain, &intake, &elevarm)
+Robot::Robot() : drivetrain(this), intake(this), elevarm(this, &intake),led(this), autonomous(&drivetrain, &intake, &elevarm, &led)
 {
     frc::TimedRobot();
 }
@@ -21,6 +21,7 @@ void Robot::RobotInit() {
     drivetrain.setGamepads(&gamepadOperator, &gamepadDriver);
     elevarm.setGamepads(&gamepadOperator, &gamepadDriver);
     intake.setGamepads(&gamepadOperator, &gamepadDriver);
+    led.setGamepads(&gamepadOperator, &gamepadDriver);
 
     drivetrain.resetState();
     autonomous.fillAutoList();
@@ -55,6 +56,7 @@ void Robot::DisabledPeriodic() { }
 void Robot::AutonomousInit() {
     drivetrain.resetState();
     elevarm.resetState();
+    led.resetState();
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Brake);
     drivetrain.pullSwerveModuleZeroReference();
 

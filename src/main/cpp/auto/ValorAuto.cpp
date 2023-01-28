@@ -18,8 +18,8 @@
 
 #define ROOT_AUTO_PATH (std::string)"/home/lvuser/auto/"
 
-ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
-    drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
+ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm, LED* _led):
+    drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm), led(_led)
 {
     drivetrain->getTrajectoryConfig().SetKinematics(*drivetrain->getKinematics());
 

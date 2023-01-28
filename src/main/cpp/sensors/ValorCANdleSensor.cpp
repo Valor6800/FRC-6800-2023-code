@@ -41,9 +41,9 @@ ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int
 ValorCANdleSensor::RGBColor ValorCANdleSensor::toRGB(int color)
 {
     RGBColor outColor;
-    outColor.red = ((color & 0xFF0000) >> 16) * 255;
-    outColor.green = ((color & 0x00FF00) >> 8) * 255;
-    outColor.blue = ((color & 0x0000FF)) * 255;
+    outColor.red = ((color & 0xFF0000) >> 16) & 0xFF;
+    outColor.green = ((color & 0x00FF00) >> 8) & 0xFF;
+    outColor.blue = ((color & 0x0000FF)) & 0xFF;
     return outColor;
 }
 
@@ -96,6 +96,12 @@ void ValorCANdleSensor::setAnimation(ValorCANdleSensor::AnimationType animation)
 
     if (activeAnimation)
         candle.Animate(*activeAnimation);
+}
+
+void ValorCANdleSensor::setRangeLED(int value, int startindex, int endindex)
+{
+    RGBColor val = toRGB(value);
+    candle.SetLEDs(val.red, val.green, val.blue, 0, startindex, endindex - startindex + 1);
 }
 
 void ValorCANdleSensor::clearAnimation()
