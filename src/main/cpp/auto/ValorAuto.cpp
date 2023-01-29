@@ -15,6 +15,8 @@
 
 #include <frc2/command/CommandBase.h>
 
+#define TRANS_VELOCITY 4.952f
+
 ValorAuto::ValorAuto(Drivetrain *_drivetrain) :
     drivetrain(_drivetrain)
 {
@@ -51,10 +53,12 @@ frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(f
     );
 }
 
-frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed, )
+frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed, double start_vel=0, double end_vel=0)
 {
     frc::TrajectoryConfig & config = drivetrain->getTrajectoryConfig();
     config.SetReversed(reversed);
+    config.SetStartVelocity(units::meters_per_second_t{start_vel});
+    config.SetEndVelocity(units::meters_per_second_t{end_vel});
     
     return frc::TrajectoryGenerator::GenerateTrajectory(poses, drivetrain->getTrajectoryConfig());
 }
@@ -115,6 +119,16 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
     std::string line;
 
+    std::vector<ValorAutoAction> actions;
+    // @todo PLEASE find a better way to do this. 
+    std::vector<bool> traj_directions;
+    while (std::getline(infile, line)){
+        actions.push_back(ValorAutoAction(line, &points));
+        if (actions.back().type == ValorAutoAction::Type::TRAJECTORY){
+            traj_directions.push_back(actions.back().reversed);
+        }
+    }
+
     // Stores trajectory poses until a non-trajectory command is run,
     // in which case poses stored here are compiled into a single trajectory
     // and placed into the command group, and then this is reset
@@ -124,8 +138,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
     int traj_count = 0;
 
-    while (std::getline(infile, line)){
-        ValorAutoAction action(line, &points);
+    for (ValorAutoAction action: actions){
         if (action.type == ValorAutoAction::Type::TRAJECTORY){
             if (trajPoses.size() == 0){ // starting a new trajectory, set poses inside to stored action.start and action.end
                 action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
@@ -145,7 +158,14 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
                     if (trajPoses.size() > 0)
                         last_angle = trajPoses.back().Rotation();
-                    frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed);
+
+                    double s_vel = 0, e_vel = 0;
+                    if (traj_count > 0 && traj_directions[traj_count] == traj_directions[traj_count - 1])
+                        s_vel = TRANS_VELOCITY;
+                    if (traj_count < traj_directions.size() - 1 && traj_directions[traj_count] == traj_directions[traj_count + 1])
+                        e_vel = TRANS_VELOCITY;
+                    
+                    frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
                     // createTrajectoryDebugFile(trajectory, traj_count);
                     traj_count ++;
                     cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
@@ -172,7 +192,13 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 if (trajPoses.size() > 0)
                     last_angle = trajPoses.back().Rotation();
 
-                frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed);
+                double s_vel = 0, e_vel = 0;
+                if (traj_count > 0 && traj_directions[traj_count] == traj_directions[traj_count - 1])
+                    s_vel = TRANS_VELOCITY;
+                if (traj_count < traj_directions.size() - 1 && traj_directions[traj_count] == traj_directions[traj_count + 1])
+                    e_vel = TRANS_VELOCITY;
+                
+                frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
                 // createTrajectoryDebugFile(trajectory, traj_count);
                 traj_count ++;
                 cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
@@ -273,7 +299,13 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
         // }
         // table->PutNumberArray("Trajectory " + std::to_string(traj_count), angles);
         
-        frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed);
+        double s_vel = 0, e_vel = 0;
+        if (traj_count > 0 && traj_directions[traj_count] == traj_directions[traj_count - 1])
+            s_vel = TRANS_VELOCITY;
+        if (traj_count < traj_directions.size() - 1 && traj_directions[traj_count] == traj_directions[traj_count + 1])
+            e_vel = TRANS_VELOCITY;
+        
+        frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
         // createTrajectoryDebugFile(trajectory, traj_count);
         traj_count ++;
         cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
