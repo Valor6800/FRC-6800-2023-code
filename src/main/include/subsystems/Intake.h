@@ -11,6 +11,7 @@
 #include "Constants.h"
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
+#include "sensors/ValorCurrentSensor.h"
 
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -52,39 +53,35 @@ public:
      void assignOutputs();
 
      void resetState();
-
+     //this state will come from elevarm, elevarm not currently connected to dev
      enum IntakePieceState {
         ELEVARM_CONE,
         ELEVARM_CUBE
-    };
+     };
 
-    enum IntakeDirectionState {
-        ELEVARM_FRONT,
-        ELEVARM_BACK
-    };
+   
 
-    enum IntakePositionState {
-        ELEVARM_STOW,
-        ELEVARM_GROUND,
-        ELEVARM_PLAYER,
-        ELEVARM_MID,
-        ELEVARM_HIGH
-    };
+     enum IntakeStates {
+        INTAKE,
+        OUTTAKE_CONE,
+        OUTTAKE_CUBE,
+        OUTTAKE,
+        DISABLED
+     };
 
      struct x
      {
           IntakePieceState pieceState;
-          IntakeDirectionState directionState;
-          IntakePositionState positionState;
-          
+          IntakeStates intakeState;
 
-     } futureState, previousState;
+
+     }state;
 
   
 
      
 private:
      ValorNeoController intakeMotor;
-     
+     ValorCurrentSensor currySensor;
 
 };
