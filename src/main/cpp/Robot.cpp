@@ -63,16 +63,9 @@ void Robot::AutonomousInit() {
     if (autoCommand != nullptr) {
         autoCommand->Schedule();
     }
-
-    outfile.open("/home/lvuser/poseLog" + std::to_string(time(0)) + ".csv");
-}
-
-std::string makePoseLog(frc::Pose2d pose){
-    return std::to_string(frc::Timer::GetFPGATimestamp().to<double>()) + "," + std::to_string(pose.X().to<double>()) + "," + std::to_string(pose.Y().to<double>()) + "," + std::to_string(pose.Rotation().Degrees().to<double>()) + "\n";
 }
 
 void Robot::AutonomousPeriodic(){
-    outfile << makePoseLog(drivetrain.getPose_m());
 }
 
 void Robot::TeleopInit() {

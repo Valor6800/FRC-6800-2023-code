@@ -96,18 +96,6 @@ void ValorAuto::readPointsCSV(std::string filename){
     }
 }
 
-void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
-    std::ofstream outfile("/home/lvuser/trajectory" + std::to_string(i) + ".csv");
-    if (!outfile.good()){
-        return;
-    }
-
-    std::vector<frc::Trajectory::State> states = trajectory.States();
-    for (frc::Trajectory::State state: states){
-        outfile << std::to_string(state.t.to<double>()) + "," + std::to_string(state.pose.X().to<double>()) + "," + std::to_string(state.pose.Y().to<double>()) + "," + std::to_string(state.pose.Rotation().Degrees().to<double>()) + "," + std::to_string(state.velocity.to<double>()) + "\n";
-    }
-}
-
 frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     std::unordered_map<ValorAutoAction::Type, std::string> commandToStringMap = {
         {ValorAutoAction::NONE, "none"},
@@ -141,8 +129,6 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     bool trajReversed = false;
     frc::Rotation2d last_angle;
 
-    int traj_count = 0;
-
     for (int i = 0; i < actions.size(); i ++){
         table->PutString("Action " + std::to_string(i), commandToStringMap[actions[i].type]);
         ValorAutoAction & action = actions[i];
@@ -151,18 +137,11 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
                 trajPoses = {action.start, action.end};
                 trajReversed = action.reversed;
-                // table->PutNumber("Trajectory " + std::to_string(traj_count) + " start angle", last_angle.Degrees().to<double>());
                 last_angle = trajPoses.back().Rotation();
             }
             else {
                 // Create a new trajectory with each switch of normal <-> reversed, as they use different configs
                 if (action.reversed != trajReversed){ 
-                    // std::vector<double> angles;
-                    // for (frc::Pose2d pose: trajPoses){
-                    //     angles.push_back(pose.Rotation().Degrees().to<double>());
-                    // }
-                    // table->PutNumberArray("Trajectory " + std::to_string(traj_count), angles);
-
                     if (trajPoses.size() > 0)
                         last_angle = trajPoses.back().Rotation();
 
@@ -173,19 +152,14 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT && actions[i + 2].type == ValorAutoAction::TRAJECTORY && actions[i + 2].reversed == actions[i].reversed)
                         e_vel = TRANS_VELOCITY;
                     i++;
-
-                    table->PutNumber("Trajectory " + std::to_string(traj_count) + " start velocity", s_vel);
-                    table->PutNumber("Trajectory " + std::to_string(traj_count) + " end velocity", e_vel);
                     
                     frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-                    createTrajectoryDebugFile(trajectory, traj_count);
-                    traj_count ++;
+
                     cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
                     trajPoses.clear();
 
                     action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
                     trajPoses = {action.start, action.end};
-                    // table->PutNumber("Trajectory " + std::to_string(traj_count) + " start angle", last_angle.Degrees().to<double>());
                     trajReversed = action.reversed;
                 }
                 else {
@@ -195,12 +169,6 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
         }
         else {
             if (trajPoses.size() != 0){
-                // std::vector<double> angles;
-                // for (frc::Pose2d pose: trajPoses){
-                //     angles.push_back(pose.Rotation().Degrees().to<double>());
-                // }
-                // table->PutNumberArray("Trajectory " + std::to_string(traj_count), angles);
-
                 if (trajPoses.size() > 0)
                     last_angle = trajPoses.back().Rotation();
 
@@ -210,16 +178,9 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     s_vel = TRANS_VELOCITY;
                 if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT && actions[i + 2].type == ValorAutoAction::TRAJECTORY && actions[i + 2].reversed == actions[i].reversed)
                     e_vel = TRANS_VELOCITY;
-                
-                table->PutNumber("Trajectory " + std::to_string(traj_count) + " start velocity", s_vel);
-                table->PutNumber("Trajectory " + std::to_string(traj_count) + " end velocity", e_vel);
-                table->PutString(std::to_string(traj_count) + " next type: ", commandToStringMap[actions[i + 1].type]);
-                table->PutString(std::to_string(traj_count) + " next next type: ", commandToStringMap[actions[i + 2].type]);
                 i++;
 
                 frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-                createTrajectoryDebugFile(trajectory, traj_count);
-                traj_count ++;
                 cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
                 trajPoses.clear();
             }
@@ -312,29 +273,15 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     }
 
     if (trajPoses.size() != 0){
-        // std::vector<double> angles;
-        // for (frc::Pose2d pose: trajPoses){
-        //     angles.push_back(pose.Rotation().Degrees().to<double>());
-        // }
-        // table->PutNumberArray("Trajectory " + std::to_string(traj_count), angles);
-        
         int i = actions.size() - 1;
         double s_vel = 0, e_vel = 0;
         if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
             s_vel = TRANS_VELOCITY;
-        // table->PutString(std::to_string(traj_count) + " next type: ", commandToStringMap[actions[i + 1].type]);
-        // table->PutString(std::to_string(traj_count) + " next next type: ", commandToStringMap[actions[i + 2].type]);
-        table->PutNumber("Trajectory " + std::to_string(traj_count) + " start velocity", s_vel);
-        table->PutNumber("Trajectory " + std::to_string(traj_count) + " end velocity", e_vel);
         
         frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-        createTrajectoryDebugFile(trajectory, traj_count);
-        traj_count ++;
         cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
         trajPoses.empty();
     }
-
-    table->PutNumber("trajectory count", traj_count);
 
     return cmdGroup;
 }
