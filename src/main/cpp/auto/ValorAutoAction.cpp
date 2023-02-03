@@ -42,6 +42,8 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         type = ValorAutoAction::Type::RESET_ODOM;
     } else if (items[0] == "action"){
         type = ValorAutoAction::Type::ACTION;
+    } else if (items[0] == "split"){
+        type = ValorAutoAction::Type::SPLIT;
     }
 
     if (type == ValorAutoAction::Type::TIME) {
@@ -98,5 +100,8 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         }
         name = items[1];
         // Code to load commands into the action is handled in ValorAuto
+    }
+    else if (type == ValorAutoAction::Type::SPLIT){
+
     }
 }

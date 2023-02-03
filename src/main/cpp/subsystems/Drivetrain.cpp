@@ -278,11 +278,11 @@ void Drivetrain::analyzeDashboard()
                 table->PutNumber("Current vision doubt", visionDoubt);
 
                 // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset
-                estimator->AddVisionMeasurement(
-                    thetalessBotpose,  
-                    frc::Timer::GetFPGATimestamp(),
-                    {visionDoubt, visionDoubt, visionDoubt}
-                );
+                // estimator->AddVisionMeasurement(
+                //     thetalessBotpose,  
+                //     frc::Timer::GetFPGATimestamp(),
+                //     {visionDoubt, visionDoubt, visionDoubt}
+                // );
             }
             
             if (driverGamepad->GetAButton()){
