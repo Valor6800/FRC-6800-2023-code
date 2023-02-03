@@ -66,7 +66,8 @@ public:
         OUTTAKE_CONE,
         OUTTAKE_CUBE,
         OUTTAKE,
-        DISABLED
+        DISABLED,
+        SPIKED
      };
 
      struct x
@@ -81,7 +82,8 @@ public:
 
      
 private:
-     ValorNeoController intakeMotor;
+     ValorNeoController intakeMotor1;
+     ValorNeoController intakeMotor2;
      ValorCurrentSensor currySensor;
 
 };
