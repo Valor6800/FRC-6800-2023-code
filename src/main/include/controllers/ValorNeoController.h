@@ -28,6 +28,8 @@ public:
     double getPosition();
     double getSpeed();
 
+    int getProfile();
+
     void setEncoderPosition(double position);
 
     void setPosition(double);
