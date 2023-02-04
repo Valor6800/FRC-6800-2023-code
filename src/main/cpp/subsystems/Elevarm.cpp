@@ -25,12 +25,12 @@
 #define CARRIAGE_K_VEL 0.02f
 #define CARRIAGE_K_ACC_MUL 1.0f
 
-#define ROTATE_K_F 0.0000753f
-#define ROTATE_K_P 5e-5f
+#define ROTATE_K_F 0.005f
+#define ROTATE_K_P 0.001f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
-#define ROTATE_K_ERROR 0.2f
-#define ROTATE_K_VEL 0.2f
+#define ROTATE_K_ERROR 1.0f
+#define ROTATE_K_VEL 18.0f
 #define ROTATE_K_ACC_MUL 1.0f
 
 #define PREVIOUS_HEIGHT_DEADBAND 0.01f
@@ -99,8 +99,7 @@ void Elevarm::init()
     carriageMotors.setPIDF(carriagePID, 0);
     carriageMotors.setupFollower(CANIDs::CARRIAGE_FOLLOW, false);
 
-    armRotateMotor.setConversion((1.0 / ROTATE_GEAR_RATIO) / 360.0);
-    armRotateMotor.setForwardLimit(ROTATE_FORWARD_LIMIT);
+    armRotateMotor.setConversion(1.0 / ROTATE_GEAR_RATIO * 360.0);
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
     armRotateMotor.setPIDF(rotatePID, 0);
 
@@ -213,7 +212,7 @@ void Elevarm::assignOutputs()
             (std::abs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
         }
     } else {
-        carriageMotors.setPower(0);
+        carriageMotors.setPower(0.0125);
         armRotateMotor.setPower(0);
         previousState = ((std::abs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
         (std::abs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
