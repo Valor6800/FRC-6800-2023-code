@@ -203,27 +203,9 @@ void Elevarm::assignOutputs()
 
     if (futureState.deadManEnabled) {
         if (futureState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
-
-            double manualCarriage = futureState.manualCarriage;
-            double manualArm = futureState.manualArm;
-
-            double currentX = futureState.resultKinematics.X().to<double>();
-            double currentZ = futureState.resultKinematics.Z().to<double>();
-            // Arm inside front chassis box or in ground
-            if (currentX > 0 && ((X_FORK > currentX && Z_FORK > currentZ) || (Z_GROUND > currentZ))) {
-                // Allow only up
-                manualCarriage = manualCarriage > 0 ? manualCarriage : 0;
-                // Allow only away from chassis (positive)
-                manualArm = manualArm > 0 ? manualArm : 0;
-            // Arm inside back chassis box or in ground
-            } else if (0 > currentX && ((currentX > -X_FORK && Z_FORK > currentZ) || (Z_GROUND > currentZ))) {
-                // Allow only up
-                manualCarriage = manualCarriage > 0 ? manualCarriage : 0;
-                // Allow only away from chassis (negative)
-                manualArm = 0 > manualArm ? manualArm : 0;
-            }
-            carriageMotors.setPower(manualCarriage);
-            armRotateMotor.setPower(manualArm);
+            auto manualOutputs = detectionBoxManual(futureState.manualCarriage, futureState.manualArm);
+            carriageMotors.setPower(manualOutputs.h);
+            armRotateMotor.setPower(manualOutputs.theta);
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
             carriageMotors.setPosition(futureState.targetPose.h);
@@ -237,6 +219,25 @@ void Elevarm::assignOutputs()
         previousState = ((std::abs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
         (std::abs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
     }
+}
+
+Elevarm::Positions Elevarm::detectionBoxManual(double carriage, double arm) {
+    double currentX = futureState.resultKinematics.X().to<double>();
+    double currentZ = futureState.resultKinematics.Z().to<double>();
+    // Arm inside front chassis box or in ground
+    if (currentX > 0 && ((X_FORK > currentX && Z_FORK > currentZ) || (Z_GROUND > currentZ))) {
+        // Allow only up
+        carriage = carriage > 0 ? carriage : 0;
+        // Allow only away from chassis (positive)
+        arm = arm > 0 ? arm : 0;
+    // Arm inside back chassis box or in ground
+    } else if (0 > currentX && ((currentX > -X_FORK && Z_FORK > currentZ) || (Z_GROUND > currentZ))) {
+        // Allow only up
+        carriage = carriage > 0 ? carriage : 0;
+        // Allow only away from chassis (negative)
+        arm = 0 > arm ? arm : 0;
+    }
+    return Positions(carriage, arm);
 }
 
 
