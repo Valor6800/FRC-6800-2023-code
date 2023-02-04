@@ -26,12 +26,11 @@
 #define KDT 0.0f
 #define KFT 0.0f
 
-#define AZIMUTH_K_P 0.00001f
+#define AZIMUTH_K_P 0.0f
 #define AZIMUTH_K_I 0.0f
 #define AZIMUTH_K_D 0.0f
-#define AZIMUTH_K_E 0.0027f
 
-#define AZIMUTH_K_VEL 10.0f
+#define AZIMUTH_K_VEL 6.4849f
 #define AZIMUTH_K_ACC_MUL 20.0f
 
 #define MOTOR_FREE_SPEED 6380.0f
@@ -42,10 +41,9 @@
 #define ROT_SPEED_MUL 1.0f
 
 #define MODULE_DIFF_XS {1, 1, -1, -1}
-#define MODULE_DIFF_YS {1, -1, -1, 1}
+#define MODULE_DIFF_YS {1, -1, 1, -1}
 
-#define DRIVETRAIN_CAN_BUS ""
-#define PIGEON_CAN_BUS "baseCAN"
+#define DRIVETRAIN_CAN_BUS "baseCAN"
 
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
@@ -53,7 +51,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         autoMaxSpeed(driveMaxSpeed * 1),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         rotMaxAccel(rotMaxSpeed * 0.5),
-                        pigeon(CANIDs::PIGEON_CAN, PIGEON_CAN_BUS),
+                        pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
                         motorLocations(wpi::empty_array),
                         initPositions(wpi::empty_array),
                         kinematics(NULL),
@@ -94,17 +92,16 @@ void Drivetrain::configSwerveModule(int i)
     azimuthPID.P = AZIMUTH_K_P;
     azimuthPID.I = AZIMUTH_K_I;
     azimuthPID.D = AZIMUTH_K_D;
-    azimuthPID.error = AZIMUTH_K_E;
 
     azimuthControllers.push_back(new SwerveAzimuthMotor(CANIDs::AZIMUTH_CANS[i],
-                                                      rev::CANSparkMax::IdleMode::kBrake,
-                                                      true,
+                                                      NeutralMode::Brake,
+                                                      false,
                                                       DRIVETRAIN_CAN_BUS));
-    azimuthControllers[i]->setConversion(1 / AZIMUTH_GEAR_RATIO);
     azimuthControllers[i]->setPIDF(azimuthPID, 0);
+    azimuthControllers[i]->setConversion(1 / AZIMUTH_GEAR_RATIO);
 
     driveControllers.push_back(new SwerveDriveMotor(CANIDs::DRIVE_CANS[i],
-                                                    rev::CANSparkMax::IdleMode::kCoast,
+                                                    NeutralMode::Coast,
                                                     false,
                                                     DRIVETRAIN_CAN_BUS));
     driveControllers[i]->setConversion(1 / DRIVE_GEAR_RATIO * M_PI * WHEEL_DIAMETER_M);
@@ -213,7 +210,7 @@ void Drivetrain::analyzeDashboard()
     table->PutNumber("Pigeon Theta", getPigeon().Degrees().to<double>());
     table->PutNumber("Detecting value",limeTable->GetNumber("tv", 0));
 
-    table->PutNumber("Module 0 Mag Count", azimuthControllers[0]->getAbsEncoderPosition());
+    table->PutNumber("Module 0 Mag Count", swerveModules[0]->getMagEncoderCount());
     table->PutNumber("Module 0 Azi Pos", swerveModules[0]->getAzimuthPosition().Degrees().to<double>() / 360);
     table->PutNumber("Module 1 Mag Count", swerveModules[1]->getMagEncoderCount());
     table->PutNumber("Module 1 Azi Pos", swerveModules[1]->getAzimuthPosition().Degrees().to<double>() / 360);
@@ -335,7 +332,7 @@ void Drivetrain::assignOutputs()
 void Drivetrain::cancelCmdGoToTag(){
     cmdGoToTag->Cancel();
     // delete cmdGoToTag;
-    setDriveMotorModeTo(rev::CANSparkMax::IdleMode::kCoast);
+    setDriveMotorModeTo(NeutralMode::Coast);
 }
 
 void Drivetrain::pullSwerveModuleZeroReference(){
@@ -428,7 +425,7 @@ frc::Pose2d Drivetrain::translatePoseToCorner(frc::Pose2d tagPose){
 }
 // 16.535_m / 2, 8_m / 2, 0_deg
 
-void Drivetrain::setDriveMotorModeTo(rev::CANSparkMax::IdleMode mode){
+void Drivetrain::setDriveMotorModeTo(NeutralMode mode){
     for (int i = 0; i < driveControllers.size(); i ++){
         driveControllers[i]->setMotorMode(mode);
     }
