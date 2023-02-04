@@ -101,6 +101,7 @@ bool ValorSwerve<AzimuthMotor, DriveMotor>::loadAndSetAzimuthZeroReference()
     //   Protects against issues as seen in: https://www.youtube.com/watch?v=MGxpWNcv-VM
     double currPos = getMagEncoderCount() / MAG_ENCODER_TICKS_PER_REV;
     if (currPos == 0) {
+        azimuthMotor->setEncoderPosition(0);
         return false;
     }
 

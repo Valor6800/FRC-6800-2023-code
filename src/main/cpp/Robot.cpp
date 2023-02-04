@@ -75,12 +75,8 @@ void Robot::AutonomousPeriodic(){
 
 void Robot::TeleopInit() {
     drivetrain.pullSwerveModuleZeroReference();
-<<<<<<< HEAD
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Coast);
 
-=======
-    drivetrain.setDriveMotorModeTo(NeutralMode::Coast);
->>>>>>> 3a31786 (Decrease vision trust with distance, make motors use brake during auto)
 
     if (autoCommand != nullptr) {
         autoCommand->Cancel();

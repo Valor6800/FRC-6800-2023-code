@@ -26,26 +26,24 @@
 #define KDT 0.0f
 #define KFT 0.0f
 
-#define AZIMUTH_K_P 0.00001f
+#define AZIMUTH_K_P 0.0f
 #define AZIMUTH_K_I 0.0f
 #define AZIMUTH_K_D 0.0f
-#define AZIMUTH_K_E 0.0027f
 
-#define AZIMUTH_K_VEL 10.0f
+#define AZIMUTH_K_VEL 6.4849f
 #define AZIMUTH_K_ACC_MUL 20.0f
 
 #define MOTOR_FREE_SPEED 6380.0f
 #define WHEEL_DIAMETER_M 0.1016f
-#define DRIVE_GEAR_RATIO 5.51f
-#define AZIMUTH_GEAR_RATIO 13.37f
+#define DRIVE_GEAR_RATIO 5.14f
+#define AZIMUTH_GEAR_RATIO 12.8f
 #define AUTO_SPEED_MUL 0.75f
-#define ROT_SPEED_MUL 2.0f
+#define ROT_SPEED_MUL 1.0f
 
 #define MODULE_DIFF_XS {1, 1, -1, -1}
-#define MODULE_DIFF_YS {1, -1, -1, 1}
+#define MODULE_DIFF_YS {1, -1, 1, -1}
 
-#define DRIVETRAIN_CAN_BUS ""
-#define PIGEON_CAN_BUS "baseCAN"
+#define DRIVETRAIN_CAN_BUS "baseCAN"
 
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
@@ -53,7 +51,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         autoMaxSpeed(driveMaxSpeed * 0.75),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         rotMaxAccel(rotMaxSpeed * 0.5),
-                        pigeon(CANIDs::PIGEON_CAN, PIGEON_CAN_BUS),
+                        pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
                         motorLocations(wpi::empty_array),
                         initPositions(wpi::empty_array),
                         kinematics(NULL),
@@ -94,14 +92,13 @@ void Drivetrain::configSwerveModule(int i)
     azimuthPID.P = AZIMUTH_K_P;
     azimuthPID.I = AZIMUTH_K_I;
     azimuthPID.D = AZIMUTH_K_D;
-    azimuthPID.error = AZIMUTH_K_E;
 
     azimuthControllers.push_back(new SwerveAzimuthMotor(CANIDs::AZIMUTH_CANS[i],
                                                       ValorNeutralMode::Brake,
                                                       true,
                                                       DRIVETRAIN_CAN_BUS));
-    azimuthControllers[i]->setConversion(1 / AZIMUTH_GEAR_RATIO);
     azimuthControllers[i]->setPIDF(azimuthPID, 0);
+    azimuthControllers[i]->setConversion(1 / AZIMUTH_GEAR_RATIO);
 
     driveControllers.push_back(new SwerveDriveMotor(CANIDs::DRIVE_CANS[i],
                                                     ValorNeutralMode::Coast,
@@ -210,7 +207,6 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
-
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
         for (ValorSwerve<SwerveAzimuthMotor, SwerveDriveMotor> *module : swerveModules)

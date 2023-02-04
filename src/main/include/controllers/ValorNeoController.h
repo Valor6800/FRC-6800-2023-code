@@ -13,7 +13,6 @@
 
 #include <rev/CANSparkMax.h>
 #include <rev/CANEncoder.h>
-#include <rev/SparkMaxAbsoluteEncoder.h>
 #include <string>
 
 class ValorNeoController : public ValorController<rev::CANSparkMax>
@@ -55,7 +54,6 @@ public:
 private:
     rev::SparkMaxPIDController pidController;
     rev::SparkMaxRelativeEncoder encoder;
-    rev::SparkMaxAbsoluteEncoder extEncoder;
 
     int currentPidSlot;
 };

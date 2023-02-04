@@ -116,11 +116,6 @@ void ValorNeoController::setEncoderPosition(double position)
     encoder.SetPosition(position);
 }
 
-double ValorNeoController::getAbsEncoderPosition()
-{
-    return extEncoder.GetPosition();
-}
-
 /**
  * Set the position in units (specified by conversion). Example: inches
  */
