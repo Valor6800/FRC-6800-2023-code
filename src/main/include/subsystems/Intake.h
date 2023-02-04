@@ -86,5 +86,7 @@ private:
      ValorCurrentSensor currySensor;
      double intakeSpeed;
      double outtakeSpeed;
+     double outtakeConeSpeed;
+     double outtakeCubeSpeed;
      double spikeAmps;
 };
