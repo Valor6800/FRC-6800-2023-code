@@ -108,9 +108,6 @@ public:
 
      } futureState, previousState;
 
-     // First in the pair returns the height in meters and second returns the rotation in degrees
-     Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
-
 private:
      ValorNeoController carriageMotors;
      ValorNeoController armRotateMotor;
@@ -120,6 +117,7 @@ private:
     Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
     frc::Pose3d forwardKinematics(Positions positions);
     Positions detectionBoxManual(double, double);
+    Positions detectionBoxAuto();
      
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;

@@ -99,6 +99,14 @@ double ValorNeoController::getPosition()
 }
 
 /**
+ * Get the PIDF profile number of the motor
+*/
+int ValorNeoController::getProfile()
+{
+    return currentPidSlot;
+}
+
+/**
  * Get the speed in units per second (specified by conversion)
  */
 double ValorNeoController::getSpeed()
@@ -121,7 +129,7 @@ double ValorNeoController::getAbsEncoderPosition()
  */
 void ValorNeoController::setPosition(double position)
 {
-    pidController.SetReference(position, rev::CANSparkMax::ControlType::kSmartMotion);
+    pidController.SetReference(position, rev::CANSparkMax::ControlType::kSmartMotion, currentPidSlot);
 }
 
 void ValorNeoController::setProfile(int profile)

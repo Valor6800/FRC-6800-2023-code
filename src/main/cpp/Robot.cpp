@@ -18,6 +18,7 @@ Robot::Robot() : drivetrain(this), intake(this), elevarm(this), autonomous(&driv
 void Robot::RobotInit() {
     drivetrain.setGamepads(&gamepadOperator, &gamepadDriver);
     elevarm.setGamepads(&gamepadOperator, &gamepadDriver);
+    intake.setGamepads(&gamepadOperator, &gamepadDriver);
 
     drivetrain.resetState();
     drivetrain.setDriveMotorModeTo(rev::CANSparkMax::IdleMode::kCoast);
