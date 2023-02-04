@@ -62,12 +62,12 @@ public:
    
 
      enum IntakeStates {
-        INTAKE,
+        DISABLED,
+        SPIKED,
         OUTTAKE_CONE,
         OUTTAKE_CUBE,
         OUTTAKE,
-        DISABLED,
-        SPIKED
+        INTAKE
      };
 
      struct x
@@ -82,8 +82,9 @@ public:
 
      
 private:
-     ValorNeoController intakeMotor1;
-     ValorNeoController intakeMotor2;
+     ValorNeoController intakeMotor;
      ValorCurrentSensor currySensor;
-
+     double intakeSpeed;
+     double outtakeSpeed;
+     double spikeAmps;
 };
