@@ -26,9 +26,10 @@
 #define KDT 0.0f
 #define KFT 0.0f
 
-#define AZIMUTH_K_P 0.0f
+#define AZIMUTH_K_P 0.2f
 #define AZIMUTH_K_I 0.0f
-#define AZIMUTH_K_D 0.0f
+#define AZIMUTH_K_D 0.1f
+#define AZIMUTH_K_F 0.0002f
 
 #define AZIMUTH_K_VEL 6.4849f
 #define AZIMUTH_K_ACC_MUL 20.0f
@@ -92,6 +93,7 @@ void Drivetrain::configSwerveModule(int i)
     azimuthPID.P = AZIMUTH_K_P;
     azimuthPID.I = AZIMUTH_K_I;
     azimuthPID.D = AZIMUTH_K_D;
+    azimuthPID.F = AZIMUTH_K_F;
 
     azimuthControllers.push_back(new SwerveAzimuthMotor(CANIDs::AZIMUTH_CANS[i],
                                                       ValorNeutralMode::Brake,
