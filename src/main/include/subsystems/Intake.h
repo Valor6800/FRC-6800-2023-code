@@ -23,9 +23,6 @@
 class Intake : public ValorSubsystem
 {
 public:
-
-    
-     
      /**
       * @brief Construct a new Intake object
       * 
@@ -43,8 +40,6 @@ public:
      /**
       * @brief Initialize the Intake
       * 
-      * Includes:
-      * * Resetting the test Bench state
       */
      void init();
 
@@ -53,13 +48,14 @@ public:
      void assignOutputs();
 
      void resetState();
+
+     void InitSendable(wpi::SendableBuilder& builder);
+
      //this state will come from elevarm, elevarm not currently connected to dev
      enum IntakePieceState {
         ELEVARM_CONE,
         ELEVARM_CUBE
      };
-
-   
 
      enum IntakeStates {
         DISABLED,
@@ -75,15 +71,14 @@ public:
           IntakePieceState pieceState;
           IntakeStates intakeState;
 
-
      }state;
-
-  
-
-     
+    
 private:
+
      ValorNeoController intakeMotor;
+
      ValorCurrentSensor currySensor;
+
      double intakeSpeed;
      double outtakeSpeed;
      double outtakeConeSpeed;

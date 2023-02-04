@@ -91,3 +91,19 @@ void Intake::assignOutputs()
         intakeMotor.setPower(intakeSpeed);
     }
 }
+
+void Intake::InitSendable(wpi::SendableBuilder& builder)
+    {
+        builder.SetSmartDashboardType("Subsystem");
+
+        builder.AddDoubleProperty(
+            "state",
+            [this] { return state.intakeState; },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "pieceState",
+            [this] { return state.pieceState; },
+            nullptr
+        );
+    }
