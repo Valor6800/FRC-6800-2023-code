@@ -102,21 +102,23 @@ public:
         bool test;
 
         Positions targetPose;
+        frc::Pose3d resultKinematics;
 
         bool deadManEnabled;
 
      } futureState, previousState;
 
-     
      // First in the pair returns the height in meters and second returns the rotation in degrees
      Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
-
 
 private:
      ValorNeoController carriageMotors;
      ValorNeoController armRotateMotor;
      std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose3d>>> posMap;
      frc::Pose3d stowPos;
+
+    Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
+    frc::Pose3d forwardKinematics(Positions positions);
      
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;

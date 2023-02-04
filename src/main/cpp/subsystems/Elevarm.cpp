@@ -41,12 +41,13 @@
 #define X_CARRIAGE_OFFSET 0.1778f
 #define X_ARM_LENGTH 1.01854f
 
-#define D_CARRIAGE_JOINT_OFFSET 0.0724154f
-#define D_CARRIAGE_FLOOR_OFFSET 0.2286f
-#define D_CARRIAGE_STOW_Z 0.4f
-#define D_CARRIAGE_STOW_X -0.508f
-
+#define Z_CARRIAGE_JOINT_OFFSET 0.0724154f
+#define Z_CARRIAGE_FLOOR_OFFSET 0.2286f
 #define Z_INTAKE_OFFSET 0.138f
+
+#define X_FORK 0.35f
+#define Z_FORK 0.45f
+#define Z_GROUND 0.1f
 
 Elevarm::Elevarm(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Elevarm"),                        
                             carriageMotors(CANIDs::CARRIAGE_MAIN, rev::CANSparkMax::IdleMode::kBrake, false),
@@ -103,10 +104,7 @@ void Elevarm::init()
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
     armRotateMotor.setPIDF(rotatePID, 0);
 
-    stowPos = frc::Pose3d((units::meter_t) D_CARRIAGE_STOW_X,  0.0_m, (units::meter_t) D_CARRIAGE_STOW_Z, frc::Rotation3d());
-
-    // 0.77
-
+    stowPos = frc::Pose3d(-0.508_m, 0_m, 0.4_m, frc::Rotation3d());
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0.0_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -0.408_m,  0.0_m,  0.0_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.5_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
@@ -174,14 +172,17 @@ void Elevarm::analyzeDashboard()
 {
     manualMaxCarriageSpeed = table->GetNumber("Carriage Max Manual Speed", 1.0);
     manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", 1.0);
-    table->PutNumber("Carriage Encoder Value", carriageMotors.getPosition());
-    table->PutNumber("Arm rotate Encoder Value", armRotateMotor.getPosition());
+    table->PutNumber("Carriage Position", carriageMotors.getPosition());
+    table->PutNumber("Arm Position", armRotateMotor.getPosition());
 
     table->PutNumber("EA position state", futureState.positionState);
     table->PutNumber("EA piece state", futureState.pieceState);
     table->PutNumber("EA direction state", futureState.directionState);
     table->PutNumber("target height", futureState.targetPose.h);
     table->PutNumber("target rotation", futureState.targetPose.theta);
+    futureState.resultKinematics = forwardKinematics(Positions(carriageMotors.getPosition(), armRotateMotor.getPosition()));
+    table->PutNumber("forward kin. x", futureState.resultKinematics.X().to<double>());
+    table->PutNumber("forward kin. z", futureState.resultKinematics.Z().to<double>());
 }
 
 void Elevarm::assignOutputs()
@@ -202,8 +203,27 @@ void Elevarm::assignOutputs()
 
     if (futureState.deadManEnabled) {
         if (futureState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
-            carriageMotors.setPower(futureState.manualCarriage);
-            armRotateMotor.setPower(futureState.manualArm);
+
+            double manualCarriage = futureState.manualCarriage;
+            double manualArm = futureState.manualArm;
+
+            double currentX = futureState.resultKinematics.X().to<double>();
+            double currentZ = futureState.resultKinematics.Z().to<double>();
+            // Arm inside front chassis box or in ground
+            if (currentX > 0 && ((X_FORK > currentX && Z_FORK > currentZ) || (Z_GROUND > currentZ))) {
+                // Allow only up
+                manualCarriage = manualCarriage > 0 ? manualCarriage : 0;
+                // Allow only away from chassis (positive)
+                manualArm = manualArm > 0 ? manualArm : 0;
+            // Arm inside back chassis box or in ground
+            } else if (0 > currentX && ((currentX > -X_FORK && Z_FORK > currentZ) || (Z_GROUND > currentZ))) {
+                // Allow only up
+                manualCarriage = manualCarriage > 0 ? manualCarriage : 0;
+                // Allow only away from chassis (negative)
+                manualArm = 0 > manualArm ? manualArm : 0;
+            }
+            carriageMotors.setPower(manualCarriage);
+            armRotateMotor.setPower(manualArm);
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
             carriageMotors.setPosition(futureState.targetPose.h);
@@ -240,72 +260,103 @@ Elevarm::Positions Elevarm::reverseKinematics(frc::Pose3d pose, ElevarmSolutions
         theta = std::asin((pose.X().to<double>() + X_BUMPER_WIDTH + X_HALF_WIDTH - X_CARRIAGE_OFFSET ) / X_ARM_LENGTH);
         height = pose.Z().to<double>() + (X_ARM_LENGTH * std::cos(theta)) - Z_INTAKE_OFFSET;
     }
-    height -= (D_CARRIAGE_FLOOR_OFFSET + D_CARRIAGE_JOINT_OFFSET);
+    height -= (Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET);
 
     return Positions(height,theta * 180.0 / M_PI);
 }
 
 void Elevarm::InitSendable(wpi::SendableBuilder& builder)
-    {
-        builder.SetSmartDashboardType("Subsystem");
+{
+    builder.SetSmartDashboardType("Subsystem");
+
+    builder.AddDoubleProperty(
+        "Previous State Piece",
+        [this] { return previousState.pieceState; },
+        nullptr
+    );
+
+    builder.AddDoubleProperty(
+        "Previous State Position",
+        [this] { return previousState.positionState; },
+        nullptr
+    );
+
+    builder.AddDoubleProperty(
+        "Previous State Direction",
+        [this] { return previousState.directionState; },
+        nullptr
+    );
+
+    builder.AddDoubleProperty(
+        "Previous State Target Height",
+        [this]{ return previousState.targetPose.h; },
+        nullptr
+    );
 
         builder.AddDoubleProperty(
-            "Previous State Piece",
-            [this] { return previousState.pieceState; },
-            nullptr
-        );
+        "Previous State Target Theta",
+        [this]{ return previousState.targetPose.theta; },
+        nullptr
+    );
+
+    builder.AddDoubleProperty(
+        "Future State Piece",
+        [this] { return futureState.pieceState; },
+        nullptr
+    );
+
+    builder.AddDoubleProperty(
+        "Future State Position",
+        [this] { return futureState.positionState; },
+        nullptr
+    );
+
+    builder.AddDoubleProperty(
+        "Future State Direction",
+        [this] { return futureState.directionState; },
+        nullptr
+    );
+
+    builder.AddDoubleProperty(
+        "Future State Target Height",
+        [this]{ return futureState.targetPose.h; },
+        nullptr
+    );
 
         builder.AddDoubleProperty(
-            "Previous State Position",
-            [this] { return previousState.positionState; },
-            nullptr
-        );
+        "Future State Target Theta",
+        [this]{ return futureState.targetPose.theta; },
+        nullptr
+    );
+}
 
-        builder.AddDoubleProperty(
-            "Previous State Direction",
-            [this] { return previousState.directionState; },
-            nullptr
-        );
-
-        builder.AddDoubleProperty(
-            "Previous State Target Height",
-            [this]{ return previousState.targetPose.h; },
-            nullptr
-        );
-
-         builder.AddDoubleProperty(
-            "Previous State Target Theta",
-            [this]{ return previousState.targetPose.theta; },
-            nullptr
-        );
-
-        builder.AddDoubleProperty(
-            "Future State Piece",
-            [this] { return futureState.pieceState; },
-            nullptr
-        );
-
-        builder.AddDoubleProperty(
-            "Future State Position",
-            [this] { return futureState.positionState; },
-            nullptr
-        );
-
-        builder.AddDoubleProperty(
-            "Future State Direction",
-            [this] { return futureState.directionState; },
-            nullptr
-        );
-
-        builder.AddDoubleProperty(
-            "Future State Target Height",
-            [this]{ return futureState.targetPose.h; },
-            nullptr
-        );
-
-         builder.AddDoubleProperty(
-            "Future State Target Theta",
-            [this]{ return futureState.targetPose.theta; },
-            nullptr
-        );
+frc::Pose3d Elevarm::forwardKinematics(Elevarm::Positions positions) 
+{
+    double x, z = 0;
+    // Forward
+    if (positions.theta > 0) {
+        // Arms
+        if (positions.theta > 90) {
+            double phi = (positions.theta - 90) * M_PI / 180.0;
+            z = Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET + Z_INTAKE_OFFSET + X_ARM_LENGTH * sin(phi);
+            x = X_ARM_LENGTH * cos(phi) + X_CARRIAGE_OFFSET - X_BUMPER_WIDTH - X_HALF_WIDTH;
+        // Legs
+        } else {
+            z = Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET + Z_INTAKE_OFFSET - X_ARM_LENGTH * cos(positions.theta);
+            x = X_ARM_LENGTH * sin(positions.theta) + X_CARRIAGE_OFFSET - X_BUMPER_WIDTH - X_HALF_WIDTH;
+        }
+    // Reverse
+    } else {
+        // Arms
+        if (positions.theta < -90) {
+            double phi = std::fabs(positions.theta + 90);
+            z = Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET + Z_INTAKE_OFFSET + X_ARM_LENGTH * sin(phi);
+            x = -X_ARM_LENGTH * cos(phi) + X_CARRIAGE_OFFSET - X_BUMPER_WIDTH - X_HALF_WIDTH;
+        // Legs
+        } else {
+            z = Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET + Z_INTAKE_OFFSET - X_ARM_LENGTH * cos(std::fabs(positions.theta));
+            x = -X_ARM_LENGTH * sin(std::fabs(positions.theta)) + X_CARRIAGE_OFFSET - X_BUMPER_WIDTH - X_HALF_WIDTH;
+        }
     }
+    return frc::Pose3d((units::length::meter_t)x, 0_m, (units::length::meter_t)z, frc::Rotation3d());
+}
