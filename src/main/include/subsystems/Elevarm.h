@@ -119,6 +119,7 @@ private:
 
     Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
     frc::Pose3d forwardKinematics(Positions positions);
+    Positions detectionBoxManual(double, double);
      
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;
