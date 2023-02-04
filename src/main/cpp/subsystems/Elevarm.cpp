@@ -17,21 +17,21 @@
 #define ROTATE_FORWARD_LIMIT 180.0f
 #define ROTATE_REVERSE_LIMIT -180.0f
 
-#define CARRIAGE_K_F 0.05f  
-#define CARRIAGE_K_P 0.01f
+#define CARRIAGE_K_F 0.000156f  
+#define CARRIAGE_K_P 0.00005f
 #define CARRIAGE_K_I 0.0f
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.01f
-#define CARRIAGE_K_VEL 0.02f
-#define CARRIAGE_K_ACC_MUL 1.0f
+#define CARRIAGE_K_VEL 4.0f
+#define CARRIAGE_K_ACC_MUL 20.0f
 
-#define ROTATE_K_F 0.005f
-#define ROTATE_K_P 0.001f
+#define ROTATE_K_F 0.000156f
+#define ROTATE_K_P 0.00005f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 1.0f
-#define ROTATE_K_VEL 18.0f
-#define ROTATE_K_ACC_MUL 1.0f
+#define ROTATE_K_VEL 180.0f
+#define ROTATE_K_ACC_MUL 10.0f
 
 #define PREVIOUS_HEIGHT_DEADBAND 0.01f
 #define PREVIOUS_ROTATION_DEADBAND 0.5f
