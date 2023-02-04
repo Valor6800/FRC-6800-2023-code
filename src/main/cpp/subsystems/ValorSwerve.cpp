@@ -180,7 +180,7 @@ void ValorSwerve<AzimuthMotor, DriveMotor>::setDriveClosedLoop(double mps)
 template<class AzimuthMotor, class DriveMotor>
 void ValorSwerve<AzimuthMotor, DriveMotor>::InitSendable(wpi::SendableBuilder& builder)
 {
-    builder.SetSmartDashboardType("Susbsystem");
+    builder.SetSmartDashboardType("Subsystem");
     builder.AddDoubleProperty(
         "magEncoderRotatons",
         [this] { return getMagEncoderCount() / MAG_ENCODER_TICKS_PER_REV; },

@@ -148,7 +148,7 @@ void ValorNeoController::setMotorMode(rev::CANSparkMax::IdleMode mode){
 
 void ValorNeoController::InitSendable(wpi::SendableBuilder& builder)
 {
-    builder.SetSmartDashboardType("Susbsystem");
+    builder.SetSmartDashboardType("Subsystem");
     builder.AddDoubleProperty(
         "Amps", 
         [this] { return getCurrent(); },

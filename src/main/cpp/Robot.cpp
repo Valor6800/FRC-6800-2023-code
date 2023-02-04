@@ -23,6 +23,7 @@ void Robot::RobotInit() {
     drivetrain.setDriveMotorModeTo(rev::CANSparkMax::IdleMode::kCoast);
     autonomous.fillAutoList();
 
+    frc::LiveWindow::EnableAllTelemetry();
     frc::DataLogManager::Start();
 }
 

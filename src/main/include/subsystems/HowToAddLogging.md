@@ -1,9 +1,9 @@
-# How to Add Dashboard Values to a Susbsytem
+# How to Add Dashboard Values to a Subsytem
 
 ## Step 1: In the header, extend Sendable and SendableHelper:
 
 ```
-    class NameOfSubsystem : public ValorSusbsystem, public wpi::Sendable, public wpi::SendableHelper<NameOfSubsystem>
+    class NameOfSubsystem : public ValorSubsystem, public wpi::Sendable, public wpi::SendableHelper<NameOfSubsystem>
 ```
 
 **Don't forget to change NameOfSubsystem to the name of YOUR subsystem**
@@ -21,7 +21,7 @@
 ```
     void NameOfSubsystem::InitSendable(wpi::SendableBuilder& builder)
     {
-        builder.SetSmartDashboardType("Susbsystem");
+        builder.SetSmartDashboardType("Subsystem");
     }
 ```
 

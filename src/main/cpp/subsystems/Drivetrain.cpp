@@ -462,7 +462,7 @@ void Drivetrain::setXMode(){
 
 void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
     {
-        builder.SetSmartDashboardType("Susbsystem");
+        builder.SetSmartDashboardType("Subsystem");
 
         builder.AddDoubleProperty(
             "xSpeed",

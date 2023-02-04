@@ -138,7 +138,7 @@ void ValorFalconController::setMotorMode(NeutralMode mode){
 
 void ValorFalconController::InitSendable(wpi::SendableBuilder& builder)
 {
-    builder.SetSmartDashboardType("Susbsystem");
+    builder.SetSmartDashboardType("Subsystem");
     builder.AddDoubleProperty(
         "Amps", 
         [this] { return getCurrent(); },
