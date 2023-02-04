@@ -15,15 +15,10 @@
 
 #include <frc2/command/CommandBase.h>
 
-<<<<<<< HEAD
-ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
-    drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
-=======
 #define TRANS_VELOCITY 4.952f
 
-ValorAuto::ValorAuto(Drivetrain *_drivetrain) :
-    drivetrain(_drivetrain)
->>>>>>> 8db941e (Decrease vision trust with distance, make motors use brake during auto)
+ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
+    drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
 {
     drivetrain->getTrajectoryConfig().SetKinematics(*drivetrain->getKinematics());
 
