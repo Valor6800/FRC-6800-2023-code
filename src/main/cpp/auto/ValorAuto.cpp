@@ -15,8 +15,6 @@
 
 #include <frc2/command/CommandBase.h>
 
-#define TRANS_VELOCITY 4.952f
-
 ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
     drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
 {
@@ -96,6 +94,19 @@ void ValorAuto::readPointsCSV(std::string filename){
     }
 }
 
+void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
+    std::ofstream outfile("/home/lvuser/trajectory" + std::to_string(i) + ".csv");
+    if (!outfile.good()){
+        return;
+    }
+
+    std::vector<frc::Trajectory::State> states = trajectory.States();
+    for (frc::Trajectory::State state: states){
+        outfile << std::to_string(state.t.to<double>()) + "," + std::to_string(state.pose.X().to<double>()) + "," + std::to_string(state.pose.Y().to<double>()) + "," + std::to_string(state.pose.Rotation().Degrees().to<double>()) + "," + std::to_string(state.velocity.to<double>()) + "\n";
+    }
+}
+
+
 frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     std::unordered_map<ValorAutoAction::Type, std::string> commandToStringMap = {
         {ValorAutoAction::NONE, "none"},
@@ -119,7 +130,9 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
     std::vector<ValorAutoAction> actions;
     while (std::getline(infile, line)){
-        actions.push_back(ValorAutoAction(line, &points));
+        ValorAutoAction action(line, &points);
+        if (action.type != ValorAutoAction::NONE)
+            actions.push_back(action);
     }
 
     // Stores trajectory poses until a non-trajectory command is run,
@@ -148,13 +161,13 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     double s_vel = 0, e_vel = 0;
                     i--;
                     if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
-                        s_vel = TRANS_VELOCITY;
+                        s_vel = actions[i - 1].vel;
                     if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT && actions[i + 2].type == ValorAutoAction::TRAJECTORY && actions[i + 2].reversed == actions[i].reversed)
-                        e_vel = TRANS_VELOCITY;
+                        e_vel = actions[i + 1].vel;
                     i++;
                     
                     frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-
+                    createTrajectoryDebugFile(trajectory, i);
                     cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
                     trajPoses.clear();
 
@@ -175,12 +188,13 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 double s_vel = 0, e_vel = 0;
                 i--;
                 if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
-                    s_vel = TRANS_VELOCITY;
+                    s_vel = actions[i - 1].vel;
                 if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT && actions[i + 2].type == ValorAutoAction::TRAJECTORY && actions[i + 2].reversed == actions[i].reversed)
-                    e_vel = TRANS_VELOCITY;
+                    e_vel = actions[i + 1].vel;
                 i++;
 
                 frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
+                createTrajectoryDebugFile(trajectory, i);
                 cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
                 trajPoses.clear();
             }
@@ -276,9 +290,10 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
         int i = actions.size() - 1;
         double s_vel = 0, e_vel = 0;
         if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
-            s_vel = TRANS_VELOCITY;
+            s_vel = actions[i - 1].vel;
         
         frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
+        createTrajectoryDebugFile(trajectory, i);
         cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
         trajPoses.empty();
     }

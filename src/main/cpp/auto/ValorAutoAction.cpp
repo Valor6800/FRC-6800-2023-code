@@ -1,5 +1,7 @@
 #include "ValorAutoAction.h"
 
+#define TRANS_VELOCITY 4.952f
+
 // Split a string by commas, spaces not accounted for
 std::vector<std::string> ValorAutoAction::parseCSVLine(std::string line)
 {
@@ -29,7 +31,7 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
     std::vector<std::string> items = parseCSVLine(line);
     error = ValorAutoAction::Error::NONE_ERROR;
     
-    if (items.empty()) {
+    if (items.empty() || (!items.empty() && items[0].starts_with("//"))) {
         type = ValorAutoAction::Type::NONE;
         return;
     } else if (items[0] == "time") {
@@ -102,6 +104,10 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         // Code to load commands into the action is handled in ValorAuto
     }
     else if (type == ValorAutoAction::Type::SPLIT){
-
+        if (items.size() > 1){
+            vel = stod(items[1]);
+        }
+        else
+            vel = TRANS_VELOCITY;
     }
 }

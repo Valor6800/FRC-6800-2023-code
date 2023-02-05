@@ -45,7 +45,8 @@ struct ValorAutoAction {
 
     std::string name;
     
-
+    double vel;
+    
 public:
     static std::vector<std::string> parseCSVLine(std::string);
 

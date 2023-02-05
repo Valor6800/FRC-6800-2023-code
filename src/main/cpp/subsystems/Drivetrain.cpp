@@ -16,12 +16,12 @@
 #define KDX 0.0f //0.0
 #define KFX 0.0f
 
-#define KPY 13.75f //0.5
+#define KPY 6.875f //0.5
 #define KIY 0.0f //0.0
 #define KDY 0.0f //0.0
 #define KFY 0.0f//0.0
 
-#define KPT 8.0f //4.0
+#define KPT 4.0f //4.0
 #define KIT 0.0f
 #define KDT 0.0f
 #define KFT 0.0f
@@ -38,8 +38,10 @@
 #define WHEEL_DIAMETER_M 0.1016f
 #define DRIVE_GEAR_RATIO 5.14f
 #define AZIMUTH_GEAR_RATIO 12.8f
-#define AUTO_SPEED_MUL 0.75f
+#define AUTO_SPEED_MUL 0.4687f
 #define ROT_SPEED_MUL 1.0f
+
+#define AUTO_VISION_THRESHOLD 3.0f //meters
 
 #define MODULE_DIFF_XS {1, 1, -1, -1}
 #define MODULE_DIFF_YS {1, -1, 1, -1}
@@ -49,7 +51,7 @@
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
-                        autoMaxSpeed(driveMaxSpeed * 0.75),
+                        autoMaxSpeed(driveMaxSpeed * 0.5),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         rotMaxAccel(rotMaxSpeed * 0.5),
                         pigeon(CANIDs::PIGEON_CAN, DRIVETRAIN_CAN_BUS),
@@ -267,12 +269,16 @@ void Drivetrain::analyzeDashboard()
 
                 table->PutNumber("Current vision doubt", visionDoubt);
 
-                // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset
-                // estimator->AddVisionMeasurement(
-                //     thetalessBotpose,  
-                //     frc::Timer::GetFPGATimestamp(),
-                //     {visionDoubt, visionDoubt, visionDoubt}
-                // );
+                // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset4
+                //distance to tag
+                if (distanceToTag < AUTO_VISION_THRESHOLD) {
+                    estimator->AddVisionMeasurement(
+                        thetalessBotpose,  
+                        frc::Timer::GetFPGATimestamp(),
+                        {visionDoubt, visionDoubt, visionDoubt}
+                    );  
+                }
+                
             }
             
             if (driverGamepad->GetAButton()){
