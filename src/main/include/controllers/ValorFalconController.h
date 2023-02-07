@@ -16,7 +16,7 @@
 class ValorFalconController : public ValorController<WPI_TalonFX>
 {
 public:
-    ValorFalconController(int _canID, NeutralMode _mode, bool _inverted, std::string _canbus = "");
+    ValorFalconController(int _canID, ValorNeutralMode _mode, bool _inverted, std::string _canbus = "");
 
     void init();
     void reset();
@@ -49,14 +49,16 @@ public:
      */
     void preventBackwards();
 
-    void setMotorMode(NeutralMode mode);
+    void setNeutralMode(ValorNeutralMode mode);
 
     void InitSendable(wpi::SendableBuilder& builder);
 
 private:
 
     double conversion;
-    NeutralMode mode;
+
+    ValorNeutralMode neutralMode;
+
     bool inverted;
 
 };

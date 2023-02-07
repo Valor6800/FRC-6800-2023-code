@@ -19,7 +19,7 @@
 class ValorNeoController : public ValorController<rev::CANSparkMax>
 {
 public:
-    ValorNeoController(int, rev::CANSparkMax::IdleMode, bool, std::string canbus = "");
+    ValorNeoController(int, ValorNeutralMode, bool, std::string canbus = "");
 
     void init();
     void reset();
@@ -46,7 +46,7 @@ public:
     void setConversion(double);
 
     void setProfile(int slot);
-    void setMotorMode(rev::CANSparkMax::IdleMode mode);
+    void setNeutralMode(ValorNeutralMode nmode);
 
     double getAbsEncoderPosition();
     
@@ -57,7 +57,7 @@ private:
     rev::SparkMaxRelativeEncoder encoder;
     rev::SparkMaxAbsoluteEncoder extEncoder;
 
-    rev::CANSparkMax::IdleMode mode;
+    ValorNeutralMode neutralMode;
     bool inverted;
 
     int currentPidSlot;

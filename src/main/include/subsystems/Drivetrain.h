@@ -188,7 +188,6 @@ public:
      frc::SwerveDriveKinematics<SWERVE_COUNT>* getKinematics();
 
      void cancelCmdGoToTag();
-     void setDriveMotorModeTo(rev::CANSparkMax::IdleMode);
      void limelightHoming();
 
      double getDriveMaxSpeed();

@@ -21,7 +21,6 @@ void Robot::RobotInit() {
     intake.setGamepads(&gamepadOperator, &gamepadDriver);
 
     drivetrain.resetState();
-    drivetrain.setDriveMotorModeTo(rev::CANSparkMax::IdleMode::kCoast);
     autonomous.fillAutoList();
 
     frc::LiveWindow::EnableAllTelemetry();

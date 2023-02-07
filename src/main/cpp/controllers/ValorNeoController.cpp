@@ -1,14 +1,14 @@
 #include "controllers/ValorNeoController.h"
 
 ValorNeoController::ValorNeoController(int canID,
-                                       rev::CANSparkMax::IdleMode _mode,
+                                       ValorNeutralMode _mode,
                                        bool _inverted,
                                        std::string canbus) :
     ValorController(new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless)),
     pidController(motor->GetPIDController()),
     encoder(motor->GetEncoder()),
     extEncoder(motor->GetAbsoluteEncoder(rev::SparkMaxAbsoluteEncoder::Type::kDutyCycle)),
-    mode(_mode),
+    neutralMode(_mode),
     inverted(_inverted),
     currentPidSlot(0),
     conversion(1)
@@ -20,7 +20,7 @@ void ValorNeoController::init()
 {
     motor->RestoreFactoryDefaults();
     motor->SetInverted(inverted);
-    motor->SetIdleMode(mode);
+    setNeutralMode(neutralMode);
     setRange(0,-1,1);
     ValorPIDF motionPIDF;
     setPIDF(motionPIDF, 0);
@@ -38,7 +38,7 @@ void ValorNeoController::setupFollower(int canID, bool followerInverted)
 {
     followerMotor = new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless);
     followerMotor->Follow(*motor, followerInverted);
-    followerMotor->SetIdleMode(mode);
+    followerMotor->SetIdleMode(neutralMode == ValorNeutralMode::Break ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
 }
 
 void ValorNeoController::setForwardLimit(double forward)
@@ -150,8 +150,8 @@ void ValorNeoController::setPower(double power)
     motor->Set(power);
 }
 
-void ValorNeoController::setMotorMode(rev::CANSparkMax::IdleMode mode){
-    motor->SetIdleMode(mode);
+void ValorNeoController::setNeutralMode(ValorNeutralMode mode){  
+    motor->SetIdleMode(mode == ValorNeutralMode::Break ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
 }
 
 void ValorNeoController::InitSendable(wpi::SendableBuilder& builder)
