@@ -2,7 +2,7 @@
 #include "subsystems/Intake.h"
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
-                            intakeMotor(CANIDs::INTAKE_LEAD_CAN, rev::CANSparkMax::IdleMode::kCoast, false),
+                            intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false),
                             currySensor(_robot, subsystemName),
                             intakeSpeed(-1),
                             outtakeSpeed(1),
@@ -26,7 +26,7 @@ void Intake::resetState()
 
 void Intake::init()
 {
-    intakeMotor.setupFollower(CANIDs::INTAKE_FOLLOW_CAN,true);
+    intakeMotor.setupFollower(CANIDs::INTAKE_FOLLOW_CAN, true);
     currySensor.setSpikeSetpoint(spikeAmps);
     currySensor.setGetter([this]() { return intakeMotor.getCurrent(); });
     currySensor.setSpikeCallback([this]() { state.intakeState = SPIKED;});
@@ -34,7 +34,7 @@ void Intake::init()
     table->PutNumber("Outtake Speed",outtakeSpeed);
     table->PutNumber("Outtake Cone Speed",outtakeConeSpeed);
     table->PutNumber("Outtake Cube Speed",outtakeCubeSpeed);
-    table->PutNumber("Spiked Amperage",spikeAmps);
+    
     resetState();
 }
 
@@ -68,13 +68,10 @@ void Intake::assessInputs()
 
 void Intake::analyzeDashboard()
 {
-    table->PutNumber("Intake Current", currySensor.getSensor());
-    table->PutNumber("State", state.intakeState);
     intakeSpeed = table->GetNumber("Intake Speed", 0);
     outtakeSpeed = table->GetNumber("Outtake Speed", 0);
     outtakeConeSpeed = table->GetNumber("Outtake Cone Speed", 0);
     outtakeCubeSpeed = table->GetNumber("Outtake Cube Speed", 0);
-    spikeAmps = table->GetNumber("Spiked Amperage", 0);
 }
  
 void Intake::assignOutputs()

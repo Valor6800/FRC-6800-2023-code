@@ -53,8 +53,8 @@
 #define Z_GROUND 0.45f
 
 Elevarm::Elevarm(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Elevarm"),                        
-                            carriageMotors(CANIDs::CARRIAGE_MAIN, rev::CANSparkMax::IdleMode::kBrake, false),
-                            armRotateMotor(CANIDs::ARM_ROTATE, rev::CANSparkMax::IdleMode::kBrake, false),
+                            carriageMotors(CANIDs::CARRIAGE_MAIN, ValorNeutralMode::Break, false),
+                            armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Break, false),
                             manualMaxArmSpeed(1.0),
                             manualMaxCarriageSpeed(1.0)
 {

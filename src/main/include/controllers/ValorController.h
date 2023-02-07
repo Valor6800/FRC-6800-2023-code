@@ -8,6 +8,8 @@
 #pragma once
 
 #include "ValorPIDF.h"
+#include "ValorNeutralMode.h"
+
 #include <string>
 
 #include <wpi/sendable/Sendable.h>
@@ -273,7 +275,10 @@ public:
      */
     virtual void setProfile(int slot) = 0;
 
+    virtual void setNeutralMode(ValorNeutralMode mode) = 0;
+
     virtual void InitSendable(wpi::SendableBuilder& builder) = 0;
+
 protected:
 
     T* motor;

@@ -3,12 +3,12 @@
 #define FALCON_TICKS_PER_REV 2048
 
 ValorFalconController::ValorFalconController(int canID,
-                                             NeutralMode _mode,
+                                             ValorNeutralMode _mode,
                                              bool _inverted,
                                              std::string canbus) :
     ValorController(new WPI_TalonFX{canID, canbus}),
     conversion(1),
-    mode(_mode),
+    neutralMode(_mode),
     inverted(_inverted)
 {
     init();
@@ -18,7 +18,7 @@ void ValorFalconController::init()
 {
     motor->ConfigFactoryDefault();
     motor->SetInverted(inverted);
-    motor->SetNeutralMode(mode);
+    setNeutralMode(neutralMode);
 
     motor->EnableVoltageCompensation(true);
     motor->ConfigVoltageCompSaturation(10);
@@ -52,7 +52,7 @@ void ValorFalconController::setupFollower(int canID, bool followerInverted)
     if (followerInverted) {
         followerMotor->SetInverted(!motor->GetInverted());
     }
-    followerMotor->SetNeutralMode(mode);
+    followerMotor->SetNeutralMode(neutralMode == ValorNeutralMode::Break ? NeutralMode::Brake : NeutralMode::Coast);
 }
 
 void ValorFalconController::setForwardLimit(double forward)
@@ -132,8 +132,8 @@ void ValorFalconController::preventBackwards()
     motor->ConfigPeakOutputReverse(0);
 }
 
-void ValorFalconController::setMotorMode(NeutralMode mode){
-    motor->SetNeutralMode(mode);
+void ValorFalconController::setNeutralMode(ValorNeutralMode mode){
+    motor->SetNeutralMode(mode == ValorNeutralMode::Break ? NeutralMode::Brake : NeutralMode::Coast);
 }
 
 void ValorFalconController::InitSendable(wpi::SendableBuilder& builder)
