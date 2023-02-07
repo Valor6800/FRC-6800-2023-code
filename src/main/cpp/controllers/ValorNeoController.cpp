@@ -4,14 +4,11 @@ ValorNeoController::ValorNeoController(int canID,
                                        ValorNeutralMode _mode,
                                        bool _inverted,
                                        std::string canbus) :
-    ValorController(new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless)),
+    ValorController(new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless), _inverted, _mode),
     pidController(motor->GetPIDController()),
     encoder(motor->GetEncoder()),
     extEncoder(motor->GetAbsoluteEncoder(rev::SparkMaxAbsoluteEncoder::Type::kDutyCycle)),
-    neutralMode(_mode),
-    inverted(_inverted),
-    currentPidSlot(0),
-    conversion(1)
+    currentPidSlot(0)
 {
     init();
 }
@@ -152,6 +149,7 @@ void ValorNeoController::setPower(double power)
 
 void ValorNeoController::setNeutralMode(ValorNeutralMode mode){  
     motor->SetIdleMode(mode == ValorNeutralMode::Break ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    neutralMode = mode;
 }
 
 void ValorNeoController::InitSendable(wpi::SendableBuilder& builder)

@@ -203,8 +203,10 @@ public:
      ValorPIDF getThetaPIDF();
 
      frc::TrajectoryConfig & getTrajectoryConfig();
+
      void setXMode();
 
+     void setDriveMotorNeutralMode(ValorNeutralMode mode);
 
      int trackingID;
 

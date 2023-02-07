@@ -6,10 +6,7 @@ ValorFalconController::ValorFalconController(int canID,
                                              ValorNeutralMode _mode,
                                              bool _inverted,
                                              std::string canbus) :
-    ValorController(new WPI_TalonFX{canID, canbus}),
-    conversion(1),
-    neutralMode(_mode),
-    inverted(_inverted)
+    ValorController(new WPI_TalonFX{canID, canbus}, _inverted, _mode)
 {
     init();
 }
@@ -134,6 +131,7 @@ void ValorFalconController::preventBackwards()
 
 void ValorFalconController::setNeutralMode(ValorNeutralMode mode){
     motor->SetNeutralMode(mode == ValorNeutralMode::Break ? NeutralMode::Brake : NeutralMode::Coast);
+    neutralMode = mode;
 }
 
 void ValorFalconController::InitSendable(wpi::SendableBuilder& builder)
