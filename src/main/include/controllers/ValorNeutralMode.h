@@ -8,19 +8,10 @@
 #pragma once
 
 /**
-<<<<<<< HEAD
  * @brief Neutral / Idle Modes for motorcontrollers. Either Brake or Coast.
  */
 enum ValorNeutralMode
 {
     Brake,
     Coast
-=======
- * @brief Nueutral modes for motor controllers. Either Brake or Coast
- */
-enum ValorNeutralMode
-{
-   Break,
-   Coast 
->>>>>>> 3a31786 (Decrease vision trust with distance, make motors use brake during auto)
 };
