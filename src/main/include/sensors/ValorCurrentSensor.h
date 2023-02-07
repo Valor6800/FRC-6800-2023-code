@@ -61,7 +61,7 @@ public:
      * 
      * @param size The size of the cache that stores current values
      */
-    void setCacheSize(double _size);
+    void setCacheSize(int _size);
 
     void InitSendable(wpi::SendableBuilder& builder) override;
 
@@ -73,5 +73,5 @@ private:
     std::deque<double> cache;
 
     double spikedSetpoint;
-    double cacheSize;
+    int cacheSize;
 };
