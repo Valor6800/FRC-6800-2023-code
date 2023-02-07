@@ -106,6 +106,7 @@ public:
         frc::Pose3d resultKinematics;
 
         bool deadManEnabled;
+        bool pitModeEnabled;
 
      } futureState, previousState;
 
@@ -135,4 +136,5 @@ private:
      
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;
+     double carriageStallPower;
 };
