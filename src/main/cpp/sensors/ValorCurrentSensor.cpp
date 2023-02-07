@@ -19,18 +19,13 @@ void ValorCurrentSensor::setSpikeSetpoint(double _setpoint)
 
 void ValorCurrentSensor::setCacheSize(int _size)
 {
-    //maintain current average to avoid unwanted behavior
     if (_size < cacheSize) {
         for (int i = 0; i < cacheSize - _size; i++){
             cache.pop_front();
         }
     }
-    else {
-        for (int i = cacheSize; i < _size; i++) {
-            cache.push_front(prevState);
-        }
-    }
     cacheSize = _size;
+    reset();
 }
 
 void ValorCurrentSensor::setSpikeCallback(std::function<void()> _lambda)
