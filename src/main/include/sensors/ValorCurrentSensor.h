@@ -54,7 +54,14 @@ public:
      * 
      * @param threshold The average current value that will trigger the spiked function
      */
-    void setSpikeSetpoint(double threshold);
+    void setSpikeSetpoint(double _setpoint);
+
+     /**
+     * @brief Set the cache size to be averaged for determining spiked value
+     * 
+     * @param size The size of the cache that stores current values
+     */
+    void setCacheSize(double _size);
 
     void InitSendable(wpi::SendableBuilder& builder) override;
 
