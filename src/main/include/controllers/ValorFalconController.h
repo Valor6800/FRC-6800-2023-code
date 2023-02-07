@@ -52,13 +52,4 @@ public:
     void setNeutralMode(ValorNeutralMode mode);
 
     void InitSendable(wpi::SendableBuilder& builder);
-
-private:
-
-    double conversion;
-
-    ValorNeutralMode neutralMode;
-
-    bool inverted;
-
 };

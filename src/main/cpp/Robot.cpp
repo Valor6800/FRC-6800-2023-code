@@ -73,6 +73,8 @@ void Robot::AutonomousPeriodic()
 
 void Robot::TeleopInit() {
     drivetrain.pullSwerveModuleZeroReference();
+    drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Coast);
+
 
     if (autoCommand != nullptr) {
         autoCommand->Cancel();

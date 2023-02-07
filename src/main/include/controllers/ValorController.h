@@ -45,8 +45,11 @@ public:
      * 
      * @param _motor The motor that will be controlled. Setup by the implemented class
      */
-    ValorController(T* _motor) :
-        motor(_motor) {}
+    ValorController(T* _motor, bool _inverted, ValorNeutralMode _neutralMode) :
+        motor(_motor),
+        inverted(_inverted),
+        neutralMode(_neutralMode),
+        conversion(1) {}
 
     /**
      * @brief Destroy the Valor Controller object
@@ -283,4 +286,10 @@ protected:
 
     T* motor;
     T* followerMotor;
+
+    double conversion;
+
+    bool inverted;
+
+    ValorNeutralMode neutralMode;
 };

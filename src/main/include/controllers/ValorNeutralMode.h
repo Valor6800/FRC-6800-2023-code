@@ -8,7 +8,7 @@
 #pragma once
 
 /**
- * @brief Container to hold PID and feed forward values for the motor controller
+ * @brief Neutral / Idle Modes for motorcontrollers. Either Break or Coast.
  */
 enum ValorNeutralMode
 {

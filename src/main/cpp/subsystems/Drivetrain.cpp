@@ -301,6 +301,8 @@ void Drivetrain::assignOutputs()
         if (driverGamepad->leftStickYActive() || driverGamepad->leftStickXActive() || driverGamepad->rightStickXActive()){
             // cancelCmdGoToTag();
         }
+        setDriveMotorNeutralMode(ValorNeutralMode::Coast);
+
         drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
     }
     
@@ -450,7 +452,16 @@ void Drivetrain::setXMode(){
     azimuthControllers[1]->setPosition(std::round(azimuthControllers[1]->getPosition()) + 0.375);
     azimuthControllers[2]->setPosition(std::round(azimuthControllers[2]->getPosition()) - 0.125);
     azimuthControllers[3]->setPosition(std::round(azimuthControllers[3]->getPosition()) - 0.375);
+    setDriveMotorNeutralMode(ValorNeutralMode::Break);
 }
+
+void Drivetrain::setDriveMotorNeutralMode(ValorNeutralMode mode) {
+    for (int i = 0; i < SWERVE_COUNT; i++)
+    {
+        driveControllers[i]->setNeutralMode(mode);
+    }
+}
+
 
 void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
     {

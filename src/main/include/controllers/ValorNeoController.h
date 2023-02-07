@@ -57,10 +57,5 @@ private:
     rev::SparkMaxRelativeEncoder encoder;
     rev::SparkMaxAbsoluteEncoder extEncoder;
 
-    ValorNeutralMode neutralMode;
-    bool inverted;
-
     int currentPidSlot;
-
-    double conversion;
 };
