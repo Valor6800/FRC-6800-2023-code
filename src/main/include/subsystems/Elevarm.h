@@ -99,7 +99,8 @@ public:
 
         double manualCarriage;
         double manualArm;
-        bool test;
+
+
 
         Positions targetPose;
         frc::Pose3d resultKinematics;
@@ -109,6 +110,20 @@ public:
      } futureState, previousState;
 
 private:
+
+    /**
+     * @brief Find the minimum angle required before moving the carriage
+     * 
+     * Dynamically calculate the angle (in degrees) in which the arm needs to be at before moving
+     * the carriage in the -Z (or downward) direction. Prevents collision of the arm with the chassis.
+     * 
+     * Does not consider the ground - assumption is that the arm is at enough of an angle to not get stuck
+     * if the arm does hit the ground while the carriage is moving downward.
+     * 
+     * @return double Minimum angle in degrees
+     */
+    double minAngle();
+
      ValorNeoController carriageMotors;
      ValorNeoController armRotateMotor;
      std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose3d>>> posMap;
@@ -117,7 +132,6 @@ private:
     Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
     frc::Pose3d forwardKinematics(Positions positions);
     Positions detectionBoxManual(double, double);
-    Positions detectionBoxAuto();
      
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;
