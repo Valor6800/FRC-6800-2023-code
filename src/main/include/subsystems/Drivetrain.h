@@ -112,8 +112,6 @@ public:
           double xSpeed;
           double ySpeed;
           double rot;
-
-          bool startButton;
           
           bool saveToFileDebouncer;
 
