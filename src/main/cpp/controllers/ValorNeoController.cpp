@@ -7,7 +7,6 @@ ValorNeoController::ValorNeoController(int canID,
     ValorController(new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless), _inverted, _mode),
     pidController(motor->GetPIDController()),
     encoder(motor->GetEncoder()),
-    extEncoder(motor->GetAbsoluteEncoder(rev::SparkMaxAbsoluteEncoder::Type::kDutyCycle)),
     currentPidSlot(0)
 {
     init();
@@ -114,11 +113,6 @@ double ValorNeoController::getSpeed()
 void ValorNeoController::setEncoderPosition(double position)
 {
     encoder.SetPosition(position);
-}
-
-double ValorNeoController::getAbsEncoderPosition()
-{
-    return extEncoder.GetPosition();
 }
 
 /**
