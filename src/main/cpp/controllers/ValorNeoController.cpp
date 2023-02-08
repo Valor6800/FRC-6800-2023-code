@@ -149,8 +149,6 @@ void ValorNeoController::setPower(double power)
 
 void ValorNeoController::setNeutralMode(ValorNeutralMode mode){  
     motor->SetIdleMode(mode == ValorNeutralMode::Brake ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
-    if (followerMotor)
-        followerMotor->SetIdleMode(neutralMode == ValorNeutralMode::Brake ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
     neutralMode = mode;
 }
 

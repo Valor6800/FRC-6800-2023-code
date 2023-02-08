@@ -52,7 +52,7 @@
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
-                        autoMaxSpeed(driveMaxSpeed),
+                        autoMaxSpeed(driveMaxSpeed * 0.5),
                         autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
                         rotMaxAccel(rotMaxSpeed * 0.5),
                         pigeon(CANIDs::PIGEON_CAN, PIGEON_CAN_BUS),

@@ -131,8 +131,6 @@ void ValorFalconController::preventBackwards()
 
 void ValorFalconController::setNeutralMode(ValorNeutralMode mode){
     motor->SetNeutralMode(mode == ValorNeutralMode::Brake ? NeutralMode::Brake : NeutralMode::Coast);
-    if (followerMotor)
-        followerMotor->SetNeutralMode(neutralMode == ValorNeutralMode::Brake ? NeutralMode::Brake : NeutralMode::Coast);
     neutralMode = mode;
 }
 
