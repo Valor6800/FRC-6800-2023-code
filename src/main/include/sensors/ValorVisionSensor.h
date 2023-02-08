@@ -18,15 +18,15 @@
 class ValorVisionSensor : public ValorSensor<frc::Pose2d>
 {
     public:
-    ValorVisionSensor(frc::TimedRobot *_robot) : ValorSensor(_robot){
-
-    }
+    ValorVisionSensor(frc::TimedRobot *_robot) : ValorSensor(_robot, "visionSensor"){}
+    
     std::shared_ptr<nt::NetworkTable> visionTable;
     int pipe{0};
     
     void reset();
     void calculate();
-    void aim();
+    void InitSendable(wpi::SendableBuilder& builder) override;
+    int GetTag();
 
     int tv;
     int tid;

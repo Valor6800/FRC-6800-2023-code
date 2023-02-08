@@ -12,6 +12,7 @@ void ValorVisionSensor::reset()
         });
     visionTable->PutNumber("pipeline", 0);
 }
+
 void ValorVisionSensor::calculate() {
     if (visionTable->GetNumber("getpipe", 0) == 0){
         tx = 0;
@@ -86,14 +87,21 @@ void ValorVisionSensor::calculate() {
     // finalPose = frc::Translation2d((units::meter_t) finalx, (units::meter_t) finaly);
 }
 
-void ValorVisionSensor::aim() {
-    //Get in range of target
-    // auto result = getSensor();
+void ValorVisionSensor::InitSendable(wpi::SendableBuilder& builder) {
+    builder.SetSmartDashboardType("VisionSensor");
+    // builder.AddIntegerProperty(
+    //         "tag", [this] { return GetTag; },
+    //         nullptr
+    // );
 
 }
 
 void ValorVisionSensor::translatePoseToCorner(frc::Pose2d tagPose){
     botpose = frc::Pose2d{tagPose.X() + 16.535_m / 2, tagPose.Y() + 8_m / 2, tagPose.Rotation()};
+}
+
+int ValorVisionSensor::GetTag(){
+    visionTable -> GetNumber("tid", 0);
 }
 
 

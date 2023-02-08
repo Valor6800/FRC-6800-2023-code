@@ -303,7 +303,12 @@ void Drivetrain::assignOutputs()
 
     if (state.xPose){
         setXMode();
-    } else if (state.limehoming){
+    } else {
+        if (state.limehoming){
+            limelightHoming();
+        } else {
+            vision.visionTable->PutNumber("pipeline", 0);    
+        }
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
         limelightHoming();
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
