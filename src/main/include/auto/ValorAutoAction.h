@@ -22,7 +22,8 @@ struct ValorAutoAction {
         STATE,
         TRAJECTORY,
         RESET_ODOM,
-        ACTION
+        ACTION,
+        SPLIT
     } type;
 
     enum Error {
@@ -44,7 +45,8 @@ struct ValorAutoAction {
 
     std::string name;
     
-
+    double vel;
+    
 public:
     static std::vector<std::string> parseCSVLine(std::string);
 

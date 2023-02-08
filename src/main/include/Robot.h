@@ -22,7 +22,7 @@
 
 #include <frc/livewindow/LiveWindow.h>
 
-#include "ValorAuto.h"
+#include "auto/ValorAuto.h"
 
 #include <fstream>
 
