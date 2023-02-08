@@ -49,7 +49,7 @@ void ValorFalconController::setupFollower(int canID, bool followerInverted)
     if (followerInverted) {
         followerMotor->SetInverted(!motor->GetInverted());
     }
-    followerMotor->SetNeutralMode(neutralMode == ValorNeutralMode::Break ? NeutralMode::Brake : NeutralMode::Coast);
+    setNeutralMode(ValorController::neutralMode);
 }
 
 void ValorFalconController::setForwardLimit(double forward)
@@ -130,7 +130,9 @@ void ValorFalconController::preventBackwards()
 }
 
 void ValorFalconController::setNeutralMode(ValorNeutralMode mode){
-    motor->SetNeutralMode(mode == ValorNeutralMode::Break ? NeutralMode::Brake : NeutralMode::Coast);
+    motor->SetNeutralMode(mode == ValorNeutralMode::Brake ? NeutralMode::Brake : NeutralMode::Coast);
+    if (followerMotor)
+        followerMotor->SetNeutralMode(neutralMode == ValorNeutralMode::Brake ? NeutralMode::Brake : NeutralMode::Coast);
     neutralMode = mode;
 }
 

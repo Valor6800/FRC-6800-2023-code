@@ -58,6 +58,7 @@ void Robot::DisabledPeriodic()
 void Robot::AutonomousInit() {
     drivetrain.resetState();
     elevarm.resetState();
+    drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Brake);
 
     autoCommand = autonomous.getCurrentAuto();
 

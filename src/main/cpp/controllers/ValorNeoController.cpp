@@ -35,7 +35,7 @@ void ValorNeoController::setupFollower(int canID, bool followerInverted)
 {
     followerMotor = new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless);
     followerMotor->Follow(*motor, followerInverted);
-    followerMotor->SetIdleMode(neutralMode == ValorNeutralMode::Break ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    setNeutralMode(ValorController::neutralMode);
 }
 
 void ValorNeoController::setForwardLimit(double forward)
@@ -148,7 +148,9 @@ void ValorNeoController::setPower(double power)
 }
 
 void ValorNeoController::setNeutralMode(ValorNeutralMode mode){  
-    motor->SetIdleMode(mode == ValorNeutralMode::Break ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    motor->SetIdleMode(mode == ValorNeutralMode::Brake ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
+    if (followerMotor)
+        followerMotor->SetIdleMode(neutralMode == ValorNeutralMode::Brake ? rev::CANSparkMax::IdleMode::kBrake : rev::CANSparkMax::IdleMode::kCoast);
     neutralMode = mode;
 }
 

@@ -97,7 +97,7 @@ void Drivetrain::configSwerveModule(int i)
     azimuthPID.error = AZIMUTH_K_E;
 
     azimuthControllers.push_back(new SwerveAzimuthMotor(CANIDs::AZIMUTH_CANS[i],
-                                                      ValorNeutralMode::Break,
+                                                      ValorNeutralMode::Brake,
                                                       true,
                                                       DRIVETRAIN_CAN_BUS));
     azimuthControllers[i]->setConversion(1 / AZIMUTH_GEAR_RATIO);
@@ -198,9 +198,12 @@ void Drivetrain::assessInputs()
     state.xSpeed = driverGamepad->leftStickY(2);
     state.ySpeed = driverGamepad->leftStickX(2);
     state.rot = driverGamepad->rightStickX(3);
-    state.startButton = driverGamepad->GetStartButtonPressed();
     state.limehoming = driverGamepad->GetYButton();
     state.xPose = driverGamepad->GetXButton();
+
+    if (driverGamepad->GetStartButtonPressed()) {
+        pullSwerveModuleZeroReference();
+    }
 }
 
 void Drivetrain::analyzeDashboard()
@@ -285,10 +288,6 @@ void Drivetrain::assignOutputs()
     ySpeedMPS = units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed};
     rotRPS = units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed};
 
-    
-    if (state.startButton) {
-        pullSwerveModuleZeroReference();
-    }
     if (state.xPose){
         setXMode();
     } else {
@@ -296,10 +295,6 @@ void Drivetrain::assignOutputs()
             limelightHoming();
         } else {
             limeTable->PutNumber("pipeline", 0);    
-        }
-
-        if (driverGamepad->leftStickYActive() || driverGamepad->leftStickXActive() || driverGamepad->rightStickXActive()){
-            // cancelCmdGoToTag();
         }
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
 
@@ -452,7 +447,7 @@ void Drivetrain::setXMode(){
     azimuthControllers[1]->setPosition(std::round(azimuthControllers[1]->getPosition()) + 0.375);
     azimuthControllers[2]->setPosition(std::round(azimuthControllers[2]->getPosition()) - 0.125);
     azimuthControllers[3]->setPosition(std::round(azimuthControllers[3]->getPosition()) - 0.375);
-    setDriveMotorNeutralMode(ValorNeutralMode::Break);
+    setDriveMotorNeutralMode(ValorNeutralMode::Brake);
 }
 
 void Drivetrain::setDriveMotorNeutralMode(ValorNeutralMode mode) {

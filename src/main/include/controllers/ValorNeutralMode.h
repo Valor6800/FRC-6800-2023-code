@@ -8,10 +8,10 @@
 #pragma once
 
 /**
- * @brief Neutral / Idle Modes for motorcontrollers. Either Break or Coast.
+ * @brief Neutral / Idle Modes for motorcontrollers. Either Brake or Coast.
  */
 enum ValorNeutralMode
 {
-    Break,
+    Brake,
     Coast
 };
