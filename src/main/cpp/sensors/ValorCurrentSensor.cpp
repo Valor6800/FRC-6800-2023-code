@@ -19,11 +19,6 @@ void ValorCurrentSensor::setSpikeSetpoint(double _setpoint)
 
 void ValorCurrentSensor::setCacheSize(int _size)
 {
-    if (_size < cacheSize) {
-        for (int i = 0; i < cacheSize - _size; i++){
-            cache.pop_front();
-        }
-    }
     cacheSize = _size;
     reset();
 }
