@@ -254,10 +254,14 @@ private:
 
      frc::Pose2d translatePoseToCorner(frc::Pose2d);
      std::map<int, frc::Pose2d> tags = {
-          {5, frc::Pose2d{0.36195_m, 6.749796_m, 0_deg}}, 
-          {6, frc::Pose2d{1.02743_m, 4.424426_m, 0_deg}}, 
-          {7, frc::Pose2d{1.02743_m, 2.748026_m, 0_deg}}, 
-          {8, frc::Pose2d{1.02743_m, 1.071626_m, 0_deg}}
+          {1, frc::Pose2d{15.513558_m, 1.071626_m, 0_deg}},
+          {2, frc::Pose2d{15.513558_m, 2.0748026_m, 0_deg}},
+          {3, frc::Pose2d{15.513558_m, 4.424426_m, 0_deg}},
+          {4, frc::Pose2d{16.178784_m, 6.749796_m, 0_deg}},
+          {5, frc::Pose2d{0.36195_m, 6.749796_m, 0_deg}},
+          {6, frc::Pose2d{1.02743_m, 4.424426_m, 0_deg}},
+          {7, frc::Pose2d{1.02743_m, 2.748026_m, 0_deg}},
+          {8, frc::Pose2d{1.02743_m, 1.071626_m, 0_deg}},
      };
 
      frc2::SwerveControllerCommand<4> *cmdGoToTag;
