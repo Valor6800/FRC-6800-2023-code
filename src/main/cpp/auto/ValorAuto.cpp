@@ -26,6 +26,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm
     // @TODO look at angle wrapping and modding
     drivetrain->getThetaController().EnableContinuousInput(units::radian_t(-M_PI),
                                           units::radian_t(M_PI));
+
+    table = nt::NetworkTableInstance::GetDefault().GetTable("Auto");
 }
 
 // directory_iterator doesn't exist in vanilla c++11, luckily wpilib has it in their library
@@ -75,10 +77,11 @@ frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, boo
  * There are no restricitions on what points must be included in the file - just
    make sure that the points used in whatever auto you are using also exist in this CSV file.
  */
-void ValorAuto::readPointsCSV(std::string filename){
+bool ValorAuto::readPointsCSV(std::string filename){
     std::ifstream infile(filename);
     if (!infile.good()){
-        return;
+        table->PutString("Error:", "points file not found");
+        return false;
     }
 
     points.clear();
@@ -95,6 +98,7 @@ void ValorAuto::readPointsCSV(std::string filename){
         double x = std::stod(items[1]), y = std::stod(items[2]);
         points[name] = frc::Translation2d((units::length::meter_t)x, (units::length::meter_t)y);
     }
+    return true;
 }
 
 void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
@@ -111,22 +115,11 @@ void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
 
 
 frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
-    std::unordered_map<ValorAutoAction::Type, std::string> commandToStringMap = {
-        {ValorAutoAction::NONE, "none"},
-        {ValorAutoAction::TIME, "time"},
-        {ValorAutoAction::STATE, "state"},
-        {ValorAutoAction::TRAJECTORY, "trajectory"},
-        {ValorAutoAction::RESET_ODOM, "reset_odom"},
-        {ValorAutoAction::ACTION, "action"},
-        {ValorAutoAction::SPLIT, "split"}
-    };
-    
-    std::shared_ptr<nt::NetworkTable> table = nt::NetworkTableInstance::GetDefault().GetTable("Auto");
     frc2::SequentialCommandGroup *cmdGroup = new frc2::SequentialCommandGroup();
 
     std::ifstream infile(filename); 
     if (!infile.good()){
-        return cmdGroup;
+        return nullptr;
     }
 
     std::string line;
@@ -148,6 +141,13 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     for (int i = 0; i < actions.size(); i ++){
         table->PutString("Action " + std::to_string(i), commandToStringMap[actions[i].type]);
         ValorAutoAction & action = actions[i];
+
+        // Error encountered: stop trying to compile and output error
+        if (action.error != ValorAutoAction::NONE_ERROR){
+            table->PutString("Error: ", errorToStringMap[action.error]);
+            return nullptr;
+        }
+
         if (action.type == ValorAutoAction::Type::TRAJECTORY){
             if (trajPoses.size() == 0){ // starting a new trajectory, set poses inside to stored action.start and action.end
                 action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
@@ -347,12 +347,15 @@ std::string makeFriendlyName(std::string filename){
 }
 
 frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
+    bool read_points = false;
     if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue){
-        readPointsCSV(ROOT_AUTO_PATH + "points/blue_points.csv");
+        read_points = readPointsCSV(ROOT_AUTO_PATH + "points/blue_points.csv");
     }
     else {
-        readPointsCSV(ROOT_AUTO_PATH + "points/red_points.csv");
+        read_points = readPointsCSV(ROOT_AUTO_PATH + "points/red_points.csv");
     }
+    if (!read_points)
+        return nullptr;
     
     precompileActions(ROOT_AUTO_PATH + "actions/");
 

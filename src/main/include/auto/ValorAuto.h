@@ -32,7 +32,7 @@ struct UsableCommand{
 class ValorAuto {
     public:
         ValorAuto(Drivetrain*, Intake*, Elevarm*);
-        void readPointsCSV(std::string);
+        bool readPointsCSV(std::string);
         frc2::SequentialCommandGroup* makeAuto(std::string);
         void precompileActions(std::string);
         void fillAutoList();
@@ -46,7 +46,21 @@ class ValorAuto {
         void readAuto(std::string);
 
     private:
+        std::unordered_map<ValorAutoAction::Type, std::string> commandToStringMap = {
+            {ValorAutoAction::NONE, "none"},
+            {ValorAutoAction::TIME, "time"},
+            {ValorAutoAction::STATE, "state"},
+            {ValorAutoAction::TRAJECTORY, "trajectory"},
+            {ValorAutoAction::RESET_ODOM, "reset_odom"},
+            {ValorAutoAction::ACTION, "action"},
+            {ValorAutoAction::SPLIT, "split"}
+        };
 
+        std::unordered_map<ValorAutoAction::Error, std::string> errorToStringMap = {
+            {ValorAutoAction::NONE_ERROR, "no error"},
+            {ValorAutoAction::POINT_MISSING, "non-existent point used"},
+            {ValorAutoAction::SIZE_MISMATCH, "insufficient number of parameters passed in"}
+        };
 
         std::vector<ValorAutoAction> autoActions;
 
@@ -60,5 +74,7 @@ class ValorAuto {
         std::map<std::string, frc2::SequentialCommandGroup *> precompiledActions;
 
         nt::NetworkTableEntry entry;
+
+        std::shared_ptr<nt::NetworkTable> table;
 };
 #endif
