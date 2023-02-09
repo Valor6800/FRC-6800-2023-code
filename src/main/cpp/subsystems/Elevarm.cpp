@@ -115,21 +115,21 @@ void Elevarm::init()
 
     stowPos = frc::Pose3d(-0.54_m, 0_m, 0.55_m, frc::Rotation3d());
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0.226_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -0.408_m,  0.0_m,  0.226_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -1.0_m,  0.0_m,  0.4_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.5_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.5_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( 0.576898_m,  0.0_m,  0.862775_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.576898_m,  0.0_m,  0.862775_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.866_m,  0.0_m,  1.5_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -0.866_m,  0.0_m,  1.5_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -1.1_m,  0.0_m,  1.75_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0.226_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -0.408_m,  0.0_m,  0.226_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -1.0_m,  0.0_m,  0.4_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.5_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.5_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( 0.576898_m,  0.0_m,  0.80_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.576898_m,  0.0_m,  0.80_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.866_m,  0.0_m,  1.5_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -0.866_m,  0.0_m,  1.5_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -1.1_m,  0.0_m,  1.75_m, frc::Rotation3d() );
 
     table->PutNumber("Carriage Max Manual Speed", manualMaxCarriageSpeed);
     table->PutNumber("Arm Rotate Max Manual Speed", manualMaxArmSpeed);
@@ -193,24 +193,23 @@ void Elevarm::analyzeDashboard()
     futureState.resultKinematics = forwardKinematics(Positions(carriageMotors.getPosition(), armRotateMotor.getPosition()));
     table->PutNumber("forward kin. x", futureState.resultKinematics.X().to<double>());
     table->PutNumber("forward kin. z", futureState.resultKinematics.Z().to<double>());
+    table->PutNumber("Min Angle", minAngle());
 }
 
 void Elevarm::assignOutputs()
 {    
+     if (futureState.directionState != previousState.directionState) {
+        futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+    }
+    
     if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS);
     } else {
-        if (futureState.directionState != previousState.directionState) {
-        futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS);
-        } else {
             if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID) {
                 futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS);
             } else 
                 futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS);
-        }
     }
-
-    
 
     if (futureState.deadManEnabled) {
         if (futureState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
@@ -222,7 +221,7 @@ void Elevarm::assignOutputs()
             armRotateMotor.setPower(manualOutputs.theta);
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
-            if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && futureState.positionState == ElevarmPositionState::ELEVARM_GROUND) {
+            if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && (futureState.positionState != ElevarmPositionState::ELEVARM_STOW )) {
                 if (std::fabs(armRotateMotor.getPosition()) > minAngle()){
                     carriageMotors.setPosition(futureState.targetPose.h);
                 } else {
@@ -236,13 +235,6 @@ void Elevarm::assignOutputs()
                     armRotateMotor.setPower(0.0);
                 }
                 carriageMotors.setPosition(futureState.targetPose.h);
-            } else if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && ( futureState.positionState == ElevarmPositionState::ELEVARM_MID || futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER)) {
-                if (std::fabs(armRotateMotor.getPosition()) > minAngle()){
-                    carriageMotors.setPosition(futureState.targetPose.h);
-                } else {
-                    carriageMotors.setPower(P_MIN_CARRIAGE);
-                }
-                armRotateMotor.setPosition(futureState.targetPose.theta);
             } else {            
                 carriageMotors.setPosition(futureState.targetPose.h);
                 armRotateMotor.setPosition(futureState.targetPose.theta);
@@ -264,7 +256,7 @@ double Elevarm::minAngle()
     double Xt = -X_BUMPER_WIDTH - X_HALF_WIDTH + X_CARRIAGE_OFFSET;
     double Zs = Z_FORK;
     double Xs = armRotateMotor.getPosition() > 0 ? X_CHASSIS_FRONT_BOUND : X_CHASSIS_BACK_BOUND;
-    return atan2(Xs - Xt, Zt - Zs) * 180.0 / M_PI;
+    return std::fabs(atan2(Xs - Xt, Zt - Zs) * 180.0 / M_PI);
 }
 
 Elevarm::Positions Elevarm::detectionBoxManual(double carriage, double arm) {
@@ -293,9 +285,6 @@ Elevarm::Positions Elevarm::reverseKinematics(frc::Pose3d pose, ElevarmSolutions
     double phi = 0.0;
     double theta = 0.0;
     double height = 0.0;
-
-    table->PutNumber("target Xt", pose.X().to<double>());
-    table->PutNumber("target Zt", pose.Z().to<double>());
 
     // Arms solution
     if (solution == ElevarmSolutions::ELEVARM_ARMS) {
