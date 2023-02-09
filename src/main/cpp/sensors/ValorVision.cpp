@@ -27,7 +27,11 @@ void ValorVisionSensor::calculate() {
                     static_cast<units::meter_t>(robotPoseList[1]),
                     static_cast<units::degree_t>(robotPoseList[5])
                 );
-                translatePoseToCorner(visionRobotPose);
+                if (frc::DriverStation::GetAlliance() == 0){
+                    translatePoseToCornerRed(visionRobotPose);
+                } else if (frc::DriverStation::GetAlliance() == 1){
+                    translatePoseToCornerBlue(visionRobotPose);
+                }
             }
         } else {
             robotPoseList = std::vector<double>();
@@ -95,8 +99,10 @@ void ValorVisionSensor::InitSendable(wpi::SendableBuilder& builder) {
     // );
 
 }
-
-void ValorVisionSensor::translatePoseToCorner(frc::Pose2d tagPose){
+void ValorVisionSensor::translatePoseToCornerRed(frc::Pose2d tagPose){
+    botpose = frc::Pose2d{tagPose.X() - 16.535_m / 2, tagPose.Y() - 8_m / 2, tagPose.Rotation()};
+}
+void ValorVisionSensor::translatePoseToCornerBlue(frc::Pose2d tagPose){
     botpose = frc::Pose2d{tagPose.X() + 16.535_m / 2, tagPose.Y() + 8_m / 2, tagPose.Rotation()};
 }
 

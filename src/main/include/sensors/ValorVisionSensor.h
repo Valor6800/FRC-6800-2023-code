@@ -12,6 +12,7 @@
 #include <frc/geometry/Translation2d.h>
 #include <frc/geometry/Pose2d.h>
 #include <map>
+#include <frc/DriverStation.h>
 
 #include <units/length.h>
 
@@ -36,7 +37,8 @@ class ValorVisionSensor : public ValorSensor<frc::Pose2d>
     frc::Pose2d visionRobotPose;
     std::vector<double> robotPoseList;
 
-    void translatePoseToCorner(frc::Pose2d tagPose);
+    void translatePoseToCornerRed(frc::Pose2d tagPose);
+    void translatePoseToCornerBlue(frc::Pose2d tagPose);
     std::map<int, frc::Pose2d> tags = {
         {1, frc::Pose2d{15.513558_m, 1.071626_m, 0_deg}},
         {2, frc::Pose2d{15.513558_m, 2.0748026_m, 0_deg}},

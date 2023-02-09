@@ -224,16 +224,6 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
-
-    table->PutNumber("Module 0 Mag Count", azimuthControllers[0]->getAbsEncoderPosition());
-    table->PutNumber("Module 0 Azi Pos", swerveModules[0]->getAzimuthPosition().Degrees().to<double>() / 360);
-    table->PutNumber("Module 1 Mag Count", swerveModules[1]->getMagEncoderCount());
-    table->PutNumber("Module 1 Azi Pos", swerveModules[1]->getAzimuthPosition().Degrees().to<double>() / 360);
-    table->PutNumber("Module 2 Mag Count", swerveModules[2]->getMagEncoderCount());
-    table->PutNumber("Module 2 Azi Pos", swerveModules[2]->getAzimuthPosition().Degrees().to<double>() / 360);
-    table->PutNumber("Module 3 Mag Count", swerveModules[3]->getMagEncoderCount());
-    table->PutNumber("Module 3 Azi Pos", swerveModules[3]->getAzimuthPosition().Degrees().to<double>() / 360);
-
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
         for (ValorSwerve<SwerveAzimuthMotor, SwerveDriveMotor> *module : swerveModules)
