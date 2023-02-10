@@ -52,8 +52,11 @@
 #define Z_FORK 0.465f
 #define Z_GROUND 0.45f
 
+
 #define P_MIN_CARRIAGE 0.0125f
 #define P_MIN_ARM 0.0125f
+
+
 
 Elevarm::Elevarm(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Elevarm"),                        
                             carriageMotors(CANIDs::CARRIAGE_MAIN, ValorNeutralMode::Brake, false),
@@ -146,10 +149,13 @@ void Elevarm::assessInputs()
 {
     futureState.manualCarriage = 0;
     futureState.manualArm = 0;
+    
     if (operatorGamepad->leftStickYActive() || operatorGamepad->rightStickYActive()) {
         futureState.manualCarriage = operatorGamepad->leftStickY() * manualMaxCarriageSpeed;
         futureState.manualArm = operatorGamepad->rightStickY() * manualMaxArmSpeed;
         futureState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
+    } else if (driverGamepad->GetLeftBumper() && driverGamepad->GetRightBumper()) {
+        futureState.positionState = ElevarmPositionState::ELEVARM_GROUND;
     } else if (operatorGamepad->GetRightBumper()) {
         futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
     } else if (operatorGamepad->GetAButton() || operatorGamepad->DPadDown()){
@@ -166,7 +172,6 @@ void Elevarm::assessInputs()
         } 
     }
 
-
     if (operatorGamepad->DPadUp() || operatorGamepad->DPadDown() 
     || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight()){
         futureState.pieceState = ElevarmPieceState::ELEVARM_CUBE;
@@ -174,7 +179,11 @@ void Elevarm::assessInputs()
         futureState.pieceState = ElevarmPieceState::ELEVARM_CONE;
     }
 
-    if (operatorGamepad->GetLeftBumper()){
+    if (driverGamepad->GetLeftBumper()) {
+        futureState.directionState = ElevarmDirectionState::ELEVARM_FRONT;
+    } else if (driverGamepad->GetRightBumper()) {
+        futureState.directionState = ElevarmDirectionState::ELEVARM_BACK;
+    } else if (operatorGamepad->GetLeftBumper()){
         futureState.directionState = ElevarmDirectionState::ELEVARM_BACK;
     } else {
         futureState.directionState = ElevarmDirectionState::ELEVARM_FRONT;
@@ -230,7 +239,15 @@ void Elevarm::assignOutputs()
             armRotateMotor.setPower(manualOutputs.theta);
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
-            if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && (futureState.positionState != ElevarmPositionState::ELEVARM_STOW )) {
+            if (previousState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
+                if (carriageMotors.getPosition() < CARRIAGE_UPPER_LIMIT - 0.05) {
+                    armRotateMotor.setPower(0.0);
+                    carriageMotors.setPosition(CARRIAGE_UPPER_LIMIT);
+                } else {
+                    carriageMotors.setPosition(futureState.targetPose.h);
+                    armRotateMotor.setPosition(futureState.targetPose.theta);
+                }
+            } else if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && (futureState.positionState != ElevarmPositionState::ELEVARM_STOW )) {
                 if (std::fabs(armRotateMotor.getPosition()) > minAngle()){
                     carriageMotors.setPosition(futureState.targetPose.h);
                 } else {
