@@ -282,6 +282,8 @@ public:
 
     virtual void InitSendable(wpi::SendableBuilder& builder) = 0;
 
+    virtual double getAbsEncoderPosition() = 0;
+
 protected:
 
     T* motor;

@@ -61,6 +61,7 @@ void Robot::AutonomousInit() {
     drivetrain.resetState();
     elevarm.resetState();
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Brake);
+    drivetrain.pullSwerveModuleZeroReference();
 
     autoCommand = autonomous.getCurrentAuto();
 

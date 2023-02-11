@@ -33,7 +33,6 @@ public:
 
     ValorSwerve(AzimuthMotor* _azimuthMotor,
                 DriveMotor* _driveMotor,
-                frc::DutyCycleEncoder* _magEncoder,
                 frc::Translation2d _wheelLocation);
 
     frc::SwerveModulePosition getModulePosition();
@@ -87,15 +86,15 @@ public:
 
     void setAzimuthPosition(frc::Rotation2d angle);
 
+    void InitSendable(wpi::SendableBuilder& builder) override;
+
+private:
+
     /**
      * Get the encoder position reported by the mag encoder
      * @return encoder position reported by the mag encoder
      */
-    int getMagEncoderCount();
-
-    void InitSendable(wpi::SendableBuilder& builder) override;
-
-private:
+    double getMagEncoderCount();
 
     double maxSpeed;
 
@@ -105,8 +104,6 @@ private:
 
     AzimuthMotor* azimuthMotor;
     DriveMotor* driveMotor;
-
-    frc::DutyCycleEncoder* magEncoder;
 
     int wheelIdx;
 };

@@ -20,11 +20,9 @@ template class ValorSwerve<ValorNeoController, ValorFalconController>;
 template<class AzimuthMotor, class DriveMotor>
 ValorSwerve<AzimuthMotor, DriveMotor>::ValorSwerve(AzimuthMotor* _azimuthMotor,
                                                     DriveMotor* _driveMotor,
-                                                    frc::DutyCycleEncoder* _magEncoder,
                                                     frc::Translation2d _wheelLocation) :
     azimuthMotor(_azimuthMotor),
-    driveMotor(_driveMotor),
-    magEncoder(_magEncoder)
+    driveMotor(_driveMotor)
 {
     if (_wheelLocation.X() > units::meter_t{0} && _wheelLocation.Y() > units::meter_t{0}) wheelIdx = 0;
     else if (_wheelLocation.X() > units::meter_t{0} && _wheelLocation.Y() < units::meter_t{0}) wheelIdx = 1;
@@ -79,8 +77,8 @@ void ValorSwerve<AzimuthMotor, DriveMotor>::resetDriveEncoder()
 template<class AzimuthMotor, class DriveMotor>
 void ValorSwerve<AzimuthMotor, DriveMotor>::storeAzimuthZeroReference()
 {
-    // Encoder ticks via the mag encoder
-    int position = getMagEncoderCount();
+    // Encoder position in rotations via the mag encoder
+    double position = getMagEncoderCount();
 
     std::ofstream ofs;
     std::stringstream stream;
@@ -99,35 +97,31 @@ bool ValorSwerve<AzimuthMotor, DriveMotor>::loadAndSetAzimuthZeroReference()
     //   are currently. The pit crew sets the wheels straight in pre-match setup. They should be close enough
     //   if the mag encoders aren't working.
     //   Protects against issues as seen in: https://www.youtube.com/watch?v=MGxpWNcv-VM
-    double currPos = getMagEncoderCount() / MAG_ENCODER_TICKS_PER_REV;
+    double currPos = getMagEncoderCount();
     if (currPos == 0) {
         return false;
     }
 
     std::ifstream infile("/home/lvuser/SwerveModule.wheel." + std::to_string(wheelIdx) + ".txt");
     if (!infile.good()) {
-        azimuthMotor->setEncoderPosition(0);
         return false;
     }
 
     // Encoder position for the mag encoder read from storage
     std::string line;
     std::getline(infile, line);
-    int storedMagEncoderTicks = atoi(line.c_str());
+    double storedPos = atof(line.c_str());
     infile.close();
 
-    // Difference in position to re-zero the module
-    double savedPos = storedMagEncoderTicks / MAG_ENCODER_TICKS_PER_REV;
     // Get the remainder of the delta so the encoder can wrap
-    double pos = fmod(currPos - savedPos, 1);
-    azimuthMotor->setEncoderPosition(pos);
+    azimuthMotor->setEncoderPosition(currPos - storedPos);
     return true;
 }
 
 template<class AzimuthMotor, class DriveMotor>
-int ValorSwerve<AzimuthMotor, DriveMotor>::getMagEncoderCount()
+double ValorSwerve<AzimuthMotor, DriveMotor>::getMagEncoderCount()
 {
-    return magEncoder->GetDistance();
+    return azimuthMotor->getAbsEncoderPosition();
 }
 
 template<class AzimuthMotor, class DriveMotor>
@@ -183,7 +177,7 @@ void ValorSwerve<AzimuthMotor, DriveMotor>::InitSendable(wpi::SendableBuilder& b
     builder.SetSmartDashboardType("Subsystem");
     builder.AddDoubleProperty(
         "magEncoderRotatons",
-        [this] { return getMagEncoderCount() / MAG_ENCODER_TICKS_PER_REV; },
+        [this] { return getMagEncoderCount(); },
         nullptr
     );
     builder.AddDoubleProperty

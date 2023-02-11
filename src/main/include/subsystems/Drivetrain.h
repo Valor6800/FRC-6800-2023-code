@@ -232,7 +232,6 @@ private:
      std::vector<SwerveAzimuthMotor *> azimuthControllers;
      std::vector<SwerveDriveMotor *> driveControllers;
 
-     std::vector<frc::DutyCycleEncoder*> magEncoders;
      units::meter_t swerveModuleDiff = units::meter_t(MODULE_DIFF);
 
      wpi::array<frc::Translation2d, SWERVE_COUNT> motorLocations;
@@ -263,4 +262,6 @@ private:
      frc2::SwerveControllerCommand<4> *cmdGoToTag;
 
      std::shared_ptr<nt::NetworkTable> limeTable;
+
+     bool swerveNoError;
 };

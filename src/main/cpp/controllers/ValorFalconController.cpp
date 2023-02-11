@@ -129,6 +129,11 @@ void ValorFalconController::preventBackwards()
     motor->ConfigPeakOutputReverse(0);
 }
 
+double ValorFalconController::getAbsEncoderPosition()
+{
+    return 0;
+}
+
 void ValorFalconController::setNeutralMode(ValorNeutralMode mode){
     motor->SetNeutralMode(mode == ValorNeutralMode::Brake ? NeutralMode::Brake : NeutralMode::Coast);
     neutralMode = mode;

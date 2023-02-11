@@ -41,6 +41,7 @@ public:
     void setConversion(double);
 
     void setProfile(int slot);
+    double getAbsEncoderPosition();
 
     /**
      * @brief Prevent the motor from traveling backwards

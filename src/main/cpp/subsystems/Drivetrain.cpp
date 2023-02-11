@@ -61,7 +61,8 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         kinematics(NULL),
                         estimator(NULL),
                         config(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel}),
-                        thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})}
+                        thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})},
+                        swerveNoError(true)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -71,7 +72,6 @@ Drivetrain::~Drivetrain()
 {
     for (int i = 0; i < SWERVE_COUNT; i++)
     {
-        delete magEncoders[i];
         delete azimuthControllers[i];
         delete driveControllers[i];
         delete swerveModules[i];
@@ -111,10 +111,7 @@ void Drivetrain::configSwerveModule(int i)
                                                     DRIVETRAIN_CAN_BUS));
     driveControllers[i]->setConversion(1 / DRIVE_GEAR_RATIO * M_PI * WHEEL_DIAMETER_M);
 
-    magEncoders.push_back(new frc::DutyCycleEncoder(DIOPorts::MAG_ENCODER_PORTS[i]));
-    magEncoders[i]->SetDistancePerRotation(4096.0);
-
-    swerveModules.push_back(new ValorSwerve<SwerveAzimuthMotor, SwerveDriveMotor>(azimuthControllers[i], driveControllers[i], magEncoders[i], motorLocations[i]));
+    swerveModules.push_back(new ValorSwerve<SwerveAzimuthMotor, SwerveDriveMotor>(azimuthControllers[i], driveControllers[i], motorLocations[i]));
     swerveModules[i]->setMaxSpeed(driveMaxSpeed);
 }
 
@@ -325,8 +322,9 @@ void Drivetrain::cancelCmdGoToTag(){
 }
 
 void Drivetrain::pullSwerveModuleZeroReference(){
+    swerveNoError = true;
     for (size_t i = 0; i < swerveModules.size(); i++) {
-        swerveModules[i]->loadAndSetAzimuthZeroReference();
+        swerveNoError &= swerveModules[i]->loadAndSetAzimuthZeroReference();
     }
 }
 
@@ -506,6 +504,11 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
         builder.AddDoubleProperty(
             "theta",
             [this] { return getPose_m().Rotation().Degrees().to<double>(); },
+            nullptr
+        );
+        builder.AddBooleanProperty(
+            "swerveGood",
+            [this] { return swerveNoError; },
             nullptr
         );
     }
