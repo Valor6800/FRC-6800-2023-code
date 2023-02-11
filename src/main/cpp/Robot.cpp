@@ -12,7 +12,7 @@
 
 #include <ctime>
 
-Robot::Robot() : drivetrain(this), intake(this), elevarm(this), autonomous(&drivetrain, &intake, &elevarm)
+Robot::Robot() : drivetrain(this), intake(this), elevarm(this, &intake), autonomous(&drivetrain, &intake, &elevarm)
 {
     frc::TimedRobot();
 }
