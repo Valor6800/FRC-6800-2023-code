@@ -5,6 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 #include "subsystems/Drivetrain.h"
+#include <frc/DriverStation.h>
 #include <iostream>
 
 #define TXRANGE  30.0f
@@ -152,20 +153,12 @@ void Drivetrain::init()
     thetaPIDF.D = KDT;
     thetaPIDF.F = KFT;
 
-    table->PutNumber("Real-estimated pose delta cap", 5);
-    table->PutNumber("Base vision doubt", 3.0);
-    table->PutNumber("Scalar vision doubt", 0.7);
-    table->PutNumber("Squared vision doubt", 0);
-
+    table->PutNumber("Vision Std", 3.0);
     table->PutBoolean("Save Swerve Mag Encoder", false);
+    table->PutBoolean("Load Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
 
-    resetState();   
-    trackingID = 0;
-
-    table->PutNumber("pipeline", 0);
-
-    //wpi::SendableRegistry::AddLW(this, "ValorSubsystem", "Drivetrain");
+    resetState();
 }
 
 std::vector<ValorSwerve<Drivetrain::SwerveAzimuthMotor, Drivetrain::SwerveDriveMotor> *> Drivetrain::getSwerveModules()
@@ -201,10 +194,6 @@ void Drivetrain::assessInputs()
     state.rot = driverGamepad->rightStickX(3);
     state.limehoming = driverGamepad->GetYButton();
     state.xPose = driverGamepad->GetXButton();
-
-    if (driverGamepad->GetStartButtonPressed()) {
-        pullSwerveModuleZeroReference();
-    }
 }
 
 void Drivetrain::analyzeDashboard()
@@ -221,6 +210,9 @@ void Drivetrain::analyzeDashboard()
         state.saveToFileDebouncer = false;
     }
 
+    if (table->GetBoolean("Load Swerve Mag Encoder",false))
+        pullSwerveModuleZeroReference();
+
     estimator->UpdateWithTime(frc::Timer::GetFPGATimestamp(),
                             getPigeon(),
                             {
@@ -230,95 +222,53 @@ void Drivetrain::analyzeDashboard()
                                 swerveModules[3]->getModulePosition()
                             });
 
-    if (limeTable->GetNumber("tv", 0) == 1.0){
-        std::vector<double> poseArray = limeTable->GetNumberArray("botpose", std::span<const double>());
-        table->PutNumber("pose array size", poseArray.size());
+    if (limeTable->GetNumber("tv", 0) == 1.0) {
+        
+        std::vector<double> poseArray;
+        if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
+            poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
+        } else {
+            poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
+        }
+
         if (poseArray.size() >= 6){
-            double x = poseArray[0], y = poseArray[1];
-            double angle = poseArray[5];
-            frc::Pose2d botpose = translatePoseToCorner(
-                frc::Pose2d{
-                    units::meter_t(x), 
-                    units::meter_t(y), 
-                    units::degree_t(angle)
-                }
+            double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
+            frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
+            state.visionPose = frc::Pose2d{botpose.X(), botpose.Y(), getPose_m().Rotation()};
+
+            state.visionOdomDiff = (botpose - getPose_m()).Translation().Norm().to<double>();
+            double visionStd = table->GetNumber("Vision Std", 3.0);
+
+            estimator->AddVisionMeasurement(
+                state.visionPose,  
+                frc::Timer::GetFPGATimestamp(),
+                {visionStd, visionStd, visionStd}
             );
-
-            frc::Pose2d thetalessBotpose = frc::Pose2d{
-                botpose.X(),
-                botpose.Y(),
-                getPose_m().Rotation()
-            };
-
-            double difMag = (botpose - getPose_m()).Translation().Norm().to<double>();
             
-            table->PutNumber("Theoretical to current pose delta", difMag);
-            if (difMag < table->GetNumber("Real-estimated pose delta cap", 5.0)){
-                table->PutNumber("Theoretical X", botpose.X().to<double>());
-                table->PutNumber("Theoretical Y", botpose.Y().to<double>());
-
-                double distanceToTag = (
-                    getPose_m() - tags[(int)limeTable->GetNumber("tid", 0)]
-                ).Translation().Norm().to<double>();
-
-                double visionDoubt = 
-                table->GetNumber("Base vision doubt", 3.0) +
-                table->GetNumber("Scalar vision doubt", 0.7) * distanceToTag + 
-                table->GetNumber("Squared vision doubt", 0) * distanceToTag * distanceToTag;
-
-                table->PutNumber("Current vision doubt", visionDoubt);
-
-                // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset4
-                //distance to tag
-                if (distanceToTag < AUTO_VISION_THRESHOLD) {
-                    estimator->AddVisionMeasurement(
-                        thetalessBotpose,  
-                        frc::Timer::GetFPGATimestamp(),
-                        {visionDoubt, visionDoubt, visionDoubt}
-                    );  
-                }
-                
-            }
-            
-            if (driverGamepad->GetAButton()){
+            if (driverGamepad->GetStartButton()){
                 resetOdometry(botpose);
             }
         }
     }
 }
 
-frc::Pose2d translatePoseBy(frc::Pose2d pose, frc::Translation2d translation){
-    return frc::Pose2d{pose.X() + translation.X(), pose.Y() + translation.Y(), pose.Rotation()};
-}
-
-frc::Pose2d translateAndRotatePoseBy(frc::Pose2d pose, frc::Pose2d addPose){
-    return frc::Pose2d{pose.X() + addPose.X(), pose.Y() + addPose.Y(), pose.Rotation().Degrees() + addPose.Rotation().Degrees()};
-}
-
 void Drivetrain::assignOutputs()
 {    
-    xSpeedMPS = units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed};
-    ySpeedMPS = units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed};
-    rotRPS = units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed};
+    state.xSpeedMPS = units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed};
+    state.ySpeedMPS = units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed};
+    state.rotRPS = units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed};
 
     if (state.xPose){
         setXMode();
-    } else {
-        if (state.limehoming){
-            limelightHoming();
-        } else {
-            limeTable->PutNumber("pipeline", 0);    
-        }
+    } else if (state.limehoming){
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-
-        drive(xSpeedMPS, ySpeedMPS, rotRPS, true);
-    }
-    
-}
-
-void Drivetrain::cancelCmdGoToTag(){
-    cmdGoToTag->Cancel();
-    // delete cmdGoToTag;
+        limelightHoming();
+        drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
+    } else {
+        setDriveMotorNeutralMode(ValorNeutralMode::Coast);
+        limeTable->PutNumber("pipeline", 0);    
+        drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
+    }    
 }
 
 void Drivetrain::pullSwerveModuleZeroReference(){
@@ -406,16 +356,10 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT
     }
 }
 
-
-frc::Pose2d Drivetrain::translatePoseToCorner(frc::Pose2d tagPose){
-    return frc::Pose2d{tagPose.X() + 16.535_m / 2, tagPose.Y() + 8_m / 2, tagPose.Rotation()};
-}
-// 16.535_m / 2, 8_m / 2, 0_deg
-
 void Drivetrain::limelightHoming(){
     limeTable->PutNumber("pipeline", 1);
     if (limeTable->GetNumber("tv", 0) == 1){
-        rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) * rotMaxSpeed) / KLIMELIGHT);
+        state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) * rotMaxSpeed) / KLIMELIGHT);
     }
 }
 
@@ -471,10 +415,15 @@ void Drivetrain::setDriveMotorNeutralMode(ValorNeutralMode mode) {
     }
 }
 
-
 void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
     {
         builder.SetSmartDashboardType("Subsystem");
+
+        builder.AddDoubleProperty(
+            "diffVisionOdom",
+            [this] { return state.visionOdomDiff; },
+            nullptr
+        );
 
         builder.AddDoubleProperty(
             "xSpeed",
@@ -489,6 +438,22 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
         builder.AddDoubleProperty(
             "rotSpeed",
             [this] { return state.rot; },
+            nullptr
+        );
+
+        builder.AddDoubleProperty(
+            "xSpeedMPS",
+            [this] { return state.xSpeedMPS.to<double>(); },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "ySpeedMPS",
+            [this] { return state.ySpeedMPS.to<double>(); },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "rotSpeedMPS",
+            [this] { return state.rotRPS.to<double>(); },
             nullptr
         );
         builder.AddDoubleProperty(
@@ -509,6 +474,16 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
         builder.AddBooleanProperty(
             "swerveGood",
             [this] { return swerveNoError; },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "visionX",
+            [this] { return state.visionPose.X().to<double>(); },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "visionY",
+            [this] { return state.visionPose.Y().to<double>(); },
             nullptr
         );
     }
