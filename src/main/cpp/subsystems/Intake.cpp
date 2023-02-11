@@ -40,34 +40,33 @@ void Intake::init()
 
 void Intake::assessInputs()
 {
-    // if (driverGamepad->GetAButton()) {
-    //     // works with elevarm locations in order to outtake at speed for cone/cube
-    //     if (operatorGamepad->DPadDown() || operatorGamepad->DPadUp()
-    //         || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight()) {
-    //         state.intakeState = OUTTAKE_CUBE;
-    //     } else if (operatorGamepad->GetAButton() || operatorGamepad->GetBButton() 
-    //             || operatorGamepad->GetXButton() || operatorGamepad->GetYButton()) {
-    //         state.intakeState = OUTTAKE_CONE;
-    //     } else {
-    //         state.intakeState = OUTTAKE;
-    //     }
-    // } else if (operatorGamepad->rightTriggerActive()) {
-    //     state.intakeState = OUTTAKE;
-    // } else if (state.intakeState != SPIKED) {
-    //     if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || operatorGamepad->leftTriggerActive() ||
-    //      operatorGamepad->GetXButton()  || operatorGamepad->DPadLeft() || operatorGamepad->GetAButton() ||
-    //       operatorGamepad->DPadDown()) {
-    //         state.intakeState = INTAKE;
-    //     } else{
-    //         state.intakeState = DISABLED;
-    //     }
-    // } else if(state.intakeState == SPIKED) {
-    //     if (!driverGamepad->GetLeftBumper() && !driverGamepad->GetRightBumper() && !operatorGamepad->leftTriggerActive()) {
-    //         state.intakeState = DISABLED;
-    //     } 
-    // }
-    if (driverGamepad->leftTriggerActive()) state.intakeState = SPIKED;
-    else state.intakeState = DISABLED;
+    if (driverGamepad->GetAButton()) {
+        // works with elevarm locations in order to outtake at speed for cone/cube
+        if (operatorGamepad->DPadDown() || operatorGamepad->DPadUp()
+            || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight()) {
+            state.intakeState = OUTTAKE_CUBE;
+        } else if (operatorGamepad->GetAButton() || operatorGamepad->GetBButton() 
+                || operatorGamepad->GetXButton() || operatorGamepad->GetYButton()) {
+            state.intakeState = OUTTAKE_CONE;
+        } else {
+            state.intakeState = OUTTAKE;
+        }
+    } else if (operatorGamepad->rightTriggerActive()) {
+        state.intakeState = OUTTAKE;
+    } else if (state.intakeState != SPIKED) {
+        if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || operatorGamepad->leftTriggerActive() ||
+         operatorGamepad->GetXButton()  || operatorGamepad->DPadLeft() || operatorGamepad->GetAButton() ||
+          operatorGamepad->DPadDown()) {
+            state.intakeState = INTAKE;
+        } else{
+            state.intakeState = DISABLED;
+        }
+    } else if(state.intakeState == SPIKED) {
+        if (!driverGamepad->GetLeftBumper() && !driverGamepad->GetRightBumper() && !operatorGamepad->leftTriggerActive()) {
+            state.intakeState = DISABLED;
+        } 
+    }
+    
 }
 
 void Intake::analyzeDashboard()

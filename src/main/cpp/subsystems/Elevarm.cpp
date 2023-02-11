@@ -47,9 +47,7 @@
 #define Z_CARRIAGE_FLOOR_OFFSET 0.2286f
 #define Z_INTAKE_OFFSET 0.138f
 
-// #define X_CHASSIS_FRONT_BOUND 0.0f
 #define X_CHASSIS_FRONT_BOUND 0.2f
-// #define X_CHASSIS_BACK_BOUND  -0.6604f
 #define X_CHASSIS_BACK_BOUND  -0.8604f
 #define Z_FORK 0.465f
 #define Z_GROUND 0.45f
@@ -205,18 +203,6 @@ void Elevarm::analyzeDashboard()
 {
     manualMaxCarriageSpeed = table->GetNumber("Carriage Max Manual Speed", 1.0);
     manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", 1.0);
-    table->PutNumber("Carriage Position", carriageMotors.getPosition());
-    table->PutNumber("Arm Position", armRotateMotor.getPosition());
-
-    table->PutNumber("EA position state", futureState.positionState);
-    table->PutNumber("EA piece state", futureState.pieceState);
-    table->PutNumber("EA direction state", futureState.directionState);
-    table->PutNumber("target height", futureState.targetPose.h);
-    table->PutNumber("target rotation", futureState.targetPose.theta);
-    futureState.resultKinematics = forwardKinematics(Positions(carriageMotors.getPosition(), armRotateMotor.getPosition()));
-    table->PutNumber("forward kin. x", futureState.resultKinematics.X().to<double>());
-    table->PutNumber("forward kin. z", futureState.resultKinematics.Z().to<double>());
-    
     futureState.pitModeEnabled = table->GetBoolean("Pit Mode", false);
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
 }
@@ -248,15 +234,6 @@ void Elevarm::assignOutputs()
             armRotateMotor.setPower(manualOutputs.theta);
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
-            // if (previousState.positionState == ElevarmPositionState::ELEVARM_MANUAL && futureState.positionState != ElevarmPositionState::ELEVARM_MANUAL) {
-            //     if (carriageMotors.getPosition() < CARRIAGE_UPPER_LIMIT - 0.1) {
-            //         armRotateMotor.setPower(0.0);
-            //         carriageMotors.setPosition(1.0);
-            //     } else {
-            //         carriageMotors.setPosition(futureState.targetPose.h);
-            //         armRotateMotor.setPosition(futureState.targetPose.theta);
-            //     }
-            // } else 
             if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && (futureState.positionState != ElevarmPositionState::ELEVARM_STOW )) {
                 if (std::fabs(armRotateMotor.getPosition()) > minAngle()){
                     carriageMotors.setPosition(futureState.targetPose.h);
@@ -350,11 +327,6 @@ Elevarm::Positions Elevarm::reverseKinematics(frc::Pose3d pose, ElevarmSolutions
     }
     height -= (Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET);
 
-    table->PutNumber("cjn dir", direction);
-    table->PutNumber("cjn solution", solution);
-    table->PutNumber("cjn phi", phi);
-    table->PutNumber("cjn pose x", pose.X().to<double>());
-    table->PutNumber("cjn pose z", pose.Z().to<double>());
 
     return Positions(height,theta * 180.0 / M_PI);
 }
