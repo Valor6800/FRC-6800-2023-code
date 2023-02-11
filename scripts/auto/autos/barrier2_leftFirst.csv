@@ -1,0 +1,8 @@
+reset_odom,barrierBox,180
+trajectory,barrierBox,chell,180,reversed
+trajectory,chell,cave,180,reversed
+trajectory,cave,barrierLeft,180
+trajectory,barrierLeft,chell,180,reversed
+trajectory,chell,chellFar,135,reversed
+split,1.857
+trajectory,chellFar,chargeFar,90,reversed
