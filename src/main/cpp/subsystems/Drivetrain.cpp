@@ -272,7 +272,7 @@ void Drivetrain::analyzeDashboard()
 
                 // Might want to remove this later when we completely mess up vision, and then just store the vision-based bot pose for manual odom reset4
                 //distance to tag
-                if (distanceToTag < AUTO_VISION_THRESHOLD) {
+                if (distanceToTag < AUTO_VISION_THRESHOLD || robot->IsTeleop()) {
                     estimator->AddVisionMeasurement(
                         thetalessBotpose,  
                         frc::Timer::GetFPGATimestamp(),
