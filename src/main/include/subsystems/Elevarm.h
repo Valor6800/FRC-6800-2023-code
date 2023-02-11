@@ -11,6 +11,7 @@
 #include "Constants.h"
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
+#include "subsystems/Intake.h"
 
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -30,7 +31,7 @@ public:
       * 
       * @param robot Top level robot object to parse out smart dashboard and table information
       */
-     Elevarm(frc::TimedRobot *robot);
+     Elevarm(frc::TimedRobot *robot , Intake *_intake);
 
      /**
       * @brief Destroy the Elevarm object
@@ -83,7 +84,8 @@ public:
         ELEVARM_PLAYER,
         ELEVARM_MID,
         ELEVARM_HIGH,
-        ELEVARM_MANUAL
+        ELEVARM_MANUAL,
+        ELEVARM_SNAKE
     };
 
     enum ElevarmSolutions {
@@ -130,9 +132,11 @@ private:
      std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose3d>>> posMap;
      frc::Pose3d stowPos;
 
-    Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions); 
+    Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions, ElevarmDirectionState); 
     frc::Pose3d forwardKinematics(Positions positions);
     Positions detectionBoxManual(double, double);
+
+    Intake *intake;
      
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;
