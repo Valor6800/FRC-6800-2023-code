@@ -44,14 +44,9 @@ void Robot::RobotPeriodic() { frc2::CommandScheduler::GetInstance().Run(); }
  * can use it to reset any subsystem information you want to clear when the
  * robot is disabled.
  */
-void Robot::DisabledInit() {
-    drivetrain.cancelCmdGoToTag();
-}
+void Robot::DisabledInit() { }
 
-void Robot::DisabledPeriodic()
-{
-
-}
+void Robot::DisabledPeriodic() { }
 
 /**
  * This autonomous runs the autonomous command selected by your {@link
