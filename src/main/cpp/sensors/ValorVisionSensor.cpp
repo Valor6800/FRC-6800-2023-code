@@ -24,9 +24,9 @@ void ValorVisionSensor::calculate() {
 
             if (robotPoseList.size() >= 6){
                 visionRobotPose = frc::Pose2d(
-                    static_cast<units::meter_t>(robotPoseList[0]),
-                    static_cast<units::meter_t>(robotPoseList[1]),
-                    static_cast<units::degree_t>(robotPoseList[5])
+                    static_cast<units::meter_t>(robotPoseList[0]),//x
+                    static_cast<units::meter_t>(robotPoseList[1]),//y
+                    static_cast<units::degree_t>(robotPoseList[5])//angle
                 );
             }
         } else {

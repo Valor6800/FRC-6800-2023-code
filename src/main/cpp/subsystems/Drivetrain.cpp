@@ -247,26 +247,24 @@ void Drivetrain::analyzeDashboard()
                                 swerveModules[3]->getModulePosition()
                             });
 
-    if (limeTable->GetNumber("tv", 0) == 1.0) {
+    if (vision.visionTable->GetNumber("tv", 0) == 1.0) {
         
-        std::vector<double> poseArray;
-        if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
-            poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
-        } else {
-            poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
-        }
+        vision.calculate();
+        
+        
+        if (vision.robotPoseList.size() >= 6){
+            frc::Pose2d botpose{vision.visionRobotPose};
 
-        if (poseArray.size() >= 6){
-            double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
-            frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
+            table->PutNumber("botpose.x", botpose.X().to<double>());
+            // double x = vision.robotPoseList[0], y = vision.robotPoseList[1], angle = vision.robotPoseList[5];
             state.prevVisionPose = state.visionPose;
             state.visionPose = frc::Pose2d{botpose.X(), botpose.Y(), getPose_m().Rotation()};
 
             state.visionOdomDiff = (botpose - getPose_m()).Translation().Norm().to<double>();
             double visionStd = table->GetNumber("Vision Std", 3.0);
 
-            if (((x < AUTO_VISION_THRESHOLD && x > 0) || 
-                (x > (FIELD_LENGTH - AUTO_VISION_THRESHOLD) && x < FIELD_LENGTH)) &&
+            if (((botpose.X().to<double>() < AUTO_VISION_THRESHOLD && botpose.X().to<double>() > 0) || 
+                (botpose.X().to<double>() > (FIELD_LENGTH - AUTO_VISION_THRESHOLD) && botpose.X().to<double>() < FIELD_LENGTH)) &&
                 (state.visionPose - state.prevVisionPose).Translation().Norm().to<double>() < 1.0)
             {
                 estimator->AddVisionMeasurement(
@@ -293,18 +291,11 @@ void Drivetrain::assignOutputs()
 
     if (state.xPose){
         setXMode();
-    } else {
-        if (state.limehoming){
-            limelightHoming();
-        } else {
-            vision.visionTable->PutNumber("pipeline", 0);    
-        }
-        setDriveMotorNeutralMode(ValorNeutralMode::Coast);
+    } else if (state.limehoming) {
         limelightHoming();
-        drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     } else {
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-        limeTable->PutNumber("pipeline", 0);    
+        vision.visionTable->PutNumber("pipeline", 0);    
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     }
 }
