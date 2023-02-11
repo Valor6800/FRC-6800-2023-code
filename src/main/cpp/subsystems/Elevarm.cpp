@@ -328,13 +328,13 @@ Elevarm::Positions Elevarm::detectionBoxManual(double carriage, double arm) {
 }
 
 
-Elevarm::Positions Elevarm::reverseKinematics(frc::Pose3d pose, ElevarmSolutions solution, ElevarmDirectionState direction) 
+Elevarm::Positions Elevarm::reverseKinematics(frc::Pose3d pose, ElevarmSolutions solution, ElevarmDirectionState dir) 
 {
     double phi = 0.0;
     double theta = 0.0;
     double height = 0.0;
 
-    double direction = (direction == ElevarmDirectionState::ELEVARM_FRONT) ? 1.0 : -1.0;
+    double direction = (dir == ElevarmDirectionState::ELEVARM_FRONT) ? 1.0 : -1.0;
 
     // Arms solution
     if (solution == ElevarmSolutions::ELEVARM_ARMS) {
