@@ -42,7 +42,8 @@
 #define AUTO_SPEED_MUL 0.75f
 #define ROT_SPEED_MUL 2.0f
 
-#define AUTO_VISION_THRESHOLD 3.0f //meters
+#define AUTO_VISION_THRESHOLD 5.0f //meters
+#define FIELD_LENGTH 16.5f
 
 #define MODULE_DIFF_XS {1, 1, -1, -1}
 #define MODULE_DIFF_YS {1, -1, -1, 1}
@@ -234,16 +235,23 @@ void Drivetrain::analyzeDashboard()
         if (poseArray.size() >= 6){
             double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
             frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
+            state.prevVisionPose = state.visionPose;
             state.visionPose = frc::Pose2d{botpose.X(), botpose.Y(), getPose_m().Rotation()};
 
             state.visionOdomDiff = (botpose - getPose_m()).Translation().Norm().to<double>();
             double visionStd = table->GetNumber("Vision Std", 3.0);
 
-            estimator->AddVisionMeasurement(
-                state.visionPose,  
-                frc::Timer::GetFPGATimestamp(),
-                {visionStd, visionStd, visionStd}
-            );
+            if (((x < AUTO_VISION_THRESHOLD && x > 0) || 
+                (x > (FIELD_LENGTH - AUTO_VISION_THRESHOLD) && x < FIELD_LENGTH)) &&
+                (state.visionPose - state.prevVisionPose).Translation().Norm().to<double>() < 1.0)
+            {
+                estimator->AddVisionMeasurement(
+                    state.visionPose,  
+                    frc::Timer::GetFPGATimestamp(),
+                    {visionStd, visionStd, visionStd}
+                ); 
+            }
+            
             
             if (driverGamepad->GetStartButton()){
                 resetOdometry(botpose);
@@ -268,7 +276,7 @@ void Drivetrain::assignOutputs()
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
         limeTable->PutNumber("pipeline", 0);    
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
-    }    
+    }
 }
 
 void Drivetrain::pullSwerveModuleZeroReference(){
@@ -484,6 +492,18 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
         builder.AddDoubleProperty(
             "visionY",
             [this] { return state.visionPose.Y().to<double>(); },
+            nullptr
+        );
+        builder.AddDoubleArrayProperty(
+            "pose",
+            [this] 
+            { 
+                std::vector<double> pose;
+                pose.push_back(getPose_m().X().to<double>());
+                pose.push_back(getPose_m().Y().to<double>());
+                pose.push_back(getPose_m().Rotation().Degrees().to<double>());
+                return pose;
+            },
             nullptr
         );
     }

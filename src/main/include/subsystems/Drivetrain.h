@@ -122,6 +122,7 @@ public:
           double visionOdomDiff;
 
           frc::Pose2d visionPose;
+          frc::Pose2d prevVisionPose;
 
           units::velocity::meters_per_second_t xSpeedMPS;
           units::velocity::meters_per_second_t ySpeedMPS;
