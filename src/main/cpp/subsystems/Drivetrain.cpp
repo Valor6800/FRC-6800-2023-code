@@ -507,4 +507,16 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
             [this] { return getPose_m().Rotation().Degrees().to<double>(); },
             nullptr
         );
+        builder.AddDoubleArrayProperty(
+            "pose",
+            [this] 
+            { 
+                std::vector<double> pose;
+                pose.push_back(getPose_m().X().to<double>());
+                pose.push_back(getPose_m().Y().to<double>());
+                pose.push_back(getPose_m().Rotation().Degrees().to<double>());
+                return pose;
+            },
+            nullptr
+        );
     }
