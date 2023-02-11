@@ -40,6 +40,8 @@
 #define X_HALF_WIDTH 0.254f
 #define X_CARRIAGE_OFFSET 0.1778f
 #define X_ARM_LENGTH 1.01854f
+#define X_INTAKE_FORWARD_OFFSET 0.0f  // 0.2450338f
+#define X_INTAKE_REVERSE_OFFSET 0.0f  // 0.126285117f
 
 #define Z_CARRIAGE_JOINT_OFFSET 0.0724154f
 #define Z_CARRIAGE_FLOOR_OFFSET 0.2286f
@@ -137,9 +139,9 @@ void Elevarm::init()
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.866_m,  0.0_m,  1.5_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -1.1_m,  0.0_m,  1.75_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( 0.0_m,  0.0_m,  1.5_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( 0.06_m,  0.0_m,  1.44_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.6_m,  0.0_m,  1.34_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( 0.0_m,  0.0_m,  1.5_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( 0.06_m,  0.0_m,  1.44_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.6_m,  0.0_m,  1.34_m, frc::Rotation3d() );
     
 
@@ -190,9 +192,7 @@ void Elevarm::assessInputs()
 
     if (driverGamepad->GetLeftBumper()) {
         futureState.directionState = ElevarmDirectionState::ELEVARM_FRONT;
-    } else if (driverGamepad->GetRightBumper()) {
-        futureState.directionState = ElevarmDirectionState::ELEVARM_BACK;
-    } else if (operatorGamepad->GetLeftBumper()){
+    } else if (driverGamepad->GetRightBumper() || operatorGamepad->GetLeftBumper()) {
         futureState.directionState = ElevarmDirectionState::ELEVARM_BACK;
     } else {
         futureState.directionState = ElevarmDirectionState::ELEVARM_FRONT;
@@ -223,10 +223,10 @@ void Elevarm::analyzeDashboard()
 
 void Elevarm::assignOutputs()
 {    
-     if (futureState.directionState != previousState.directionState) {
+    if (futureState.directionState != previousState.directionState) {
         futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
     }
-    
+
     if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, ElevarmDirectionState::ELEVARM_FRONT);
     } else {
@@ -248,15 +248,16 @@ void Elevarm::assignOutputs()
             armRotateMotor.setPower(manualOutputs.theta);
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
-            if (previousState.positionState == ElevarmPositionState::ELEVARM_MANUAL && futureState.positionState != ElevarmPositionState::ELEVARM_MANUAL) {
-                if (carriageMotors.getPosition() < CARRIAGE_UPPER_LIMIT - 0.05) {
-                    armRotateMotor.setPower(0.0);
-                    carriageMotors.setPower(0.1);
-                } else {
-                    carriageMotors.setPosition(futureState.targetPose.h);
-                    armRotateMotor.setPosition(futureState.targetPose.theta);
-                }
-            } else if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && (futureState.positionState != ElevarmPositionState::ELEVARM_STOW )) {
+            // if (previousState.positionState == ElevarmPositionState::ELEVARM_MANUAL && futureState.positionState != ElevarmPositionState::ELEVARM_MANUAL) {
+            //     if (carriageMotors.getPosition() < CARRIAGE_UPPER_LIMIT - 0.1) {
+            //         armRotateMotor.setPower(0.0);
+            //         carriageMotors.setPosition(1.0);
+            //     } else {
+            //         carriageMotors.setPosition(futureState.targetPose.h);
+            //         armRotateMotor.setPosition(futureState.targetPose.theta);
+            //     }
+            // } else 
+            if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && (futureState.positionState != ElevarmPositionState::ELEVARM_STOW )) {
                 if (std::fabs(armRotateMotor.getPosition()) > minAngle()){
                     carriageMotors.setPosition(futureState.targetPose.h);
                 } else {
@@ -300,7 +301,7 @@ void Elevarm::assignOutputs()
 }
 double Elevarm::minAngle()
 {
-    double Zt = carriageMotors.getPosition() + Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET;
+    double Zt = carriageMotors.getPosition() + Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET ;
     double Xt = -X_BUMPER_WIDTH - X_HALF_WIDTH + X_CARRIAGE_OFFSET;
     double Zs = Z_FORK;
     double Xs = armRotateMotor.getPosition() > 0 ? X_CHASSIS_FRONT_BOUND : X_CHASSIS_BACK_BOUND;
@@ -333,21 +334,27 @@ Elevarm::Positions Elevarm::reverseKinematics(frc::Pose3d pose, ElevarmSolutions
     double phi = 0.0;
     double theta = 0.0;
     double height = 0.0;
-
+    double intakeOff = (dir == ElevarmDirectionState::ELEVARM_FRONT) ? X_INTAKE_FORWARD_OFFSET: X_INTAKE_REVERSE_OFFSET;
     double direction = (dir == ElevarmDirectionState::ELEVARM_FRONT) ? 1.0 : -1.0;
 
     // Arms solution
     if (solution == ElevarmSolutions::ELEVARM_ARMS) {
-        phi = direction * std::acos((pose.X().to<double>() + X_BUMPER_WIDTH + X_HALF_WIDTH - X_CARRIAGE_OFFSET ) / X_ARM_LENGTH);
-        theta = phi + (direction * (M_PI / 2.0))  ;
-        height = pose.Z().to<double>() - (X_ARM_LENGTH * std::sin(phi)) + Z_INTAKE_OFFSET;
-
+        phi = std::acos(std::fabs((pose.X().to<double>() + X_BUMPER_WIDTH + X_HALF_WIDTH - X_CARRIAGE_OFFSET - intakeOff) / X_ARM_LENGTH));
+        theta = phi + (M_PI / 2.0);
+        height = pose.Z().to<double>() - (X_ARM_LENGTH * std::sin(phi)) - Z_INTAKE_OFFSET;
+        theta *= direction;
     // Legs Solution
     } else {
-        theta = std::asin((pose.X().to<double>() + X_BUMPER_WIDTH + X_HALF_WIDTH - X_CARRIAGE_OFFSET ) / X_ARM_LENGTH);
+        theta = std::asin((pose.X().to<double>() + X_BUMPER_WIDTH + X_HALF_WIDTH - X_CARRIAGE_OFFSET - intakeOff) / X_ARM_LENGTH);
         height = pose.Z().to<double>() + (X_ARM_LENGTH * std::cos(theta)) - Z_INTAKE_OFFSET;
     }
     height -= (Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET);
+
+    table->PutNumber("cjn dir", direction);
+    table->PutNumber("cjn solution", solution);
+    table->PutNumber("cjn phi", phi);
+    table->PutNumber("cjn pose x", pose.X().to<double>());
+    table->PutNumber("cjn pose z", pose.Z().to<double>());
 
     return Positions(height,theta * 180.0 / M_PI);
 }
@@ -365,8 +372,6 @@ frc::Pose3d Elevarm::forwardKinematics(Elevarm::Positions positions)
             x = X_ARM_LENGTH * cos(phi) + X_CARRIAGE_OFFSET - X_BUMPER_WIDTH - X_HALF_WIDTH;
         // Legs
         } else {
-            // z = 0.2286f + 0.0724154f + 0.138f  - ( 1.01854f * 0.866025 )
-
             z = Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET + Z_INTAKE_OFFSET + positions.h - X_ARM_LENGTH * cos(theta);
             x = X_ARM_LENGTH * sin(theta) + X_CARRIAGE_OFFSET - X_BUMPER_WIDTH - X_HALF_WIDTH;
         }
