@@ -23,7 +23,8 @@ struct ValorAutoAction {
         TRAJECTORY,
         RESET_ODOM,
         ACTION,
-        SPLIT
+        SPLIT,
+        XMODE
     } type;
 
     enum Error {
@@ -35,7 +36,6 @@ struct ValorAutoAction {
     frc::Pose2d start;
     frc::Pose2d end;
     bool reversed;
-
     std::string state;
     std::string value;
     

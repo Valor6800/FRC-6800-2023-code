@@ -182,8 +182,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     trajPoses.push_back(action.end);
                 }
             }
-        }
-        else {
+        } else{
             if (trajPoses.size() != 0){
                 if (trajPoses.size() > 0)
                     last_angle = trajPoses.back().Rotation();
@@ -280,11 +279,19 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 you may not know that that destroys it. As such, you have to knowingly destroy it
                 with std::move.
                 */
-                
+
                 /*
                 What confuses me about this is that the header code I showed above is for the constructor.
                 Why would passing in a command (in this case a SequentialCommandGroup) call the constructor for the cmdGroup?
                 */
+            } else if (action.type == ValorAutoAction::Type::XMODE){
+                cmdGroup->AddCommands(
+                    frc2::InstantCommand(
+                        [&, action] {
+                            drivetrain->getSetXMode();
+                        }
+                    )
+                );
             }
         }
     }
