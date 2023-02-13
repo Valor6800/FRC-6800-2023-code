@@ -411,8 +411,8 @@ void Drivetrain::setXMode(){
     drive(static_cast<units::velocity::meters_per_second_t>(0),static_cast<units::velocity::meters_per_second_t>(0),static_cast<units::angular_velocity::radians_per_second_t>(0),true);
     azimuthControllers[0]->setPosition(std::round(azimuthControllers[0]->getPosition()) + 0.125);
     azimuthControllers[1]->setPosition(std::round(azimuthControllers[1]->getPosition()) + 0.375);
-    azimuthControllers[2]->setPosition(std::round(azimuthControllers[2]->getPosition()) - 0.125);
-    azimuthControllers[3]->setPosition(std::round(azimuthControllers[3]->getPosition()) - 0.375);
+    azimuthControllers[2]->setPosition(std::round(azimuthControllers[2]->getPosition()) - 0.375);
+    azimuthControllers[3]->setPosition(std::round(azimuthControllers[3]->getPosition()) - 0.125);
     setDriveMotorNeutralMode(ValorNeutralMode::Brake);
 }
 
@@ -421,6 +421,13 @@ void Drivetrain::setDriveMotorNeutralMode(ValorNeutralMode mode) {
     {
         driveControllers[i]->setNeutralMode(mode);
     }
+}
+
+frc2::InstantCommand* Drivetrain::getSetXMode(){
+    frc2::InstantCommand* cmd_XMode = new frc2::InstantCommand( [&] {
+        setXMode();
+    });
+     return cmd_XMode;
 }
 
 void Drivetrain::InitSendable(wpi::SendableBuilder& builder)

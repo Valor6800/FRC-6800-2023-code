@@ -213,6 +213,8 @@ public:
 
      void setXMode();
 
+     frc2::InstantCommand* getSetXMode();
+
      void setDriveMotorNeutralMode(ValorNeutralMode mode);
 
 private:
