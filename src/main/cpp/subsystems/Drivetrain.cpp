@@ -12,17 +12,17 @@
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
 
-#define KPX 0.5f //.75
+#define KPX 50.0f //.75
 #define KIX 0.0f //0
 #define KDX 0.0f //.1
 #define KFX 0.0f
 
-#define KPY 0.5f //.75
+#define KPY 50.5f //.75
 #define KIY 0.0f //0
 #define KDY 0.0f //.1
 #define KFY 0.0f
 
-#define KPT 4.0f
+#define KPT 15.0f
 #define KIT 0.0f
 #define KDT 0.0f
 #define KFT 0.0f
@@ -35,11 +35,20 @@
 #define AZIMUTH_K_VEL 10.0f
 #define AZIMUTH_K_ACC_MUL 20.0f
 
+#define DRIVE_K_P 0.001f
+#define DRIVE_K_I 0.0f
+#define DRIVE_K_D 0.0f
+#define DRIVE_K_E 0.0027f
+
+#define DRIVE_K_VEL 6.0f
+#define DRIVE_K_ACC_MUL 20.0f
+
 #define MOTOR_FREE_SPEED 6380.0f
 #define WHEEL_DIAMETER_M 0.1016f
 #define DRIVE_GEAR_RATIO 5.51f
 #define AZIMUTH_GEAR_RATIO 13.37f
-#define AUTO_SPEED_MUL 0.75f
+#define AUTO_MAX_SPEED 10.0f
+#define AUTO_MAX_ACCEL 3.0f
 #define ROT_SPEED_MUL 2.0f
 
 #define AUTO_VISION_THRESHOLD 5.0f //meters
@@ -54,8 +63,8 @@
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
-                        autoMaxSpeed(driveMaxSpeed * 0.5),
-                        autoMaxAccel(autoMaxSpeed * AUTO_SPEED_MUL),
+                        autoMaxSpeed(AUTO_MAX_SPEED),
+                        autoMaxAccel(AUTO_MAX_ACCEL),
                         rotMaxAccel(rotMaxSpeed * 0.5),
                         pigeon(CANIDs::PIGEON_CAN, PIGEON_CAN_BUS),
                         motorLocations(wpi::empty_array),
@@ -104,17 +113,28 @@ void Drivetrain::configSwerveModule(int i)
                                                       ValorNeutralMode::Brake,
                                                       true,
                                                       DRIVETRAIN_CAN_BUS));
-    azimuthControllers[i]->setConversion(1 / AZIMUTH_GEAR_RATIO);
+    azimuthControllers[i]->setConversion(1.0 / AZIMUTH_GEAR_RATIO);
     azimuthControllers[i]->setPIDF(azimuthPID, 0);
+
+    ValorPIDF drivePID;
+    drivePID.velocity = DRIVE_K_VEL;
+    drivePID.acceleration = drivePID.velocity * DRIVE_K_ACC_MUL;
+    drivePID.P = DRIVE_K_P;
+    drivePID.I = DRIVE_K_I;
+    drivePID.D = DRIVE_K_D;
+    drivePID.error = DRIVE_K_E;
 
     driveControllers.push_back(new SwerveDriveMotor(CANIDs::DRIVE_CANS[i],
                                                     ValorNeutralMode::Coast,
                                                     false,
                                                     DRIVETRAIN_CAN_BUS));
-    driveControllers[i]->setConversion(1 / DRIVE_GEAR_RATIO * M_PI * WHEEL_DIAMETER_M);
+    driveControllers[i]->setConversion(1.0 / DRIVE_GEAR_RATIO * M_PI * WHEEL_DIAMETER_M);
+    driveControllers[i]->setPIDF(drivePID, 0);
 
     swerveModules.push_back(new ValorSwerve<SwerveAzimuthMotor, SwerveDriveMotor>(azimuthControllers[i], driveControllers[i], motorLocations[i]));
     swerveModules[i]->setMaxSpeed(driveMaxSpeed);
+    
+
 }
 
 void Drivetrain::resetState()

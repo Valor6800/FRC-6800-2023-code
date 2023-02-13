@@ -139,7 +139,7 @@ void ValorNeoController::setProfile(int profile)
  */
 void ValorNeoController::setSpeed(double speed)
 {
-    pidController.SetReference(speed, rev::CANSparkMax::ControlType::kSmartVelocity, currentPidSlot);
+    pidController.SetReference(speed * 60.0, rev::CANSparkMax::ControlType::kVelocity, currentPidSlot);
 }
 
 void ValorNeoController::setPower(double power)
