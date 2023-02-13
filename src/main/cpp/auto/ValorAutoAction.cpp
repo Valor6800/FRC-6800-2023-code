@@ -48,6 +48,8 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         type = ValorAutoAction::Type::SPLIT;
     } else if (items[0] == "xmode" || items[0] == "XMode"){
         type = ValorAutoAction::Type::XMODE;
+    } else if (items[0] == "elevarm"){
+        type = ValorAutoAction::ELEVARM;
     }
 
     if (type == ValorAutoAction::Type::TIME) {
@@ -111,5 +113,10 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         }
         else
             vel = TRANS_VELOCITY;
+    }
+    else if (type == ValorAutoAction::ELEVARM){
+        if (items.size() < 4)
+            error = ValorAutoAction::SIZE_MISMATCH;
+        values = {items[1], items[2], items[3]};
     }
 }

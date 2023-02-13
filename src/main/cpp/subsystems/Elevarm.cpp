@@ -153,7 +153,7 @@ void Elevarm::init()
 }
 
 void Elevarm::assessInputs()
-{
+{   
     futureState.manualCarriage = 0;
     futureState.manualArm = 0;
     
@@ -209,7 +209,7 @@ void Elevarm::analyzeDashboard()
 
 void Elevarm::assignOutputs()
 {    
-    if (futureState.directionState != previousState.directionState) {
+    if (futureState.directionState != previousState.directionState && robot->IsTeleop()) {
         futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
     }
 
@@ -427,3 +427,23 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
         nullptr
     );
 }
+
+frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState){
+    return new frc2::FunctionalCommand(
+        [&, pieceState, directionState, positionState]() {
+            futureState.pieceState = stringToPieceState(pieceState);
+            futureState.directionState = stringToDirectionState(directionState);
+            futureState.positionState = stringToPositionState(positionState);
+            }, // OnInit
+        [&](){
+            
+        }, //onExecute
+        [&](bool){}, // onEnd
+        [&](){ //isFinished
+            return ((std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
+            (std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND));
+        },
+        {}
+    );
+}
+
