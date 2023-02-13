@@ -53,7 +53,8 @@ class ValorAuto {
             {ValorAutoAction::TRAJECTORY, "trajectory"},
             {ValorAutoAction::RESET_ODOM, "reset_odom"},
             {ValorAutoAction::ACTION, "action"},
-            {ValorAutoAction::SPLIT, "split"}
+            {ValorAutoAction::SPLIT, "split"},
+            {ValorAutoAction::XMODE, "xmode"}
         };
 
         std::unordered_map<ValorAutoAction::Error, std::string> errorToStringMap = {
