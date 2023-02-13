@@ -138,6 +138,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     bool trajReversed = false;
     frc::Rotation2d last_angle;
 
+    int trajCount = 0;
+
     for (int i = 0; i < actions.size(); i ++){
         table->PutString("Action " + std::to_string(i), commandToStringMap[actions[i].type]);
         ValorAutoAction & action = actions[i];
@@ -170,7 +172,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     i++;
                     
                     frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-                    createTrajectoryDebugFile(trajectory, i);
+                    createTrajectoryDebugFile(trajectory, trajCount);
+                    trajCount++;
                     cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
                     trajPoses.clear();
 
@@ -196,7 +199,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 i++;
 
                 frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-                createTrajectoryDebugFile(trajectory, i);
+                createTrajectoryDebugFile(trajectory, trajCount);
+                trajCount++;
                 cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
                 trajPoses.clear();
             }
@@ -299,7 +303,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
             s_vel = actions[i - 1].vel;
         
         frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-        createTrajectoryDebugFile(trajectory, i);
+        createTrajectoryDebugFile(trajectory, trajCount);
+        trajCount++;
         cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
         trajPoses.empty();
     }
