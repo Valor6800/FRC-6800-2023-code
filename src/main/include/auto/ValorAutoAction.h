@@ -24,7 +24,8 @@ struct ValorAutoAction {
         RESET_ODOM,
         ACTION,
         SPLIT,
-        XMODE
+        XMODE,
+        ELEVARM
     } type;
 
     enum Error {
@@ -38,6 +39,7 @@ struct ValorAutoAction {
     bool reversed;
     std::string state;
     std::string value;
+    std::vector<std::string> values;
     
     int duration_ms;
 

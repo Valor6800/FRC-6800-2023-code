@@ -19,6 +19,9 @@
 #include <frc/geometry/Pose3d.h>
 #include <frc/geometry/Rotation3d.h>
 
+#include <frc2/command/FunctionalCommand.h>
+#include <unordered_map>
+
 /**
  * @brief Subsystem - Elevarm
  */
@@ -93,8 +96,8 @@ public:
         ELEVARM_LEGS
     };
 
-     struct x
-     {
+    struct x
+    {
         ElevarmPieceState pieceState;
         ElevarmDirectionState directionState;
         ElevarmPositionState positionState;
@@ -110,7 +113,42 @@ public:
         bool deadManEnabled;
         bool pitModeEnabled;
 
-     } futureState, previousState;
+    } futureState, previousState;
+
+    double heightDeadband, rotationDeadband;
+
+    frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string);
+
+    std::unordered_map<std::string, ElevarmPieceState> stringToPieceMap = {
+        {"cone", ElevarmPieceState::ELEVARM_CONE},
+        {"cube", ElevarmPieceState::ELEVARM_CUBE}
+    };
+    ElevarmPieceState stringToPieceState(std::string name){
+        return stringToPieceMap[name];
+    }
+
+    std::unordered_map<std::string, ElevarmDirectionState> stringToDirectionMap = {
+        {"front", ElevarmDirectionState::ELEVARM_FRONT},
+        {"back", ElevarmDirectionState::ELEVARM_BACK}
+    };
+    ElevarmDirectionState stringToDirectionState(std::string name){
+        return stringToDirectionMap[name];
+    }
+
+    std::unordered_map<std::string, ElevarmPositionState> stringToPositionMap = {
+        {"stow", ElevarmPositionState::ELEVARM_STOW},
+        {"ground", ElevarmPositionState::ELEVARM_GROUND},
+        {"player", ElevarmPositionState::ELEVARM_PLAYER},
+        {"mid", ElevarmPositionState::ELEVARM_MID},
+        {"high", ElevarmPositionState::ELEVARM_HIGH},
+        {"ground", ElevarmPositionState::ELEVARM_MANUAL},
+        {"snake", ElevarmPositionState::ELEVARM_SNAKE}
+    };
+    ElevarmPositionState stringToPositionState(std::string name){
+        if (!stringToPositionMap.contains(name))
+            return ElevarmPositionState::ELEVARM_GROUND;
+        return stringToPositionMap.at(name);
+    }
 
 private:
 

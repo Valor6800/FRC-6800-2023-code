@@ -293,6 +293,19 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     std::move(*(drivetrain->getSetXMode()))
                 );
             }
+            else if (action.type == ValorAutoAction::ELEVARM){
+                Elevarm::ElevarmPieceState pieceState = elevarm->stringToPieceState(action.values[0]);
+                Elevarm::ElevarmDirectionState directionState = elevarm->stringToDirectionState(action.values[1]);
+                Elevarm::ElevarmPositionState positionState = elevarm->stringToPositionState(action.values[2]);
+
+                cmdGroup->AddCommands(
+                    std::move(*elevarm->getAutoCommand(
+                        action.values[0],
+                        action.values[1],
+                        action.values[2]
+                    ))
+                );
+            }
         }
     }
 
