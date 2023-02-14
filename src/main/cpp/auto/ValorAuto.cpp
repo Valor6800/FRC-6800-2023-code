@@ -286,11 +286,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 */
             } else if (action.type == ValorAutoAction::Type::XMODE){
                 cmdGroup->AddCommands(
-                    frc2::InstantCommand(
-                        [&, action] {
-                            drivetrain->getSetXMode();
-                        }
-                    )
+                    std::move(*(drivetrain->getSetXMode()))
                 );
             }
         }

@@ -58,12 +58,11 @@ void Robot::AutonomousInit() {
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Brake);
     drivetrain.pullSwerveModuleZeroReference();
 
-    drivetrain.getSetXMode()->Schedule();
-    // autoCommand = autonomous.getCurrentAuto();
+    autoCommand = autonomous.getCurrentAuto();
 
-    // if (autoCommand != nullptr) {
-    //     autoCommand->Schedule();
-    // }
+    if (autoCommand != nullptr) {
+        autoCommand->Schedule();
+    }
 
     outfile.open("/home/lvuser/poseLog" + std::to_string(time(0)) + ".csv");
 }
