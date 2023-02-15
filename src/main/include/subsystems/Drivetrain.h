@@ -268,8 +268,6 @@ private:
      ValorPIDF yPIDF;
      ValorPIDF thetaPIDF;
 
-     frc::Pose2d translatePoseToCorner(frc::Pose2d);
-
      ValorVisionSensor vision;
 
      frc2::SwerveControllerCommand<4> *cmdGoToTag;
