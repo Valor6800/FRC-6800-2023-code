@@ -393,6 +393,13 @@ void Drivetrain::limelightHoming(){
     } 
 }
 
+frc2::InstantCommand* Drivetrain::getLimeHoming(){
+    frc2::InstantCommand* cmd_LimeLightHoming = new frc2::InstantCommand( [&] {
+        limelightHoming();
+    });
+    return cmd_LimeLightHoming;
+}
+
 double Drivetrain::getDriveMaxSpeed() {
     return driveMaxSpeed;
 }

@@ -56,7 +56,8 @@ class ValorAuto {
             {ValorAutoAction::ACTION, "action"},
             {ValorAutoAction::SPLIT, "split"},
             {ValorAutoAction::XMODE, "xmode"},
-            {ValorAutoAction::ACCELERATION, "acceleration"}
+            {ValorAutoAction::ACCELERATION, "acceleration"},
+            {ValorAutoAction::LIMEHOMING, "lime_homing"}
         };
 
         std::unordered_map<ValorAutoAction::Error, std::string> errorToStringMap = {

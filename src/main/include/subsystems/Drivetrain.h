@@ -197,6 +197,8 @@ public:
 
      void limelightHoming();
 
+     frc2::InstantCommand* getLimeHoming();
+
      double getDriveMaxSpeed();
      double getAutoMaxSpeed();
      double getAutoMaxAcceleration();
@@ -207,9 +209,9 @@ public:
 
      frc::ProfiledPIDController<units::angle::radians> & getThetaController();
 
-     ValorPIDF getXPIDF();
-     ValorPIDF getYPIDF();
-     ValorPIDF getThetaPIDF();
+                                             ValorPIDF getXPIDF();
+                                             ValorPIDF getYPIDF();
+                                             ValorPIDF getThetaPIDF();
 
      frc::TrajectoryConfig & getTrajectoryConfig();
 

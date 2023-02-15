@@ -59,6 +59,7 @@ void Robot::AutonomousInit() {
     drivetrain.pullSwerveModuleZeroReference();
 
     autoCommand = autonomous.getCurrentAuto();
+    // drivetrain.getLimeHoming()->Schedule();
 
     if (autoCommand != nullptr) {
         autoCommand->Schedule();
@@ -73,7 +74,7 @@ void Robot::AutonomousExit() {
 
 std::string makePoseLog(frc::Pose2d pose){
     return std::to_string(frc::Timer::GetFPGATimestamp().to<double>()) + "," + std::to_string(pose.X().to<double>()) + "," + std::to_string(pose.Y().to<double>()) + "," + std::to_string(pose.Rotation().Degrees().to<double>()) + "\n";
-}
+} 
 
 void Robot::AutonomousPeriodic(){
     outfile << makePoseLog(drivetrain.getPose_m());

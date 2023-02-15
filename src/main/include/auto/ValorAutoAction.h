@@ -26,7 +26,8 @@ struct ValorAutoAction {
         SPLIT,
         XMODE,
         ELEVARM,
-        ACCELERATION
+        ACCELERATION,
+        LIMEHOMING
     } type;
 
     enum Error {
