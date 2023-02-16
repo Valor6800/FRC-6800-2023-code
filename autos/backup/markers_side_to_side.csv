@@ -1,0 +1,12 @@
+reset_odom,markerA,0
+trajectory,markerA,markerD,0
+time,0
+trajectory,markerD,markerA,0
+time,0
+trajectory,markerA,markerD,0
+time,0
+trajectory,markerD,markerA,0
+time,0
+trajectory,markerA,markerD,0
+time,0
+trajectory,markerD,markerA,0
