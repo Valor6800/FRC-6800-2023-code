@@ -396,13 +396,25 @@ void Drivetrain::limelightHoming(){
     } 
 }
 
-frc2::InstantCommand* Drivetrain::getLimeHoming(){
-    frc2::InstantCommand* cmd_LimeLightHoming = new frc2::InstantCommand( [&] {
-        limelightHoming();
-    });
-    return cmd_LimeLightHoming;
+// frc2::InstantCommand* Drivetrain::getLimeHoming(){
+//     frc2::InstantCommand* cmd_LimeLightHoming = new frc2::InstantCommand( [&] {
+//         limelightHoming();
+//     });
+//     return cmd_LimeLightHoming;
+// }
+frc2::FunctionalCommand* Drivetrain::getLimeHoming(){
+    return new frc2::FunctionalCommand(
+        [&](){}, // OnInit
+        [&](){
+            limelightHoming();
+        }, //onExecute
+        [&](){}, // onEnd
+        [&](bool){
+            return abs(limeTable->GetNumber("tx",0))<2.0;
+        },//isFinished
+        {}
+    );
 }
-
 double Drivetrain::getDriveMaxSpeed() {
     return driveMaxSpeed;
 }

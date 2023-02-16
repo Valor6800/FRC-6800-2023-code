@@ -41,6 +41,7 @@
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/WaitCommand.h>
 #include <frc/TimedRobot.h>
+#include <frc2/command/FunctionalCommand.h>
 
 #include <ctre/phoenix/motorcontrol/NeutralMode.h>
 #include <rev/CANSparkMax.h>
@@ -197,7 +198,7 @@ public:
 
      void limelightHoming();
 
-     frc2::InstantCommand* getLimeHoming();
+     frc2::FunctionalCommand* getLimeHoming();
 
      double getDriveMaxSpeed();
      double getAutoMaxSpeed();
