@@ -91,7 +91,7 @@ bool ValorAuto::readPointsCSV(std::string filename){
         std::vector<std::string> items = ValorAutoAction::parseCSVLine(line);
 
         // empty or invalid line
-        if (items.size() != 3)
+        if (items.size() != 3 || (!items.empty() && items[0].starts_with("//")))
             continue;
 
         std::string name = items[0];
@@ -165,9 +165,9 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
                     double s_vel = 0, e_vel = 0;
                     i--;
-                    if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
+                    if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT)
                         s_vel = actions[i - 1].vel;
-                    if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT && actions[i + 2].type == ValorAutoAction::TRAJECTORY && actions[i + 2].reversed == actions[i].reversed)
+                    if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT)
                         e_vel = actions[i + 1].vel;
                     i++;
                     
@@ -192,9 +192,9 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
                 double s_vel = 0, e_vel = 0;
                 i--;
-                if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
+                if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT)
                     s_vel = actions[i - 1].vel;
-                if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT && actions[i + 2].type == ValorAutoAction::TRAJECTORY && actions[i + 2].reversed == actions[i].reversed)
+                if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT)
                     e_vel = actions[i + 1].vel;
                 i++;
 
@@ -312,7 +312,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     if (trajPoses.size() != 0){
         int i = actions.size() - 1;
         double s_vel = 0, e_vel = 0;
-        if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT && actions[i - 2].type == ValorAutoAction::TRAJECTORY && actions[i - 2].reversed == actions[i].reversed)
+        if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT)
             s_vel = actions[i - 1].vel;
         
         frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);

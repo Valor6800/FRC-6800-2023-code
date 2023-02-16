@@ -17,7 +17,7 @@
 #define KDX 0.0f //.1
 #define KFX 0.0f
 
-#define KPY 60.0f //.75
+#define KPY 65.0f //.75
 #define KIY 0.0f //0
 #define KDY 0.0f //.1
 #define KFY 0.0f
@@ -48,7 +48,7 @@
 #define DRIVE_GEAR_RATIO 5.51f
 #define AZIMUTH_GEAR_RATIO 13.37f
 #define AUTO_MAX_SPEED 10.0f
-#define AUTO_MAX_ACCEL 1.5f //3.0
+#define AUTO_MAX_ACCEL 2.25f //3.0
 #define ROT_SPEED_MUL 2.0f
 
 #define AUTO_VISION_THRESHOLD 5.0f //meters
