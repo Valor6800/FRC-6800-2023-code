@@ -102,7 +102,7 @@ public:
         double manualCarriage;
         double manualArm;
 
-
+        bool stowFirst;
 
         Positions targetPose;
         frc::Pose3d resultKinematics;
@@ -135,6 +135,9 @@ private:
     Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions, ElevarmDirectionState); 
     frc::Pose3d forwardKinematics(Positions positions);
     Positions detectionBoxManual(double, double);
+
+    bool carriageAtTarget();
+    bool armAtTarget();
 
     Intake *intake;
      
