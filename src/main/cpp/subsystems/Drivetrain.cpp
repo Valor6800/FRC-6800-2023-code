@@ -11,6 +11,7 @@
 #define TXRANGE  30.0f
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
+// #define KPLIMELIGHT .25f
 
 #define KPX 50.0f //.75
 #define KIX 0.0f //0
@@ -180,6 +181,8 @@ void Drivetrain::init()
     table->PutBoolean("Save Swerve Mag Encoder", false);
     table->PutBoolean("Load Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
+
+    table->PutNumber("KPLIMELIGHT",KPLIMELIGHT);
 
     resetState();
 }

@@ -246,6 +246,11 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     };
                 }
                 */ 
+                if (action.state == "drivetrain"){
+                    func = [&, action] {
+                        drivetrain->state.limehoming = action.value == "lime_homing";
+                    };
+                }
                 currentGroup->AddCommands(frc2::InstantCommand(func));
             }
             else if (action.type == ValorAutoAction::Type::TIME){
