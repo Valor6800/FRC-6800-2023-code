@@ -1,0 +1,15 @@
+reset_odom,wallBox,180
+cone_score
+trajectory,wallBox,gladosNear,180,reversed
+split
+trajectory,gladosNear,gladosFar,0,reversed
+trajectory,gladosFar,doug,0
+pickup
+trajectory,doug,gladosNear,180,reversed
+split
+trajectory,gladosNear,wallLeft,180
+cube_score
+trajectory,wallLeft,gladosAlpha,180,reversed
+trajectory,gladosAlpha,gladosFar,180,reversed
+split,1.857
+trajectory,gladosFar,chargeFar,270,reversed
