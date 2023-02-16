@@ -1,0 +1,6 @@
+state, elevarm, high
+action, wait_1sec
+state, intake, cube, outtake_cube
+action, wait_1sec
+state, intake, cube, disabled
+state, elevarm, snake
