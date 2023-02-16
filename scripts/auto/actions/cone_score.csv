@@ -1,0 +1,5 @@
+elevarm,cone,front,high
+state,intake,cone,outtake_cone
+action,wait_0.1sec
+state,intake,cone,disabled
+elevarm,cone,front,snake
