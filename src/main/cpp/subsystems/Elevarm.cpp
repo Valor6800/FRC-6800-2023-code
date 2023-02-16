@@ -48,7 +48,7 @@
 #define Z_INTAKE_OFFSET 0.03f
 
 // #define X_CHASSIS_FRONT_BOUND 0.0f
-#define X_CHASSIS_FRONT_BOUND 0.1f
+#define X_CHASSIS_FRONT_BOUND 0.2f
 // #define X_CHASSIS_BACK_BOUND  -0.6604f
 #define X_CHASSIS_BACK_BOUND  -0.8604f
 #define Z_FORK 0.465f
@@ -211,7 +211,7 @@ void Elevarm::analyzeDashboard()
 
 void Elevarm::assignOutputs()
 {    
-    if (futureState.directionState != previousState.directionState && robot->IsTeleop()) {
+    if (futureState.directionState != previousState.directionState) {
         futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
     }
 
@@ -224,6 +224,7 @@ void Elevarm::assignOutputs()
                 futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
     }
 
+    table->PutBoolean("going from stow to not stow", false);
     
 
     if ((futureState.deadManEnabled && futureState.pitModeEnabled) || !futureState.pitModeEnabled) {
@@ -237,10 +238,12 @@ void Elevarm::assignOutputs()
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
             if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && (futureState.positionState != ElevarmPositionState::ELEVARM_STOW )) {
-                if (std::fabs(armRotateMotor.getPosition()) > minAngle()){
+                table->PutBoolean("going from stow to not stow", true);
+                if (std::fabs(armRotateMotor.getPosition()) > minAngle() && minFloorAngle()){
                     carriageMotors.setPosition(futureState.targetPose.h);
                 } else {
                     carriageMotors.setPower(carriageStallPower);
+
                 }
                 armRotateMotor.setPosition(futureState.targetPose.theta);
             } else if (previousState.positionState == ElevarmPositionState::ELEVARM_GROUND && futureState.positionState == ElevarmPositionState::ELEVARM_STOW){
@@ -250,32 +253,25 @@ void Elevarm::assignOutputs()
                     armRotateMotor.setPower(0.0);
                 }
                 carriageMotors.setPosition(futureState.targetPose.h);
-            } else if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && ( futureState.positionState == ElevarmPositionState::ELEVARM_MID || futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_SNAKE)) {
-                if (std::fabs(armRotateMotor.getPosition()) > 90.0){
-                    carriageMotors.setPosition(futureState.targetPose.h);
-                } else {
-                    carriageMotors.setPower(carriageStallPower);
-                }
-                armRotateMotor.setPosition(futureState.targetPose.theta);
             } else {            
                 carriageMotors.setPosition(futureState.targetPose.h);
                 armRotateMotor.setPosition(futureState.targetPose.theta);
             }
             
-            if (std::abs(carriageMotors.getPosition() - futureState.targetPose.h) <= PREVIOUS_HEIGHT_DEADBAND) {
+            if (std::fabs(carriageMotors.getPosition() - futureState.targetPose.h) <= PREVIOUS_HEIGHT_DEADBAND) {
                 carriageMotors.setPower(carriageStallPower);
             } 
 
-            previousState = ((std::abs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
-            (std::abs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
+            previousState = ((std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
+            (std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
             
         }
             
     } else {
         carriageMotors.setPower(carriageStallPower);
         armRotateMotor.setPower(0);
-        previousState = ((std::abs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
-        (std::abs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
+        previousState = ((std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
+        (std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
     }
 }
 double Elevarm::minAngle()
@@ -285,6 +281,11 @@ double Elevarm::minAngle()
     double Zs = Z_FORK;
     double Xs = armRotateMotor.getPosition() > 0 ? X_CHASSIS_FRONT_BOUND : X_CHASSIS_BACK_BOUND;
     return std::fabs(atan2(Xs - Xt, Zt - Zs) * 180.0 / M_PI);
+}
+
+bool Elevarm::minFloorAngle()
+{
+    return (futureState.resultKinematics.Z().to<double>() - Z_INTAKE_OFFSET) > 0.5;
 }
 
 Elevarm::Positions Elevarm::detectionBoxManual(double carriage, double arm) {
@@ -428,19 +429,49 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
         [this]{ return futureState.targetPose.theta; },
         nullptr
     );
+        builder.AddDoubleProperty(
+        "Min Floor Angle",
+        [this]{ return minFloorAngle(); },
+        nullptr
+    );
+        builder.AddDoubleProperty(
+        "Min Angle",
+        [this]{ return minAngle(); },
+        nullptr
+    );
+        builder.AddDoubleProperty(
+        "Forward Kinematics Z",
+        [this]{ return futureState.resultKinematics.Z().to<double>(); },
+        nullptr
+    );
+        builder.AddDoubleProperty(
+        "Forward Kinematics X",
+        [this]{ return futureState.resultKinematics.X().to<double>(); },
+        nullptr
+    );
+    builder.AddBooleanProperty(
+        "going from stow",
+        [this]{ return table->GetBoolean("going from stow to not stow", false); },
+        nullptr
+    );
+        
 }
 
 frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState){
     return new frc2::FunctionalCommand(
-        [&, pieceState, directionState, positionState]() {
+        // OnInit
+        [&]() {
+            
+            }, 
+        //onExecute
+        [&, pieceState, directionState, positionState](){
             futureState.pieceState = stringToPieceState(pieceState);
             futureState.directionState = stringToDirectionState(directionState);
             futureState.positionState = stringToPositionState(positionState);
-            }, // OnInit
-        [&](){
-            
-        }, //onExecute
-        [&](bool){}, // onEnd
+        }, 
+        [&](bool){
+            previousState = futureState;
+        }, // onEnd
         [&](){ //isFinished
             return ((std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
             (std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND));
