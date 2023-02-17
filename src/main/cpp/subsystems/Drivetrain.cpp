@@ -387,8 +387,8 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT
 void Drivetrain::limelightHoming(){
     limeTable->PutNumber("pipeline", 1);
     if (limeTable->GetNumber("tv", 0) == 1){
-        state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) * rotMaxSpeed) / KLIMELIGHT);
-    }
+        state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * LimelightConstants::KP_LIME_LIGHT) * rotMaxSpeed);
+    } 
 }
 
 double Drivetrain::getDriveMaxSpeed() {
