@@ -25,7 +25,8 @@ struct ValorAutoAction {
         ACTION,
         SPLIT,
         XMODE,
-        ELEVARM
+        ELEVARM,
+        ACCELERATION
     } type;
 
     enum Error {
@@ -48,6 +49,7 @@ struct ValorAutoAction {
     std::string name;
     
     double vel;
+    double maxAccel;
     
 public:
     static std::vector<std::string> parseCSVLine(std::string);

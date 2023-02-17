@@ -48,7 +48,7 @@
 #define DRIVE_GEAR_RATIO 5.51f
 #define AZIMUTH_GEAR_RATIO 13.37f
 #define AUTO_MAX_SPEED 10.0f
-#define AUTO_MAX_ACCEL 2.25f //3.0
+#define AUTO_MAX_ACCEL 1.5f //3.0
 #define ROT_SPEED_MUL 2.0f
 
 #define AUTO_VISION_THRESHOLD 5.0f //meters
@@ -71,7 +71,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         initPositions(wpi::empty_array),
                         kinematics(NULL),
                         estimator(NULL),
-                        config(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel}),
+                        config(NULL),
                         thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})},
                         swerveNoError(true)
 {
@@ -90,6 +90,7 @@ Drivetrain::~Drivetrain()
 
     delete kinematics;
     delete estimator;
+    delete config;
 }
 
 void Drivetrain::configSwerveModule(int i)
@@ -158,6 +159,7 @@ void Drivetrain::init()
 
     kinematics = new frc::SwerveDriveKinematics<SWERVE_COUNT>(motorLocations);
     estimator = new frc::SwerveDrivePoseEstimator<SWERVE_COUNT>(*kinematics, pigeon.GetRotation2d(), initPositions, frc::Pose2d{0_m, 0_m, 0_rad});
+    config = new frc::TrajectoryConfig(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel});
 
     xPIDF.P = KPX;
     xPIDF.I = KIX;
@@ -403,6 +405,7 @@ double Drivetrain::getAutoMaxAcceleration() {
     return autoMaxAccel;
 }
 
+
 double Drivetrain::getRotationMaxSpeed() {
     return rotMaxSpeed;
 }
@@ -415,8 +418,8 @@ frc::ProfiledPIDController<units::angle::radians> & Drivetrain::getThetaControll
     return thetaController;
 }
 
-frc::TrajectoryConfig & Drivetrain::getTrajectoryConfig() {
-    return config;
+frc::TrajectoryConfig & Drivetrain::getTrajectoryConfig() {    
+    return *config;
 }
 
 ValorPIDF Drivetrain::getXPIDF() {
@@ -425,6 +428,11 @@ ValorPIDF Drivetrain::getXPIDF() {
 
 ValorPIDF  Drivetrain::getYPIDF() {
     return yPIDF;
+}
+
+void Drivetrain::setAutoMaxAcceleration(double acceleration)  {
+    autoMaxAccel = (acceleration == NULL ? AUTO_MAX_ACCEL : acceleration);
+    config = new frc::TrajectoryConfig(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel});
 }
 
 void Drivetrain::setXMode(){

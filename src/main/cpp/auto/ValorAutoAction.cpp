@@ -50,6 +50,8 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         type = ValorAutoAction::Type::XMODE;
     } else if (items[0] == "elevarm"){
         type = ValorAutoAction::ELEVARM;
+    } else if (items[0] == "acceleration" || items[0] == "accel") {
+        type = ValorAutoAction::Type::ACCELERATION;
     }
 
     if (type == ValorAutoAction::Type::TIME) {
@@ -118,5 +120,11 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         if (items.size() < 4)
             error = ValorAutoAction::SIZE_MISMATCH;
         values = {items[1], items[2], items[3]};
+    } else if (type == ValorAutoAction::Type::ACCELERATION) {
+        if (items.size() > 1){
+            maxAccel = stod(items[1]);
+        }
+        else
+            maxAccel = NULL;
     }
 }
