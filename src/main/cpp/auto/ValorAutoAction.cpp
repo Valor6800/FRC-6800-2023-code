@@ -124,7 +124,7 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             error = ValorAutoAction::SIZE_MISMATCH;
         values = {items[1], items[2], items[3]};
     } else if (type == ValorAutoAction::Type::ACCELERATION) {
-        if (items.size() > 1){
+        if (items.size() == 2){
             maxAccel = stod(items[1]);
         }
         else
