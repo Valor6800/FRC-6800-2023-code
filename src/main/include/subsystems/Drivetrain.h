@@ -203,6 +203,8 @@ public:
      double getRotationMaxSpeed();
      double getRotationMaxAcceleration();
 
+     void setAutoMaxAcceleration(double acceleration);
+
      frc::ProfiledPIDController<units::angle::radians> & getThetaController();
 
      ValorPIDF getXPIDF();
@@ -248,7 +250,7 @@ private:
      frc::SwerveDriveKinematics<SWERVE_COUNT> * kinematics;
      frc::SwerveDrivePoseEstimator<SWERVE_COUNT> * estimator;
 
-     frc::TrajectoryConfig config;
+     frc::TrajectoryConfig * config;
 
      frc::ProfiledPIDController<units::radians> thetaController;
 
