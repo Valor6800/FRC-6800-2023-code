@@ -430,8 +430,8 @@ ValorPIDF  Drivetrain::getYPIDF() {
     return yPIDF;
 }
 
-void Drivetrain::setAutoMaxAcceleration(double acceleration)  {
-    autoMaxAccel = (acceleration == NULL ? AUTO_MAX_ACCEL : acceleration);
+void Drivetrain::setAutoMaxAcceleration(double acceleration, double multiplier)  {
+    autoMaxAccel = multiplier * (acceleration == NULL ? AUTO_MAX_ACCEL : acceleration);
     config = new frc::TrajectoryConfig(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel});
 }
 
