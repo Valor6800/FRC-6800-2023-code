@@ -182,8 +182,6 @@ void Drivetrain::init()
     table->PutBoolean("Load Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
 
-    table->PutNumber("KPLIMELIGHT",KPLIMELIGHT);
-
     resetState();
 }
 
@@ -408,8 +406,8 @@ frc2::FunctionalCommand* Drivetrain::getLimeHoming(){
         [&](){
             limelightHoming();
         }, //onExecute
-        [&](){}, // onEnd
-        [&](bool){
+        [&](bool){}, // onEnd
+        [&](){
             return abs(limeTable->GetNumber("tx",0))<2.0;
         },//isFinished
         {}
