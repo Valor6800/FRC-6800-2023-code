@@ -110,7 +110,10 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         // Code to load commands into the action is handled in ValorAuto
     }
     else if (type == ValorAutoAction::Type::SPLIT){
-        if (items.size() > 1){
+        
+        if (items.size() == 3 && items[2] == "multiplier"){
+            vel = stod(items[1]) * TRANS_VELOCITY;
+        } else if (items.size() == 2){
             vel = stod(items[1]);
         }
         else
@@ -126,5 +129,10 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         }
         else
             maxAccel = NULL;
+        
+        if (items.size() == 3 && items[2] == "multiplier")
+            accelMultiplier = stod(items[1]);
+        else
+            accelMultiplier = 1.0;
     }
 }

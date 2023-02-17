@@ -172,7 +172,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     i++;
 
                     if (i >= 2 && actions[i - 1].type == ValorAutoAction::ACCELERATION)
-                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel);
+                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel, actions[i - 1].accelMultiplier);
                     
                     frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
                     createTrajectoryDebugFile(trajectory, trajCount);
@@ -202,7 +202,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 i++;
 
                 if (i >= 2 && actions[i - 1].type == ValorAutoAction::ACCELERATION)
-                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel);
+                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel, actions[i - 1].accelMultiplier);
 
                 frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
                 createTrajectoryDebugFile(trajectory, trajCount);
@@ -322,7 +322,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
             s_vel = actions[i - 1].vel;
 
         if (i >= 2 && actions[i - 1].type == ValorAutoAction::ACCELERATION)
-                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel);
+                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel, actions[i - 1].accelMultiplier);
         
         frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
         createTrajectoryDebugFile(trajectory, trajCount);

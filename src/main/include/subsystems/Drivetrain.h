@@ -203,7 +203,7 @@ public:
      double getRotationMaxSpeed();
      double getRotationMaxAcceleration();
 
-     void setAutoMaxAcceleration(double acceleration);
+     void setAutoMaxAcceleration(double acceleration, double multiplier);
 
      frc::ProfiledPIDController<units::angle::radians> & getThetaController();
 

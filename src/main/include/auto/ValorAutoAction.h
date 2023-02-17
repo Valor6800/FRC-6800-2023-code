@@ -50,6 +50,7 @@ struct ValorAutoAction {
     
     double vel;
     double maxAccel;
+    double accelMultiplier;
     
 public:
     static std::vector<std::string> parseCSVLine(std::string);
