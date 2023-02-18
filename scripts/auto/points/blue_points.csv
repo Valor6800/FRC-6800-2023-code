@@ -3,12 +3,12 @@
 barrierLeft,1.9,5.03
 barrierBox,1.78,4.45
 barrierRight,1.9,3.87
-coopLeft,1.78,3.28
-coopBox,1.78,2.75
-coopRight,1.78,2.22
-wallLeft,1.83,1.65
-wallBox,1.78,1.07
-wallRight,1.83,0.56
+coopLeft,1.9,3.27
+coopBox,1.78,2.78
+coopRight,1.9,2.29
+wallLeft,1.9,1.69
+wallBox,1.78,1.11
+wallRight,1.9,0.53
 
 cave,7.07,4.58
 wheatley,7.07,3.36
@@ -19,10 +19,10 @@ chellFar,5.0,4.69
 chell,3.93,4.68
 chellNear,2.855,4.67
 
-gladosFar,5.0,0.79
-glados,3.93,0.78
-gladosAlpha,3.325,0.78
-gladosNear,2.855,0.77
+gladosFar,5.0,0.76
+glados,3.93,0.77
+gladosAlpha,3.325,0.77
+gladosNear,2.855,0.78
 
 chargeFarLeft,6.0,3.12
 chargeFarRight,6.0,2.12
