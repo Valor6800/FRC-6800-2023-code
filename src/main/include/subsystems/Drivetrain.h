@@ -41,6 +41,7 @@
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/WaitCommand.h>
 #include <frc/TimedRobot.h>
+#include <frc2/command/FunctionalCommand.h>
 
 #include <ctre/phoenix/motorcontrol/NeutralMode.h>
 #include <rev/CANSparkMax.h>
@@ -117,6 +118,8 @@ public:
 
           bool limehoming;
           bool xPose;
+
+          bool isLeveled;
 
           int trackingID;
           double visionOdomDiff;
@@ -196,6 +199,9 @@ public:
      frc::SwerveDriveKinematics<SWERVE_COUNT>* getKinematics();
 
      void limelightHoming();
+     
+     frc2::FunctionalCommand* getAutoLevel();
+
 
      double getDriveMaxSpeed();
      double getAutoMaxSpeed();
