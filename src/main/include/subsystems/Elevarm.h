@@ -117,7 +117,7 @@ public:
 
     double heightDeadband, rotationDeadband;
 
-    frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string);
+    frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string, bool);
 
     std::unordered_map<std::string, ElevarmPieceState> stringToPieceMap = {
         {"cone", ElevarmPieceState::ELEVARM_CONE},

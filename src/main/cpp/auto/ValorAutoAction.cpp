@@ -30,6 +30,7 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
 {
     std::vector<std::string> items = parseCSVLine(line);
     error = ValorAutoAction::Error::NONE_ERROR;
+    error_message = "";
     
     if (items.empty() || (!items.empty() && items[0].starts_with("//"))) {
         type = ValorAutoAction::Type::NONE;
@@ -57,6 +58,7 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
     if (type == ValorAutoAction::Type::TIME) {
         if (items.size() < 2) {
             error = ValorAutoAction::Error::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
             return;
         }
         duration_ms = atoi(items[1].c_str());
@@ -73,11 +75,13 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
     else if (type == ValorAutoAction::Type::TRAJECTORY) {
         if (items.size() < 4) {
             error = ValorAutoAction::Error::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
             return;
         }
 
         if (points->count(items[1]) == 0 || points->count(items[2]) == 0) {
             error = ValorAutoAction::Error::POINT_MISSING;
+            error_message = items[1] + " or " + items[2];
             return;
         }
 
@@ -97,6 +101,7 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
     else if (type == ValorAutoAction::Type::RESET_ODOM){
         if (items.size() < 3){
             error = ValorAutoAction::Error::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
             return;
         }
         auto _start = points->at(items[1]);
@@ -105,9 +110,14 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
     else if (type == ValorAutoAction::Type::ACTION){
         if (items.size() < 2){
             error = ValorAutoAction::Error::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
+            return;
         }
         name = items[1];
+        if (items.size() >= 3)
+            parallel = items[2] == "parallel";
         // Code to load commands into the action is handled in ValorAuto
+        vel = TRANS_VELOCITY; // when the action acts as a split
     }
     else if (type == ValorAutoAction::Type::SPLIT){
         
@@ -120,9 +130,16 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             vel = TRANS_VELOCITY;
     }
     else if (type == ValorAutoAction::ELEVARM){
-        if (items.size() < 4)
+        if (items.size() < 4){
             error = ValorAutoAction::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
+            return;
+        }
+            
         values = {items[1], items[2], items[3]};
+        parallel = false;
+        if (items.size() >= 5)
+            parallel = items[4] == "parallel";
     } else if (type == ValorAutoAction::Type::ACCELERATION) {
         if (items.size() == 2){
             maxAccel = stod(items[1]);
