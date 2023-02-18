@@ -50,15 +50,9 @@
 // #define X_CHASSIS_FRONT_BOUND 0.0f
 #define X_CHASSIS_FRONT_BOUND 0.1f
 // #define X_CHASSIS_BACK_BOUND  -0.6604f
-<<<<<<< HEAD
-#define X_CHASSIS_BACK_BOUND  -0.65f
-#define Z_FORK 0.35f
-#define Z_GROUND 0.45f
-=======
 #define X_CHASSIS_BACK_BOUND  -0.8604f
 #define Z_FORK 0.35f
 #define Z_GROUND 0.1f
->>>>>>> 27dde8c (fixed manual)
 
 #define P_MIN_CARRIAGE 0.0125f
 #define P_MIN_ARM 0.0125f
