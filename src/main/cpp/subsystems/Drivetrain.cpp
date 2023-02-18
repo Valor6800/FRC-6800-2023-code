@@ -393,6 +393,30 @@ void Drivetrain::limelightHoming(){
     } 
 }
 
+frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
+    return new frc2::FunctionalCommand(
+        [&](){}, // OnInit
+        [&](){
+            static bool abovePitchThreshold = false;
+            if (pigeon.GetPitch() > 5.0) {
+                abovePitchThreshold = true;
+            } else if (abovePitchThreshold && pigeon.GetPitch() < 2.0) {
+                state.isLeveled = true;
+            } else {
+                state.xSpeedMPS = -0.3_mps;
+            }
+        }, //onExecute
+        [&](bool){
+            state.xSpeedMPS = 0.0_mps;
+        }, // onEnd
+        [&](){
+            return state.isLeveled;
+        },//isFinished
+        {}
+    );
+}
+
+
 double Drivetrain::getDriveMaxSpeed() {
     return driveMaxSpeed;
 }
