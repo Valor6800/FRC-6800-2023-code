@@ -53,6 +53,8 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         type = ValorAutoAction::ELEVARM;
     } else if (items[0] == "acceleration" || items[0] == "accel") {
         type = ValorAutoAction::Type::ACCELERATION;
+    } else if (items[0] == "balance") {
+        type = ValorAutoAction::BALANCE;
     }
 
     if (type == ValorAutoAction::Type::TIME) {
@@ -151,5 +153,7 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             accelMultiplier = stod(items[1]);
         else
             accelMultiplier = 1.0;
+    } else if (type == ValorAutoAction::BALANCE){
+        
     }
 }

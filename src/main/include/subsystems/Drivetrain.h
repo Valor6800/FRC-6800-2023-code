@@ -120,6 +120,7 @@ public:
           bool xPose;
 
           bool isLeveled;
+          bool abovePitchThreshold;
 
           int trackingID;
           double visionOdomDiff;
