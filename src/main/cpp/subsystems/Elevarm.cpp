@@ -8,11 +8,10 @@
 #include <iostream>
 
 
-#define ROTATE_GEAR_RATIO 143.73f
-#define ROTATE_OUTPUT_DIAMETER 0.1334516f
+#define ROTATE_GEAR_RATIO 74.25f
 #define CARRIAGE_GEAR_RATIO 4.0f
 #define CARRAIAGE_OUTPUT_DIAMETER 0.0364f
-#define CARRIAGE_UPPER_LIMIT 1.05f 
+#define CARRIAGE_UPPER_LIMIT 1.00f 
 #define CARRIAGE_LOWER_LIMIT 0.07f
 #define ROTATE_FORWARD_LIMIT 180.0f
 #define ROTATE_REVERSE_LIMIT -180.0f
@@ -36,16 +35,16 @@
 #define PREVIOUS_HEIGHT_DEADBAND 0.02f
 #define PREVIOUS_ROTATION_DEADBAND 2.0f
 
-#define X_BUMPER_WIDTH 0.0762f
-#define X_HALF_WIDTH 0.254f
-#define X_CARRIAGE_OFFSET 0.1778f
-#define X_ARM_LENGTH 1.01854f
-#define X_INTAKE_FORWARD_OFFSET 0.0f  // 0.2450338f
-#define X_INTAKE_REVERSE_OFFSET 0.0f  // 0.126285117f
+#define X_BUMPER_WIDTH 0.0984f
+#define X_HALF_WIDTH 0.2921f
+#define X_CARRIAGE_OFFSET 0.121f
+#define X_ARM_LENGTH 0.84455f
+#define X_INTAKE_FORWARD_OFFSET 0.254f
+#define X_INTAKE_REVERSE_OFFSET 0.127f
 
-#define Z_CARRIAGE_JOINT_OFFSET 0.0724154f
-#define Z_CARRIAGE_FLOOR_OFFSET 0.2286f
-#define Z_INTAKE_OFFSET 0.03f
+#define Z_CARRIAGE_JOINT_OFFSET 0.1651f
+#define Z_CARRIAGE_FLOOR_OFFSET 0.230f
+#define Z_INTAKE_OFFSET 0.1143f
 
 // #define X_CHASSIS_FRONT_BOUND 0.0f
 #define X_CHASSIS_FRONT_BOUND 0.1f
@@ -56,8 +55,6 @@
 
 #define P_MIN_CARRIAGE 0.0125f
 #define P_MIN_ARM 0.0125f
-
-
 
 Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_robot, "Elevarm"),                        
                             intake(_intake),
