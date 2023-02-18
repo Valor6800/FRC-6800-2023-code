@@ -213,6 +213,11 @@ void Elevarm::assignOutputs()
 {    
     bool inTransition = futureState.directionState != previousState.directionState;
 
+    if (robot->IsAutonomous() && previousState.positionState == ElevarmPositionState::ELEVARM_GROUND && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
+        futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+        futureState.directionState = ElevarmDirectionState::ELEVARM_FRONT;
+    }
+
     if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW || inTransition) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, ElevarmDirectionState::ELEVARM_FRONT);
     } else {

@@ -1,5 +1,5 @@
 elevarm,cube,front,high
-state,intake,cube,outtake_cube
-action,wait_0.1sec
-state,intake,cube,disabled
+//state,intake,cube,outtake_cube
+time,100
+//state,intake,cube,disabled
 elevarm,cube,front,snake
