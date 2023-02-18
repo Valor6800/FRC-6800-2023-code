@@ -1,0 +1,11 @@
+reset_odom,barrierBox,180
+cone_score
+trajectory,barrierBox,chell,180,reversed
+trajectory,chell,cave,180,reversed
+pickup
+trajectory,cave,barrierLeft,180
+cube_score
+trajectory,barrierLeft,chell,180,reversed
+trajectory,chell,chellFar,135,reversed
+split,1.857
+trajectory,chellFar,chargeFar,90,reversed

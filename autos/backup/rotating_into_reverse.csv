@@ -1,0 +1,9 @@
+reset_odom,scoringA1,180
+trajectory,scoringA1,markerA,180,reversed
+time,3000
+trajectory,markerA,scoringA1,0,reversed
+time,3000
+trajectory,scoringA1,markerA,180,reversed
+time,3000
+trajectory,markerA,scoringA1,0,reversed
+time,3000
