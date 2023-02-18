@@ -395,19 +395,30 @@ void Drivetrain::limelightHoming(){
 
 frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
     return new frc2::FunctionalCommand(
-        [&](){}, // OnInit
         [&](){
-            static bool abovePitchThreshold = false;
-            if (pigeon.GetPitch() > 5.0) {
-                abovePitchThreshold = true;
-            } else if (abovePitchThreshold && pigeon.GetPitch() < 2.0) {
-                state.isLeveled = true;
+            state.abovePitchThreshold = false;
+            state.isLeveled = false;
+        }, // OnInit
+        [&](){
+            //if (pigeon.GetPitch() < -15.0){state.xSpeed = -0.5;}
+            if (pigeon.GetPitch() < -25.0) {
+                state.abovePitchThreshold = true;
+                state.xSpeed = -0.4;
+            } else if (state.abovePitchThreshold) {
+                if (pigeon.GetPitch()> -8.0 ){
+                    state.isLeveled = true;
+                    state.xSpeed = 0.0;
+                }else if(pigeon.GetPitch()> -16){
+                    state.xSpeed = -0.15;
+                }else{
+                    state.xSpeed = -0.4;
+                }
             } else {
-                state.xSpeedMPS = -0.3_mps;
+                state.xSpeed = -0.4;
             }
         }, //onExecute
         [&](bool){
-            state.xSpeedMPS = 0.0_mps;
+            state.xSpeed = 0.0;
         }, // onEnd
         [&](){
             return state.isLeveled;
@@ -565,6 +576,14 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
                 pose.push_back(getPose_m().Y().to<double>());
                 pose.push_back(getPose_m().Rotation().Degrees().to<double>());
                 return pose;
+            },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "pigeonPitch",
+            [this]
+            {
+                return pigeon.GetPitch();
             },
             nullptr
         );
