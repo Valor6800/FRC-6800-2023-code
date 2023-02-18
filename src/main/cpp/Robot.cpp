@@ -59,7 +59,6 @@ void Robot::AutonomousInit() {
     drivetrain.pullSwerveModuleZeroReference();
 
     autoCommand = autonomous.getCurrentAuto();
-    // drivetrain.getLimeHoming()->Schedule();
 
     if (autoCommand != nullptr) {
         autoCommand->Schedule();

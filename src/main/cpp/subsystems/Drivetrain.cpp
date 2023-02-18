@@ -11,7 +11,7 @@
 #define TXRANGE  30.0f
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
-// #define KPLIMELIGHT .25f
+#define KPLIMELIGHT 1.25f
 
 #define KPX 50.0f //.75
 #define KIX 0.0f //0
@@ -390,16 +390,10 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT
 void Drivetrain::limelightHoming(){
     limeTable->PutNumber("pipeline", 1);
     if (limeTable->GetNumber("tv", 0) == 1){
-        state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * LimelightConstants::KP_LIME_LIGHT) * rotMaxSpeed);
+        state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * KPLIMELIGHT) * rotMaxSpeed);
     } 
 }
 
-// frc2::InstantCommand* Drivetrain::getLimeHoming(){
-//     frc2::InstantCommand* cmd_LimeLightHoming = new frc2::InstantCommand( [&] {
-//         limelightHoming();
-//     });
-//     return cmd_LimeLightHoming;
-// }
 frc2::FunctionalCommand* Drivetrain::getLimeHoming(){
     return new frc2::FunctionalCommand(
         [&](){}, // OnInit

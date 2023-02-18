@@ -39,7 +39,6 @@ namespace LimelightConstants {
     constexpr static int LED_MODE_OFF = 1;
     constexpr static int TRACK_MODE_ON = 0;
     constexpr static int TRACK_MODE_OFF = 1;
-    constexpr static double KP_LIME_LIGHT = 1.25;
 }
 
 namespace DIOPorts {
