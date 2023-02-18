@@ -1,7 +1,7 @@
 reset_odom,wallBox,180
 trajectory,wallBox,glados,180,reversed
-trajectory,glados,cave,180,reversed
-trajectory,cave,glados,180
+trajectory,glados,doug,180,reversed
+trajectory,doug,glados,180
 trajectory,glados,wallLeft,180
 trajectory,wallLeft,glados,180,reversed
 trajectory,glados,gladosFar,180,reversed
