@@ -163,7 +163,7 @@ private:
      * 
      * @return double Minimum angle in degrees
      */
-    double minAngle();
+    double minAngle(bool);
     bool minFloorAngle();
 
      ValorNeoController carriageMotors;
