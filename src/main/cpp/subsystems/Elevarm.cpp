@@ -50,9 +50,15 @@
 // #define X_CHASSIS_FRONT_BOUND 0.0f
 #define X_CHASSIS_FRONT_BOUND 0.1f
 // #define X_CHASSIS_BACK_BOUND  -0.6604f
+<<<<<<< HEAD
 #define X_CHASSIS_BACK_BOUND  -0.65f
 #define Z_FORK 0.35f
 #define Z_GROUND 0.45f
+=======
+#define X_CHASSIS_BACK_BOUND  -0.8604f
+#define Z_FORK 0.35f
+#define Z_GROUND 0.1f
+>>>>>>> 27dde8c (fixed manual)
 
 #define P_MIN_CARRIAGE 0.0125f
 #define P_MIN_ARM 0.0125f
@@ -161,6 +167,8 @@ void Elevarm::assessInputs()
     if (operatorGamepad->leftStickYActive() || operatorGamepad->rightStickYActive()) {
         futureState.manualCarriage = operatorGamepad->leftStickY() * manualMaxCarriageSpeed;
         futureState.manualArm = operatorGamepad->rightStickY() * manualMaxArmSpeed;
+        table->PutNumber("L stick Y", futureState.manualCarriage);
+        table->PutNumber("R stick X", futureState.manualArm);
         futureState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
     } else if (operatorGamepad->GetRightBumper()) {
         futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
@@ -213,6 +221,7 @@ void Elevarm::analyzeDashboard()
 void Elevarm::assignOutputs()
 {    
     bool inTransition = futureState.directionState != previousState.directionState;
+    futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition()));
 
     if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW || inTransition) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, ElevarmDirectionState::ELEVARM_FRONT);
@@ -295,6 +304,9 @@ Elevarm::Positions Elevarm::detectionBoxManual(double carriage, double arm) {
     double currentX = futureState.resultKinematics.X().to<double>();
     double currentZ = futureState.resultKinematics.Z().to<double>();
     // Arm inside front chassis box or in ground
+    table->PutNumber("current X", currentX);
+    table->PutNumber("current z", currentZ);
+    table->PutNumber("vertial", vertical);
     if (currentX > vertical && ((X_CHASSIS_FRONT_BOUND > currentX && Z_FORK > currentZ) || (Z_GROUND > currentZ))) {
         // Allow only up
         carriage = carriage > 0 ? carriage : 0;
@@ -362,7 +374,7 @@ frc::Pose3d Elevarm::forwardKinematics(Elevarm::Positions positions)
         // Legs
         } else {
             z = Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET + Z_INTAKE_OFFSET + positions.h - X_ARM_LENGTH * cos(std::fabs(theta));
-            x = -X_ARM_LENGTH * sin(std::fabs(theta)) + X_CARRIAGE_OFFSET - X_BUMPER_WIDTH - X_HALF_WIDTH;
+            x = -(X_ARM_LENGTH * sin(std::fabs(theta))) + X_CARRIAGE_OFFSET - X_BUMPER_WIDTH - X_HALF_WIDTH;
         }
     }
     return frc::Pose3d((units::length::meter_t)x, 0_m, (units::length::meter_t)z, frc::Rotation3d());
