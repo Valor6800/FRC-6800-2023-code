@@ -140,6 +140,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
     int trajCount = 0;
 
+    drivetrain->setAutoMaxAcceleration(NULL, 1.0);
+
     for (int i = 0; i < actions.size(); i ++){
         table->PutString("Action " + std::to_string(i), commandToStringMap[actions[i].type]);
         ValorAutoAction & action = actions[i];
@@ -164,15 +166,25 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                         last_angle = trajPoses.back().Rotation();
 
                     double s_vel = 0, e_vel = 0;
-                    i--;
-                    if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT)
-                        s_vel = actions[i - 1].vel;
-                    if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT)
-                        e_vel = actions[i + 1].vel;
-                    i++;
+                    int ei = i - 1, si = i - 1;
+                    while (actions[si].type == ValorAutoAction::TRAJECTORY && actions[si].reversed == trajReversed)
+                        si--;
+                    si++;
+                    if (si >= 2 && actions[si - 1].type == ValorAutoAction::SPLIT) {
+                        s_vel = actions[si - 1].vel;
+                        if (si >=3 && actions[si - 2].type == ValorAutoAction::ACCELERATION) {
+                        }
+                    }
+                    if (ei + 2 < actions.size() && actions[ei + 1].type == ValorAutoAction::SPLIT)
+                        e_vel = actions[ei + 1].vel;
 
-                    if (i >= 2 && actions[i - 1].type == ValorAutoAction::ACCELERATION)
-                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel, actions[i - 1].accelMultiplier);
+                    if (si >= 2 && actions[si - 1].type == ValorAutoAction::ACCELERATION) {
+                        if (si >= 3 && actions[si - 2].type == ValorAutoAction::SPLIT) {
+                            s_vel = actions[si - 1].vel;
+                        }
+                    }
+                    table->PutNumber("trajectory " + std::to_string(trajCount) + " start velocity", s_vel);
+                    table->PutNumber("trajectory " + std::to_string(trajCount) + " end velocity", e_vel);
                     
                     frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
                     createTrajectoryDebugFile(trajectory, trajCount);
@@ -192,17 +204,28 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
             if (trajPoses.size() != 0){
                 if (trajPoses.size() > 0)
                     last_angle = trajPoses.back().Rotation();
-
+                
                 double s_vel = 0, e_vel = 0;
-                i--;
-                if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT)
-                    s_vel = actions[i - 1].vel;
-                if (i + 2 < actions.size() && actions[i + 1].type == ValorAutoAction::SPLIT)
-                    e_vel = actions[i + 1].vel;
-                i++;
+                int ei = i - 1, si = i - 1;
+                while (actions[si].type == ValorAutoAction::TRAJECTORY && actions[si].reversed == trajReversed)
+                    si--;
+                si++;
+                if (si >= 2 && actions[si - 1].type == ValorAutoAction::SPLIT) {
+                    s_vel = actions[si - 1].vel;
+                    if (si >=3 && actions[si - 2].type == ValorAutoAction::ACCELERATION) {
+                    }
+                }
+                if (ei + 2 < actions.size() && actions[ei + 1].type == ValorAutoAction::SPLIT)
+                    e_vel = actions[ei + 1].vel;
 
-                if (i >= 2 && actions[i - 1].type == ValorAutoAction::ACCELERATION)
-                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel, actions[i - 1].accelMultiplier);
+                if (si >= 2 && actions[si - 1].type == ValorAutoAction::ACCELERATION) {
+                    if (si >= 3 && actions[si - 2].type == ValorAutoAction::SPLIT) {
+                        s_vel = actions[si - 1].vel;
+                    }
+                }
+
+                table->PutNumber("trajectory " + std::to_string(trajCount) + " start velocity", s_vel);
+                table->PutNumber("trajectory " + std::to_string(trajCount) + " end velocity", e_vel);
 
                 frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
                 createTrajectoryDebugFile(trajectory, trajCount);
@@ -298,6 +321,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 cmdGroup->AddCommands(
                     std::move(*(drivetrain->getSetXMode()))
                 );
+            } else if (action.type == ValorAutoAction::ACCELERATION){
+               drivetrain->setAutoMaxAcceleration(action.maxAccel, action.accelMultiplier);
             }
             else if (action.type == ValorAutoAction::ELEVARM){
                 Elevarm::ElevarmPieceState pieceState = elevarm->stringToPieceState(action.values[0]);
@@ -318,11 +343,27 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
     if (trajPoses.size() != 0){
         int i = actions.size() - 1;
         double s_vel = 0, e_vel = 0;
-        if (i >= 2 && actions[i - 1].type == ValorAutoAction::SPLIT)
-            s_vel = actions[i - 1].vel;
 
-        if (i >= 2 && actions[i - 1].type == ValorAutoAction::ACCELERATION)
-                        drivetrain->setAutoMaxAcceleration(actions[i - 1].maxAccel, actions[i - 1].accelMultiplier);
+        int ei = i - 1, si = i - 1;
+        while (actions[si].type == ValorAutoAction::TRAJECTORY && actions[si].reversed == trajReversed)
+            si--;
+        si++;
+        if (si >= 2 && actions[si - 1].type == ValorAutoAction::SPLIT) {
+            s_vel = actions[si - 1].vel;
+            if (si >=3 && actions[si - 2].type == ValorAutoAction::ACCELERATION) {
+            }
+        }
+        if (ei + 2 < actions.size() && actions[ei + 1].type == ValorAutoAction::SPLIT)
+            e_vel = actions[ei + 1].vel;
+
+        if (si >= 2 && actions[si - 1].type == ValorAutoAction::ACCELERATION) {
+            if (si >= 3 && actions[si - 2].type == ValorAutoAction::SPLIT) {
+                s_vel = actions[si - 1].vel;
+            }
+        }
+        table->PutNumber("trajectory " + std::to_string(trajCount) + " start velocity", s_vel);
+        table->PutNumber("trajectory " + std::to_string(trajCount) + " end velocity", e_vel);
+                        
         
         frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
         createTrajectoryDebugFile(trajectory, trajCount);
