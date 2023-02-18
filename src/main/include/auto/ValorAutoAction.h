@@ -34,6 +34,7 @@ struct ValorAutoAction {
         SIZE_MISMATCH,
         POINT_MISSING
     } error;
+    std::string error_message;
 
     frc::Pose2d start;
     frc::Pose2d end;
@@ -51,6 +52,8 @@ struct ValorAutoAction {
     double vel;
     double maxAccel;
     double accelMultiplier;
+
+    bool parallel;
     
 public:
     static std::vector<std::string> parseCSVLine(std::string);

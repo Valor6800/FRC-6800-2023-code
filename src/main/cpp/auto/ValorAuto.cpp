@@ -115,7 +115,8 @@ void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
 
 
 frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
-    frc2::SequentialCommandGroup *cmdGroup = new frc2::SequentialCommandGroup();
+    frc2::SequentialCommandGroup *currentGroup = new frc2::SequentialCommandGroup();
+    std::vector<frc2::SequentialCommandGroup> cmdGroups = {};
 
     std::ifstream infile(filename); 
     if (!infile.good()){
@@ -148,7 +149,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
         // Error encountered: stop trying to compile and output error
         if (action.error != ValorAutoAction::NONE_ERROR){
-            table->PutString("Error: ", errorToStringMap[action.error]);
+            table->PutString("Error: ", "On line " + std::to_string(i + 1) + ": " + errorToStringMap[action.error] + " - " + action.error_message);
             return nullptr;
         }
 
@@ -189,7 +190,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
                     createTrajectoryDebugFile(trajectory, trajCount);
                     trajCount++;
-                    cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
+                    currentGroup->AddCommands(createTrajectoryCommand(trajectory));
                     trajPoses.clear();
 
                     action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
@@ -215,6 +216,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     if (si >=3 && actions[si - 2].type == ValorAutoAction::ACCELERATION) {
                     }
                 }
+
                 if (ei + 2 < actions.size() && actions[ei + 1].type == ValorAutoAction::SPLIT)
                     e_vel = actions[ei + 1].vel;
 
@@ -230,7 +232,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
                 createTrajectoryDebugFile(trajectory, trajCount);
                 trajCount++;
-                cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
+                currentGroup->AddCommands(createTrajectoryCommand(trajectory));
                 trajPoses.clear();
             }
 
@@ -244,13 +246,13 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     };
                 }
                 */ 
-                cmdGroup->AddCommands(frc2::InstantCommand(func));
+                currentGroup->AddCommands(frc2::InstantCommand(func));
             }
             else if (action.type == ValorAutoAction::Type::TIME){
-                cmdGroup->AddCommands(frc2::WaitCommand((units::millisecond_t)action.duration_ms));
+                currentGroup->AddCommands(frc2::WaitCommand((units::millisecond_t)action.duration_ms));
             }
             else if (action.type == ValorAutoAction::Type::RESET_ODOM){
-                cmdGroup->AddCommands(
+                currentGroup->AddCommands(
                     frc2::InstantCommand(
                         [&, action] {
                             drivetrain->resetOdometry(action.start);
@@ -305,7 +307,13 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 // The issue is not with the pointers!!
                 // cmdGroup->AddCommands((*precompiledActions[action.name]));
                 // std::move - Convert a value to an rvalue
-                cmdGroup->AddCommands(std::move(*precompiledActions[action.name]));
+                if (action.parallel){
+                    cmdGroups.push_back(std::move(*currentGroup));
+                    cmdGroups.push_back(std::move(*precompiledActions[action.name]));
+                    currentGroup = new frc2::SequentialCommandGroup();
+                }
+                else
+                    currentGroup->AddCommands(std::move(*precompiledActions[action.name]));
 
                 /*
                 C++ doesn't allow you to pass an lvalue into an rvalue reference, as  
@@ -318,7 +326,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 Why would passing in a command (in this case a SequentialCommandGroup) call the constructor for the cmdGroup?
                 */
             } else if (action.type == ValorAutoAction::Type::XMODE){
-                cmdGroup->AddCommands(
+                currentGroup->AddCommands(
                     std::move(*(drivetrain->getSetXMode()))
                 );
             } else if (action.type == ValorAutoAction::ACCELERATION){
@@ -329,13 +337,15 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 Elevarm::ElevarmDirectionState directionState = elevarm->stringToDirectionState(action.values[1]);
                 Elevarm::ElevarmPositionState positionState = elevarm->stringToPositionState(action.values[2]);
 
-                cmdGroup->AddCommands(
+                currentGroup->AddCommands(
                     std::move(*elevarm->getAutoCommand(
                         action.values[0],
                         action.values[1],
-                        action.values[2]
+                        action.values[2],
+                        action.parallel
                     ))
                 );
+                table->PutBoolean("Action " + std::to_string(i) + " parallel", action.parallel);
             }
         }
     }
@@ -368,11 +378,24 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
         frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
         createTrajectoryDebugFile(trajectory, trajCount);
         trajCount++;
-        cmdGroup->AddCommands(createTrajectoryCommand(trajectory));
+        currentGroup->AddCommands(createTrajectoryCommand(trajectory));
         trajPoses.empty();
     }
+    cmdGroups.push_back(std::move(*currentGroup));
 
-    return cmdGroup;
+    // bad way of doing this currently this relies on 
+    // adding the action command group and the other command group in a specific order, which i know i'll fuck up some day
+    // the action command group and other cocmmadn group should be named
+    frc2::SequentialCommandGroup * combinedGroup = new frc2::SequentialCommandGroup(std::move(cmdGroups[0]));
+    for (int i = cmdGroups.size() - 1; i >= 1; i -= 2){
+        combinedGroup->AddCommands(
+            frc2::ParallelCommandGroup(
+                std::move(cmdGroups[i]), std::move(cmdGroups[i - 1])
+            )
+        );
+    }
+
+    return combinedGroup;
 }
 
 void ValorAuto::precompileActions(std::string path_name){
@@ -418,6 +441,7 @@ std::string makeFriendlyName(std::string filename){
 }
 
 frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
+    table->PutString("Error", "none");
     bool read_points = false;
     if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue){
         read_points = readPointsCSV(ROOT_AUTO_PATH + "points/blue_points.csv");

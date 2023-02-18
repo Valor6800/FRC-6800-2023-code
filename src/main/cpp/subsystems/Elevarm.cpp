@@ -48,12 +48,11 @@
 #define Z_INTAKE_OFFSET 0.03f
 
 // #define X_CHASSIS_FRONT_BOUND 0.0f
-#define X_CHASSIS_FRONT_BOUND 0.2f
+#define X_CHASSIS_FRONT_BOUND 0.1f
 // #define X_CHASSIS_BACK_BOUND  -0.6604f
-#define X_CHASSIS_BACK_BOUND  -0.8604f
-#define Z_FORK 0.465f
+#define X_CHASSIS_BACK_BOUND  -0.65f
+#define Z_FORK 0.35f
 #define Z_GROUND 0.45f
-
 
 #define P_MIN_CARRIAGE 0.0125f
 #define P_MIN_ARM 0.0125f
@@ -207,6 +206,8 @@ void Elevarm::analyzeDashboard()
     manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", 1.0);
     futureState.pitModeEnabled = table->GetBoolean("Pit Mode", false);
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
+    table->PutNumber("Min angle front", minAngle(true));
+    table->PutNumber("min angle back", minAngle(false));
 }
 
 void Elevarm::assignOutputs()
@@ -455,10 +456,19 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
         [this]{ return table->GetBoolean("going from stow to not stow", false); },
         nullptr
     );
-        
+    builder.AddDoubleProperty(
+        "Min angle front",
+        [this]{ return minAngle(true); },
+        nullptr
+    );
+    builder.AddDoubleProperty(
+        "Min angle back",
+        [this]{ return minAngle(false); },
+        nullptr
+    );
 }
 
-frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState){
+frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState, bool parallel){
     Elevarm::ElevarmPieceState eaPieceState = stringToPieceState(pieceState);
     Elevarm::ElevarmDirectionState eaDirectionState = stringToDirectionState(directionState);
     Elevarm::ElevarmPositionState eaPositionState = stringToPositionState(positionState);
@@ -479,8 +489,8 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
         [&](bool){
             previousState = futureState;
         }, // onEnd
-        [&, eaPieceState, eaDirectionState, eaPositionState](){ //isFinished
-            return previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState;
+        [&, eaPieceState, eaDirectionState, eaPositionState, parallel](){ //isFinished
+            return parallel || (previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState);
         },
         {}
     );
