@@ -1,9 +1,14 @@
 reset_odom,barrierBox,180
+action,cube_score
 trajectory,barrierBox,chell,180,reversed
+action,pickup
 trajectory,chell,cave,180,reversed
 trajectory,cave,chell,180
+action,pre_score
 trajectory,chell,barrierLeft,180
+action,cone_score
 trajectory,barrierLeft,chell,180,reversed
+action,pre_score
 trajectory,chell,chellFar,180,reversed
 trajectory,chellFar,chargeFarRight,180,reversed
 trajectory,chargeFarRight,charge,180
