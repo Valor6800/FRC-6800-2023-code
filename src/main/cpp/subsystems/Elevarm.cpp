@@ -22,7 +22,7 @@
 #define CARRIAGE_K_I 0.0f
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
-#define CARRIAGE_K_VEL 4.0f
+#define CARRIAGE_K_VEL 3.0f
 #define CARRIAGE_K_ACC_MUL 20.0f
 
 #define ROTATE_K_F 0.000156f
@@ -123,7 +123,7 @@ void Elevarm::init()
     armRotateMotor.setPIDF(rotatePID, 0);
 
     stowPos = frc::Pose3d(-0.508_m, 0_m, 0.431_m, frc::Rotation3d());
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0.1_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -1.0_m,  0.0_m,  0.4_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.75_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
@@ -131,7 +131,7 @@ void Elevarm::init()
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.866_m,  0.0_m,  1.1668_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -1.1709_m,  0.0_m,  1.1668_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0.1_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -1.0_m,  0.0_m,  0.4_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.75_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
@@ -211,11 +211,9 @@ void Elevarm::analyzeDashboard()
 
 void Elevarm::assignOutputs()
 {    
-    if (futureState.directionState != previousState.directionState) {
-        futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
-    }
+    bool inTransition = futureState.directionState != previousState.directionState;
 
-    if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW) {
+    if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW || inTransition) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, ElevarmDirectionState::ELEVARM_FRONT);
     } else {
             if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID || futureState.positionState == ElevarmPositionState::ELEVARM_SNAKE) {
@@ -225,7 +223,8 @@ void Elevarm::assignOutputs()
     }
 
     table->PutBoolean("going from stow to not stow", false);
-    
+    bool atCarriage = std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND;
+    bool atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
 
     if ((futureState.deadManEnabled && futureState.pitModeEnabled) || !futureState.pitModeEnabled) {
         if (futureState.positionState == ElevarmPositionState::ELEVARM_MANUAL) {
@@ -237,50 +236,52 @@ void Elevarm::assignOutputs()
             armRotateMotor.setPower(manualOutputs.theta);
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
-            if (previousState.positionState == ElevarmPositionState::ELEVARM_STOW && (futureState.positionState != ElevarmPositionState::ELEVARM_STOW )) {
-                table->PutBoolean("going from stow to not stow", true);
-                if (std::fabs(armRotateMotor.getPosition()) > minAngle() && minFloorAngle()){
-                    carriageMotors.setPosition(futureState.targetPose.h);
-                } else {
-                    carriageMotors.setPower(carriageStallPower);
+            double frontAngle = minAngle(true);
+            double backAngle = minAngle(false);
 
-                }
-                armRotateMotor.setPosition(futureState.targetPose.theta);
-            } else if (previousState.positionState == ElevarmPositionState::ELEVARM_GROUND && futureState.positionState == ElevarmPositionState::ELEVARM_STOW){
-                if (std::fabs(carriageMotors.getPosition() - futureState.targetPose.h) < PREVIOUS_HEIGHT_DEADBAND) {
+            // Target in triangle
+            if (futureState.targetPose.theta >= backAngle && futureState.targetPose.theta <= frontAngle){
+                if (atCarriage || std::fabs(armRotateMotor.getPosition()) > 45){
                     armRotateMotor.setPosition(futureState.targetPose.theta);
-                } else {
+                }
+                else {
                     armRotateMotor.setPower(0.0);
                 }
                 carriageMotors.setPosition(futureState.targetPose.h);
-            } else {            
-                carriageMotors.setPosition(futureState.targetPose.h);
+            // Target oustside triangle
+            } else {
+                if (armRotateMotor.getPosition() > frontAngle || armRotateMotor.getPosition() < backAngle){
+                    carriageMotors.setPosition(futureState.targetPose.h);
+                } else {
+                    carriageMotors.setPower(carriageStallPower);
+                }
                 armRotateMotor.setPosition(futureState.targetPose.theta);
             }
             
-            if (std::fabs(carriageMotors.getPosition() - futureState.targetPose.h) <= PREVIOUS_HEIGHT_DEADBAND) {
+            if (atCarriage) {
                 carriageMotors.setPower(carriageStallPower);
-            } 
+            }
 
-            previousState = ((std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
-            (std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
-            
+            if (atCarriage && atArm) {
+                previousState = futureState;
+                if (inTransition)
+                    previousState.positionState = ELEVARM_STOW;
+            }
         }
             
     } else {
         carriageMotors.setPower(carriageStallPower);
         armRotateMotor.setPower(0);
-        previousState = ((std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
-        (std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND))  ? futureState : previousState;
     }
 }
-double Elevarm::minAngle()
+double Elevarm::minAngle(bool isFront)
 {
     double Zt = carriageMotors.getPosition() + Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET ;
     double Xt = -X_BUMPER_WIDTH - X_HALF_WIDTH + X_CARRIAGE_OFFSET;
     double Zs = Z_FORK;
-    double Xs = armRotateMotor.getPosition() > 0 ? X_CHASSIS_FRONT_BOUND : X_CHASSIS_BACK_BOUND;
-    return std::fabs(atan2(Xs - Xt, Zt - Zs) * 180.0 / M_PI);
+    if (isFront)
+        return atan2(X_CHASSIS_FRONT_BOUND - Xt, Zt - Zs) * 180 / M_PI;
+    return atan2(X_CHASSIS_BACK_BOUND - Xt, Zt - Zs) * 180 / M_PI;
 }
 
 bool Elevarm::minFloorAngle()
@@ -436,7 +437,7 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
     );
         builder.AddDoubleProperty(
         "Min Angle",
-        [this]{ return minAngle(); },
+        [this]{ return minAngle(true); },
         nullptr
     );
         builder.AddDoubleProperty(
@@ -458,23 +459,28 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
 }
 
 frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState){
+    Elevarm::ElevarmPieceState eaPieceState = stringToPieceState(pieceState);
+    Elevarm::ElevarmDirectionState eaDirectionState = stringToDirectionState(directionState);
+    Elevarm::ElevarmPositionState eaPositionState = stringToPositionState(positionState);
     return new frc2::FunctionalCommand(
         // OnInit
         [&]() {
             
             }, 
         //onExecute
-        [&, pieceState, directionState, positionState](){
-            futureState.pieceState = stringToPieceState(pieceState);
-            futureState.directionState = stringToDirectionState(directionState);
-            futureState.positionState = stringToPositionState(positionState);
+        [&, eaPieceState, eaDirectionState, eaPositionState](){
+            futureState.pieceState = eaPieceState;
+            futureState.directionState = eaDirectionState;
+            futureState.positionState = eaPositionState;
+            table->PutNumber("piece", futureState.pieceState);
+            table->PutNumber("dir", futureState.directionState);
+            table->PutNumber("pos", futureState.positionState);
         }, 
         [&](bool){
             previousState = futureState;
         }, // onEnd
-        [&](){ //isFinished
-            return ((std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND) && 
-            (std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND));
+        [&, eaPieceState, eaDirectionState, eaPositionState](){ //isFinished
+            return previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState;
         },
         {}
     );
