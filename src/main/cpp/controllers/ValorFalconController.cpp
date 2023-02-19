@@ -72,6 +72,7 @@ void ValorFalconController::setPIDF(ValorPIDF pidf, int slot)
     motor->Config_kI(slot, pidf.I);
     motor->Config_kD(slot, pidf.D);
     motor->Config_kF(slot, pidf.F / 10.0 * FALCON_TICKS_PER_REV);
+    // motor->ConfigAllowableClosedloopError(slot, pidf.error * FALCON_TICKS_PER_REV / conversion);
     motor->ConfigMotionCruiseVelocity(pidf.velocity / 10.0 * FALCON_TICKS_PER_REV / conversion);
     motor->ConfigMotionAcceleration(pidf.acceleration / 10.0 * FALCON_TICKS_PER_REV / conversion);
 }
@@ -157,5 +158,9 @@ void ValorFalconController::InitSendable(wpi::SendableBuilder& builder)
     builder.AddBooleanProperty(
         "Inverted", 
         [this] { return inverted; },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Out Volt", 
+        [this] { return motor->GetMotorOutputVoltage(); },
         nullptr);
 }
