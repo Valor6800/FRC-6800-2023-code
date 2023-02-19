@@ -54,6 +54,8 @@
 #define AUTO_VISION_THRESHOLD 5.0f //meters
 #define FIELD_LENGTH 16.5f
 
+#define MODULE_DIFF 0.206375f
+
 #define MODULE_DIFF_XS {1, 1, -1, -1}
 #define MODULE_DIFF_YS {1, -1, -1, 1}
 
@@ -62,6 +64,7 @@
 
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
+                        swerveModuleDiff(units::meter_t(MODULE_DIFF)),
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
                         autoMaxSpeed(AUTO_MAX_SPEED),
                         autoMaxAccel(AUTO_MAX_ACCEL),

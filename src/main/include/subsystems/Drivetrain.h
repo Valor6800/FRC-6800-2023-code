@@ -46,7 +46,6 @@
 #include <ctre/phoenix/motorcontrol/NeutralMode.h>
 #include <rev/CANSparkMax.h>
 
-#define MODULE_DIFF 0.168f
 #define SWERVE_COUNT 4
 
 /**
@@ -246,7 +245,7 @@ private:
      std::vector<SwerveAzimuthMotor *> azimuthControllers;
      std::vector<SwerveDriveMotor *> driveControllers;
 
-     units::meter_t swerveModuleDiff = units::meter_t(MODULE_DIFF);
+     units::meter_t swerveModuleDiff;
 
      wpi::array<frc::Translation2d, SWERVE_COUNT> motorLocations;
 
