@@ -11,26 +11,26 @@
 #define ROTATE_GEAR_RATIO 74.25f
 #define CARRIAGE_GEAR_RATIO 4.0f
 #define CARRAIAGE_OUTPUT_DIAMETER 0.0364f
-#define CARRIAGE_UPPER_LIMIT 0.8f 
+#define CARRIAGE_UPPER_LIMIT 0.89f 
 #define CARRIAGE_LOWER_LIMIT 0.07f
 #define ROTATE_FORWARD_LIMIT 180.0f
 #define ROTATE_REVERSE_LIMIT -180.0f
 
 #define CARRIAGE_K_F 0.000156f  
-#define CARRIAGE_K_P 0.00005f
+#define CARRIAGE_K_P 0.0f
 #define CARRIAGE_K_I 0.0f
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
-#define CARRIAGE_K_VEL 0.5f
-#define CARRIAGE_K_ACC_MUL 20.0f
+#define CARRIAGE_K_VEL 0.1f
+#define CARRIAGE_K_ACC_MUL 1.0f
 
-#define ROTATE_K_F 0.05f
-#define ROTATE_K_P 0.1f
+#define ROTATE_K_F 0.5f
+#define ROTATE_K_P 2.0f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.1f
-#define ROTATE_K_VEL 20.0f
-#define ROTATE_K_ACC_MUL 10.0f
+#define ROTATE_K_VEL 50.0f
+#define ROTATE_K_ACC_MUL 0.5f
 
 #define PREVIOUS_HEIGHT_DEADBAND 0.02f
 #define PREVIOUS_ROTATION_DEADBAND 2.0f
@@ -47,21 +47,24 @@
 #define Z_INTAKE_OFFSET 0.1143f
 
 // #define X_CHASSIS_FRONT_BOUND 0.0f
-#define X_CHASSIS_FRONT_BOUND 0.1f
+#define X_CHASSIS_FRONT_BOUND 0.2113f
 // #define X_CHASSIS_BACK_BOUND  -0.6604f
-#define X_CHASSIS_BACK_BOUND  -0.8604f
-#define Z_FORK 0.35f
+#define X_CHASSIS_BACK_BOUND  -1.0f
+#define Z_FORK 0.465f
 #define Z_GROUND 0.1f
 
-#define P_MIN_CARRIAGE 0.0125f
-#define P_MIN_ARM 0.0125f
+#define P_MIN_CARRIAGE 0.0f
+#define P_MIN_ARM 0.0f
+
+#define MAN_MAX_CARRIAGE 0.3f
+#define MAN_MAX_ROTATE 0.4f
 
 Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_robot, "Elevarm"),                        
                             intake(_intake),
                             carriageMotors(CANIDs::CARRIAGE_MAIN, ValorNeutralMode::Brake, false),
                             armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
-                            manualMaxArmSpeed(1.0),
-                            manualMaxCarriageSpeed(1.0),
+                            manualMaxArmSpeed(MAN_MAX_ROTATE),
+                            manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
                             carriageStallPower(P_MIN_CARRIAGE)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
@@ -99,7 +102,7 @@ void Elevarm::init()
     
     ValorPIDF rotatePID;
     rotatePID.velocity = ROTATE_K_VEL;
-    rotatePID.acceleration = rotatePID.velocity * ROTATE_K_ACC_MUL;
+    rotatePID.acceleration = ROTATE_K_ACC_MUL;
     rotatePID.F = ROTATE_K_F;
     rotatePID.P = ROTATE_K_P;
     rotatePID.I = ROTATE_K_I;
@@ -117,27 +120,27 @@ void Elevarm::init()
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
     armRotateMotor.setPIDF(rotatePID, 0);
 
-    stowPos = frc::Pose3d(-0.508_m, 0_m, 0.431_m, frc::Rotation3d());
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0.1_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -1.0_m,  0.0_m,  0.4_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.75_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( 0.576898_m,  0.0_m,  1.15_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.866_m,  0.0_m,  1.1668_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -1.1709_m,  0.0_m,  1.1668_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.408_m,  0.0_m,  0.1_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -1.0_m,  0.0_m,  0.4_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.75_m,  0.0_m,  0.946150_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( 0.576898_m,  0.0_m,  1.15_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.76_m,  0.0_m,  1.25_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.866_m,  0.0_m,  1.1668_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -1.1709_m,  0.0_m,  1.1668_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( 0.06_m,  0.0_m,  1.44_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.6_m,  0.0_m,  1.34_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( 0.06_m,  0.0_m,  1.44_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.6_m,  0.0_m,  1.34_m, frc::Rotation3d() );
+    stowPos = frc::Pose3d(-0.463_m, 0_m, 0.5722_m, frc::Rotation3d());
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.31_m,  0.0_m,  0.307_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -1.12_m,  0.0_m,  0.535_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.19_m,  0.0_m,  1.32_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.88_m,  0.0_m,  1.3_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( 0.275_m,  0.0_m,  1.22_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -1.07_m,  0.0_m,  1.2_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.51_m,  0.0_m,  1.55_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -1.055_m,  0.0_m,  1.4_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.31_m,  0.0_m,  0.307_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( -1.12_m,  0.0_m,  0.535_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.19_m,  0.0_m,  1.32_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( -0.88_m,  0.0_m,  1.3_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( 0.255_m,  0.0_m,  1.175_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( -0.89_m,  0.0_m,  1.08_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.3_m,  0.0_m,  1.315_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( -1.055_m,  0.0_m,  1.4_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.07_m,  0.0_m,  1.36_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.56_m,  0.0_m,  1.36_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.07_m,  0.0_m,  1.36_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.56_m,  0.0_m,  1.36_m, frc::Rotation3d() );
     
 
     table->PutNumber("Carriage Max Manual Speed", manualMaxCarriageSpeed);
@@ -200,10 +203,12 @@ void Elevarm::assessInputs()
 
 void Elevarm::analyzeDashboard()
 {
-    manualMaxCarriageSpeed = table->GetNumber("Carriage Max Manual Speed", 1.0);
-    manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", 1.0);
+    manualMaxCarriageSpeed = table->GetNumber("Carriage Max Manual Speed", MAN_MAX_CARRIAGE);
+    manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", MAN_MAX_ROTATE);
     futureState.pitModeEnabled = table->GetBoolean("Pit Mode", false);
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
+    // armStallPower = table->GetNumber("Arm Stall Power", P_MIN_ARM);
+    futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition()));
     table->PutNumber("Min angle front", minAngle(true));
     table->PutNumber("min angle back", minAngle(false));
 }
@@ -211,7 +216,6 @@ void Elevarm::analyzeDashboard()
 void Elevarm::assignOutputs()
 {    
     bool inTransition = futureState.directionState != previousState.directionState;
-    futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition()));
 
     if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW || inTransition) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, ElevarmDirectionState::ELEVARM_FRONT);
