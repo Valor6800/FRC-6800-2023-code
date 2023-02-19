@@ -11,7 +11,7 @@
 #define ROTATE_GEAR_RATIO 74.25f
 #define CARRIAGE_GEAR_RATIO 4.0f
 #define CARRAIAGE_OUTPUT_DIAMETER 0.0364f
-#define CARRIAGE_UPPER_LIMIT 1.00f 
+#define CARRIAGE_UPPER_LIMIT 0.8f 
 #define CARRIAGE_LOWER_LIMIT 0.07f
 #define ROTATE_FORWARD_LIMIT 180.0f
 #define ROTATE_REVERSE_LIMIT -180.0f
@@ -21,15 +21,15 @@
 #define CARRIAGE_K_I 0.0f
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
-#define CARRIAGE_K_VEL 3.0f
+#define CARRIAGE_K_VEL 0.5f
 #define CARRIAGE_K_ACC_MUL 20.0f
 
-#define ROTATE_K_F 0.000156f
-#define ROTATE_K_P 0.00005f
+#define ROTATE_K_F 0.05f
+#define ROTATE_K_P 0.1f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.1f
-#define ROTATE_K_VEL 180.0f
+#define ROTATE_K_VEL 20.0f
 #define ROTATE_K_ACC_MUL 10.0f
 
 #define PREVIOUS_HEIGHT_DEADBAND 0.02f
@@ -59,7 +59,7 @@
 Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_robot, "Elevarm"),                        
                             intake(_intake),
                             carriageMotors(CANIDs::CARRIAGE_MAIN, ValorNeutralMode::Brake, false),
-                            armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false),
+                            armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
                             manualMaxArmSpeed(1.0),
                             manualMaxCarriageSpeed(1.0),
                             carriageStallPower(P_MIN_CARRIAGE)
@@ -105,7 +105,6 @@ void Elevarm::init()
     rotatePID.I = ROTATE_K_I;
     rotatePID.D = ROTATE_K_D;
     rotatePID.error = ROTATE_K_ERROR; 
-    
     
     carriageMotors.setConversion(1.0 / CARRIAGE_GEAR_RATIO * M_PI * CARRAIAGE_OUTPUT_DIAMETER);
     carriageMotors.setForwardLimit(CARRIAGE_UPPER_LIMIT);

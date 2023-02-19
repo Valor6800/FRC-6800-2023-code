@@ -105,8 +105,6 @@ public:
         double manualCarriage;
         double manualArm;
 
-
-
         Positions targetPose;
         frc::Pose3d resultKinematics;
 
@@ -167,7 +165,7 @@ private:
     bool minFloorAngle();
 
      ValorNeoController carriageMotors;
-     ValorNeoController armRotateMotor;
+     ValorFalconController armRotateMotor;
      std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose3d>>> posMap;
      frc::Pose3d stowPos;
 
