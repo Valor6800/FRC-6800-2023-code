@@ -24,13 +24,15 @@
 #define CARRIAGE_K_VEL 0.1f
 #define CARRIAGE_K_ACC_MUL 1.0f
 
-#define ROTATE_K_F 0.5f
-#define ROTATE_K_P 2.0f
+#define ROTATE_K_F 0.0f
+#define ROTATE_K_P 0.0f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
-#define ROTATE_K_ERROR 0.1f
-#define ROTATE_K_VEL 50.0f
-#define ROTATE_K_ACC_MUL 0.5f
+#define ROTATE_K_ERROR 1.0f
+#define ROTATE_K_VEL 90.0f
+#define ROTATE_K_ACC_MUL 2.0f
+#define ROTATE_K_AFF -0.3f
+#define ROTATE_K_AFF_POS 90.0f
 
 #define PREVIOUS_HEIGHT_DEADBAND 0.02f
 #define PREVIOUS_ROTATION_DEADBAND 2.0f
@@ -108,6 +110,8 @@ void Elevarm::init()
     rotatePID.I = ROTATE_K_I;
     rotatePID.D = ROTATE_K_D;
     rotatePID.error = ROTATE_K_ERROR; 
+    rotatePID.aFF = ROTATE_K_AFF; 
+    rotatePID.aFFTarget = ROTATE_K_AFF_POS; 
     
     carriageMotors.setConversion(1.0 / CARRIAGE_GEAR_RATIO * M_PI * CARRAIAGE_OUTPUT_DIAMETER);
     carriageMotors.setForwardLimit(CARRIAGE_UPPER_LIMIT);

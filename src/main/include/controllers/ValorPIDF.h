@@ -25,5 +25,8 @@ struct ValorPIDF
     /// Max acceleration: revolutions per 1s^2
     double acceleration = 15000;
     /// Minimum error threshold
-    double error = 0.5; 
+    double error = 0.5;
+
+    double aFF = 0;
+    double aFFTarget = 90;
 };

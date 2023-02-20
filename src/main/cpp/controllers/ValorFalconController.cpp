@@ -66,15 +66,18 @@ void ValorFalconController::setReverseLimit(double reverse)
     motor->ConfigReverseSoftLimitEnable(true);
 }
 
-void ValorFalconController::setPIDF(ValorPIDF pidf, int slot)
+void ValorFalconController::setPIDF(ValorPIDF _pidf, int slot)
 {
+    pidf = _pidf;
     motor->Config_kP(slot, pidf.P);
     motor->Config_kI(slot, pidf.I);
     motor->Config_kD(slot, pidf.D);
-    motor->Config_kF(slot, pidf.F / 10.0 * FALCON_TICKS_PER_REV);
-    // motor->ConfigAllowableClosedloopError(slot, pidf.error * FALCON_TICKS_PER_REV / conversion);
-    motor->ConfigMotionCruiseVelocity(pidf.velocity / 10.0 * FALCON_TICKS_PER_REV / conversion);
-    motor->ConfigMotionAcceleration(pidf.acceleration / 10.0 * FALCON_TICKS_PER_REV / conversion);
+    motor->Config_kF(slot, pidf.F * (1023.0 / 7112.0));
+    motor->ConfigOpenloopRamp(2);
+    motor->ConfigAllowableClosedloopError(slot, pidf.error * FALCON_TICKS_PER_REV / conversion);
+    double vel = pidf.velocity / 10.0 * FALCON_TICKS_PER_REV / conversion;
+    motor->ConfigMotionCruiseVelocity(vel);
+    motor->ConfigMotionAcceleration(vel / pidf.acceleration);
 }
 
 void ValorFalconController::setConversion(double _conversion)
@@ -107,7 +110,12 @@ void ValorFalconController::setRange(int slot, double min, double max)
 
 void ValorFalconController::setPosition(double position)
 {
-    motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV);
+    if (pidf.aFF != 0) {
+        double horizontalOffset = getPosition() - pidf.aFFTarget;
+        double scalar = std::cos(horizontalOffset * M_PI / 180.0);
+        motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV, DemandType_ArbitraryFeedForward, scalar * pidf.aFF);
+    } else
+        motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV);
 }
 
 void ValorFalconController::setSpeed(double speed)
