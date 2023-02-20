@@ -26,7 +26,7 @@ frc::Pose2d ValorAutoAction::getPose(frc::Translation2d position, double angle)
     return frc::Pose2d(position, frc::Rotation2d(units::degree_t{angle}));
 }
 
-ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Translation2d> * points)
+ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Translation2d> * points, bool blueSide)
 {
     std::vector<std::string> items = parseCSVLine(line);
     error = ValorAutoAction::Error::NONE_ERROR;
@@ -90,8 +90,12 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         auto _start = points->at(items[1]);
         auto _end = points->at(items[2]);
 
-        start = getPose(_start, atoi(items[3].c_str()));
-        end = getPose(_end, atoi(items[3].c_str()));
+        double heading = stod(items[3]);
+        if (!blueSide)
+            heading = -heading;
+
+        start = getPose(_start, heading);
+        end = getPose(_end, heading);
 
         reversed = false;
 
