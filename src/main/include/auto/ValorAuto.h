@@ -34,7 +34,7 @@ class ValorAuto {
     public:
         ValorAuto(Drivetrain*, Intake*, Elevarm*);
         bool readPointsCSV(std::string);
-        frc2::SequentialCommandGroup* makeAuto(std::string);
+        frc2::SequentialCommandGroup* makeAuto(std::string, bool);
         void precompileActions(std::string);
         void fillAutoList();
         frc2::SequentialCommandGroup* getCurrentAuto();

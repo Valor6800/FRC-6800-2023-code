@@ -80,7 +80,7 @@ frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, boo
 bool ValorAuto::readPointsCSV(std::string filename){
     std::ifstream infile(filename);
     if (!infile.good()){
-        table->PutString("Error:", "points file not found");
+        table->PutString("Error", "points file not found");
         return false;
     }
 
@@ -114,7 +114,7 @@ void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
 }
 
 
-frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
+frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blueSide=false){
     frc2::SequentialCommandGroup *currentGroup = new frc2::SequentialCommandGroup();
     std::vector<frc2::SequentialCommandGroup> cmdGroups = {};
 
@@ -127,7 +127,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
     std::vector<ValorAutoAction> actions;
     while (std::getline(infile, line)){
-        ValorAutoAction action(line, &points);
+        ValorAutoAction action(line, &points, blueSide);
         if (action.type != ValorAutoAction::NONE)
             actions.push_back(action);
     }
@@ -149,7 +149,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
 
         // Error encountered: stop trying to compile and output error
         if (action.error != ValorAutoAction::NONE_ERROR){
-            table->PutString("Error: ", "On line " + std::to_string(i + 1) + ": " + errorToStringMap[action.error] + " - " + action.error_message);
+            table->PutString("Error", "On line " + std::to_string(i + 1) + ": " + errorToStringMap[action.error] + " - " + action.error_message);
             return nullptr;
         }
 
@@ -188,6 +188,11 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                     table->PutNumber("trajectory " + std::to_string(trajCount) + " end velocity", e_vel);
                     
                     frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
+                    table->PutNumber("trajectory " + std::to_string(trajCount) + " time", std::fabs(trajectory.TotalTime().to<double>()));
+                    if (std::fabs(trajectory.TotalTime().to<double>()) < 0.001){
+                        table->PutString("Error", "On line " + std::to_string(i + 1) + ": malformed trajectory");
+                        return nullptr;
+                    }
                     createTrajectoryDebugFile(trajectory, trajCount);
                     trajCount++;
                     currentGroup->AddCommands(createTrajectoryCommand(trajectory));
@@ -230,6 +235,11 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                 table->PutNumber("trajectory " + std::to_string(trajCount) + " end velocity", e_vel);
 
                 frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
+                table->PutNumber("trajectory " + std::to_string(trajCount) + " time", std::fabs(trajectory.TotalTime().to<double>()));
+                if (std::fabs(trajectory.TotalTime().to<double>()) < 0.001){
+                    table->PutString("Error", "On line " + std::to_string(i + 1) + ": malformed trajectory");
+                    return nullptr;
+                }
                 createTrajectoryDebugFile(trajectory, trajCount);
                 trajCount++;
                 currentGroup->AddCommands(createTrajectoryCommand(trajectory));
@@ -380,6 +390,11 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename){
                         
         
         frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
+        table->PutNumber("trajectory " + std::to_string(trajCount) + " time", std::fabs(trajectory.TotalTime().to<double>()));
+        if (std::fabs(trajectory.TotalTime().to<double>()) < 0.001){
+            table->PutString("Error", "On line " + std::to_string(i + 1) + ": malformed trajectory");
+            return nullptr;
+        }
         createTrajectoryDebugFile(trajectory, trajCount);
         trajCount++;
         currentGroup->AddCommands(createTrajectoryCommand(trajectory));

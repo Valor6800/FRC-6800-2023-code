@@ -15,15 +15,17 @@ wheatley,7.07,3.36
 johnson,7.07,2.14
 doug,7.07,0.92
 
-farParallel,6.5,4.57
+farParallelLeft,6.5,4.57
 chellFar,5.0,4.69
 chell,3.93,4.68
 chellNear,2.855,4.67
-shortParallel,2.0,4.47
+shortParallelLeft,2.15,4.47
 
+farParallelRight,6.5,0.91
 gladosFar,5.0,0.76
 glados,3.93,0.77
 gladosNear,2.855,0.78
+shortParallelRight,2.15,0.78
 
 chargeFarLeft,6.0,3.42
 chargeFarRight,6.0,2.12
