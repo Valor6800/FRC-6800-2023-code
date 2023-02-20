@@ -21,17 +21,18 @@
 #define CARRIAGE_K_I 0.0f
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
-#define CARRIAGE_K_VEL 0.1f
+#define CARRIAGE_K_VEL 2.0f
 #define CARRIAGE_K_ACC_MUL 1.0f
 
-#define ROTATE_K_F 0.0f
-#define ROTATE_K_P 0.0f
+#define ROTATE_K_F 0.75f
+#define ROTATE_K_P 0.03f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 1.0f
-#define ROTATE_K_VEL 90.0f
-#define ROTATE_K_ACC_MUL 2.0f
-#define ROTATE_K_AFF -0.3f
+#define ROTATE_K_VEL 120.0f
+#define ROTATE_K_ACC_MUL 0.66f
+#define ROTATE_K_AFF 0.105f
+#define ROTATE_K_AFF_CUBE 0.1275f
 #define ROTATE_K_AFF_POS 90.0f
 
 #define PREVIOUS_HEIGHT_DEADBAND 0.02f
@@ -224,7 +225,7 @@ void Elevarm::assignOutputs()
     if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW || inTransition) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, ElevarmDirectionState::ELEVARM_FRONT);
     } else {
-            if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID || futureState.positionState == ElevarmPositionState::ELEVARM_SNAKE) {
+            if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID || futureState.positionState == ElevarmPositionState::ELEVARM_SNAKE || futureState.positionState == ElevarmPositionState::ELEVARM_HIGH) {
                 futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
             } else 
                 futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
