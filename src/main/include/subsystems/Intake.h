@@ -71,17 +71,18 @@ public:
           IntakePieceState pieceState;
           IntakeStates intakeState;
 
+          double intakeSpeed;
+          double outtakeSpeed;
+          double outtakeConeSpeed;
+          double outtakeCubeSpeed;
+          double holdSpeed;
+
+          double stallCurrent;
+
      }state;
     
 private:
 
      ValorNeoController intakeMotor;
-
      ValorCurrentSensor currySensor;
-
-     double intakeSpeed;
-     double outtakeSpeed;
-     double outtakeConeSpeed;
-     double outtakeCubeSpeed;
-     double spikeAmps;
 };
