@@ -347,14 +347,17 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 Elevarm::ElevarmDirectionState directionState = elevarm->stringToDirectionState(action.values[1]);
                 Elevarm::ElevarmPositionState positionState = elevarm->stringToPositionState(action.values[2]);
 
-                currentGroup->AddCommands(
-                    std::move(*elevarm->getAutoCommand(
-                        action.values[0],
-                        action.values[1],
-                        action.values[2],
-                        action.parallel
-                    ))
-                );
+                if (!elevarm->futureState.pitModeEnabled)
+                    currentGroup->AddCommands(
+                        std::move(*elevarm->getAutoCommand(
+                            action.values[0],
+                            action.values[1],
+                            action.values[2],
+                            action.parallel
+                        ))
+                    );
+                table->PutBoolean("Pit mode enabled for elevarm", elevarm->futureState.pitModeEnabled);
+                
                 table->PutBoolean("Action " + std::to_string(i) + " parallel", action.parallel);
             } else if (action.type == ValorAutoAction::BALANCE){
                 currentGroup->AddCommands(
@@ -473,7 +476,7 @@ frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
     
     precompileActions(ROOT_AUTO_PATH + "actions/");
 
-    return makeAuto(m_chooser.GetSelected());
+    return makeAuto(m_chooser.GetSelected(), frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue);
 }
 
 void ValorAuto::fillAutoList(){

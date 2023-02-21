@@ -1,0 +1,4 @@
+action,pickup
+action,pre_score
+//action,pickup
+elevarm,cone,back,ground
