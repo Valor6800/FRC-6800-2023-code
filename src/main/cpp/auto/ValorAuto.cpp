@@ -115,6 +115,8 @@ void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
 
 
 frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blueSide=false){
+    auto elevarmTable = nt::NetworkTableInstance::GetDefault().GetTable("Elevarm");
+
     frc2::SequentialCommandGroup *currentGroup = new frc2::SequentialCommandGroup();
     std::vector<frc2::SequentialCommandGroup> cmdGroups = {};
 
@@ -347,7 +349,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 Elevarm::ElevarmDirectionState directionState = elevarm->stringToDirectionState(action.values[1]);
                 Elevarm::ElevarmPositionState positionState = elevarm->stringToPositionState(action.values[2]);
 
-                if (!elevarm->futureState.pitModeEnabled)
+                if (!elevarmTable->GetBoolean("Pit Mode", false))
                     currentGroup->AddCommands(
                         std::move(*elevarm->getAutoCommand(
                             action.values[0],
@@ -356,7 +358,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                             action.parallel
                         ))
                     );
-                table->PutBoolean("Pit mode enabled for elevarm", elevarm->futureState.pitModeEnabled);
+                table->PutBoolean("Pit mode enabled for elevarm", elevarmTable->GetBoolean("Pit Mode", false));
                 
                 table->PutBoolean("Action " + std::to_string(i) + " parallel", action.parallel);
             } else if (action.type == ValorAutoAction::BALANCE){
@@ -480,9 +482,6 @@ frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
 }
 
 void ValorAuto::fillAutoList(){
-    auto inst = nt::NetworkTableInstance::GetDefault();
-    auto table = inst.GetTable("Drivetrain");
-
     std::string autos_path = ROOT_AUTO_PATH + "autos/";
     std::vector<std::string> avAutos = listDirectory(autos_path);
     for (std::string a: avAutos){
