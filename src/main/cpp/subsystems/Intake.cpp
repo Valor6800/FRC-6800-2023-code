@@ -4,8 +4,8 @@
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
                             intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false),
                             currySensor(_robot, subsystemName),
-                            intakeSpeed(-1),
-                            outtakeSpeed(0),
+                            intakeSpeed(1),
+                            outtakeSpeed(-0.4),
                             outtakeConeSpeed(-0.5),
                             outtakeCubeSpeed(-0.25),
                             spikeAmps(50)
@@ -51,7 +51,7 @@ void Intake::assessInputs()
         // } else {
         //     state.intakeState = OUTTAKE;
         // }
-    } else if (operatorGamepad->rightTriggerActive()) {
+    } else if (operatorGamepad->GetRightBumper()) {
         state.intakeState = OUTTAKE;
     } else if (operatorGamepad->leftTriggerActive()) {
         state.intakeState = INTAKE;
