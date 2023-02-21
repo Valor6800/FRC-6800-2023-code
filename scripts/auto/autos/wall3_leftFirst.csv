@@ -30,5 +30,5 @@ trajectory,johnson,gladosFar,180
 split,0.75,multiplier
 elevarm,cone,front,high,parallel
 split,0.75,multiplier
-trajectory,gladosFar,glados,180
-trajectory,glados,wallRight,180
+trajectory,gladosFar,gladosNear,180
+trajectory,gladosNear,wallRight,180
