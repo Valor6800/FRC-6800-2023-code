@@ -173,10 +173,10 @@ void Elevarm::assessInputs()
         if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
         else futureState.positionState = ElevarmPositionState::ELEVARM_PLAYER;
     } else if (operatorGamepad->GetYButton() || operatorGamepad->DPadUp()){
-        if (driverGamepad->rightTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_HIGH;
+        if (driverGamepad->leftTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_HIGH;
         else futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
     } else if(operatorGamepad->GetBButton() || operatorGamepad->DPadRight()){
-        if (driverGamepad->rightTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_MID;
+        if (driverGamepad->leftTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_MID;
         else futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
     } else {
         if (previousState.positionState != ElevarmPositionState::ELEVARM_MANUAL) {
@@ -191,9 +191,7 @@ void Elevarm::assessInputs()
         futureState.pieceState = ElevarmPieceState::ELEVARM_CONE;
     }
 
-    if (driverGamepad->GetLeftBumper()) {
-        futureState.directionState = ElevarmDirectionState::ELEVARM_FRONT;
-    } else if (driverGamepad->GetRightBumper() || operatorGamepad->GetLeftBumper()) {
+    if (driverGamepad->GetRightBumper() || operatorGamepad->GetLeftBumper()) {
         futureState.directionState = ElevarmDirectionState::ELEVARM_BACK;
     } else {
         futureState.directionState = ElevarmDirectionState::ELEVARM_FRONT;
