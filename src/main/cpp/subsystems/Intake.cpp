@@ -2,10 +2,10 @@
 #include "subsystems/Intake.h"
 
 #define DEFAULT_INTAKE_SPD 0.7f
-#define DEFAULT_OUTTAKE_SPD -0.4f
-#define DEFAULT_OUTTAKE_CONE_SPD -0.5f
-#define DEFAULT_OUTTAKE_CUBE_SPD -0.3f
-#define DEFAULT_HOLD_SPD 0.015f
+#define DEFAULT_OUTTAKE_SPD -0.7f
+#define DEFAULT_OUTTAKE_CONE_SPD -0.3f
+#define DEFAULT_OUTTAKE_CUBE_SPD -0.4f
+#define DEFAULT_HOLD_SPD 0.04f
 
 #define STALL_CURRENT 20.0f
 
