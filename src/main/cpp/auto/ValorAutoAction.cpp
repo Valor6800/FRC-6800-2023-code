@@ -87,6 +87,16 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             return;
         }
 
+        if (!blueSide){
+            // Terrible way of dealing with it, but its the best way other than making a whole new set of autos for red side
+            // The issue here is that we're only flipping the points along the y axis - this leaves X untouched and Y must be flipped
+            // The problem with that is that what was "left" on the blue side stays "left" on the red side, but the actual point Y got flipped
+            // so what is called "left" on the red side appears to be on the right when viewed on the red side - our value became right but our name stayed "left"
+            // The workaround to this is to flip the points while interepreting what was written, so when we tell it to use the "right" point is uses the right value
+            // if (!isScoringPosition(items[1])) items[1] = flipPointName(items[1]);
+            // if (!isScoringPosition(items[2])) items[2] = flipPointName(items[2]);
+        }
+
         auto _start = points->at(items[1]);
         auto _end = points->at(items[2]);
 

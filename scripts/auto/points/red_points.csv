@@ -1,32 +1,32 @@
 //robot start pos (x=1.78)
 //left and right are +5cm x from grid
-barrierLeft,1.9,2.99
+barrierLeft,1.9,4.15
 barrierBox,1.78,3.57
-barrierRight,1.9,4.15
-coopLeft,1.9,4.75
+barrierRight,1.9,2.99
+coopLeft,1.9,5.73
 coopBox,1.78,5.24
-coopRight,1.9,5.73
-wallLeft,1.9,6.33
+coopRight,1.9,4.75
+wallLeft,1.9,7.49
 wallBox,1.78,6.91
-wallRight,1.9,7.49
+wallRight,1.9,6.33
 
 cave,7.07,3.44
 wheatley,7.07,4.66
 johnson,7.07,5.88
 doug,7.07,7.1
 
-farParallelLeft,6.5,3.45
+farParallelWall,6.5,7.11
 chellFar,5.0,3.33
 chell,3.93,3.34
 chellNear,2.855,3.35
-shortParallelLeft,2.15,3.55
+shortParallelWall,2.15,7.24
 
-farParallelRight,6.5,7.11
+farParallelBarrier,6.5,3.45
 gladosFar,5.0,7.26
 glados,3.93,7.25
 gladosNear,2.855,7.24
-shortParallelRight,2.15,7.24
+shortParallelBarrier,2.15,3.55
 
-chargeFarLeft,6.0,5.9
-chargeFarRight,6.0,4.6
+chargeFarWall,6.0,5.9
+chargeFarBarrier,6.0,4.6
 charge,0.8,5.25
