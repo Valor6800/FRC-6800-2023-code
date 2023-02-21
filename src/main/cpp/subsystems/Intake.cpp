@@ -42,6 +42,13 @@ void Intake::init()
     currySensor.setSpikeSetpoint(state.stallCurrent);
     currySensor.setGetter([this]() { return intakeMotor.getCurrent(); });
     currySensor.setSpikeCallback([this]() { state.intakeState = SPIKED;});
+
+    table->PutNumber("outtake speed", state.outtakeSpeed);
+    table->PutNumber("outtake Cone speed", state.outtakeConeSpeed);
+    table->PutNumber("outtake Cube speed", state.outtakeCubeSpeed);
+    table->PutNumber("Hold Speed", state.holdSpeed);
+    table->PutNumber("Stall Current", state.stallCurrent);
+    table->PutNumber("intake speed", state.intakeSpeed);
     
     resetState();
 }
@@ -94,6 +101,12 @@ void Intake::assessInputs()
 
 void Intake::analyzeDashboard()
 {
+    state.outtakeSpeed = table->GetNumber("outtake speed", DEFAULT_OUTTAKE_SPD);
+    state.outtakeConeSpeed = table->GetNumber("outtake Cone speed", DEFAULT_OUTTAKE_CONE_SPD);
+    state.outtakeCubeSpeed =  table->GetNumber("outtake Cube speed", DEFAULT_OUTTAKE_CUBE_SPD);
+    state.holdSpeed = table->GetNumber("Hold Speed", DEFAULT_HOLD_SPD);
+    state.stallCurrent = table->GetNumber("Stall Current", STALL_CURRENT);
+    state.intakeSpeed = table->GetNumber("intake speed", DEFAULT_INTAKE_SPD);
 }
  
 void Intake::assignOutputs()
@@ -125,34 +138,40 @@ void Intake::InitSendable(wpi::SendableBuilder& builder)
         builder.AddDoubleProperty(
             "Outtake Cone Speed",
             [this]{ return state.outtakeConeSpeed; },
-            [this](double value) { state.outtakeConeSpeed = value; }
+            // [this](double value) { state.outtakeConeSpeed = value; }
+            nullptr
         );
         builder.AddDoubleProperty(
             "Outtake Cube Speed",
             [this]{ return state.outtakeCubeSpeed; },
-            [this](double value) { state.outtakeCubeSpeed = value; }
+            // [this](double value) { state.outtakeCubeSpeed = value; }
+            nullptr
         );
         builder.AddDoubleProperty(
             "Outtake Speed",
             [this]{ return state.outtakeSpeed; },
-            [this](double value) { state.outtakeSpeed = value; }
+            // [this](double value) { state.outtakeSpeed = value; }
+            nullptr
         );
         builder.AddDoubleProperty(
             "Intake Speed",
             [this]{ return state.intakeSpeed; },
-            [this](double value) { state.intakeSpeed = value; }
+            // [this](double value) { state.intakeSpeed = value; }
+            nullptr
         );
         builder.AddDoubleProperty(
             "Hold Speed",
             [this]{ return state.holdSpeed; },
-            [this](double value) { state.holdSpeed = value; }
+            // [this](double value) { state.holdSpeed = value; }
+            nullptr
         );
         builder.AddDoubleProperty(
             "Stall Current",
             [this]{ return state.stallCurrent; },
-            [this](double value) {
-                state.stallCurrent = value;
-                currySensor.setSpikeSetpoint(state.stallCurrent);
-            }
+            // [this](double value) {
+            //     state.stallCurrent = value;
+            //     currySensor.setSpikeSetpoint(state.stallCurrent);
+            // }
+            nullptr
         );
     }
