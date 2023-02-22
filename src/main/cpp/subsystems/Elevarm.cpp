@@ -259,11 +259,9 @@ void Elevarm::assignOutputs()
             armRotateMotor.setPower(manualOutputs.theta);
             previousState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
         } else {
-            double frontAngle = minAngle(true);
-            double backAngle = minAngle(false);
 
             // Target in triangle
-            if (futureState.targetPose.theta >= backAngle && futureState.targetPose.theta <= frontAngle){
+            if (futureState.targetPose.theta >= futureState.backMinAngle && futureState.targetPose.theta <= futureState.frontMinAngle){
                 if (atCarriage || std::fabs(armRotateMotor.getPosition()) > 45){
                     armRotateMotor.setPosition(futureState.targetPose.theta);
                 }
@@ -273,7 +271,7 @@ void Elevarm::assignOutputs()
                 carriageMotors.setPosition(futureState.targetPose.h);
             // Target oustside triangle
             } else {
-                if (armRotateMotor.getPosition() > frontAngle || armRotateMotor.getPosition() < backAngle){
+                if (armRotateMotor.getPosition() > futureState.frontMinAngle || armRotateMotor.getPosition() < futureState.backMinAngle){
                     carriageMotors.setPosition(futureState.targetPose.h);
                 } else {
                     carriageMotors.setPower(carriageStallPower);
@@ -483,12 +481,12 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
     );
     builder.AddDoubleProperty(
         "Min angle front",
-        [this]{ return minAngle(true); },
+        [this]{ return futureState.frontMinAngle; },
         nullptr
     );
     builder.AddDoubleProperty(
         "Min angle back",
-        [this]{ return minAngle(false); },
+        [this]{ return futureState.backMinAngle; },
         nullptr
     );
     builder.AddDoubleProperty(

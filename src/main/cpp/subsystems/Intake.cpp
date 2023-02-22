@@ -15,6 +15,7 @@
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
                             intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false),
+                            wristMotor(CANIDs::INTAKE_FOLLOW_CAN, ValorNeutralMode::Coast, false),
                             currySensor(_robot, subsystemName)
 {  
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
@@ -134,6 +135,21 @@ void Intake::assignOutputs()
         intakeMotor.setPower(state.intakeConeSpeed);
     } else if (state.intakeState == INTAKE_CUBE){
         intakeMotor.setPower(state.intakeCubeSpeed);
+    }
+    
+    if (!state.armInSailboat && state.armOnCorrectSide) {
+        // If setpoint in map, go to mapped setpoint
+        if (true) {
+            // wristMotor.setPosition();
+
+        // Go to snowcone
+        } else {
+            // wristMotor.setPosition();
+        }
+
+    // Go to snowcone
+    } else {
+        // wristMotor.setPosition();
     }
 }
 

@@ -113,6 +113,9 @@ public:
         bool deadManEnabled;
         bool pitModeEnabled;
 
+        double frontMinAngle;
+        double backMinAngle;
+
     } futureState, previousState;
 
     double heightDeadband, rotationDeadband;
