@@ -128,8 +128,8 @@ void Elevarm::init()
     // FRONT CONE
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.3_m,  0.0_m,  0.2_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] = frc::Pose3d( 0.045_m,  0.0_m,  1.173_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( 0.254_m,  0.0_m,  1.295_m, frc::Rotation3d() );
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.53_m,  0.0_m,  1.53_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] = frc::Pose3d( 0.108_m,  0.0_m,  1.15_m, frc::Rotation3d() );
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] = frc::Pose3d( 0.50_m,  0.0_m,  1.52_m, frc::Rotation3d() );
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] = frc::Pose3d( -0.11_m,  0.0_m,  1.23_m, frc::Rotation3d() );
     // FRONT CUBE
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] = frc::Pose3d( 0.3_m,  0.0_m,  0.2_m, frc::Rotation3d() );
@@ -172,9 +172,11 @@ void Elevarm::assessInputs()
         table->PutNumber("L stick Y", futureState.manualCarriage);
         table->PutNumber("R stick X", futureState.manualArm);
         futureState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
-    } else if (operatorGamepad->GetAButton() || operatorGamepad->DPadDown() || driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper()){
-        if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+    } else if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper()){
+        if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
         else futureState.positionState = ElevarmPositionState::ELEVARM_GROUND;
+    } else if (operatorGamepad->GetAButton() || operatorGamepad->DPadDown()) {
+        futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
     } else if(operatorGamepad->GetXButton() || operatorGamepad->DPadLeft()){
         if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
         else futureState.positionState = ElevarmPositionState::ELEVARM_PLAYER;
@@ -186,7 +188,11 @@ void Elevarm::assessInputs()
         else futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
     } else {
         if (previousState.positionState != ElevarmPositionState::ELEVARM_MANUAL) {
-            futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+            if (intake->state.intakeState == Intake::IntakeStates::SPIKED) {
+                futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
+            } else {
+                futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+            }
         } 
     }
 
@@ -197,6 +203,7 @@ void Elevarm::assessInputs()
         futureState.pieceState = ElevarmPieceState::ELEVARM_CONE;
     }
 
+    
     if (driverGamepad->GetRightBumper() || operatorGamepad->GetLeftBumper()) {
         futureState.directionState = ElevarmDirectionState::ELEVARM_BACK;
     } else {

@@ -87,12 +87,6 @@ void Intake::assessInputs()
     // Game element in intake, do not allow intaking until button release
     } else if(state.intakeState == SPIKED) {
 
-        // Matches the intake buttons - once released, reset spiked
-        if (!driverGamepad->GetLeftBumper() && !driverGamepad->GetRightBumper() && !operatorGamepad->leftTriggerActive() &&
-            !operatorGamepad->GetXButton() && !operatorGamepad->DPadLeft()) {
-            state.intakeState = DISABLED;
-        }
-
     // Should never happen
     } else {
         state.intakeState = DISABLED;
