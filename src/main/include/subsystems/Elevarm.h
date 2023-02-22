@@ -22,6 +22,8 @@
 #include <frc2/command/FunctionalCommand.h>
 #include <unordered_map>
 
+#include <ctre/phoenix/sensors/WPI_CANCoder.h>
+
 /**
  * @brief Subsystem - Elevarm
  */
@@ -166,6 +168,9 @@ private:
 
      ValorNeoController carriageMotors;
      ValorFalconController armRotateMotor;
+
+    ctre::phoenix::sensors::WPI_CANCoder armCANcoder;
+
      std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose3d>>> posMap;
      frc::Pose3d stowPos;
 

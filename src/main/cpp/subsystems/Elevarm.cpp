@@ -63,6 +63,7 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             intake(_intake),
                             carriageMotors(CANIDs::CARRIAGE_MAIN, ValorNeutralMode::Brake, false),
                             armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
+                            armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
                             carriageStallPower(P_MIN_CARRIAGE)
@@ -482,6 +483,11 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
     builder.AddDoubleProperty(
         "Min angle back",
         [this]{ return minAngle(false); },
+        nullptr
+    );
+    builder.AddDoubleProperty(
+        "Arm CANcoder",
+        [this]{ return armCANcoder.GetAbsolutePosition(); },
         nullptr
     );
 }
