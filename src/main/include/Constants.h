@@ -54,4 +54,5 @@ namespace CANIDs {
     constexpr static int CARRIAGE_FOLLOW = 10;
     constexpr static int ARM_ROTATE = 11;
     constexpr static int ARM_CANCODER = 14;
+    constexpr static int WRIST = 15;
 }

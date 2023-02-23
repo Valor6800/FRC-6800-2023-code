@@ -112,9 +112,12 @@ private:
 
      ValorFalconController intakeMotor;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
      ValorFalconController wristMotor;
 
 >>>>>>> 3ac8746 (feat: New wrist)
+=======
+>>>>>>> 3c44d4f (feat: untested wrist code using map setpoints, innacurate constants for wrist)
      ValorCurrentSensor currySensor;
 };
