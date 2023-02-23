@@ -389,11 +389,21 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT
     }
 }
 
-void Drivetrain::limelightHoming(){
+void Drivetrain::limelightHoming(){//TODO: Add an input for pipeline here once we get mid pipe tuned and ready
     limeTable->PutNumber("pipeline", 1);
-    if (limeTable->GetNumber("tv", 0) == 1){
-        state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * LimelightConstants::KP_LIME_LIGHT) * rotMaxSpeed);
-    } 
+
+    if (limeTable->GetNumber("tv",0) == 1){
+        if(std::fabs(pigeon.GetYaw())>3){
+            state.rotRPS = units::angular_velocity::radians_per_second_t((frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue?0:180)*rotMaxSpeed);
+        } else{
+            state.ySpeedMPS = units::velocity::meters_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * LimelightConstants::KP_LIME_LIGHT) * driveMaxSpeed);
+        }
+        
+    }
+
+    //// if (limeTable->GetNumber("tv", 0) == 1){
+    ////     state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * LimelightConstants::KP_LIME_LIGHT) * rotMaxSpeed);
+    //// }
 }
 
 frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
