@@ -55,6 +55,8 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         type = ValorAutoAction::Type::ACCELERATION;
     } else if (items[0] == "balance") {
         type = ValorAutoAction::BALANCE;
+    } else if (items[0] == "intake") {
+        type = ValorAutoAction::INTAKE;
     }
 
     if (type == ValorAutoAction::Type::TIME) {
@@ -169,5 +171,12 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             accelMultiplier = 1.0;
     } else if (type == ValorAutoAction::BALANCE){
         
+    } else if (type == ValorAutoAction::Type::INTAKE) {
+        if (items.size() < 2){
+            error + ValorAutoAction::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
+            return;
+        }
+        value = items[1];
     }
 }

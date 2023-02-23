@@ -16,6 +16,7 @@
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
+#include <frc2/command/FunctionalCommand.h>
 
 /**
  * @brief Subsystem - Intake
@@ -51,6 +52,9 @@ public:
 
      void InitSendable(wpi::SendableBuilder& builder);
 
+     
+
+
      //this state will come from elevarm, elevarm not currently connected to dev
      enum IntakePieceState {
         ELEVARM_CONE,
@@ -81,6 +85,23 @@ public:
 
      }state;
     
+    std::unordered_map<std::string, IntakeStates> stringToStateMap = {
+        {"disable", IntakeStates::DISABLED},
+        {"spiked", IntakeStates::SPIKED},
+        {"outtake_cone", IntakeStates::OUTTAKE_CONE},
+        {"outtake_cube", IntakeStates::OUTTAKE_CUBE},
+        {"outtake", IntakeStates::OUTTAKE},
+        {"intake", IntakeStates::INTAKE},
+     };
+     
+     IntakeStates stringToIntakeState(std::string name){
+        if (!stringToStateMap.contains(name))
+               return IntakeStates::DISABLED;
+        return stringToStateMap.at(name);
+     }
+
+     frc2::FunctionalCommand * getAutoCommand(std::string);
+
 private:
 
      ValorNeoController intakeMotor;

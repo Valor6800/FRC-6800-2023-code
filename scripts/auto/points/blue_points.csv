@@ -1,8 +1,9 @@
 //robot start pos (x=1.78)
 //left and right are +5cm x from grid
-barrierLeft,1.9,5.03
+barrierLeft,1.78,5.03
+barrierStartLeft,2.095,5.03
 barrierBox,1.78,4.45
-barrierRight,1.9,3.87
+barrierRight,1.78,3.87
 coopLeft,1.9,3.27
 coopBox,1.78,2.78
 coopRight,1.9,2.29
