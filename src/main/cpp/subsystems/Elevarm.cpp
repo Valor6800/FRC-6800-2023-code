@@ -38,8 +38,8 @@
 #define ROTATE_K_AFF_CUBE 0.1275f
 #define ROTATE_K_AFF_POS 90.0f
 
-#define PREVIOUS_HEIGHT_DEADBAND 0.02f
-#define PREVIOUS_ROTATION_DEADBAND 2.0f
+#define PREVIOUS_HEIGHT_DEADBAND 0.03f
+#define PREVIOUS_ROTATION_DEADBAND 3.5f
 
 #define X_BUMPER_WIDTH 0.0984f
 #define X_HALF_WIDTH 0.2921f
@@ -525,4 +525,3 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
         {}
     );
 }
-

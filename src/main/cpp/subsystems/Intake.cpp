@@ -8,6 +8,7 @@
 #define DEFAULT_HOLD_SPD 0.04f
 
 #define STALL_CURRENT 20.0f
+#define NOLOAD_CURRENT 4.0f
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
                             intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false),
@@ -118,6 +119,27 @@ void Intake::assignOutputs()
     } else if (state.intakeState == INTAKE){
         intakeMotor.setPower(state.intakeSpeed);
     }
+}
+
+frc2::FunctionalCommand * Intake::getAutoCommand(std::string intakeState){
+    Intake::IntakeStates inState = stringToIntakeState(intakeState);
+    return new frc2::FunctionalCommand(
+        // OnInit
+        [&, inState]() {
+            state.intakeState = inState;
+        }, 
+        //onExecute
+        [&](){
+            
+        }, 
+        [&](bool){
+    
+        }, // onEnd
+        [&](){ //isFinished
+            return true;
+        },
+        {}
+    );
 }
 
 void Intake::InitSendable(wpi::SendableBuilder& builder)

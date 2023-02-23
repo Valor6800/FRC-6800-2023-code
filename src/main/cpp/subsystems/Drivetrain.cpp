@@ -12,12 +12,12 @@
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
 
-#define KPX 50.0f //.75
+#define KPX 60.0f //50
 #define KIX 0.0f //0
 #define KDX 0.0f //.1
 #define KFX 0.0f
 
-#define KPY 65.0f //.75
+#define KPY 60.0f //65
 #define KIY 0.0f //0
 #define KDY 0.0f //.1
 #define KFY 0.0f
@@ -48,7 +48,7 @@
 #define DRIVE_GEAR_RATIO 5.51f
 #define AZIMUTH_GEAR_RATIO 13.37f
 #define AUTO_MAX_SPEED 10.0f
-#define AUTO_MAX_ACCEL 0.75f //3.0
+#define AUTO_MAX_ACCEL 1.875f //1.5
 #define ROT_SPEED_MUL 2.0f
 
 #define AUTO_VISION_THRESHOLD 5.0f //meters
@@ -270,11 +270,11 @@ void Drivetrain::analyzeDashboard()
                 (x > (FIELD_LENGTH - AUTO_VISION_THRESHOLD) && x < FIELD_LENGTH)) &&
                 (state.visionPose - state.prevVisionPose).Translation().Norm().to<double>() < 1.0)
             {
-                estimator->AddVisionMeasurement(
-                    state.visionPose,  
-                    frc::Timer::GetFPGATimestamp(),
-                    {visionStd, visionStd, visionStd}
-                ); 
+                // estimator->AddVisionMeasurement(
+                //     state.visionPose,  
+                //     frc::Timer::GetFPGATimestamp(),
+                //     {visionStd, visionStd, visionStd}
+                // ); 
             }
             
             
