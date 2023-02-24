@@ -430,21 +430,20 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
             state.isLeveled = false;
         }, // OnInit
         [&](){
-            //if (pigeon.GetPitch() < -15.0){state.xSpeed = -0.5;}
-            if (pigeon.GetPitch() < -25.0) {
+            if (pigeon.GetPitch() > 18.0) {
                 state.abovePitchThreshold = true;
                 state.xSpeed = -0.4;
             } else if (state.abovePitchThreshold) {
-                if (pigeon.GetPitch()> -8.0 ){
+                if (pigeon.GetPitch() < 10.7 ){
                     state.isLeveled = true;
                     state.xSpeed = 0.0;
-                }else if(pigeon.GetPitch()> -16){
+                }else if(pigeon.GetPitch() < 16){
                     state.xSpeed = -0.15;
                 }else{
-                    state.xSpeed = -0.4;
+                    state.xSpeed = -0.3;
                 }
             } else {
-                state.xSpeed = -0.4;
+                state.xSpeed = -0.3;
             }
         }, //onExecute
         [&](bool){

@@ -28,6 +28,5 @@ glados,3.93,0.77
 gladosNear,2.855,0.78
 shortParallelWall,2.15,0.78
 
-chargeFarBarrier,6.0,3.42
-chargeFarWall,6.0,2.12
+chargeFar,6.0,2.77
 charge,0.8,2.77
