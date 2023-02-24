@@ -11,6 +11,7 @@
 #define TXRANGE  30.0f
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
+// #define KP_LIME_LIGHT 1.25f
 
 #define KPX 50.0f //.75
 #define KIX 0.0f //0
@@ -184,6 +185,8 @@ void Drivetrain::init()
     table->PutBoolean("Load Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
 
+    table->PutNumber("KPLIMELIGHT", 1.25);
+
     resetState();
 }
 
@@ -218,12 +221,14 @@ void Drivetrain::assessInputs()
     state.xSpeed = driverGamepad->leftStickY(2);
     state.ySpeed = driverGamepad->leftStickX(2);
     state.rot = driverGamepad->rightStickX(3);
-    state.limehoming = driverGamepad->GetYButton();
+    state.limehoming = driverGamepad->GetBButton();
     state.xPose = driverGamepad->GetXButton();
 }
 
 void Drivetrain::analyzeDashboard()
 {
+
+    KP_LIME_LIGHT = table->GetNumber("KPLIMELIGHT",1.25);
 
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
@@ -295,11 +300,11 @@ void Drivetrain::assignOutputs()
         setXMode();
     } else if (state.limehoming){
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-        limelightHoming();
+        limelightHoming(LimelightPipes::TAPE_HIGH);
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     } else {
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-        limeTable->PutNumber("pipeline", 0);    
+        limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);    
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     }
 }
@@ -389,14 +394,14 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT
     }
 }
 
-void Drivetrain::limelightHoming(){//TODO: Add an input for pipeline here once we get mid pipe tuned and ready
-    limeTable->PutNumber("pipeline", 1);
+void Drivetrain::limelightHoming(LimelightPipes pipe){
+    limeTable->PutNumber("pipeline", pipe);
 
     if (limeTable->GetNumber("tv",0) == 1){
         if(std::fabs(pigeon.GetYaw())>3){
             state.rotRPS = units::angular_velocity::radians_per_second_t((frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue?0:180)*rotMaxSpeed);
         } else{
-            state.ySpeedMPS = units::velocity::meters_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * LimelightConstants::KP_LIME_LIGHT) * driveMaxSpeed);
+            state.ySpeedMPS = units::velocity::meters_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * KP_LIME_LIGHT) * driveMaxSpeed);
         }
         
     }
