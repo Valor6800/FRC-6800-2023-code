@@ -1,14 +1,17 @@
 #include <iostream>
 #include "subsystems/Intake.h"
-
-#define DEFAULT_INTAKE_SPD 0.7f
+//intaking with cone and cube has different directions, so flipped
+#define DEFAULT_INTAKE_CUBE_SPD -0.7f
+#define DEFAULT_INTAKE_CONE_SPD 0.7f
 #define DEFAULT_OUTTAKE_SPD -0.7f
+//since intaking with cone vs cube is different, outtaking follows the same rule
+#define DEFAULT_OUTTAKE_CUBE_SPD 0.4f
 #define DEFAULT_OUTTAKE_CONE_SPD -0.3f
-#define DEFAULT_OUTTAKE_CUBE_SPD -0.4f
-#define DEFAULT_HOLD_SPD 0.04f
 
-#define STALL_CURRENT 20.0f
-#define NOLOAD_CURRENT 4.0f
+#define DEFAULT_HOLD_SPD 0.05f
+
+#define STALL_CURRENT 15.0f
+#define CACHE_SIZE 10.0f
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
                             intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false),
@@ -25,14 +28,14 @@ Intake::~Intake()
 void Intake::resetState()
 {
    state.intakeState = DISABLED;
+   state.pieceState = CONE;
    currySensor.reset();
 }
 
 void Intake::init()
 {
-    intakeMotor.setupFollower(CANIDs::INTAKE_FOLLOW_CAN, true);
-
-    state.intakeSpeed = DEFAULT_INTAKE_SPD;
+    state.intakeConeSpeed = DEFAULT_INTAKE_CONE_SPD;
+    state.intakeCubeSpeed = DEFAULT_INTAKE_CUBE_SPD;
     state.outtakeSpeed = DEFAULT_OUTTAKE_SPD;
     state.outtakeConeSpeed = DEFAULT_OUTTAKE_CONE_SPD;
     state.outtakeCubeSpeed = DEFAULT_OUTTAKE_CUBE_SPD;
@@ -43,13 +46,15 @@ void Intake::init()
     currySensor.setSpikeSetpoint(state.stallCurrent);
     currySensor.setGetter([this]() { return intakeMotor.getCurrent(); });
     currySensor.setSpikeCallback([this]() { state.intakeState = SPIKED;});
+    currySensor.setCacheSize(CACHE_SIZE);
 
     table->PutNumber("outtake speed", state.outtakeSpeed);
     table->PutNumber("outtake Cone speed", state.outtakeConeSpeed);
     table->PutNumber("outtake Cube speed", state.outtakeCubeSpeed);
     table->PutNumber("Hold Speed", state.holdSpeed);
     table->PutNumber("Stall Current", state.stallCurrent);
-    table->PutNumber("intake speed", state.intakeSpeed);
+    table->PutNumber("intake cone speed", state.intakeConeSpeed);
+    table->PutNumber("intake cube speed", state.intakeCubeSpeed);
     
     resetState();
 }
@@ -60,17 +65,13 @@ void Intake::assessInputs()
     if (driverGamepad->rightTriggerActive() || operatorGamepad->rightTriggerActive()) {
         // Operator holding cube score
         if (operatorGamepad->DPadDown() || operatorGamepad->DPadUp()
-            || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight()) {
+            || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight() || driverGamepad->GetAButton()) {
             state.intakeState = OUTTAKE_CUBE;
         // Operator holding cone score
-        } else if (operatorGamepad->GetAButton() || operatorGamepad->GetBButton() 
-                || operatorGamepad->GetXButton() || operatorGamepad->GetYButton()) {
+        } else{
             state.intakeState = OUTTAKE_CONE;
+        }    
         // Driver/Operator scoring independently
-        } else {
-            state.intakeState = OUTTAKE;
-        }
-
     // No game element in intake, driver/operator requesting intake
     } else if (state.intakeState != SPIKED) {
 
@@ -78,8 +79,14 @@ void Intake::assessInputs()
         if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || operatorGamepad->leftTriggerActive() ||
             // Operator human player pickup
             operatorGamepad->GetXButton()  || operatorGamepad->DPadLeft()) {
-            state.intakeState = INTAKE;
-
+            if (driverGamepad->GetAButton()){
+                state.intakeState = INTAKE_CUBE;
+                state.pieceState = CUBE;
+            }
+            else{
+                state.intakeState = INTAKE_CONE;
+                state.pieceState = CONE;
+            }
         // Nothing pressed
         } else{
             state.intakeState = DISABLED;
@@ -101,7 +108,8 @@ void Intake::analyzeDashboard()
     state.outtakeCubeSpeed =  table->GetNumber("outtake Cube speed", DEFAULT_OUTTAKE_CUBE_SPD);
     state.holdSpeed = table->GetNumber("Hold Speed", DEFAULT_HOLD_SPD);
     state.stallCurrent = table->GetNumber("Stall Current", STALL_CURRENT);
-    state.intakeSpeed = table->GetNumber("intake speed", DEFAULT_INTAKE_SPD);
+    state.intakeConeSpeed = table->GetNumber("intake cone speed", DEFAULT_INTAKE_CONE_SPD);
+    state.intakeCubeSpeed = table->GetNumber("intake cube speed", DEFAULT_INTAKE_CUBE_SPD);
 }
  
 void Intake::assignOutputs()
@@ -109,15 +117,23 @@ void Intake::assignOutputs()
     if (state.intakeState == DISABLED) {
         intakeMotor.setPower(0);
     } else if (state.intakeState == SPIKED) {
-        intakeMotor.setPower(state.holdSpeed);
+        if (state.pieceState == CONE){
+            intakeMotor.setPower(state.holdSpeed);
+        } else{
+            intakeMotor.setPower(-state.holdSpeed);
+        }
+
+        
     } else if (state.intakeState == OUTTAKE_CONE){
         intakeMotor.setPower(state.outtakeConeSpeed);
     } else if (state.intakeState == OUTTAKE_CUBE){
         intakeMotor.setPower(state.outtakeCubeSpeed);
     } else if (state.intakeState == OUTTAKE){
         intakeMotor.setPower(state.outtakeSpeed);
-    } else if (state.intakeState == INTAKE){
-        intakeMotor.setPower(state.intakeSpeed);
+    } else if (state.intakeState == INTAKE_CONE){
+        intakeMotor.setPower(state.intakeConeSpeed);
+    } else if (state.intakeState == INTAKE_CUBE){
+        intakeMotor.setPower(state.intakeCubeSpeed);
     }
 }
 
@@ -170,8 +186,14 @@ void Intake::InitSendable(wpi::SendableBuilder& builder)
             nullptr
         );
         builder.AddDoubleProperty(
-            "Intake Speed",
-            [this]{ return state.intakeSpeed; },
+            "Intake Cone Speed",
+            [this]{ return state.intakeConeSpeed; },
+            // [this](double value) { state.intakeSpeed = value; }
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "Intake Cube Speed",
+            [this]{ return state.intakeCubeSpeed; },
             // [this](double value) { state.intakeSpeed = value; }
             nullptr
         );

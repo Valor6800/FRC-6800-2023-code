@@ -8,7 +8,7 @@ ValorCurrentSensor::ValorCurrentSensor(frc::TimedRobot *_robot, const char *_nam
     spikedSetpoint(DEFAULT_SPIKE_VALUE),
     cacheSize(DEFAULT_CACHE_SIZE)
 {
-    wpi::SendableRegistry::AddLW(this, "ValorDebounceSensor", sensorName);
+    wpi::SendableRegistry::AddLW(this, "ValorCurrentSensor", sensorName);
     reset();
 }
 

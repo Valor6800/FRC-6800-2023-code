@@ -73,7 +73,6 @@ void ValorFalconController::setPIDF(ValorPIDF _pidf, int slot)
     motor->Config_kI(slot, pidf.I);
     motor->Config_kD(slot, pidf.D);
     motor->Config_kF(slot, pidf.F * (1023.0 / 7112.0));
-    motor->ConfigOpenloopRamp(2);
     motor->ConfigAllowableClosedloopError(slot, pidf.error * FALCON_TICKS_PER_REV / conversion);
     double vel = pidf.velocity / 10.0 * FALCON_TICKS_PER_REV / conversion;
     motor->ConfigMotionCruiseVelocity(vel);
