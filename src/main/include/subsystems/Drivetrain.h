@@ -137,7 +137,7 @@ public:
           TAPE_HIGH
           //TAPE_LOW //TODO the pipeline needs to be made for this
      };
-     double KP_LIME_LIGHT = 1.25; //!Remove when tuning is done.
+     double KP_LIME_LIGHT = 0.25; //!Remove when tuning is done.
      /**
       * Drive the robot with given x, y and rotational velocities using open loop velocity control
       * @param vx_mps the desired x velocity component in meters per second
