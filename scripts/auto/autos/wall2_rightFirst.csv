@@ -18,6 +18,6 @@ trajectory,glados,wallRight,180
 elevarm,cone,front,snake,parallel
 trajectory,wallRight,glados,180,reversed
 trajectory,glados,gladosFar,180,reversed
-trajectory,gladosFar,chargeFarBarrier,180,reversed
+trajectory,gladosFar,chargeFar,180,reversed
 balance
 xmode

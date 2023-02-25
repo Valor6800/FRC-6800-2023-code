@@ -51,7 +51,7 @@
 #define AUTO_MAX_ACCEL 1.875f //1.5
 #define ROT_SPEED_MUL 2.0f
 
-#define AUTO_VISION_THRESHOLD 5.0f //meters
+#define AUTO_VISION_THRESHOLD 4.0f //meters
 #define FIELD_LENGTH 16.5f
 
 #define MODULE_DIFF 0.206375f
@@ -61,7 +61,6 @@
 
 #define DRIVETRAIN_CAN_BUS ""
 #define PIGEON_CAN_BUS "baseCAN"
-
 Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivetrain"),
                         driveMaxSpeed(MOTOR_FREE_SPEED / 60.0 / DRIVE_GEAR_RATIO * WHEEL_DIAMETER_M * M_PI),
                         swerveModuleDiff(units::meter_t(MODULE_DIFF)),
@@ -577,6 +576,18 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
                 pose.push_back(getPose_m().X().to<double>());
                 pose.push_back(getPose_m().Y().to<double>());
                 pose.push_back(getPose_m().Rotation().Degrees().to<double>());
+                return pose;
+            },
+            nullptr
+        );
+        builder.AddDoubleArrayProperty(
+            "visionPose",
+            [this] 
+            { 
+                std::vector<double> pose;
+                pose.push_back(state.visionPose.X().to<double>());
+                pose.push_back(state.visionPose.Y().to<double>());
+                pose.push_back(state.visionPose.Rotation().Degrees().to<double>());
                 return pose;
             },
             nullptr

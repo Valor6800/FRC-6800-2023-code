@@ -1,0 +1,15 @@
+reset_odom,wallStartLeft,180
+elevarm,cone,front,high
+trajectory,wallStartLeft,wallLeft,180
+time,1000
+intake,outtake_cone
+time,1000
+intake,disabled
+trajectory,wallLeft,wallStartLeft,180,reversed
+elevarm,cone,front,stow,parallel
+trajectory,wallStartLeft,glados,180,reversed
+trajectory,glados,gladosFar,180,reversed
+split,0.25,multiplier
+trajectory,gladosFar,chargeFar,180,reversed
+balance
+xmode
