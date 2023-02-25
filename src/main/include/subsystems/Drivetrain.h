@@ -115,7 +115,8 @@ public:
           
           bool saveToFileDebouncer;
 
-          bool limehoming;
+          bool limehomingHigh;
+          bool limehomingMid;
           bool xPose;
 
           bool isLeveled;
@@ -134,10 +135,10 @@ public:
 
      enum LimelightPipes{
           APRIL_TAGS,
-          TAPE_HIGH
-          //TAPE_LOW //TODO the pipeline needs to be made for this
+          TAPE_HIGH,
+          TAPE_MID
      };
-     double KP_LIME_LIGHT = 0.25; //!Remove when tuning is done.
+     
      /**
       * Drive the robot with given x, y and rotational velocities using open loop velocity control
       * @param vx_mps the desired x velocity component in meters per second

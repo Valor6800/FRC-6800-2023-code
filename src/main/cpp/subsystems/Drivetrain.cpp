@@ -11,7 +11,7 @@
 #define TXRANGE  30.0f
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
-// #define KP_LIME_LIGHT 1.25f
+#define KP_LIME_LIGHT 0.375f
 
 #define KPX 50.0f //.75
 #define KIX 0.0f //0
@@ -154,6 +154,9 @@ void Drivetrain::init()
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     pigeon.Calibrate();    
 
+    state.limehomingHigh = false;
+    state.limehomingMid = false;
+
     initPositions.fill(frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)});
 
     for (int i = 0; i < SWERVE_COUNT; i++)
@@ -221,14 +224,28 @@ void Drivetrain::assessInputs()
     state.xSpeed = driverGamepad->leftStickY(2);
     state.ySpeed = driverGamepad->leftStickX(2);
     state.rot = driverGamepad->rightStickX(3);
-    state.limehoming = driverGamepad->GetBButton();
+
+    if (driverGamepad->GetBButton()){
+        if (operatorGamepad->GetYButton()) {
+            state.limehomingHigh = true;
+            state.limehomingMid = false;
+        } else if(operatorGamepad->GetBButton()) {
+            state.limehomingMid = true;
+            state.limehomingHigh = false;
+        } else{
+            state.limehomingHigh = false;
+            state.limehomingMid = false;  
+        }
+    } else{
+        state.limehomingHigh = false;
+        state.limehomingMid = false;
+    }
+
     state.xPose = driverGamepad->GetXButton();
 }
 
 void Drivetrain::analyzeDashboard()
 {
-
-    KP_LIME_LIGHT = table->GetNumber("KPLIMELIGHT",1.25);
 
     // Only save to file once. Wait until switch is toggled to run again
     if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
@@ -298,9 +315,9 @@ void Drivetrain::assignOutputs()
 
     if (state.xPose){
         setXMode();
-    } else if (state.limehoming){
+    } else if (state.limehomingHigh || state.limehomingMid){
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-        limelightHoming(LimelightPipes::TAPE_HIGH);
+        limelightHoming(state.limehomingHigh ? LimelightPipes::TAPE_HIGH : LimelightPipes::TAPE_MID);
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     } else {
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
