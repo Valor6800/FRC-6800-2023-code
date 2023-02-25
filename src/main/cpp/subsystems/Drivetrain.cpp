@@ -399,16 +399,16 @@ void Drivetrain::limelightHoming(LimelightPipes pipe){
 
     if (limeTable->GetNumber("tv",0) == 1){
         if(std::fabs(pigeon.GetYaw())>3){
-            state.rotRPS = units::angular_velocity::radians_per_second_t((frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue?0:180)*rotMaxSpeed);
+            state.rotRPS = units::angular_velocity::radians_per_second_t((pigeon.GetYaw()/180) * rotMaxSpeed);
         } else{
             state.ySpeedMPS = units::velocity::meters_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * KP_LIME_LIGHT) * driveMaxSpeed);
         }
         
     }
 
-    //// if (limeTable->GetNumber("tv", 0) == 1){
-    ////     state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * LimelightConstants::KP_LIME_LIGHT) * rotMaxSpeed);
-    //// }
+    // if (limeTable->GetNumber("tv", 0) == 1){
+    //     state.rotRPS = units::angular_velocity::radians_per_second_t((limeTable->GetNumber("tx", 0) / KLIMELIGHT * LimelightConstants::KP_LIME_LIGHT) * rotMaxSpeed);
+    // }
 }
 
 frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
