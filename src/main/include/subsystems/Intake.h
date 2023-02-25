@@ -109,5 +109,6 @@ public:
 private:
 
      ValorFalconController intakeMotor;
+
      ValorCurrentSensor currySensor;
 };
