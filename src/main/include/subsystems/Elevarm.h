@@ -61,6 +61,9 @@ public:
 
      void InitSendable(wpi::SendableBuilder& builder);
 
+    double getArmCANcoderPosition();
+    double getWristCANcoderPosition();
+
     struct Positions {
         Positions() {
             Positions(0,0,0);
@@ -176,6 +179,7 @@ private:
      ValorFalconController armRotateMotor;
 
     ctre::phoenix::sensors::WPI_CANCoder armCANcoder;
+    ctre::phoenix::sensors::WPI_CANCoder wristCANcoder;
 
      ValorFalconController wristMotor;
 
@@ -188,7 +192,10 @@ private:
 
     Intake *intake;
      
-     double manualMaxCarriageSpeed;
-     double manualMaxArmSpeed;
-     double carriageStallPower;
+    double manualMaxCarriageSpeed;
+    double manualMaxArmSpeed;
+    double carriageStallPower;
+
+    bool wristInRange;
+    bool armInRange;
 };

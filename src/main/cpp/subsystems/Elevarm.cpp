@@ -22,6 +22,11 @@
 
 #define CANCODER_OFFSET 43.5f
 
+#define WRIST_HIGH_EDGE 360.0f
+#define WRIST_LOW_EDGE 0.0f
+#define ARM_HIGH_EDGE 100.0f
+#define ARM_LOW_EDGE  0.0f
+
 #define CARRIAGE_K_F 0.000156f  
 #define CARRIAGE_K_P 1e-4f
 #define CARRIAGE_K_I 0.0f
@@ -80,6 +85,7 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
                             armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
                             wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, true, "baseCAN"),
+                            wristCANcoder(CANIDs::WRIST_CANCODER, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
                             carriageStallPower(P_MIN_CARRIAGE)
@@ -150,6 +156,9 @@ void Elevarm::init()
 
     armCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
     armCANcoder.SetPositionToAbsolute();
+
+    wristCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
+    wristCANcoder.SetPositionToAbsolute();
     
     wristMotor.setConversion((1.0 / WRIST_GEAR_RATIO) * 360.0);
     wristMotor.setForwardLimit(WRIST_FORWARD_LIMIT);
@@ -187,17 +196,19 @@ void Elevarm::init()
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
-    
+
+    resetState();
+    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
+    carriageMotors.setEncoderPosition(0.0);
+    wristMotor.setEncoderPosition(0.0);
 
     table->PutNumber("Carriage Max Manual Speed", MAN_MAX_CARRIAGE);
     table->PutNumber("Arm Rotate Max Manual Speed", MAN_MAX_ROTATE);
     table->PutBoolean("Pit Mode", futureState.pitModeEnabled);
     table->PutNumber("Carraige Stall", carriageStallPower);
 
-    resetState();
-    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
-    carriageMotors.setEncoderPosition(0.0);
-    wristMotor.setEncoderPosition(0.0);
+    wristInRange = getWristCANcoderPosition() < WRIST_HIGH_EDGE && getWristCANcoderPosition() > WRIST_LOW_EDGE;
+    armInRange = getArmCANcoderPosition() < ARM_HIGH_EDGE && getArmCANcoderPosition() > ARM_LOW_EDGE;
 }
 
 void Elevarm::assessInputs()
@@ -257,6 +268,9 @@ void Elevarm::analyzeDashboard()
     futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition(), wristMotor.getPosition()));
     futureState.frontMinAngle = minAngle(true);
     futureState.backMinAngle = minAngle(false);
+
+    wristInRange = getWristCANcoderPosition() < WRIST_HIGH_EDGE && getWristCANcoderPosition() > WRIST_LOW_EDGE;
+    armInRange = getArmCANcoderPosition() < ARM_HIGH_EDGE && getArmCANcoderPosition() > ARM_LOW_EDGE;
 }
 
 void Elevarm::assignOutputs()
@@ -429,6 +443,16 @@ frc::Pose2d Elevarm::forwardKinematics(Elevarm::Positions positions)
     return frc::Pose2d((units::length::meter_t)x,(units::length::meter_t)z,(units::angle::degree_t)w);
 }
 
+double Elevarm::getArmCANcoderPosition()
+{
+    return armCANcoder.GetAbsolutePosition();
+}
+
+double Elevarm::getWristCANcoderPosition()
+{
+    return wristCANcoder.GetAbsolutePosition();
+}
+
 void Elevarm::InitSendable(wpi::SendableBuilder& builder)
 {
     builder.SetSmartDashboardType("Subsystem");
@@ -536,7 +560,22 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
     );
     builder.AddDoubleProperty(
         "Arm CANcoder",
-        [this]{ return armCANcoder.GetAbsolutePosition(); },
+        [this]{ return getArmCANcoderPosition(); },
+        nullptr
+    );
+    builder.AddDoubleProperty(
+        "Wrist CANcoder",
+        [this]{ return getWristCANcoderPosition(); },
+        nullptr
+    );
+    builder.AddBooleanProperty(
+        "Wrist CANcoder in range",
+        [this]{ return wristInRange; },
+        nullptr
+    );
+    builder.AddBooleanProperty(
+        "Arm CANcoder in range",
+        [this]{ return armInRange; },
         nullptr
     );
 }
