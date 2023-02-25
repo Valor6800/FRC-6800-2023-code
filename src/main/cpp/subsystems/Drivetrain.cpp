@@ -422,6 +422,26 @@ void Drivetrain::limelightHoming(LimelightPipes pipe){
     }
 }
 
+frc2::FunctionalCommand* Drivetrain::getLimeHoming(std::string height){
+    return new frc2::FunctionalCommand(
+        [&](){}, // OnInit
+        [&](){
+            if (height == "mid"){
+                limelightHoming(LimelightPipes::TAPE_MID);
+            } else{
+                limelightHoming(LimelightPipes::TAPE_HIGH);
+            }
+        }, //onExecute
+        [&](bool){
+            limelightHoming(LimelightPipes::APRIL_TAGS);
+        }, // onEnd
+        [&](){
+            return std::fabs(limeTable->GetNumber("tx",0))<2.0;
+        },//isFinished
+        {}
+    );
+}
+
 frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
     return new frc2::FunctionalCommand(
         [&](){

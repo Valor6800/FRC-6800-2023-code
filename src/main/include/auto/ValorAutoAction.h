@@ -28,7 +28,8 @@ struct ValorAutoAction {
         ELEVARM,
         ACCELERATION,
         BALANCE,
-        INTAKE
+        INTAKE,
+        LIME_HOMING
     } type;
 
     enum Error {

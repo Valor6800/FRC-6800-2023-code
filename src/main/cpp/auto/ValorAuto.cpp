@@ -376,6 +376,10 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 currentGroup->AddCommands(
                     std::move(*intake->getAutoCommand(action.value))
                 );
+            } else if (action.type == ValorAutoAction::LIME_HOMING) {
+                currentGroup->AddCommands(
+                    std::move(*drivetrain->getLimeHoming(action.value))
+                );
             }
         }
     }
