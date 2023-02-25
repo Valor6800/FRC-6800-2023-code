@@ -107,6 +107,12 @@ public:
 
      void InitSendable(wpi::SendableBuilder& builder);
 
+     enum LimelightPipes{
+          APRIL_TAGS,
+          TAPE_HIGH,
+          TAPE_MID
+     };
+
      struct x
      {
           double xSpeed;
@@ -115,8 +121,8 @@ public:
           
           bool saveToFileDebouncer;
 
-          bool limehomingHigh;
-          bool limehomingMid;
+          LimelightPipes limeLocation;
+          
           bool xPose;
 
           bool isLeveled;
@@ -132,12 +138,7 @@ public:
           units::velocity::meters_per_second_t ySpeedMPS;
           units::angular_velocity::radians_per_second_t rotRPS;
      } state;
-
-     enum LimelightPipes{
-          APRIL_TAGS,
-          TAPE_HIGH,
-          TAPE_MID
-     };
+     
      
      /**
       * Drive the robot with given x, y and rotational velocities using open loop velocity control
