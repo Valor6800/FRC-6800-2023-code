@@ -56,10 +56,6 @@ public:
 
 
      //this state will come from elevarm, elevarm not currently connected to dev
-     enum IntakePieceState {
-        ELEVARM_CONE,
-        ELEVARM_CUBE
-     };
 
      enum IntakeStates {
         DISABLED,
@@ -67,15 +63,22 @@ public:
         OUTTAKE_CONE,
         OUTTAKE_CUBE,
         OUTTAKE,
-        INTAKE
+        INTAKE_CONE,
+        INTAKE_CUBE
+     };
+
+     enum IntakePieceState {
+        CUBE,
+        CONE
      };
 
      struct x
      {
-          IntakePieceState pieceState;
-          IntakeStates intakeState;
+         IntakeStates intakeState;
+         IntakePieceState pieceState;
 
-          double intakeSpeed;
+          double intakeConeSpeed;
+          double intakeCubeSpeed;
           double outtakeSpeed;
           double outtakeConeSpeed;
           double outtakeCubeSpeed;
@@ -91,7 +94,8 @@ public:
         {"outtake_cone", IntakeStates::OUTTAKE_CONE},
         {"outtake_cube", IntakeStates::OUTTAKE_CUBE},
         {"outtake", IntakeStates::OUTTAKE},
-        {"intake", IntakeStates::INTAKE},
+        {"intake_cone", IntakeStates::INTAKE_CONE},
+        {"intake_cube", IntakeStates::INTAKE_CUBE}
      };
      
      IntakeStates stringToIntakeState(std::string name){
@@ -104,6 +108,6 @@ public:
 
 private:
 
-     ValorNeoController intakeMotor;
+     ValorFalconController intakeMotor;
      ValorCurrentSensor currySensor;
 };
