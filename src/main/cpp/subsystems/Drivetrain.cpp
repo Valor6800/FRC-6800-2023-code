@@ -154,8 +154,7 @@ void Drivetrain::init()
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     pigeon.Calibrate();    
 
-    state.limehomingHigh = false;
-    state.limehomingMid = false;
+    state.limeLocation = APRIL_TAGS;
 
     initPositions.fill(frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)});
 
@@ -227,18 +226,14 @@ void Drivetrain::assessInputs()
 
     if (driverGamepad->GetBButton()){
         if (operatorGamepad->GetYButton()) {
-            state.limehomingHigh = true;
-            state.limehomingMid = false;
+            state.limeLocation = TAPE_HIGH;
         } else if(operatorGamepad->GetBButton()) {
-            state.limehomingMid = true;
-            state.limehomingHigh = false;
+            state.limeLocation = TAPE_MID;
         } else{
-            state.limehomingHigh = false;
-            state.limehomingMid = false;  
+            state.limeLocation = APRIL_TAGS; 
         }
     } else{
-        state.limehomingHigh = false;
-        state.limehomingMid = false;
+        state.limeLocation = APRIL_TAGS;
     }
 
     state.xPose = driverGamepad->GetXButton();
@@ -315,9 +310,9 @@ void Drivetrain::assignOutputs()
 
     if (state.xPose){
         setXMode();
-    } else if (state.limehomingHigh || state.limehomingMid){
+    } else if (state.limeLocation != APRIL_TAGS){
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-        limelightHoming(state.limehomingHigh ? LimelightPipes::TAPE_HIGH : LimelightPipes::TAPE_MID);
+        limelightHoming(state.limeLocation);
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     } else {
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
