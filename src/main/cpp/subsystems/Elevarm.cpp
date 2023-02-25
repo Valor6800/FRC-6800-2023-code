@@ -42,12 +42,12 @@
 #define ROTATE_K_AFF_POS 90.0f
 
 #define WRIST_K_F 0.75f
-#define WRIST_K_P 0.06f
+#define WRIST_K_P 0.12f
 #define WRIST_K_I 0.0f
 #define WRIST_K_D 0.0f
 #define WRIST_K_ERROR 0.25f
 #define WRIST_K_VEL 540.0f
-#define WRIST_K_ACC_MUL 1.25f
+#define WRIST_K_ACC_MUL 0.375f
 
 #define PREVIOUS_WRIST_DEADBAND 1.0f
 #define PREVIOUS_HEIGHT_DEADBAND 0.03f
@@ -160,21 +160,21 @@ void Elevarm::init()
     // STOW POSITION
     stowPos = frc::Pose2d(-0.428_m, 0.451_m, 0.0_deg);
     // FRONT CONE
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(0.048_m, 0.502_m, 169.58_deg);
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(0.196_m, 0.506_m, 180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND_SCORE] =frc::Pose2d(-0.428_m, 0.451_m, 71.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(0.045_m, 1.173_m, 180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] =frc::Pose2d(0.286_m, 1.295_m, 269.5_deg);
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(0.566_m, 1.45_m, 205.86_deg);
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(0.516_m, 1.45_m, 205.86_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] =frc::Pose2d(0.086_m, 1.16_m, 253.2_deg);
     // FRONT CUBE
-    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(0.066_m, 0.314_m, 173.85_deg);
+    posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(0.13_m, 0.28_m, 173.85_deg);
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND_SCORE] =frc::Pose2d(-0.428_m, 0.451_m, 71.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(0.045_m, 1.173_m, 180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] =frc::Pose2d(0.346_m, 0.869_m, 291.22_deg);
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(0.567_m, 1.24_m, 227.5_deg);
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] =frc::Pose2d(0.086_m, 1.16_m, 253.2_deg);
     // BACK CONE
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(-1.11_m, 0.53_m, -180.0_deg);
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(-0.95_m, 0.519_m, -208.5_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND_SCORE] =frc::Pose2d(-0.428_m, 0.451_m, -71.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(-0.6495_m, 1.14_m, -180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
@@ -231,7 +231,7 @@ void Elevarm::assessInputs()
         } 
     }
 
-    if (operatorGamepad->DPadUp() || operatorGamepad->DPadDown() || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight() || driverGamepad->GetAButton()){
+    if (operatorGamepad->DPadUp() || operatorGamepad->DPadDown() || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight() || driverGamepad->GetYButton()){
         futureState.pieceState = ElevarmPieceState::ELEVARM_CUBE;
     } else {
         futureState.pieceState = ElevarmPieceState::ELEVARM_CONE;
@@ -313,6 +313,7 @@ void Elevarm::assignOutputs()
             //     wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
             // // Target oustside triangle wrist
             // } else {
+            
                 if ((futureState.directionState == ElevarmDirectionState::ELEVARM_FRONT && armRotateMotor.getPosition() > 0.0) || (futureState.directionState == ElevarmDirectionState::ELEVARM_BACK && armRotateMotor.getPosition() < 0.0))
                 wristMotor.setPosition(futureState.targetPose.wrist);
                 else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
