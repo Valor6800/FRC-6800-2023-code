@@ -116,7 +116,6 @@ void Elevarm::init()
     carriagePID.D = CARRIAGE_K_D;
     carriagePID.error = CARRIAGE_K_ERROR;
 
-    
     ValorPIDF rotatePID;
     rotatePID.velocity = ROTATE_K_VEL;
     rotatePID.acceleration = ROTATE_K_ACC_MUL;
