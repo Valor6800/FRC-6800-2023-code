@@ -88,6 +88,7 @@ public:
     enum ElevarmPositionState {
         ELEVARM_STOW,
         ELEVARM_GROUND,
+        ELEVARM_GROUND_SCORE,
         ELEVARM_PLAYER,
         ELEVARM_MID,
         ELEVARM_HIGH,
