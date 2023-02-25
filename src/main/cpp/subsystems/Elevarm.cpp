@@ -10,11 +10,14 @@
 
 #define ROTATE_GEAR_RATIO 74.25f
 #define CARRIAGE_GEAR_RATIO 4.0f
+#define CANCODER_GEAR_RATIO 9.75f
 #define CARRAIAGE_OUTPUT_DIAMETER 0.0364f
 #define CARRIAGE_UPPER_LIMIT 0.89f 
 #define CARRIAGE_LOWER_LIMIT 0.0f
 #define ROTATE_FORWARD_LIMIT 180.0f
 #define ROTATE_REVERSE_LIMIT -180.0f
+
+#define CANCODER_OFFSET 114.961f
 
 #define CARRIAGE_K_F 0.000156f  
 #define CARRIAGE_K_P 1e-4f
@@ -123,6 +126,8 @@ void Elevarm::init()
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
     armRotateMotor.setPIDF(rotatePID, 0);
 
+    armCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
+    armCANcoder.SetPositionToAbsolute();
    
     // STOW POSITION
     stowPos = frc::Pose3d(-0.428_m, 0_m, 0.451_m, frc::Rotation3d());
@@ -158,7 +163,7 @@ void Elevarm::init()
     table->PutNumber("Carraige Stall", carriageStallPower);
 
     resetState();
-    armRotateMotor.setEncoderPosition(0.0);
+    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO );
     carriageMotors.setEncoderPosition(0.8352);
 }
 
@@ -224,6 +229,7 @@ void Elevarm::analyzeDashboard()
     futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition()));
     table->PutNumber("Min angle front", minAngle(true));
     table->PutNumber("min angle back", minAngle(false));
+
 }
 
 void Elevarm::assignOutputs()
