@@ -13,8 +13,6 @@
 #include "controllers/ValorNeoController.h"
 #include "sensors/ValorCurrentSensor.h"
 
-#include "subsystems/Intake.h"
-
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
