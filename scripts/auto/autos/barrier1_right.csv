@@ -1,0 +1,15 @@
+reset_odom,barrierStartRight,180
+elevarm,cone,front,high
+trajectory,barrierStartRight,barrierRight,180
+time,1000
+intake,outtake_cone
+time,1000
+intake,disabled
+trajectory,barrierRight,barrierStartRight,180,reversed
+elevarm,cone,front,stow,parallel
+trajectory,barrierStartRight,chell,180,reversed
+trajectory,chell,chellFar,180,reversed
+split,0.25,multiplier
+trajectory,chellFar,chargeFar,180,reversed
+balance
+xmode

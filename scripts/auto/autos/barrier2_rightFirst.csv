@@ -18,6 +18,6 @@ trajectory,chell,barrierRight,180
 elevarm,cone,front,snake,parallel
 trajectory,barrierRight,chell,180,reversed
 trajectory,chell,chellFar,180,reversed
-trajectory,chellFar,chargeFarWall,180,reversed
+trajectory,chellFar,chargeFar,180,reversed
 balance
 xmode
