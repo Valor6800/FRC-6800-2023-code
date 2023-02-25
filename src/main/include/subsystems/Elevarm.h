@@ -114,8 +114,6 @@ public:
 
         bool deadManEnabled;
         bool pitModeEnabled;
-        bool armOnCorrectSide;
-        bool armInSailboat;
 
         double frontMinAngle;
         double backMinAngle;
