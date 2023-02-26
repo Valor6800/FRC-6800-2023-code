@@ -1,6 +1,5 @@
-reset_odom,wallStartLeft,180
+reset_odom,wallLeft,180
 elevarm,cone,front,high
-trajectory,wallStartLeft,wallLeft,180
 time,1000
 intake,outtake_cone
 time,1000

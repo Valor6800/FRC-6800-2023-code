@@ -1,6 +1,5 @@
-reset_odom,barrierStartRight,180
+reset_odom,barrierRight,180
 elevarm,cone,front,high
-trajectory,barrierStartRight,barrierRight,180
 time,1000
 intake,outtake_cone
 time,1000
