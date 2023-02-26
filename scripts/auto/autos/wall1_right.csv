@@ -5,7 +5,9 @@ intake,outtake_cone
 time,1000
 intake,disabled
 trajectory,wallRight,wallStartRight,180,reversed
+split,0.25,multiplier
 elevarm,cone,front,stow,parallel
+split,0.25,multiplier
 trajectory,wallStartRight,glados,180,reversed
 trajectory,glados,gladosFar,180,reversed
 split,0.25,multiplier
