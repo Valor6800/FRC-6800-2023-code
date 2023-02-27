@@ -2,19 +2,19 @@
 #include "subsystems/Intake.h"
 //intaking with cone and cube has different directions, so flipped
 #define DEFAULT_INTAKE_CUBE_SPD -0.7f
-#define DEFAULT_INTAKE_CONE_SPD 0.7f
+#define DEFAULT_INTAKE_CONE_SPD 0.9f
 #define DEFAULT_OUTTAKE_SPD -0.7f
 //since intaking with cone vs cube is different, outtaking follows the same rule
 #define DEFAULT_OUTTAKE_CUBE_SPD 0.4f
-#define DEFAULT_OUTTAKE_CONE_SPD -0.3f
+#define DEFAULT_OUTTAKE_CONE_SPD -0.8f
 
 #define DEFAULT_HOLD_SPD 0.05f
 
-#define STALL_CURRENT 15.0f
-#define CACHE_SIZE 10.0f
+#define STALL_CURRENT 60.0f
+#define CACHE_SIZE 30.0f
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
-                            intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false),
+                            intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false, "baseCAN"),
                             currySensor(_robot, subsystemName)
 {  
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
@@ -65,7 +65,7 @@ void Intake::assessInputs()
     if (driverGamepad->rightTriggerActive() || operatorGamepad->rightTriggerActive()) {
         // Operator holding cube score
         if (operatorGamepad->DPadDown() || operatorGamepad->DPadUp()
-            || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight() || driverGamepad->GetAButton()) {
+            || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight() || driverGamepad->GetYButton()) {
             state.intakeState = OUTTAKE_CUBE;
         // Operator holding cone score
         } else{
@@ -79,7 +79,7 @@ void Intake::assessInputs()
         if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || operatorGamepad->leftTriggerActive() ||
             // Operator human player pickup
             operatorGamepad->GetXButton()  || operatorGamepad->DPadLeft()) {
-            if (driverGamepad->GetAButton()){
+            if (driverGamepad->GetYButton()){
                 state.intakeState = INTAKE_CUBE;
                 state.pieceState = CUBE;
             }
@@ -135,6 +135,8 @@ void Intake::assignOutputs()
     } else if (state.intakeState == INTAKE_CUBE){
         intakeMotor.setPower(state.intakeCubeSpeed);
     }
+    
+   
 }
 
 frc2::FunctionalCommand * Intake::getAutoCommand(std::string intakeState){

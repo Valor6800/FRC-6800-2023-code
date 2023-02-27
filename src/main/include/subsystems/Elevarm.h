@@ -16,8 +16,8 @@
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/trajectory/Trajectory.h>
-#include <frc/geometry/Pose3d.h>
-#include <frc/geometry/Rotation3d.h>
+#include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Rotation2d.h>
 
 #include <frc2/command/FunctionalCommand.h>
 #include <unordered_map>
@@ -61,16 +61,21 @@ public:
 
      void InitSendable(wpi::SendableBuilder& builder);
 
+    double getArmCANcoderPosition();
+    double getWristCANcoderPosition();
+
     struct Positions {
         Positions() {
-            Positions(0,0);
+            Positions(0,0,0);
         }
-        Positions(double _h, double _theta) {
+        Positions(double _h, double _theta, double _wrist) {
             h = _h;
             theta = _theta;
+            wrist = _wrist;
         }
         double h;
         double theta;
+        double wrist;
     };
 
      enum ElevarmPieceState {
@@ -86,6 +91,7 @@ public:
     enum ElevarmPositionState {
         ELEVARM_STOW,
         ELEVARM_GROUND,
+        ELEVARM_GROUND_SCORE,
         ELEVARM_PLAYER,
         ELEVARM_MID,
         ELEVARM_HIGH,
@@ -108,10 +114,13 @@ public:
         double manualArm;
 
         Positions targetPose;
-        frc::Pose3d resultKinematics;
+        frc::Pose2d resultKinematics;
 
         bool deadManEnabled;
         bool pitModeEnabled;
+
+        double frontMinAngle;
+        double backMinAngle;
 
     } futureState, previousState;
 
@@ -170,17 +179,23 @@ private:
      ValorFalconController armRotateMotor;
 
     ctre::phoenix::sensors::WPI_CANCoder armCANcoder;
+    ctre::phoenix::sensors::WPI_CANCoder wristCANcoder;
 
-     std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose3d>>> posMap;
-     frc::Pose3d stowPos;
+     ValorFalconController wristMotor;
 
-    Positions reverseKinematics(frc::Pose3d pose, ElevarmSolutions, ElevarmDirectionState); 
-    frc::Pose3d forwardKinematics(Positions positions);
+     std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose2d>>> posMap;
+     frc::Pose2d stowPos;
+
+    Positions reverseKinematics(frc::Pose2d pose, ElevarmSolutions, ElevarmDirectionState); 
+    frc::Pose2d forwardKinematics(Positions positions);
     Positions detectionBoxManual(double, double);
 
     Intake *intake;
      
-     double manualMaxCarriageSpeed;
-     double manualMaxArmSpeed;
-     double carriageStallPower;
+    double manualMaxCarriageSpeed;
+    double manualMaxArmSpeed;
+    double carriageStallPower;
+
+    bool wristInRange;
+    bool armInRange;
 };
