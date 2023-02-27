@@ -207,8 +207,6 @@ public:
      frc::SwerveDriveKinematics<SWERVE_COUNT>* getKinematics();
 
      void limelightHoming(LimelightPipes pipe);
-
-     frc2::FunctionalCommand* getLimeHoming(std::string height);
      
      frc2::FunctionalCommand* getAutoLevel();
      frc2::FunctionalCommand* getAutoLevelReversed();

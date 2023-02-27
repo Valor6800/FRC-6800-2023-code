@@ -259,7 +259,18 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                         shooter->state.flywheelState = shooter->stringToFlywheelState(action.value);
                     };
                 }
-                */ 
+                */
+                if (action.state == "pipeline") {
+                    func = [&, action] {
+                         if (action.value == "mid"){
+                            drivetrain->state.limeLocation = Drivetrain::LimelightPipes::TAPE_MID;
+                        } else if (action.value == "high") {
+                            drivetrain->state.limeLocation = Drivetrain::LimelightPipes::TAPE_HIGH;
+                        } else {
+                            drivetrain->state.limeLocation = Drivetrain::LimelightPipes::APRIL_TAGS; //off condition
+                        }
+                    };
+                }
                 currentGroup->AddCommands(frc2::InstantCommand(func));
             }
             else if (action.type == ValorAutoAction::Type::TIME){
@@ -375,10 +386,6 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
             } else if (action.type == ValorAutoAction::INTAKE) {
                 currentGroup->AddCommands(
                     std::move(*intake->getAutoCommand(action.value))
-                );
-            } else if (action.type == ValorAutoAction::LIME_HOMING) {
-                currentGroup->AddCommands(
-                    std::move(*drivetrain->getLimeHoming(action.value))
                 );
             }
         }

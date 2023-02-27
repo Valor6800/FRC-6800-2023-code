@@ -57,8 +57,6 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         type = ValorAutoAction::BALANCE;
     } else if (items[0] == "intake") {
         type = ValorAutoAction::INTAKE;
-    } else if (items[0] == "lime_homing"){
-        type = ValorAutoAction::LIME_HOMING;
     }
 
     if (type == ValorAutoAction::Type::TIME) {
@@ -177,13 +175,6 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             reversed = items[1] == "reversed";
     } else if (type == ValorAutoAction::Type::INTAKE) {
         if (items.size() < 2){
-            error + ValorAutoAction::SIZE_MISMATCH;
-            error_message = "received " + std::to_string(items.size());
-            return;
-        }
-        value = items[1];
-    } else if (type == ValorAutoAction::Type::LIME_HOMING) {
-         if (items.size() < 2){
             error + ValorAutoAction::SIZE_MISMATCH;
             error_message = "received " + std::to_string(items.size());
             return;
