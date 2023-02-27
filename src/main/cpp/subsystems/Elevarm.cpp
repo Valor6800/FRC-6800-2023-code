@@ -160,7 +160,7 @@ void Elevarm::init()
     // STOW POSITION
     stowPos = frc::Pose2d(-0.428_m, 0.451_m, 0.0_deg);
     // FRONT CONE
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(0.196_m, 0.506_m, 180.0_deg);
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(0.196_m, 0.516_m, 200.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND_SCORE] =frc::Pose2d(-0.428_m, 0.451_m, 71.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(0.045_m, 1.173_m, 180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] =frc::Pose2d(0.286_m, 1.295_m, 269.5_deg);
