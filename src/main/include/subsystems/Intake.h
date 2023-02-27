@@ -110,8 +110,6 @@ public:
         return stringToStateMap.at(name);
      }
 
-     frc2::FunctionalCommand * getAutoCommand(std::string);
-
 private:
 
      ValorFalconController intakeMotor;

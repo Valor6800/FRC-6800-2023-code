@@ -27,8 +27,7 @@ struct ValorAutoAction {
         XMODE,
         ELEVARM,
         ACCELERATION,
-        BALANCE,
-        INTAKE
+        BALANCE
     } type;
 
     enum Error {

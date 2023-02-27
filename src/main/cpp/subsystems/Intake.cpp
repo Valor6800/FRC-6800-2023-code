@@ -165,27 +165,6 @@ void Intake::assignOutputs()
     prevState = state;
 }
 
-frc2::FunctionalCommand * Intake::getAutoCommand(std::string intakeState){
-    Intake::IntakeStates inState = stringToIntakeState(intakeState);
-    return new frc2::FunctionalCommand(
-        // OnInit
-        [&, inState]() {
-            state.intakeState = inState;
-        }, 
-        //onExecute
-        [&](){
-            
-        }, 
-        [&](bool){
-    
-        }, // onEnd
-        [&](){ //isFinished
-            return true;
-        },
-        {}
-    );
-}
-
 void Intake::InitSendable(wpi::SendableBuilder& builder)
     {
         builder.SetSmartDashboardType("Subsystem");

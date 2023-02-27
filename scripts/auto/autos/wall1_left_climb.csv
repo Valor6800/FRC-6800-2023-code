@@ -1,9 +1,9 @@
 reset_odom,wallLeft,180
 elevarm,cone,front,high
 time,1000
-intake,outtake_cone
+state,intake,outtake_cone
 time,1000
-intake,disabled
+state,intake,disabled
 trajectory,wallLeft,wallStartLeft,180,reversed
 elevarm,cone,front,stow,parallel
 trajectory,wallStartLeft,glados,180,reversed

@@ -252,14 +252,14 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
 
             if (action.type == ValorAutoAction::Type::STATE){
                 std::function<void(void)> func;
-                /* Example state setting command
 
-                if (action.state == "flywheel"){
+                if (action.state == "intake") {
                     func = [&, action] {
-                        shooter->state.flywheelState = shooter->stringToFlywheelState(action.value);
+                        intake->state.intakeState = intake->stringToIntakeState(action.value);
                     };
+                } else {
+                    table->PutString("Error", "On line " + std::to_string(i) + ": " + action.state + " is not a valid state");
                 }
-                */ 
                 currentGroup->AddCommands(frc2::InstantCommand(func));
             }
             else if (action.type == ValorAutoAction::Type::TIME){
@@ -364,6 +364,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 
                 table->PutBoolean("Action " + std::to_string(i) + " parallel", action.parallel);
             } else if (action.type == ValorAutoAction::BALANCE){
+<<<<<<< HEAD
                 if (!action.reversed)
                     currentGroup->AddCommands(
                         std::move(*drivetrain->getAutoLevel())
@@ -375,6 +376,10 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
             } else if (action.type == ValorAutoAction::INTAKE) {
                 currentGroup->AddCommands(
                     std::move(*intake->getAutoCommand(action.value))
+=======
+                currentGroup->AddCommands(
+                    std::move(*drivetrain->getAutoLevel())
+>>>>>>> 12af797 (fix(auto)!: intake is now a state command instead of its own valorautoaction)
                 );
             }
         }
