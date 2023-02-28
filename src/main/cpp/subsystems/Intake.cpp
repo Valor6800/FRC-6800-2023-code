@@ -8,14 +8,19 @@
 #define DEFAULT_OUTTAKE_CUBE_SPD 0.4f
 #define DEFAULT_OUTTAKE_CONE_SPD -0.8f
 
-#define DEFAULT_HOLD_SPD 0.02f
+#define CONE_HOLD_SPD 0.02f
+#define CUBE_HOLD_SPD -0.03f
 
-#define STALL_CURRENT 60.0f
-#define CACHE_SIZE 30.0f
+#define CUBE_SPIKED_CURRENT 60.0f
+#define CONE_SPIKED_CURRENT 60.0f
+
+#define CUBE_CACHE_SIZE 120.0f
+#define CONE_CACHE_SIZE 250.0f
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
                             intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false, "baseCAN"),
-                            currySensor(_robot, subsystemName)
+                            currentSensor(_robot, subsystemName)
+
 {  
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -29,7 +34,7 @@ void Intake::resetState()
 {
    state.intakeState = DISABLED;
    state.pieceState = CONE;
-   currySensor.reset();
+   currentSensor.reset();
 }
 
 void Intake::init()
@@ -39,22 +44,34 @@ void Intake::init()
     state.outtakeSpeed = DEFAULT_OUTTAKE_SPD;
     state.outtakeConeSpeed = DEFAULT_OUTTAKE_CONE_SPD;
     state.outtakeCubeSpeed = DEFAULT_OUTTAKE_CUBE_SPD;
-    state.holdSpeed = DEFAULT_HOLD_SPD;
+    state.coneHoldSpeed = CONE_HOLD_SPD;
+    state.cubeHoldSpeed = CUBE_HOLD_SPD;
     
-    state.stallCurrent = STALL_CURRENT;
+    state.cubeSpikeCurrent = CUBE_SPIKED_CURRENT;
+    state.coneSpikeCurrent = CONE_SPIKED_CURRENT;
 
-    currySensor.setSpikeSetpoint(state.stallCurrent);
-    currySensor.setGetter([this]() { return intakeMotor.getCurrent(); });
-    currySensor.setSpikeCallback([this]() { state.intakeState = SPIKED;});
-    currySensor.setCacheSize(CACHE_SIZE);
+    state.coneCacheSize = CONE_CACHE_SIZE;
+    state.cubeCacheSize = CUBE_CACHE_SIZE;
+
+    prevState = state;
+
+    currentSensor.setSpikeSetpoint(state.coneSpikeCurrent);
+    currentSensor.setGetter([this]() { return intakeMotor.getCurrent(); });
+    currentSensor.setSpikeCallback([this]() { state.intakeState = SPIKED;});
+    currentSensor.setCacheSize(CONE_CACHE_SIZE);
 
     table->PutNumber("outtake speed", state.outtakeSpeed);
     table->PutNumber("outtake Cone speed", state.outtakeConeSpeed);
     table->PutNumber("outtake Cube speed", state.outtakeCubeSpeed);
-    table->PutNumber("Hold Speed", state.holdSpeed);
-    table->PutNumber("Stall Current", state.stallCurrent);
-    table->PutNumber("intake cone speed", state.intakeConeSpeed);
-    table->PutNumber("intake cube speed", state.intakeCubeSpeed);
+    table->PutNumber("Cone Hold Speed", state.coneHoldSpeed);
+    table->PutNumber("Cube Hold Speed", state.cubeHoldSpeed);
+    table->PutNumber("Cone Spiked Current", state.coneSpikeCurrent);
+    table->PutNumber("Cube Spiked Current", state.cubeSpikeCurrent);
+    table->PutNumber("Cone Cache Size", state.coneCacheSize);
+    table->PutNumber("Cube Cache Size", state.cubeCacheSize);
+
+    intakeMotor.getMotor()->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 60, .75));
+
     
     resetState();
 }
@@ -106,10 +123,16 @@ void Intake::analyzeDashboard()
     state.outtakeSpeed = table->GetNumber("outtake speed", DEFAULT_OUTTAKE_SPD);
     state.outtakeConeSpeed = table->GetNumber("outtake Cone speed", DEFAULT_OUTTAKE_CONE_SPD);
     state.outtakeCubeSpeed =  table->GetNumber("outtake Cube speed", DEFAULT_OUTTAKE_CUBE_SPD);
-    state.holdSpeed = table->GetNumber("Hold Speed", DEFAULT_HOLD_SPD);
-    state.stallCurrent = table->GetNumber("Stall Current", STALL_CURRENT);
+    state.cubeHoldSpeed = table->GetNumber("Cube Hold Speed", CUBE_HOLD_SPD);
+    state.coneHoldSpeed = table->GetNumber("Cone Hold Speed", CONE_HOLD_SPD);
+    state.coneSpikeCurrent = table->GetNumber("Cone Spiked Current", CONE_SPIKED_CURRENT);
+    state.cubeSpikeCurrent = table->GetNumber("Cube Spiked Current", CUBE_SPIKED_CURRENT);
+    state.coneCacheSize = table->GetNumber("Cone Cache Size", CONE_CACHE_SIZE);
+    state.cubeCacheSize = table->GetNumber("Cube Cache Size", CUBE_CACHE_SIZE);
     state.intakeConeSpeed = table->GetNumber("intake cone speed", DEFAULT_INTAKE_CONE_SPD);
     state.intakeCubeSpeed = table->GetNumber("intake cube speed", DEFAULT_INTAKE_CUBE_SPD);
+
+
 }
  
 void Intake::assignOutputs()
@@ -118,12 +141,10 @@ void Intake::assignOutputs()
         intakeMotor.setPower(0);
     } else if (state.intakeState == SPIKED) {
         if (state.pieceState == CONE){
-            intakeMotor.setPower(state.holdSpeed);
+            intakeMotor.setPower(state.coneHoldSpeed);
         } else{
-            intakeMotor.setPower(-state.holdSpeed);
+            intakeMotor.setPower(state.cubeHoldSpeed);
         }
-
-        
     } else if (state.intakeState == OUTTAKE_CONE){
         intakeMotor.setPower(state.outtakeConeSpeed);
     } else if (state.intakeState == OUTTAKE_CUBE){
@@ -131,12 +152,19 @@ void Intake::assignOutputs()
     } else if (state.intakeState == OUTTAKE){
         intakeMotor.setPower(state.outtakeSpeed);
     } else if (state.intakeState == INTAKE_CONE){
+        if (prevState.pieceState != CONE) {
+            currentSensor.setCacheSize(state.coneCacheSize);
+            currentSensor.setSpikeSetpoint(state.coneSpikeCurrent);
+        }
         intakeMotor.setPower(state.intakeConeSpeed);
     } else if (state.intakeState == INTAKE_CUBE){
+        if (prevState.pieceState != CUBE) {
+            currentSensor.setCacheSize(state.cubeCacheSize);
+            currentSensor.setSpikeSetpoint(state.cubeSpikeCurrent);
+        }
         intakeMotor.setPower(state.intakeCubeSpeed);
     }
-    
-   
+    prevState = state;
 }
 
 frc2::FunctionalCommand * Intake::getAutoCommand(std::string intakeState){
@@ -200,17 +228,44 @@ void Intake::InitSendable(wpi::SendableBuilder& builder)
             nullptr
         );
         builder.AddDoubleProperty(
-            "Hold Speed",
-            [this]{ return state.holdSpeed; },
+            "Cone Cache Size",
+            [this]{ return state.coneCacheSize; },
+            // [this](double value) { state.intakeSpeed = value; }
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "Cube Cache Size",
+            [this]{ return state.cubeCacheSize; },
+            // [this](double value) { state.intakeSpeed = value; }
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "Cube Hold Speed",
+            [this]{ return state.cubeHoldSpeed; },
             // [this](double value) { state.holdSpeed = value; }
             nullptr
         );
         builder.AddDoubleProperty(
-            "Stall Current",
-            [this]{ return state.stallCurrent; },
+            "Cone Hold Speed",
+            [this]{ return state.coneHoldSpeed; },
+            // [this](double value) { state.holdSpeed = value; }
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "Cube Spike Current",
+            [this]{ return state.cubeSpikeCurrent; },
             // [this](double value) {
             //     state.stallCurrent = value;
-            //     currySensor.setSpikeSetpoint(state.stallCurrent);
+            //     cubeCurrentSensor.setSpikeSetpoint(state.stallCurrent);
+            // }
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "Cone Spike Current",
+            [this]{ return state.coneSpikeCurrent; },
+            // [this](double value) {
+            //     state.stallCurrent = value;
+            //     cubeCurrentSensor.setSpikeSetpoint(state.stallCurrent);
             // }
             nullptr
         );

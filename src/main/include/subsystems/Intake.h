@@ -77,16 +77,22 @@ public:
          IntakeStates intakeState;
          IntakePieceState pieceState;
 
-          double intakeConeSpeed;
-          double intakeCubeSpeed;
-          double outtakeSpeed;
-          double outtakeConeSpeed;
-          double outtakeCubeSpeed;
-          double holdSpeed;
+         double intakeConeSpeed;
+         double intakeCubeSpeed;
+         double outtakeSpeed;
+         double outtakeConeSpeed;
+         double outtakeCubeSpeed;
 
-          double stallCurrent;
+         double cubeHoldSpeed;
+         double coneHoldSpeed;
 
-     }state;
+         double coneSpikeCurrent;
+         double cubeSpikeCurrent;
+
+         double coneCacheSize;
+         double cubeCacheSize;
+
+     }state, prevState;
     
     std::unordered_map<std::string, IntakeStates> stringToStateMap = {
         {"disable", IntakeStates::DISABLED},
@@ -110,5 +116,5 @@ private:
 
      ValorFalconController intakeMotor;
 
-     ValorCurrentSensor currySensor;
+     ValorCurrentSensor currentSensor;
 };
