@@ -164,7 +164,7 @@ void Elevarm::init()
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND_SCORE] =frc::Pose2d(-0.428_m, 0.451_m, 71.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(0.045_m, 1.173_m, 180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_MID] =frc::Pose2d(0.286_m, 1.295_m, 269.5_deg);
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(0.516_m, 1.45_m, 205.86_deg);
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(0.516_m, 1.42_m, 205.86_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] =frc::Pose2d(0.086_m, 1.16_m, 253.2_deg);
     // FRONT CUBE
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(0.13_m, 0.28_m, 173.85_deg);
