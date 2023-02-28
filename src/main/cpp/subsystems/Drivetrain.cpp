@@ -455,6 +455,39 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
     );
 }
 
+frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
+    return new frc2::FunctionalCommand(
+        [&](){
+            state.abovePitchThreshold = false;
+            state.isLeveled = false;
+        }, // OnInit
+        [&](){
+            if (pigeon.GetPitch() < -18.0) {
+                state.abovePitchThreshold = true;
+                state.xSpeed = 0.4;
+            } else if (state.abovePitchThreshold) {
+                if (pigeon.GetPitch() > -10.7 ){
+                    state.isLeveled = true;
+                    state.xSpeed = 0.0;
+                }else if(pigeon.GetPitch() > -16){
+                    state.xSpeed = 0.15;
+                }else{
+                    state.xSpeed = 0.3;
+                }
+            } else {
+                state.xSpeed = 0.3;
+            }
+        }, //onExecute
+        [&](bool){
+            state.xSpeed = 0.0;
+        }, // onEnd
+        [&](){
+            return state.isLeveled;
+        },//isFinished
+        {}
+    );
+}
+
 
 double Drivetrain::getDriveMaxSpeed() {
     return driveMaxSpeed;

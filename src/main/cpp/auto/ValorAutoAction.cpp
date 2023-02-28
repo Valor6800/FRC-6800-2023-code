@@ -170,7 +170,9 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         else
             accelMultiplier = 1.0;
     } else if (type == ValorAutoAction::BALANCE){
-        
+        reversed = false;
+        if (items.size() > 1)
+            reversed = items[1] == "reversed";
     } else if (type == ValorAutoAction::Type::INTAKE) {
         if (items.size() < 2){
             error + ValorAutoAction::SIZE_MISMATCH;

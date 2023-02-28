@@ -209,6 +209,7 @@ public:
      void limelightHoming(LimelightPipes pipe);
      
      frc2::FunctionalCommand* getAutoLevel();
+     frc2::FunctionalCommand* getAutoLevelReversed();
 
 
      double getDriveMaxSpeed();

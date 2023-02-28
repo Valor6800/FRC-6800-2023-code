@@ -364,9 +364,14 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 
                 table->PutBoolean("Action " + std::to_string(i) + " parallel", action.parallel);
             } else if (action.type == ValorAutoAction::BALANCE){
-                currentGroup->AddCommands(
-                    std::move(*drivetrain->getAutoLevel())
-                );
+                if (!action.reversed)
+                    currentGroup->AddCommands(
+                        std::move(*drivetrain->getAutoLevel())
+                    );
+                else
+                    currentGroup->AddCommands(
+                        std::move(*drivetrain->getAutoLevelReversed())
+                    );
             } else if (action.type == ValorAutoAction::INTAKE) {
                 currentGroup->AddCommands(
                     std::move(*intake->getAutoCommand(action.value))
