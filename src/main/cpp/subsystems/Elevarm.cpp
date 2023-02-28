@@ -221,10 +221,10 @@ void Elevarm::assessInputs()
         else futureState.positionState = ElevarmPositionState::ELEVARM_PLAYER;
     } else if (operatorGamepad->GetYButton() || operatorGamepad->DPadUp()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_HIGH;
-        else futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
+        else futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
     } else if(operatorGamepad->GetBButton() || operatorGamepad->DPadRight()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_MID;
-        else futureState.positionState = ElevarmPositionState::ELEVARM_SNAKE;
+        else futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
     } else {
         if (previousState.positionState != ElevarmPositionState::ELEVARM_MANUAL) {
                 futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
@@ -306,18 +306,11 @@ void Elevarm::assignOutputs()
                     carriageMotors.setPower(carriageStallPower);
                 }
                 armRotateMotor.setPosition(futureState.targetPose.theta);
-            }
-
-            // Target in triangle wrist
-            // if (armRotateMotor.getPosition() >= futureState.backMinAngle && armRotateMotor.getPosition() <= futureState.frontMinAngle){
-            //     wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
-            // // Target oustside triangle wrist
-            // } else {
-            
-                if ((futureState.directionState == ElevarmDirectionState::ELEVARM_FRONT && armRotateMotor.getPosition() > 0.0) || (futureState.directionState == ElevarmDirectionState::ELEVARM_BACK && armRotateMotor.getPosition() < 0.0))
-                wristMotor.setPosition(futureState.targetPose.wrist);
-                else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
-            // }
+            }    
+                    
+            if ((futureState.directionState == ElevarmDirectionState::ELEVARM_FRONT && armRotateMotor.getPosition() > 0.0) || (futureState.directionState == ElevarmDirectionState::ELEVARM_BACK && armRotateMotor.getPosition() < 0.0))
+            wristMotor.setPosition(futureState.targetPose.wrist);
+            else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
             
             if (atCarriage) {
                 carriageMotors.setPower(carriageStallPower);
