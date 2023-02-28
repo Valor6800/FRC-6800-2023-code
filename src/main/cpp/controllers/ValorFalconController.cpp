@@ -24,7 +24,9 @@ void ValorFalconController::init()
     motor->ConfigSelectedFeedbackSensor(FeedbackDevice::IntegratedSensor, 0, 10);
     motor->ConfigAllowableClosedloopError(0, 0);
     motor->Config_IntegralZone(0, 0);
-    
+
+    motor->ConfigNeutralDeadband(0.01);
+
     ValorPIDF motionPIDF;
     setPIDF(motionPIDF, 0);
     reset();
