@@ -12,14 +12,14 @@ LED::LED(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "ValorLED"),
 
 void LED::init(){led.setRangeLED(CANdleColors::VALOR_GOLD, 0, LED_COUNT);}
 
-void LED::assessInputs(){}
+void LED::assessInputs(){state.yButton=driverGamepad->GetYButton();}
 
 void LED::analyzeDashboard(){}
 
 void LED::assignOutputs()
 {
     int pieceColor;
-    if (driverGamepad->GetYButton()){
+    if (state.yButton){
         pieceColor = CANdleColors::PURPLE;
     } else pieceColor = CANdleColors::VALOR_GOLD;
 

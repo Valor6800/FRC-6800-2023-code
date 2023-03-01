@@ -24,6 +24,8 @@ class LED : public ValorSubsystem
         ValorCANdleSensor led;
 
         ValorCANdleSensor::RGBColor value;
+        struct x {bool yButton;}state;
+        
 
         void init();
         void assessInputs();
