@@ -41,6 +41,17 @@
 #define ROTATE_K_AFF_CUBE 0.11f
 #define ROTATE_K_AFF_POS 90.0f
 
+#define AUTO_ROTATE_K_F 0.75f
+#define AUTO_ROTATE_K_P 0.03f
+#define AUTO_ROTATE_K_I 0.0f
+#define AUTO_ROTATE_K_D 0.0f
+#define AUTO_ROTATE_K_ERROR 0.5f
+#define AUTO_ROTATE_K_VEL 120.0f
+#define AUTO_ROTATE_K_ACC_MUL 1.0f
+#define AUTO_ROTATE_K_AFF 0.115f
+#define AUTO_ROTATE_K_AFF_CUBE 0.11f
+#define AUTO_ROTATE_K_AFF_POS 90.0f
+
 #define WRIST_K_F 0.75f
 #define WRIST_K_P 0.12f
 #define WRIST_K_I 0.0f
@@ -107,7 +118,6 @@ void Elevarm::resetState()
 
 void Elevarm::init()
 { 
-    ValorPIDF carriagePID;
     carriagePID.velocity = CARRIAGE_K_VEL;
     carriagePID.acceleration = carriagePID.velocity * CARRIAGE_K_ACC_MUL;
     carriagePID.F = CARRIAGE_K_F;
@@ -116,7 +126,6 @@ void Elevarm::init()
     carriagePID.D = CARRIAGE_K_D;
     carriagePID.error = CARRIAGE_K_ERROR;
 
-    ValorPIDF rotatePID;
     rotatePID.velocity = ROTATE_K_VEL;
     rotatePID.acceleration = ROTATE_K_ACC_MUL;
     rotatePID.F = ROTATE_K_F;
@@ -125,9 +134,18 @@ void Elevarm::init()
     rotatePID.D = ROTATE_K_D;
     rotatePID.error = ROTATE_K_ERROR; 
     rotatePID.aFF = ROTATE_K_AFF; 
-    rotatePID.aFFTarget = ROTATE_K_AFF_POS; 
+    rotatePID.aFFTarget = ROTATE_K_AFF_POS;
+
+    autoRotatePID.velocity = AUTO_ROTATE_K_VEL;
+    autoRotatePID.acceleration = AUTO_ROTATE_K_ACC_MUL;
+    autoRotatePID.F = AUTO_ROTATE_K_F;
+    autoRotatePID.P = AUTO_ROTATE_K_P;
+    autoRotatePID.I = AUTO_ROTATE_K_I;
+    autoRotatePID.D = AUTO_ROTATE_K_D;
+    autoRotatePID.error = AUTO_ROTATE_K_ERROR; 
+    autoRotatePID.aFF = AUTO_ROTATE_K_AFF; 
+    autoRotatePID.aFFTarget = AUTO_ROTATE_K_AFF_POS; 
     
-    ValorPIDF wristPID;
     wristPID.velocity = WRIST_K_VEL;
     wristPID.acceleration = WRIST_K_ACC_MUL;
     wristPID.F = WRIST_K_F;
@@ -558,6 +576,26 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
         [&, eaPieceState, eaDirectionState, eaPositionState, parallel](){ //isFinished
             return parallel || (previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState);
         },
+        {}
+    );
+}
+
+void Elevarm::setArmPIDF(bool isAuto) {
+    isAuto ? armRotateMotor.setPIDF(autoRotatePID,0) : armRotateMotor.setPIDF(rotatePID,0);
+}
+
+frc2::FunctionalCommand * Elevarm::getRotatePIDSetterCommand(bool isAuto){
+    return new frc2::FunctionalCommand(
+        // OnInit
+        [&]() {}, 
+        //onExecute
+        [&, isAuto](){
+            setArmPIDF(isAuto);
+        }, 
+        [&](bool){}, // onEnd
+        [&](){
+            return true;
+        }, //isFinished
         {}
     );
 }
