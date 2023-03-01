@@ -131,8 +131,6 @@ void Intake::analyzeDashboard()
     state.cubeCacheSize = table->GetNumber("Cube Cache Size", CUBE_CACHE_SIZE);
     state.intakeConeSpeed = table->GetNumber("intake cone speed", DEFAULT_INTAKE_CONE_SPD);
     state.intakeCubeSpeed = table->GetNumber("intake cube speed", DEFAULT_INTAKE_CUBE_SPD);
-
-
 }
  
 void Intake::assignOutputs()
