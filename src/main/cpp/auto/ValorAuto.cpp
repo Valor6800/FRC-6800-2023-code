@@ -144,6 +144,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
     int trajCount = 0;
 
     drivetrain->setAutoMaxAcceleration(NULL, 1.0);
+    
+    currentGroup->AddCommands(std::move(*elevarm->getRotatePIDSetterCommand(true)));
 
     for (int i = 0; i < actions.size(); i ++){
         table->PutString("Action " + std::to_string(i), commandToStringMap[actions[i].type]);
@@ -412,7 +414,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
     cmdGroups.push_back(std::move(*currentGroup));
 
     // bad way of doing this currently this relies on 
-    // adding the action command group and the other command group in a specific order, which i know i'll fuck up some day
+    // adding the action command group and the other command group in a specific order, which i know i'll mess up some day
     // the action command group and other cocmmadn group should be named
     frc2::SequentialCommandGroup * combinedGroup = new frc2::SequentialCommandGroup(std::move(cmdGroups[0]));
     for (int i = cmdGroups.size() - 1; i >= 1; i -= 2){
@@ -422,6 +424,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
             )
         );
     }
+
+    combinedGroup->AddCommands(std::move(*elevarm->getRotatePIDSetterCommand(false)));
 
     return combinedGroup;
 }

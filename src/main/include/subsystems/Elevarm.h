@@ -125,6 +125,8 @@ public:
 
     frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string, bool);
 
+    frc2::FunctionalCommand * getRotatePIDSetterCommand(bool);
+
     std::unordered_map<std::string, ElevarmPieceState> stringToPieceMap = {
         {"cone", ElevarmPieceState::ELEVARM_CONE},
         {"cube", ElevarmPieceState::ELEVARM_CUBE}
@@ -155,6 +157,8 @@ public:
             return ElevarmPositionState::ELEVARM_GROUND;
         return stringToPositionMap.at(name);
     }
+
+    void setArmPIDF(bool);
 
 private:
 
@@ -187,6 +191,11 @@ private:
     Positions detectionBoxManual(double, double);
 
     Intake *intake;
+
+    ValorPIDF carriagePID;
+    ValorPIDF rotatePID;
+    ValorPIDF autoRotatePID;
+    ValorPIDF wristPID;
      
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;
