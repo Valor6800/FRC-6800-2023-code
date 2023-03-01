@@ -69,6 +69,7 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousExit() {
     outfile.close();
+    drivetrain.state.xPose = true;
 }
 
 std::string makePoseLog(frc::Pose2d pose){
