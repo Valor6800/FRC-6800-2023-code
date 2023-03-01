@@ -4,7 +4,7 @@ time,1000
 intake,outtake_cone
 time,1000
 intake,disabled
-trajectory,coopRight,chargeNear
+trajectory,coopRight,chargeNear,180
 elevarm,cone,front,stow
 balance,reversed
 xmode
