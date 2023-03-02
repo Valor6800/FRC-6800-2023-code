@@ -446,7 +446,8 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
             }
         }, //onExecute
         [&](bool){
-            state.xSpeed = 0.025;
+            state.xSpeed = 0.0;
+            state.xPose = true;
         }, // onEnd
         [&](){
             return state.isLeveled;
@@ -480,6 +481,7 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
         }, //onExecute
         [&](bool){
             state.xSpeed = 0.0;
+            state.xPose = true;
         }, // onEnd
         [&](){
             return state.isLeveled;

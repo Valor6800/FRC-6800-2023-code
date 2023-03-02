@@ -1,14 +1,13 @@
-reset_odom,barrierLeft,180
+reset_odom,barrierRight,180
 elevarm,cone,front,high
 time,1000
 intake,outtake_cone
 time,1000
 intake,disabled
-trajectory,barrierLeft,barrierStartLeft,180,reversed
+trajectory,barrierRight,barrierStartRight,180,reversed
 elevarm,cone,front,stow,parallel
-trajectory,barrierStartLeft,chell,180,reversed
+trajectory,barrierStartRight,chell,180,reversed
 trajectory,chell,chellFar,180,reversed
 split,0.25,multiplier
 trajectory,chellFar,chargeFar,180,reversed
 balance
-xmode

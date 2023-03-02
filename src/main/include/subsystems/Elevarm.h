@@ -149,7 +149,8 @@ public:
         {"player", ElevarmPositionState::ELEVARM_PLAYER},
         {"mid", ElevarmPositionState::ELEVARM_MID},
         {"high", ElevarmPositionState::ELEVARM_HIGH},
-        {"ground", ElevarmPositionState::ELEVARM_MANUAL},
+        {"manual", ElevarmPositionState::ELEVARM_MANUAL},
+        {"ground_score", ElevarmPositionState::ELEVARM_GROUND_SCORE},
         {"snake", ElevarmPositionState::ELEVARM_SNAKE}
     };
     ElevarmPositionState stringToPositionState(std::string name){
