@@ -1,0 +1,29 @@
+reset_odom,wallRight,180
+//score high
+elevarm,cone,front,high
+time,1000
+intake,outtake_cone
+time,1000
+intake,disabled
+//pickup doug cone
+trajectory,wallRight,wallStartRight,180,reversed
+intake,intake_cone
+elevarm,cone,back,stow,parallel
+trajectory,wallStartRight,glados,180,reversed
+trajectory,glados,gladosFar,180,reversed
+split,0.75,multiplier
+elevarm,cone,back,ground
+split,0.75,multiplier
+trajectory,gladosFar,doug,180,reversed
+//back to wallRight
+trajectory,doug,farParallelwall,180
+split,0.5,multiplier
+elevarm,cone,front,stow,parallel
+split,0.5,multiplier
+trajectory,farParallelwall,glados,180
+split,0.25,multiplier
+elevarm,cone,front,high,parallel
+split,0.25,multiplier
+trajectory,glados,wallLeft
+time,1000
+intake,outtake_cone

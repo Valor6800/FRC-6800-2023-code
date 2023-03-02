@@ -1,0 +1,29 @@
+reset_odom,barrierRight,180
+//score high
+elevarm,cone,front,high
+time,1000
+intake,outtake_cone
+time,1000
+intake,disabled
+//pickup cave cone
+trajectory,barrierRight,barrierStartRight,180,reversed
+intake,intake_cone
+elevarm,cone,back,stow,parallel
+trajectory,barrierStartRight,chell,180,reversed
+trajectory,chell,chellFar,180,reversed
+split,0.75,multiplier
+elevarm,cone,back,ground
+split,0.75,multiplier
+trajectory,chellFar,cave,180,reversed
+//back to barrierLeft
+trajectory,cave,farParallelBarrier,180
+split,0.5,multiplier
+elevarm,cone,front,stow,parallel
+split,0.5,multiplier
+trajectory,farParallelBarrier,chell,180
+split,0.25,multiplier
+elevarm,cone,front,high,parallel
+split,0.25,multiplier
+trajectory,chell,barrierLeft
+time,1000
+intake,outtake_cone
