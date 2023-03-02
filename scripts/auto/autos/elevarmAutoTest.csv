@@ -1,9 +1,7 @@
-//front positions
-elevarm,cone,front,stow
-time,1000
+//front leg positions cone
 elevarm,cone,front,ground
 time,1000
-elevarm,cone,front,snake
+elevarm,cone,front,stow
 time,1000
 elevarm,cone,front,mid
 time,1000
@@ -11,36 +9,13 @@ elevarm,cone,front,player
 time,1000
 elevarm,cone,front,high
 time,1000
-//back positions
+//back positions cone
 elevarm,cone,back,stow
 time,1000
 elevarm,cone,back,ground
 time,1000
-elevarm,cone,back,snake
-time,1000
-elevarm,cone,back,mid
+elevarm,cone,front,ground_score
 time,1000
 elevarm,cone,back,player
 time,1000
-elevarm,cone,back,high
-time,1000
-//front-back tests
-elevarm,cone,front,ground
-time,1000
-elevarm,cone,back,ground
-time,1000
-elevarm,cone,front,snake
-time,1000
-elevarm,cone,back,snake
-time,1000
-elevarm,cone,front,mid
-time,1000
-elevarm,cone,back,mid
-time,1000
-elevarm,cone,front,player
-time,1000
-elevarm,cone,back,player
-time,1000
-elevarm,cone,front,high
-time,1000
-elevarm,cone,back,high
+elevarm,cube,back,mid
