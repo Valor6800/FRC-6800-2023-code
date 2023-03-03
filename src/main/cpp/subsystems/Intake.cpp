@@ -143,14 +143,14 @@ void Intake::analyzeDashboard()
  
 void Intake::assignOutputs()
 { 
-    if (state.intakeState == DISABLED) {
-        intakeMotor.setPower(0);
-    } else if (state.intakeOp){
+    if (state.intakeOp){
          if (state.pieceState == CONE){
             intakeMotor.setPower(state.intakeConeSpeed);
         } else{
             intakeMotor.setPower(state.intakeCubeSpeed);
         }
+    } else if (state.intakeState == DISABLED) {
+        intakeMotor.setPower(0);
     } else if (state.intakeState == SPIKED) {
         if (state.pieceState == CONE){
             intakeMotor.setPower(state.coneHoldSpeed);
