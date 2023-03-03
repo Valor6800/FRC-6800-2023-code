@@ -92,6 +92,8 @@ public:
          double coneCacheSize;
          double cubeCacheSize;
 
+         bool intakeOp;
+
      }state, prevState;
     
     std::unordered_map<std::string, IntakeStates> stringToStateMap = {

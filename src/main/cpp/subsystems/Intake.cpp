@@ -53,6 +53,8 @@ void Intake::init()
     state.coneCacheSize = CONE_CACHE_SIZE;
     state.cubeCacheSize = CUBE_CACHE_SIZE;
 
+    state.intakeOp = false;
+
     prevState = state;
 
     currentSensor.setSpikeSetpoint(state.coneSpikeCurrent);
@@ -93,7 +95,7 @@ void Intake::assessInputs()
     } else if (state.intakeState != SPIKED) {
 
         // Driver or operator ground pickup
-        if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || operatorGamepad->leftTriggerActive() ||
+        if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || 
             // Operator human player pickup
             operatorGamepad->GetXButton()  || operatorGamepad->DPadLeft()) {
             if (driverGamepad->GetYButton()){
@@ -116,6 +118,12 @@ void Intake::assessInputs()
     } else {
         state.intakeState = DISABLED;
     }
+
+    if(operatorGamepad->leftTriggerActive()){
+        state.intakeOp = true;
+    } else{
+        state.intakeOp = false;
+    }
 }
 
 void Intake::analyzeDashboard()
@@ -137,6 +145,12 @@ void Intake::assignOutputs()
 { 
     if (state.intakeState == DISABLED) {
         intakeMotor.setPower(0);
+    } else if (state.intakeOp){
+         if (state.pieceState == CONE){
+            intakeMotor.setPower(state.intakeConeSpeed);
+        } else{
+            intakeMotor.setPower(state.intakeCubeSpeed);
+        }
     } else if (state.intakeState == SPIKED) {
         if (state.pieceState == CONE){
             intakeMotor.setPower(state.coneHoldSpeed);
