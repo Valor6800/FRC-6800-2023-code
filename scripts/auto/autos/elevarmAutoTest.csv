@@ -19,3 +19,5 @@ time,1000
 elevarm,cone,back,player
 time,1000
 elevarm,cube,back,mid
+time,1000
+elevarm,cone,back,stow
