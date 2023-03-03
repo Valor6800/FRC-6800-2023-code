@@ -1,0 +1,7 @@
+reset_odom,coopLeft,180
+elevarm,cone,front,high
+time,1000
+intake,outtake_cone
+time,1000
+intake,disabled
+elevarm,cone,front,stow

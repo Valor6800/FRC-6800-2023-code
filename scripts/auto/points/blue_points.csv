@@ -28,11 +28,11 @@ chellNear,2.855,4.67
 shortParallelBarrier,2.15,4.47
 
 farParallelWall,6.5,0.91
-gladosFar,5.5,0.76
+gladosFar,6.0,0.76
 glados,3.93,0.77
 gladosNear,2.855,0.78
 shortParallelWall,2.15,0.78
 
-chargeFar,6.0,2.77
+chargeFar,6.3,2.77
 charge,0.8,2.77
 chargeNear,2.095,2.77
