@@ -433,7 +433,7 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
                 state.abovePitchThreshold = true;
                 state.xSpeed = -0.4;
             } else if (state.abovePitchThreshold) {
-                if (pigeon.GetPitch() < 10.7 ){
+                if (pigeon.GetPitch() < 11.5 ){
                     state.isLeveled = true;
                     state.xSpeed = 0.02;
                 }else if(pigeon.GetPitch() < 16){
@@ -467,7 +467,7 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
                 state.abovePitchThreshold = true;
                 state.xSpeed = 0.4;
             } else if (state.abovePitchThreshold) {
-                if (pigeon.GetPitch() > -10.7 ){
+                if (pigeon.GetPitch() > -11.5 ){
                     state.isLeveled = true;
                     state.xSpeed = -0.02;
                 }else if(pigeon.GetPitch() > -16){
