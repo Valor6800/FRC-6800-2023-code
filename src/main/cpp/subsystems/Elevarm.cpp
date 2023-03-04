@@ -47,7 +47,7 @@
 #define AUTO_ROTATE_K_D 0.0f
 #define AUTO_ROTATE_K_ERROR 0.5f
 #define AUTO_ROTATE_K_VEL 120.0f
-#define AUTO_ROTATE_K_ACC_MUL 1.5f
+#define AUTO_ROTATE_K_ACC_MUL 2.0f //1.5 = 2deg shift
 #define AUTO_ROTATE_K_AFF 0.115f
 #define AUTO_ROTATE_K_AFF_CUBE 0.11f
 #define AUTO_ROTATE_K_AFF_POS 90.0f

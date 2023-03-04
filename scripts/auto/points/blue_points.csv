@@ -16,19 +16,21 @@ wallBox,1.78,1.23
 wallStartRight,2.095,0.65
 wallRight,1.78,0.65
 
-cave,7.07,4.58
-wheatley,7.07,3.36
-johnson,7.07,2.14
-doug,7.07,0.92
+cave,6.68,4.56
+wheatley,6.68,3.34
+johnson,6.68,2.12
+doug,6.68,0.9
 
 farParallelBarrier,6.5,4.57
 chellFar,5.0,4.69
+chellFarMinus,4.5,4.69
 chell,3.93,4.68
 chellNear,2.855,4.67
 shortParallelBarrier,2.15,4.47
 
 farParallelWall,6.5,0.91
 gladosFar,6.0,0.76
+gladosFarMinus,5.0,0.76
 glados,3.93,0.77
 gladosNear,2.855,0.78
 shortParallelWall,2.15,0.78
