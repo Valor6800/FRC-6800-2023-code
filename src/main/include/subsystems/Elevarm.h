@@ -120,6 +120,8 @@ public:
         double frontMinAngle;
         double backMinAngle;
 
+        double carraigeOffset;
+
     } futureState, previousState;
 
     double heightDeadband, rotationDeadband;

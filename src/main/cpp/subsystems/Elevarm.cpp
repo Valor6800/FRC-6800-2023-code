@@ -20,7 +20,9 @@
 #define WRIST_FORWARD_LIMIT 325.0f
 #define WRIST_REVERSE_LIMIT -325.0f
 
-#define CANCODER_OFFSET 58.8f
+#define CANCODER_OFFSET 251.0f
+
+#define INTIAL_HEIGHT_OFFSET 3.0f //cm
 
 #define CARRIAGE_K_F 0.000156f  
 #define CARRIAGE_K_P 1e-4f
@@ -197,7 +199,7 @@ void Elevarm::init()
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(-0.99_m, 0.55_m, -208.5_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND_SCORE] =frc::Pose2d(-0.428_m, 0.451_m, -71.0_deg);
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(-0.8_m, 1.45_m, 57.5_deg);
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(-0.8_m, 1.485_m, 57.5_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
@@ -215,6 +217,8 @@ void Elevarm::init()
     table->PutNumber("Arm Rotate Max Manual Speed", MAN_MAX_ROTATE);
     table->PutBoolean("Pit Mode", futureState.pitModeEnabled);
     table->PutNumber("Carraige Stall", carriageStallPower);
+    table->PutNumber("Carraige Offset", 0);
+    table->PutBoolean("Enable Carraige Offset", false);
 
     resetState();
     armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
@@ -275,6 +279,12 @@ void Elevarm::analyzeDashboard()
     manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", MAN_MAX_ROTATE);
     futureState.pitModeEnabled = table->GetBoolean("Pit Mode", false);
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
+
+    if (table->GetBoolean("Enable Carraige Offset", false)) {
+        futureState.carraigeOffset = table->GetNumber("Carraige Offset", 0);
+    } else {
+        futureState.carraigeOffset = 0;
+    }
     // armStallPower = table->GetNumber("Arm Stall Power", P_MIN_ARM);
     futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition(), wristMotor.getPosition()));
     futureState.frontMinAngle = minAngle(true);
@@ -405,6 +415,7 @@ Elevarm::Positions Elevarm::reverseKinematics(frc::Pose2d pose, ElevarmSolutions
         height = pose.Y().to<double>() + (X_ARM_LENGTH * std::cos(theta));
     }
     height -= (Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET);
+    height += futureState.carraigeOffset / 100.0; //convert fron cm on dashboard to m in logic
 
 
     return Positions(height,theta * 180.0 / M_PI, pose.Rotation().Degrees().to<double>());
