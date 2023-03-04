@@ -22,7 +22,8 @@
 
 #define CANCODER_OFFSET 251.0f
 
-#define INTIAL_HEIGHT_OFFSET 3.0f //cm
+#define INITIAL_HEIGHT_OFFSET 0.0f //cm
+#define STOW_HEIGHT_OFFSET 0.0f //cm
 
 #define CARRIAGE_K_F 0.000156f  
 #define CARRIAGE_K_P 1e-4f
@@ -196,10 +197,10 @@ void Elevarm::init()
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(0.567_m, 1.24_m, 227.5_deg);
     posMap[ElevarmPieceState::ELEVARM_CUBE][ElevarmDirectionState::ELEVARM_FRONT][ElevarmPositionState::ELEVARM_SNAKE] =frc::Pose2d(0.086_m, 1.16_m, 253.2_deg);
     // BACK CONE
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(-0.99_m, 0.55_m, -208.5_deg);
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND] =frc::Pose2d(-0.99_m, 0.58_m, -208.5_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_GROUND_SCORE] =frc::Pose2d(-0.428_m, 0.451_m, -71.0_deg);
-    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(-0.8_m, 1.485_m, 57.5_deg);
+    posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_PLAYER] =frc::Pose2d(-0.8_m, 1.515_m, 57.5_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_MID] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_HIGH] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
     posMap[ElevarmPieceState::ELEVARM_CONE][ElevarmDirectionState::ELEVARM_BACK][ElevarmPositionState::ELEVARM_SNAKE] =frc::Pose2d(-0.904_m, 1.09_m, -180.0_deg);
@@ -217,7 +218,7 @@ void Elevarm::init()
     table->PutNumber("Arm Rotate Max Manual Speed", MAN_MAX_ROTATE);
     table->PutBoolean("Pit Mode", futureState.pitModeEnabled);
     table->PutNumber("Carraige Stall", carriageStallPower);
-    table->PutNumber("Carraige Offset", 0);
+    table->PutNumber("Carraige Offset", INITIAL_HEIGHT_OFFSET);
     table->PutBoolean("Enable Carraige Offset", false);
 
     resetState();
@@ -281,9 +282,9 @@ void Elevarm::analyzeDashboard()
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
 
     if (table->GetBoolean("Enable Carraige Offset", false)) {
-        futureState.carraigeOffset = table->GetNumber("Carraige Offset", 0);
+        futureState.carraigeOffset = table->GetNumber("Carraige Offset", INITIAL_HEIGHT_OFFSET);
     } else {
-        futureState.carraigeOffset = 0;
+        futureState.carraigeOffset = INITIAL_HEIGHT_OFFSET;
     }
     // armStallPower = table->GetNumber("Arm Stall Power", P_MIN_ARM);
     futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition(), wristMotor.getPosition()));
