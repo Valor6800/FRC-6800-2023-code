@@ -56,19 +56,3 @@ namespace CANIDs {
     constexpr static int ARM_CANCODER = 14;
     constexpr static int WRIST = 15;
 }
-
-namespace CANdleColors {
-    constexpr static int VALOR_GOLD = 0xEEA800;
-    constexpr static int PURPLE = 0x3C14BE;
-
-    constexpr static int LIME_COLOR = 0x054C00;
-    constexpr static int XMODE = 0x000000;
-
-    constexpr static int PINK = 0xFE019A;
-    constexpr static int ORANGE = 0xed7e15;
-    constexpr static int TEAL = 0x3dffcb;
-    constexpr static int WHITE = 0xfafafa;
-    constexpr static int LIGHT_GREEN = 0xd4f0a5;
-    constexpr static int BABY_BLUE = 0x71d2f0;
-
-}

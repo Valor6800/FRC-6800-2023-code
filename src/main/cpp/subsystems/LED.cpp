@@ -10,7 +10,7 @@ LED::LED(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "ValorLED"),
     init();
 }        
 
-void LED::init(){led.setRangeLED(CANdleColors::VALOR_GOLD, 0, LED_COUNT);}
+void LED::init(){resetState();}
 
 void LED::assessInputs(){state.yButton=driverGamepad->GetYButton();}
 
@@ -20,13 +20,13 @@ void LED::assignOutputs()
 {
     int pieceColor;
     if (state.yButton){
-        pieceColor = CANdleColors::PURPLE;
-    } else pieceColor = CANdleColors::VALOR_GOLD;
+        pieceColor = PURPLE;
+    } else pieceColor = VALOR_GOLD;
 
     led.setRangeLED(pieceColor, 0, LED_COUNT);
 }
 
-void LED::resetState(){led.setRangeLED(CANdleColors::VALOR_GOLD, 0, LED_COUNT);}
+void LED::resetState(){led.setRangeLED(VALOR_GOLD, 0, LED_COUNT);}
 
 void LED::InitSendable(wpi::SendableBuilder& builder){
     builder.SetSmartDashboardType("LEDs");

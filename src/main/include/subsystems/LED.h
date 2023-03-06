@@ -33,4 +33,18 @@ class LED : public ValorSubsystem
         void assignOutputs();
         void resetState();
         void InitSendable(wpi::SendableBuilder& builder) override;
+        
+        int VALOR_GOLD = 0xEEA800;
+        int PURPLE = 0x3C14BE;
+
+        int LIME_COLOR = 0x054C00;
+        int XMODE = 0x000000;
+
+        int PINK = 0xFE019A;
+        int ORANGE = 0xed7e15;
+        int TEAL = 0x3dffcb;
+        int WHITE = 0xfafafa;
+        int LIGHT_GREEN = 0xd4f0a5;
+        int BABY_BLUE = 0x71d2f0;
+
 };
