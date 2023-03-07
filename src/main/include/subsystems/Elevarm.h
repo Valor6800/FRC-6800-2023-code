@@ -93,6 +93,7 @@ public:
         ELEVARM_PLAYER,
         ELEVARM_MID,
         ELEVARM_HIGH,
+        ELEVARM_HIGH_AUTO,
         ELEVARM_MANUAL,
         ELEVARM_SNAKE
     };
@@ -152,6 +153,7 @@ public:
         {"player", ElevarmPositionState::ELEVARM_PLAYER},
         {"mid", ElevarmPositionState::ELEVARM_MID},
         {"high", ElevarmPositionState::ELEVARM_HIGH},
+        {"high_auto", ElevarmPositionState::ELEVARM_HIGH_AUTO},
         {"manual", ElevarmPositionState::ELEVARM_MANUAL},
         {"ground_score", ElevarmPositionState::ELEVARM_GROUND_SCORE},
         {"snake", ElevarmPositionState::ELEVARM_SNAKE}
