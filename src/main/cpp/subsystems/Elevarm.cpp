@@ -240,16 +240,17 @@ void Elevarm::assessInputs()
         futureState.positionState = ElevarmPositionState::ELEVARM_MANUAL;
     } else if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper()){
         if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
-        else if (driverGamepad->GetAButton()) futureState.positionState = ElevarmPositionState::ELEVARM_GROUND_TOPPLE;
         else futureState.positionState = ElevarmPositionState::ELEVARM_GROUND;
-    } else if (operatorGamepad->GetAButton() || operatorGamepad->DPadDown()) {
-        futureState.positionState = ElevarmPositionState::ELEVARM_GROUND_SCORE;
-    } else if(operatorGamepad->GetXButton() || operatorGamepad->DPadLeft()){
-        futureState.positionState = ElevarmPositionState::ELEVARM_PLAYER;
-    } else if (operatorGamepad->GetYButton() || operatorGamepad->DPadUp()){
+    } else if (operatorGamepad->DPadDown()) {
+        if (driverGamepad->leftTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_GROUND_SCORE;
+        else futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+    } else if(operatorGamepad->DPadLeft()){
+        if (driverGamepad->leftTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_PLAYER;
+        else futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
+    } else if (operatorGamepad->DPadUp()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_HIGH;
         else futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
-    } else if(operatorGamepad->GetBButton() || operatorGamepad->DPadRight()){
+    } else if(operatorGamepad->DPadRight()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = ElevarmPositionState::ELEVARM_MID;
         else futureState.positionState = ElevarmPositionState::ELEVARM_STOW;
     } else {
@@ -258,7 +259,7 @@ void Elevarm::assessInputs()
         } 
     }
 
-    if (operatorGamepad->DPadUp() || operatorGamepad->DPadDown() || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight() || driverGamepad->GetYButton()){
+    if (operatorGamepad->GetYButton() || driverGamepad->GetYButton()){
         futureState.pieceState = ElevarmPieceState::ELEVARM_CUBE;
     } else {
         futureState.pieceState = ElevarmPieceState::ELEVARM_CONE;
