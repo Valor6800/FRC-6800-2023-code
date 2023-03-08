@@ -121,6 +121,9 @@ public:
           
           bool saveToFileDebouncer;
 
+          bool adas;
+          bool lock;
+
           LimelightPipes limeLocation;
           
           bool xPose;
@@ -207,6 +210,8 @@ public:
      frc::SwerveDriveKinematics<SWERVE_COUNT>* getKinematics();
 
      void limelightHoming(LimelightPipes pipe);
+     void angleLock();
+     void adas();
      
      frc2::FunctionalCommand* getAutoLevel();
      frc2::FunctionalCommand* getAutoLevelReversed();
