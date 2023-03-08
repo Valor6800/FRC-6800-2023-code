@@ -83,8 +83,7 @@ void Intake::assessInputs()
     // SCORE
     if (driverGamepad->rightTriggerActive() || operatorGamepad->rightTriggerActive()) {
         // Operator holding cube score
-        if (operatorGamepad->DPadDown() || operatorGamepad->DPadUp()
-            || operatorGamepad->DPadLeft() || operatorGamepad->DPadRight() || driverGamepad->GetYButton()) {
+        if (operatorGamepad->GetYButton() || driverGamepad->GetYButton()) {
             state.intakeState = OUTTAKE_CUBE;
         // Operator holding cone score
         } else{
@@ -95,10 +94,9 @@ void Intake::assessInputs()
     } else if (state.intakeState != SPIKED) {
 
         // Driver or operator ground pickup
-        if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || 
-            // Operator human player pickup
-            operatorGamepad->GetXButton()  || operatorGamepad->DPadLeft()) {
-            if (driverGamepad->GetYButton()){
+        if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || operatorGamepad->DPadLeft()) {
+            
+            if (driverGamepad->GetYButton() || operatorGamepad->GetYButton()){
                 state.intakeState = INTAKE_CUBE;
                 state.pieceState = CUBE;
             }
