@@ -88,6 +88,8 @@
 #define MAN_MAX_CARRIAGE 0.3f
 #define MAN_MAX_ROTATE 0.4f
 
+#define S_CURVE_STRENGTH 5
+
 Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_robot, "Elevarm"),                        
                             intake(_intake),
                             carriageMotors(CANIDs::CARRIAGE_MAIN, ValorNeutralMode::Brake, false),
@@ -148,6 +150,7 @@ void Elevarm::init()
     autoRotatePID.error = AUTO_ROTATE_K_ERROR; 
     autoRotatePID.aFF = AUTO_ROTATE_K_AFF; 
     autoRotatePID.aFFTarget = AUTO_ROTATE_K_AFF_POS; 
+    autoRotatePID.sCurveStrength = S_CURVE_STRENGTH;
     
     wristPID.velocity = WRIST_K_VEL;
     wristPID.acceleration = WRIST_K_ACC_MUL;

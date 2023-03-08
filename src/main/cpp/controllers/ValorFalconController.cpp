@@ -79,6 +79,7 @@ void ValorFalconController::setPIDF(ValorPIDF _pidf, int slot)
     double vel = pidf.velocity / 10.0 * FALCON_TICKS_PER_REV / conversion;
     motor->ConfigMotionCruiseVelocity(vel);
     motor->ConfigMotionAcceleration(vel / pidf.acceleration);
+    motor->ConfigMotionSCurveStrength(pidf.sCurveStrength);
 }
 
 void ValorFalconController::setConversion(double _conversion)
