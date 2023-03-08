@@ -34,7 +34,7 @@ Intake::~Intake()
 void Intake::resetState()
 {
    state.intakeState = DISABLED;
-   state.pieceState = CONE;
+   state.pieceState = Piece::PieceState::CONE;
    currentSensor.reset();
 }
 
@@ -100,11 +100,11 @@ void Intake::assessInputs()
             
             if (driverGamepad->GetYButton() || operatorGamepad->GetYButton()){
                 state.intakeState = INTAKE_CUBE;
-                state.pieceState = CUBE;
+                state.pieceState = Piece::PieceState::CUBE;
             }
             else{
                 state.intakeState = INTAKE_CONE;
-                state.pieceState = CONE;
+                state.pieceState = Piece::PieceState::CONE;
             }
         // Nothing pressed
         } else{
@@ -144,7 +144,7 @@ void Intake::analyzeDashboard()
 void Intake::assignOutputs()
 { 
     if (state.intakeOp){
-         if (state.pieceState == CONE){
+         if (state.pieceState ==Piece::PieceState::CONE){
             intakeMotor.setPower(state.intakeConeSpeed);
         } else{
             intakeMotor.setPower(state.intakeCubeSpeed);
@@ -152,7 +152,7 @@ void Intake::assignOutputs()
     } else if (state.intakeState == DISABLED) {
         intakeMotor.setPower(0);
     } else if (state.intakeState == SPIKED) {
-        if (state.pieceState == CONE){
+        if (state.pieceState ==Piece::PieceState::CONE){
             intakeMotor.setPower(state.coneHoldSpeed);
         } else{
             intakeMotor.setPower(state.cubeHoldSpeed);
@@ -164,13 +164,13 @@ void Intake::assignOutputs()
     } else if (state.intakeState == OUTTAKE){
         intakeMotor.setPower(state.outtakeSpeed);
     } else if (state.intakeState == INTAKE_CONE){
-        if (prevState.pieceState != CONE) {
+        if (prevState.pieceState !=Piece::PieceState::CONE) {
             currentSensor.setCacheSize(state.coneCacheSize);
             currentSensor.setSpikeSetpoint(state.coneSpikeCurrent);
         }
         intakeMotor.setPower(state.intakeConeSpeed);
     } else if (state.intakeState == INTAKE_CUBE){
-        if (prevState.pieceState != CUBE) {
+        if (prevState.pieceState != Piece::PieceState::CUBE) {
             currentSensor.setCacheSize(state.cubeCacheSize);
             currentSensor.setSpikeSetpoint(state.cubeSpikeCurrent);
         }

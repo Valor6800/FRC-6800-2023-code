@@ -13,6 +13,10 @@
 #include "controllers/ValorNeoController.h"
 #include "subsystems/Intake.h"
 
+#include "subsystems/Direction.h"
+#include "subsystems/Position.h"
+#include "subsystems/Piece.h"
+
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/trajectory/Trajectory.h>
@@ -75,29 +79,6 @@ public:
         double wrist;
     };
 
-     enum ElevarmPieceState {
-        ELEVARM_CONE,
-        ELEVARM_CUBE
-    };
-
-    enum ElevarmDirectionState {
-        ELEVARM_FRONT,
-        ELEVARM_BACK
-    };
-
-    enum ElevarmPositionState {
-        ELEVARM_STOW,
-        ELEVARM_GROUND,
-        ELEVARM_GROUND_TOPPLE,
-        ELEVARM_GROUND_SCORE,
-        ELEVARM_PLAYER,
-        ELEVARM_MID,
-        ELEVARM_HIGH,
-        ELEVARM_HIGH_AUTO,
-        ELEVARM_MANUAL,
-        ELEVARM_SNAKE
-    };
-
     enum ElevarmSolutions {
         ELEVARM_ARMS,
         ELEVARM_LEGS
@@ -105,9 +86,9 @@ public:
 
     struct x
     {
-        ElevarmPieceState pieceState;
-        ElevarmDirectionState directionState;
-        ElevarmPositionState positionState;
+        Piece::PieceState pieceState;
+        Direction::DirectionState directionState;
+        Position::PositionState positionState;
 
         double manualCarriage;
         double manualArm;
@@ -131,36 +112,36 @@ public:
 
     frc2::FunctionalCommand * getRotatePIDSetterCommand(bool);
 
-    std::unordered_map<std::string, ElevarmPieceState> stringToPieceMap = {
-        {"cone", ElevarmPieceState::ELEVARM_CONE},
-        {"cube", ElevarmPieceState::ELEVARM_CUBE}
+    std::unordered_map<std::string, Piece::PieceState> stringToPieceMap = {
+        {"cone", Piece::PieceState::CONE},
+        {"cube", Piece::PieceState::CUBE}
     };
-    ElevarmPieceState stringToPieceState(std::string name){
+    Piece::PieceState stringToPieceState(std::string name){
         return stringToPieceMap[name];
     }
 
-    std::unordered_map<std::string, ElevarmDirectionState> stringToDirectionMap = {
-        {"front", ElevarmDirectionState::ELEVARM_FRONT},
-        {"back", ElevarmDirectionState::ELEVARM_BACK}
+    std::unordered_map<std::string, Direction::DirectionState> stringToDirectionMap = {
+        {"front", Direction::DirectionState::FRONT},
+        {"back", Direction::DirectionState::BACK}
     };
-    ElevarmDirectionState stringToDirectionState(std::string name){
+    Direction::DirectionState stringToDirectionState(std::string name){
         return stringToDirectionMap[name];
     }
 
-    std::unordered_map<std::string, ElevarmPositionState> stringToPositionMap = {
-        {"stow", ElevarmPositionState::ELEVARM_STOW},
-        {"ground", ElevarmPositionState::ELEVARM_GROUND},
-        {"player", ElevarmPositionState::ELEVARM_PLAYER},
-        {"mid", ElevarmPositionState::ELEVARM_MID},
-        {"high", ElevarmPositionState::ELEVARM_HIGH},
-        {"high_auto", ElevarmPositionState::ELEVARM_HIGH_AUTO},
-        {"manual", ElevarmPositionState::ELEVARM_MANUAL},
-        {"ground_score", ElevarmPositionState::ELEVARM_GROUND_SCORE},
-        {"snake", ElevarmPositionState::ELEVARM_SNAKE}
+    std::unordered_map<std::string, Position::PositionState> stringToPositionMap = {
+        {"stow", Position::PositionState::STOW},
+        {"ground", Position::PositionState::GROUND},
+        {"player", Position::PositionState::PLAYER},
+        {"mid", Position::PositionState::MID},
+        {"high", Position::PositionState::HIGH},
+        {"high_auto", Position::PositionState::HIGH_AUTO},
+        {"manual", Position::PositionState::MANUAL},
+        {"ground_score", Position::PositionState::GROUND_SCORE},
+        {"snake", Position::PositionState::SNAKE}
     };
-    ElevarmPositionState stringToPositionState(std::string name){
+    Position::PositionState stringToPositionState(std::string name){
         if (!stringToPositionMap.contains(name))
-            return ElevarmPositionState::ELEVARM_GROUND;
+            return Position::PositionState::GROUND;
         return stringToPositionMap.at(name);
     }
 
@@ -189,10 +170,10 @@ private:
 
      ValorFalconController wristMotor;
 
-     std::map<ElevarmPieceState, std::map<ElevarmDirectionState, std::map<ElevarmPositionState, frc::Pose2d>>> posMap;
+     std::map<Piece::PieceState, std::map<Direction::DirectionState, std::map<Position::PositionState, frc::Pose2d>>> posMap;
      frc::Pose2d stowPos;
 
-    Positions reverseKinematics(frc::Pose2d pose, ElevarmSolutions, ElevarmDirectionState); 
+    Positions reverseKinematics(frc::Pose2d pose, ElevarmSolutions, Direction::DirectionState); 
     frc::Pose2d forwardKinematics(Positions positions);
     Positions detectionBoxManual(double, double);
 
