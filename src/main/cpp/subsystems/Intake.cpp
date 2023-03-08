@@ -94,7 +94,8 @@ void Intake::assessInputs()
     } else if (state.intakeState != SPIKED) {
 
         // Driver or operator ground pickup
-        if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || operatorGamepad->DPadLeft()) {
+        if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || 
+        (operatorGamepad->DPadLeft() && driverGamepad->leftTriggerActive())) {
             
             if (driverGamepad->GetYButton() || operatorGamepad->GetYButton()){
                 state.intakeState = INTAKE_CUBE;
