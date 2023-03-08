@@ -67,15 +67,11 @@ public:
         INTAKE_CUBE
      };
 
-     enum IntakePieceState {
-        CUBE,
-        CONE
-     };
 
      struct x
      {
          IntakeStates intakeState;
-         IntakePieceState pieceState;
+         Piece::PieceState pieceState;
 
          double intakeConeSpeed;
          double intakeCubeSpeed;
