@@ -1,5 +1,6 @@
 #include <iostream>
 #include "subsystems/Intake.h"
+#include "subsystems/Piece.h"
 //intaking with cone and cube has different directions, so flipped
 #define DEFAULT_INTAKE_CUBE_SPD -0.7f
 #define DEFAULT_INTAKE_CONE_SPD 0.9f
