@@ -55,6 +55,8 @@
 #define AUTO_ROTATE_K_AFF_CUBE 0.11f
 #define AUTO_ROTATE_K_AFF_POS 90.0f
 
+#define ROTATE_S_CURVE_STRENGTH 3
+
 #define WRIST_K_F 0.75f
 #define WRIST_K_P 0.12f
 #define WRIST_K_I 0.0f
@@ -62,6 +64,7 @@
 #define WRIST_K_ERROR 0.25f
 #define WRIST_K_VEL 540.0f
 #define WRIST_K_ACC_MUL 0.375f
+#define WRIST_S_CURVE_STRENGTH 3
 
 #define PREVIOUS_WRIST_DEADBAND 1.0f
 #define PREVIOUS_HEIGHT_DEADBAND 0.03f
@@ -87,8 +90,6 @@
 
 #define MAN_MAX_CARRIAGE 0.3f
 #define MAN_MAX_ROTATE 0.4f
-
-#define S_CURVE_STRENGTH 5
 
 Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_robot, "Elevarm"),                        
                             intake(_intake),
@@ -140,6 +141,7 @@ void Elevarm::init()
     rotatePID.error = ROTATE_K_ERROR; 
     rotatePID.aFF = ROTATE_K_AFF; 
     rotatePID.aFFTarget = ROTATE_K_AFF_POS;
+    rotatePID.sCurveStrength = ROTATE_S_CURVE_STRENGTH;
 
     autoRotatePID.velocity = AUTO_ROTATE_K_VEL;
     autoRotatePID.acceleration = AUTO_ROTATE_K_ACC_MUL;
@@ -150,7 +152,7 @@ void Elevarm::init()
     autoRotatePID.error = AUTO_ROTATE_K_ERROR; 
     autoRotatePID.aFF = AUTO_ROTATE_K_AFF; 
     autoRotatePID.aFFTarget = AUTO_ROTATE_K_AFF_POS; 
-    autoRotatePID.sCurveStrength = S_CURVE_STRENGTH;
+    autoRotatePID.sCurveStrength = ROTATE_S_CURVE_STRENGTH;
     
     wristPID.velocity = WRIST_K_VEL;
     wristPID.acceleration = WRIST_K_ACC_MUL;
@@ -159,6 +161,7 @@ void Elevarm::init()
     wristPID.I = WRIST_K_I;
     wristPID.D = WRIST_K_D;
     wristPID.error = WRIST_K_ERROR; 
+    wristPID.sCurveStrength = WRIST_S_CURVE_STRENGTH;
         
     carriageMotors.setConversion(1.0 / CARRIAGE_GEAR_RATIO * M_PI * CARRAIAGE_OUTPUT_DIAMETER);
     carriageMotors.setForwardLimit(CARRIAGE_UPPER_LIMIT);
@@ -304,7 +307,7 @@ void Elevarm::assignOutputs()
     if (futureState.positionState == ElevarmPositionState::ELEVARM_STOW || inTransition) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, ElevarmDirectionState::ELEVARM_FRONT);
     } else {
-            if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID || futureState.positionState == ElevarmPositionState::ELEVARM_SNAKE || futureState.positionState == ElevarmPositionState::ELEVARM_HIGH) {
+            if (futureState.positionState == ElevarmPositionState::ELEVARM_PLAYER || futureState.positionState == ElevarmPositionState::ELEVARM_MID || futureState.positionState == ElevarmPositionState::ELEVARM_SNAKE || futureState.positionState == ElevarmPositionState::ELEVARM_HIGH || futureState.positionState == ElevarmPositionState::ELEVARM_HIGH_AUTO)  {
                 futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
             } else 
                 futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
