@@ -74,6 +74,11 @@ Resets odometry to a specified pose
 
 Syntax: `reset_odom,<intial_point>,<initial_heading>`
 
+or `reset_odom,<"x"/"y"/"angle">,<value>`
+
+Selecting `"x"`, `"y"`, or `"angle"` will reset the value for that specified parameter. Include quotation marks or otherwise it'll be treated as a point and you'll get an error. 
+Angle value is in degrees.
+
 ### Action
 ***ACTIONS ARE BROKEN as of 2/18/23***
 
@@ -122,6 +127,14 @@ Changes trajectory acceleration
 Syntax: `acceleration/accel,<acceleration>,["multiplier"]`
 
 Sets the acceleration used to calculate the feed forward movement. Contrary to split, this applies the acceleration to all trajectories written after it, so you don't need to place it right before each trajectory.
+
+### Goto
+
+Goes to a point from the robot's current position
+
+Syntax: `goto,<point>,<rotation>,["normal"/"reversed"]`
+
+This is different from a trajectory command as goto isn't compiled ahead of time; the trajectory from the robot's position to the point is calculated during run time. This should be used only if the robot completes a maneuver that makes its current position uncertain.
 
 ## Points
 

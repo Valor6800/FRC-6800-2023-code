@@ -1,0 +1,19 @@
+reset_odom,coopLeft,180
+elevarm,cone,front,high_auto
+time,250
+intake,outtake,cone
+time,350
+intake,disabled
+elevarm,cone,front,stow,parallel
+climb_over
+xmode
+// Do manual reset just in case we cant see tag
+reset_odom,"x",5.5
+//reset_odom,"vision"
+elevarm,cube,back,ground
+intake,intake,cube
+trajectory,chargeFinishLeft,wheatley,180,reversed
+elevarm,cube,front,stow,parallel
+trajectory,wheatley,chargeFinishLeft,180
+split,0.4
+balance

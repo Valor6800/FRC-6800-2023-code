@@ -36,6 +36,7 @@ struct UsableCommand{
 class ValorAuto {
     public:
         ValorAuto(Drivetrain*, Intake*, Elevarm*);
+        ~ValorAuto();
         bool readPointsCSV(std::string);
         frc2::SequentialCommandGroup* makeAuto(std::string, bool);
         void precompileActions(std::string);
@@ -59,13 +60,16 @@ class ValorAuto {
             {ValorAutoAction::ACTION, "action"},
             {ValorAutoAction::SPLIT, "split"},
             {ValorAutoAction::XMODE, "xmode"},
-            {ValorAutoAction::ACCELERATION, "acceleration"}
+            {ValorAutoAction::ACCELERATION, "acceleration"},
+            {ValorAutoAction::CLIMB_OVER, "climb over"},
+            {ValorAutoAction::GO_TO, "go to"}
         };
 
         std::unordered_map<ValorAutoAction::Error, std::string> errorToStringMap = {
             {ValorAutoAction::NONE_ERROR, "no error"},
             {ValorAutoAction::POINT_MISSING, "non-existent point used"},
-            {ValorAutoAction::SIZE_MISMATCH, "insufficient number of parameters passed in"}
+            {ValorAutoAction::SIZE_MISMATCH, "insufficient number of parameters passed in"},
+            {ValorAutoAction::COMMAND_MISSING, "non-existent command used"}
         };
 
         std::vector<ValorAutoAction> autoActions;
@@ -82,5 +86,7 @@ class ValorAuto {
         nt::NetworkTableEntry entry;
 
         std::shared_ptr<nt::NetworkTable> table;
+
+        frc2::SwerveControllerCommand<SWERVE_COUNT> * trajectoryCommand;
 };
 #endif
