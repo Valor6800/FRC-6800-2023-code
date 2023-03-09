@@ -75,7 +75,7 @@ public:
      struct x
      {
          IntakeStates intakeState;
-         Piece::PieceState pieceState;
+         Piece pieceState;
 
          double intakeConeSpeed;
          double intakeCubeSpeed;

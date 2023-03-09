@@ -86,9 +86,9 @@ public:
 
     struct x
     {
-        Piece::PieceState pieceState;
-        Direction::DirectionState directionState;
-        Position::PositionState positionState;
+        Piece pieceState;
+        Direction directionState;
+        Position positionState;
 
         double manualCarriage;
         double manualArm;
@@ -112,36 +112,36 @@ public:
 
     frc2::FunctionalCommand * getRotatePIDSetterCommand(bool);
 
-    std::unordered_map<std::string, Piece::PieceState> stringToPieceMap = {
-        {"cone", Piece::PieceState::CONE},
-        {"cube", Piece::PieceState::CUBE}
+    std::unordered_map<std::string, Piece> stringToPieceMap = {
+        {"cone", Piece::CONE},
+        {"cube", Piece::CUBE}
     };
-    Piece::PieceState stringToPieceState(std::string name){
+    Piece stringToPieceState(std::string name){
         return stringToPieceMap[name];
     }
 
-    std::unordered_map<std::string, Direction::DirectionState> stringToDirectionMap = {
-        {"front", Direction::DirectionState::FRONT},
-        {"back", Direction::DirectionState::BACK}
+    std::unordered_map<std::string, Direction> stringToDirectionMap = {
+        {"front", Direction::FRONT},
+        {"back", Direction::BACK}
     };
-    Direction::DirectionState stringToDirectionState(std::string name){
+    Direction stringToDirectionState(std::string name){
         return stringToDirectionMap[name];
     }
 
-    std::unordered_map<std::string, Position::PositionState> stringToPositionMap = {
-        {"stow", Position::PositionState::STOW},
-        {"ground", Position::PositionState::GROUND},
-        {"player", Position::PositionState::PLAYER},
-        {"mid", Position::PositionState::MID},
-        {"high", Position::PositionState::HIGH},
-        {"high_auto", Position::PositionState::HIGH_AUTO},
-        {"manual", Position::PositionState::MANUAL},
-        {"ground_score", Position::PositionState::GROUND_SCORE},
-        {"snake", Position::PositionState::SNAKE}
+    std::unordered_map<std::string, Position> stringToPositionMap = {
+        {"stow", Position::STOW},
+        {"ground", Position::GROUND},
+        {"player", Position::PLAYER},
+        {"mid", Position::MID},
+        {"high", Position::HIGH},
+        {"high_auto", Position::HIGH_AUTO},
+        {"manual", Position::MANUAL},
+        {"ground_score", Position::GROUND_SCORE},
+        {"snake", Position::SNAKE}
     };
-    Position::PositionState stringToPositionState(std::string name){
+    Position stringToPositionState(std::string name){
         if (!stringToPositionMap.contains(name))
-            return Position::PositionState::GROUND;
+            return Position::GROUND;
         return stringToPositionMap.at(name);
     }
 
@@ -170,10 +170,10 @@ private:
 
      ValorFalconController wristMotor;
 
-     std::map<Piece::PieceState, std::map<Direction::DirectionState, std::map<Position::PositionState, frc::Pose2d>>> posMap;
+     std::map<Piece, std::map<Direction, std::map<Position, frc::Pose2d>>> posMap;
      frc::Pose2d stowPos;
 
-    Positions reverseKinematics(frc::Pose2d pose, ElevarmSolutions, Direction::DirectionState); 
+    Positions reverseKinematics(frc::Pose2d pose, ElevarmSolutions, Direction); 
     frc::Pose2d forwardKinematics(Positions positions);
     Positions detectionBoxManual(double, double);
 
