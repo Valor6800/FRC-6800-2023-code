@@ -278,6 +278,14 @@ public:
      */
     virtual void setProfile(int slot) = 0;
 
+    /**
+    * Get the PIDF profile number of the motor
+    */
+    int getProfile()
+    {
+        return currentPIDSlot;
+    }
+
     virtual void setNeutralMode(ValorNeutralMode mode) = 0;
 
     virtual void InitSendable(wpi::SendableBuilder& builder) = 0;
@@ -294,4 +302,8 @@ protected:
     bool inverted;
 
     ValorNeutralMode neutralMode;
+
+    std::unordered_map<int, ValorPIDF> pidfs;
+
+    int currentPIDSlot;
 };

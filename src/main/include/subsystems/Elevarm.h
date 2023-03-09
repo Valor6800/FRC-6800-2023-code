@@ -129,7 +129,7 @@ public:
 
     frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string, bool);
 
-    frc2::FunctionalCommand * getRotatePIDSetterCommand(bool);
+    frc2::FunctionalCommand * getRotatePIDSetterCommand(int);
 
     std::unordered_map<std::string, ElevarmPieceState> stringToPieceMap = {
         {"cone", ElevarmPieceState::ELEVARM_CONE},
@@ -164,7 +164,7 @@ public:
         return stringToPositionMap.at(name);
     }
 
-    void setArmPIDF(bool);
+    void setArmPIDF(int);
 
 private:
 

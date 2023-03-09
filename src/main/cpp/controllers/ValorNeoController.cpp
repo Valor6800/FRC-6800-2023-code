@@ -7,8 +7,7 @@ ValorNeoController::ValorNeoController(int canID,
     ValorController(new rev::CANSparkMax(canID, rev::CANSparkMax::MotorType::kBrushless), _inverted, _mode),
     pidController(motor->GetPIDController()),
     encoder(motor->GetEncoder()),
-    extEncoder(motor->GetAbsoluteEncoder(rev::SparkMaxAbsoluteEncoder::Type::kDutyCycle)),
-    currentPidSlot(0)
+    extEncoder(motor->GetAbsoluteEncoder(rev::SparkMaxAbsoluteEncoder::Type::kDutyCycle))
 {
     init();
 }
@@ -21,6 +20,7 @@ void ValorNeoController::init()
     setRange(0,-1,1);
     ValorPIDF motionPIDF;
     setPIDF(motionPIDF, 0);
+    setProfile(0);
     reset();
 
     wpi::SendableRegistry::AddLW(this, "ValorNeoController", "ID " + std::to_string(motor->GetDeviceId()));
@@ -61,6 +61,8 @@ void ValorNeoController::setPIDF(ValorPIDF pidf, int slot)
     pidController.SetSmartMotionMaxVelocity(pidf.velocity * 60.0 / conversion, slot);
     pidController.SetSmartMotionMaxAccel(pidf.acceleration * 60.0 / conversion, slot);
     pidController.SetSmartMotionAllowedClosedLoopError(pidf.error, slot);
+
+    pidfs.insert_or_assign(slot, pidf);
 }
 
 /**
@@ -96,14 +98,6 @@ double ValorNeoController::getPosition()
 }
 
 /**
- * Get the PIDF profile number of the motor
-*/
-int ValorNeoController::getProfile()
-{
-    return currentPidSlot;
-}
-
-/**
  * Get the speed in units per second (specified by conversion)
  */
 double ValorNeoController::getSpeed()
@@ -126,12 +120,12 @@ double ValorNeoController::getAbsEncoderPosition()
  */
 void ValorNeoController::setPosition(double position)
 {
-    pidController.SetReference(position, rev::CANSparkMax::ControlType::kSmartMotion, currentPidSlot);
+    pidController.SetReference(position, rev::CANSparkMax::ControlType::kSmartMotion, currentPIDSlot);
 }
 
-void ValorNeoController::setProfile(int profile)
+void ValorNeoController::setProfile(int slot)
 {
-    currentPidSlot = profile;
+    currentPIDSlot = slot;
 }
 
 /**
@@ -139,7 +133,7 @@ void ValorNeoController::setProfile(int profile)
  */
 void ValorNeoController::setSpeed(double speed)
 {
-    pidController.SetReference(speed * 60.0, rev::CANSparkMax::ControlType::kVelocity, currentPidSlot);
+    pidController.SetReference(speed * 60.0, rev::CANSparkMax::ControlType::kVelocity, currentPIDSlot);
 }
 
 void ValorNeoController::setPower(double power)

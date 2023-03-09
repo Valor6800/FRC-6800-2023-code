@@ -54,6 +54,7 @@ struct ValorAutoAction {
     double vel;
     double maxAccel;
     double accelMultiplier;
+    double slot;
 
     bool parallel;
     
