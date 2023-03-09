@@ -227,9 +227,9 @@ void Drivetrain::assessInputs()
 
     state.xSpeed = driverGamepad->leftStickY(2);
     state.ySpeed = driverGamepad->leftStickX(2);
-    // if (!state.lock){
+    if (!state.lock){
     state.rot = driverGamepad->rightStickX(3);
-    // }
+    }
 
     state.xPose = driverGamepad->GetXButton();
 }
@@ -299,7 +299,7 @@ void Drivetrain::analyzeDashboard()
 
 void Drivetrain::assignOutputs()
 {    
-    // if (state.lock){angleLock();}
+    if (state.lock){angleLock();}
     state.xSpeedMPS = units::velocity::meters_per_second_t{state.xSpeed * driveMaxSpeed};
     state.ySpeedMPS = units::velocity::meters_per_second_t{state.ySpeed * driveMaxSpeed};
     state.rotRPS = units::angular_velocity::radians_per_second_t{state.rot * rotMaxSpeed};
@@ -403,14 +403,14 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT
     }
 }
 
-// void Drivetrain::angleLock(){
-//     if (0 > pigeon.GetYaw()){
-//         state.rot = 1 + (pigeon.GetYaw()/180);
-//     } else{
-//         state.rot =  1 - (pigeon.GetYaw()/180);
-//     }
+void Drivetrain::angleLock(){
+    if (0 > getPose_m().Rotation().Degrees().to<double>()){
+        state.rot = 1 + (getPose_m().Rotation().Degrees().to<double>()/180);
+    } else{
+        state.rot =  1 - (getPose_m().Rotation().Degrees().to<double>()/180);
+    }
     
-// }
+}
 
 // void Drivetrain::adas(){
 //     limeTable->PutNumber("pipeline", 1);
@@ -657,6 +657,14 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
             [this]
             {
                 return pigeon.GetPitch();
+            },
+            nullptr
+        );
+        builder.AddDoubleProperty(
+            "pigeoYaw",
+            [this]
+            {
+                return pigeon.GetYaw();
             },
             nullptr
         );
