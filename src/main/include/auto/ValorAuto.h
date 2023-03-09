@@ -10,6 +10,9 @@
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/ParallelCommandGroup.h>
 
+#include "subsystems/Direction.h"
+#include "subsystems/Position.h"
+#include "subsystems/Piece.h"
 
 #include <string>
 #include <vector>
