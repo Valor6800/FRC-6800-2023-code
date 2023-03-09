@@ -13,6 +13,10 @@
 #include "controllers/ValorNeoController.h"
 #include "sensors/ValorCurrentSensor.h"
 
+#include "subsystems/Direction.h"
+#include "subsystems/Position.h"
+#include "subsystems/Piece.h"
+
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 
