@@ -57,6 +57,14 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         type = ValorAutoAction::BALANCE;
     } else if (items[0] == "intake") {
         type = ValorAutoAction::INTAKE;
+    } else if (items[0] == "climb_over"){
+        type = ValorAutoAction::CLIMB_OVER;
+    } else if (items[0] == "goto"){
+        type = ValorAutoAction::GO_TO;
+    } else {
+        error = ValorAutoAction::COMMAND_MISSING;
+        error_message = items[0];
+        return;
     }
 
     if (type == ValorAutoAction::Type::TIME) {
@@ -83,9 +91,13 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             return;
         }
 
-        if (points->count(items[1]) == 0 || points->count(items[2]) == 0) {
+        if (points->count(items[1]) == 0) {
             error = ValorAutoAction::Error::POINT_MISSING;
-            error_message = items[1] + " or " + items[2];
+            error_message = items[1];
+            return;
+        } else if (points->count(items[2]) == 0) {
+            error = ValorAutoAction::Error::POINT_MISSING;
+            error_message = items[2];
             return;
         }
 
@@ -117,13 +129,43 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         }
     }
     else if (type == ValorAutoAction::Type::RESET_ODOM){
+        if (items.size() < 2){
+            error = ValorAutoAction::Error::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
+            return;
+        }
+
+        vision = false;
+        if (items[1] == "\"vision\""){
+            vision = true;
+            return;
+        }
+
         if (items.size() < 3){
             error = ValorAutoAction::Error::SIZE_MISMATCH;
             error_message = "received " + std::to_string(items.size());
             return;
         }
-        auto _start = points->at(items[1]);
-        start = getPose(_start, atoi(items[2].c_str()));
+        
+        if (points->contains(items[1])){
+            auto _start = points->at(items[1]);
+            start = getPose(_start, atoi(items[2].c_str()));
+            used_vals = {{"x", true}, {"y", true}, {"angle", true}};
+        } else if (items[1] == "\"x\""){
+            start = frc::Pose2d((units::length::meter_t)stod(items[2]), 0_m, 0_deg);
+            used_vals = {{"x", true}, {"y", false}, {"angle", false}};
+        } else if (items[1] == "\"y\""){
+            start = frc::Pose2d(0_m, (units::length::meter_t)stod(items[2]), 0_deg);
+            used_vals = {{"x", false}, {"y", true}, {"angle", false}};
+        } else if (items[1] == "\"angle\""){
+            start = frc::Pose2d(0_m, 0_m, (units::degree_t)stod(items[2]));
+            used_vals = {{"x", false}, {"y", false}, {"angle", true}};
+        } else {
+            error = ValorAutoAction::Error::POINT_MISSING;
+            error_message = items[1];
+            return;
+        }
+        
     }
     else if (type == ValorAutoAction::Type::ACTION){
         if (items.size() < 2){
@@ -186,5 +228,22 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
            values = {items[1], items[2]}; 
         }
         
+    }
+    else if (type == ValorAutoAction::Type::CLIMB_OVER) {
+        
+    } else if (type == ValorAutoAction::Type::GO_TO) {
+        if (items.size() < 3){
+            error = ValorAutoAction::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
+            return;
+        }
+        if (!points->contains(items[1])){
+            error = ValorAutoAction::Error::POINT_MISSING;
+            error_message = items[1];
+            return;
+        }
+        end = getPose(points->at(items[1]), std::stod(items[2]));
+        if (items.size() >= 4 && items[3] == "reverse" || items[3] == "reversed")
+            reversed = true;
     }
 }

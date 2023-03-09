@@ -131,6 +131,8 @@ public:
           bool isLeveled;
           bool abovePitchThreshold;
 
+          int stage;
+
           int trackingID;
           double visionOdomDiff;
 
@@ -212,10 +214,12 @@ public:
      void limelightHoming(LimelightPipes pipe);
      void angleLock();
      void adas();
+
+     frc2::InstantCommand* getResetOdom();
      
      frc2::FunctionalCommand* getAutoLevel();
      frc2::FunctionalCommand* getAutoLevelReversed();
-
+     frc2::FunctionalCommand* getAutoClimbOver();
 
      double getDriveMaxSpeed();
      double getAutoMaxSpeed();

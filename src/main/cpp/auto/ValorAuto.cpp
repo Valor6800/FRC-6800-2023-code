@@ -18,6 +18,8 @@
 
 #define ROOT_AUTO_PATH (std::string)"/home/lvuser/auto/"
 
+#define PI 3.14159265359
+
 ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
     drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
 {
@@ -28,6 +30,10 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm
                                           units::radian_t(M_PI));
 
     table = nt::NetworkTableInstance::GetDefault().GetTable("Auto");
+}
+
+ValorAuto::~ValorAuto(){
+    delete trajectoryCommand;
 }
 
 // directory_iterator doesn't exist in vanilla c++11, luckily wpilib has it in their library
@@ -132,6 +138,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
         ValorAutoAction action(line, &points, blueSide);
         if (action.type != ValorAutoAction::NONE)
             actions.push_back(action);
+        table->PutString("line " + std::to_string(actions.size()), line);
     }
 
     // Stores trajectory poses until a non-trajectory command is run,
@@ -266,16 +273,36 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 currentGroup->AddCommands(frc2::WaitCommand((units::millisecond_t)action.duration_ms));
             }
             else if (action.type == ValorAutoAction::Type::RESET_ODOM){
-                currentGroup->AddCommands(
-                    frc2::InstantCommand(
-                        [&, action] {
-                            drivetrain->resetOdometry(action.start);
-                        }
-                    )
-                );
+                if (action.vision){
+                    currentGroup->AddCommands(
+                        std::move(*(drivetrain->getResetOdom()))
+                    );
+                }
+                else {
+                    currentGroup->AddCommands(
+                        frc2::InstantCommand(
+                            [&, action] {
+                                frc::Pose2d p = action.start;
+                                table->PutBoolean("Using x", action.used_vals.at("x"));
+                                table->PutBoolean("Using y", action.used_vals.at("y"));
+                                table->PutBoolean("Using angle", action.used_vals.at("angle"));
+                                p = frc::Pose2d{
+                                    (action.used_vals.at("x") ? p.X() : drivetrain->getPose_m().X()),
+                                    (action.used_vals.at("y") ? p.Y() : drivetrain->getPose_m().Y()),
+                                    (action.used_vals.at("angle") ? p.Rotation() : drivetrain->getPose_m().Rotation())
+                                };
+                                table->PutNumber("target pose x", p.X().to<double>());
+                                table->PutNumber("target pose y", p.Y().to<double>());
+                                table->PutNumber("target pose angle", p.Rotation().Degrees().to<double>());
+                                drivetrain->resetOdometry(p);
+                            }
+                        )
+                    );
+                }
+                
                 last_angle = action.start.Rotation();
             }
-            else if (action.type == ValorAutoAction::Type::ACTION){
+            else if (action.type == ValorAutoAction::Type::ACTION){ 
                 /*
                 This doesn't work for a specific reason.
                 If you look into SequentialCommandGroup.h, you'll find the following:
@@ -376,8 +403,51 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 currentGroup->AddCommands(
                     std::move(*intake->getAutoCommand(action.values[0], action.values[1]))
                 );
+            } else if (action.type == ValorAutoAction::CLIMB_OVER) {
+                currentGroup->AddCommands(
+                    std::move(*drivetrain->getAutoClimbOver())
+                );
+            } else if (action.type == ValorAutoAction::GO_TO){
+                table->PutNumber("driving to", action.end.X().to<double>());
+                currentGroup->AddCommands(
+                    frc2::FunctionalCommand(
+                        [&, action]() {
+                            /*
+                            frc::Pose2d & curPos = drivetrain->getPose_m();
+
+                            double ang = curPos.Rotation().Radians().to<double>(), ang_d = curPos.Rotation().Degrees().to<double>();
+                            ang = std::fmod(ang + 2 * PI, 2 * PI); // Normalize angle [0, 2 * pi]
+                            ang_d = std::fmod(ang_d + 360, 360);
+
+                            double x1 = std::cos(ang) * -20, y1 = std::sin(ang) * -20, x2 = std::cos(ang) * 20, y2 = std::sin(ang) * 20;
+                            double x = action.end.X().to<double>(), y = action.end.Y().to<double>(); 
+
+                            // Gives if the point is to the left of our line (or above it if the line is flat)
+                            bool left = ((x1 - x2)*(y - y1) - (y2 - y1)*(x - x1)) > 0; // https://stackoverflow.com/questions/1560492/how-to-tell-whether-a-point-is-to-the-right-or-left-side-of-a-line
+                            bool reversed = (((0 <= ang_d && ang_d < 90) || (270 <= ang_d && ang_d <= 360)) && left) || ((90 <= ang_d && ang_d < 270) && !left);
+                            frc::Trajectory trajectory = createTrajectory({drivetrain->getPose_m(), action.end}, reversed);
+                            */
+                            std::vector<frc::Pose2d> poses = {drivetrain->getPose_m(), action.end};
+                            frc::Trajectory trajectory = createTrajectory(poses, action.reversed);
+                            frc2::SwerveControllerCommand<SWERVE_COUNT> _trajectoryCommand = createTrajectoryCommand(trajectory);
+                            trajectoryCommand = &_trajectoryCommand;
+                            trajectoryCommand->Initialize();
+                            table->PutBoolean("initialized", true);
+                        },
+                        [&](){
+                            // trajectoryCommand->Execute();
+                        },
+                        [&](bool interrupted){
+                            // trajectoryCommand->End(interrupted);
+                        },
+                        [&](){
+                            return trajectoryCommand->IsFinished();
+                        },
+                        {drivetrain}
+                    )
+                );
             }
-        }
+        } 
     }
 
     if (trajPoses.size() != 0){

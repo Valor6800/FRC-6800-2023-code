@@ -423,6 +423,28 @@ void Drivetrain::adas(){
     }
 }
 
+frc2::InstantCommand* Drivetrain::getResetOdom() {
+    return new frc2::InstantCommand(
+        [&]{
+            limeTable->PutNumber("pipeline", 3);
+            if (limeTable->GetNumber("tv", 0) == 1){
+                std::vector<double> poseArray;
+
+                if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
+                    poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
+                } else {
+                    poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
+                }
+
+                double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
+                frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
+
+                resetOdometry(botpose);
+            }
+        }
+    );
+}
+
 frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
     return new frc2::FunctionalCommand(
         [&](){
@@ -491,6 +513,41 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
     );
 }
 
+frc2::FunctionalCommand* Drivetrain::getAutoClimbOver(){
+    return new frc2::FunctionalCommand(
+        [&](){
+            state.stage = 0;
+        },
+        [&](){
+            switch (state.stage){
+                case 0: // On the ground before we've started climbing
+                    state.xSpeed = 0.3;
+                    if (pigeon.GetPitch() < -16.0)
+                        state.stage = 1;
+                    break;
+                case 1: // Began climbing up -> became balanced -> starting to move down
+                    state.xSpeed = 0.3;
+                    if (pigeon.GetPitch() > 8.0)
+                        state.stage = 2;
+                    break;
+                case 2: // The climb down
+                    state.xSpeed = 0.1;
+                    if (pigeon.GetPitch() < 5.0)
+                        state.stage = 3;
+                    break;
+                case 3: // Reached flat ground
+                    state.xSpeed = 0.0;
+            }
+        },
+        [&](bool){
+            state.xSpeed = 0.0;
+        }, // onEnd
+        [&](){
+            return state.stage == 3;
+        },//isFinished
+        {}
+    );
+}
 
 double Drivetrain::getDriveMaxSpeed() {
     return driveMaxSpeed;
@@ -668,6 +725,14 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
             [this]
             {
                 return pigeon.GetYaw();
+            },
+            nullptr
+        );
+        builder.AddIntegerProperty(
+            "stage",
+            [this]
+            {
+                return state.stage;
             },
             nullptr
         );
