@@ -12,6 +12,7 @@
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
 #include "subsystems/Intake.h"
+#include "sensors/ValorCANdleSensor.h"
 
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -206,4 +207,6 @@ private:
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;
      double carriageStallPower;
+
+    ValorCANdleSensor led;
 };

@@ -99,7 +99,8 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, true, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
-                            carriageStallPower(P_MIN_CARRIAGE)
+                            carriageStallPower(P_MIN_CARRIAGE),
+                            led(robot, 154, 60, "baseCAN")
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -268,8 +269,10 @@ void Elevarm::assessInputs()
 
     if (operatorGamepad->GetYButton() || driverGamepad->GetYButton()){
         futureState.pieceState = ElevarmPieceState::ELEVARM_CUBE;
+        led.setColor(0xfe019a);//purple
     } else {
         futureState.pieceState = ElevarmPieceState::ELEVARM_CONE;
+        led.setColor(0xeea800);//yellow
     }
 
     
