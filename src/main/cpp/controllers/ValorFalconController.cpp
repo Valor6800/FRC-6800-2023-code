@@ -29,6 +29,7 @@ void ValorFalconController::init()
 
     ValorPIDF motionPIDF;
     setPIDF(motionPIDF, 0);
+    setProfile(0);
     reset();
 
     wpi::SendableRegistry::AddLW(this, "ValorFalconController", "ID " + std::to_string(motor->GetDeviceID()));
@@ -68,18 +69,17 @@ void ValorFalconController::setReverseLimit(double reverse)
     motor->ConfigReverseSoftLimitEnable(true);
 }
 
-void ValorFalconController::setPIDF(ValorPIDF _pidf, int slot)
+void ValorFalconController::setPIDF(ValorPIDF pidf, int slot)
 {
-    pidf = _pidf;
     motor->Config_kP(slot, pidf.P);
     motor->Config_kI(slot, pidf.I);
     motor->Config_kD(slot, pidf.D);
     motor->Config_kF(slot, pidf.F * (1023.0 / 7112.0));
     motor->ConfigAllowableClosedloopError(slot, pidf.error * FALCON_TICKS_PER_REV / conversion);
-    double vel = pidf.velocity / 10.0 * FALCON_TICKS_PER_REV / conversion;
-    motor->ConfigMotionCruiseVelocity(vel);
-    motor->ConfigMotionAcceleration(vel / pidf.acceleration);
-    motor->ConfigMotionSCurveStrength(pidf.sCurveStrength);
+
+    pidf.velocity = pidf.velocity / 10.0 * FALCON_TICKS_PER_REV / conversion;
+
+    pidfs.insert_or_assign(slot, pidf);
 }
 
 void ValorFalconController::setConversion(double _conversion)
@@ -112,10 +112,10 @@ void ValorFalconController::setRange(int slot, double min, double max)
 
 void ValorFalconController::setPosition(double position)
 {
-    if (pidf.aFF != 0) {
-        double horizontalOffset = getPosition() - pidf.aFFTarget;
+    if (pidfs.at(currentPIDSlot).aFF != 0) {
+        double horizontalOffset = getPosition() - pidfs.at(currentPIDSlot).aFFTarget;
         double scalar = std::cos(horizontalOffset * M_PI / 180.0);
-        motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV, DemandType_ArbitraryFeedForward, scalar * pidf.aFF);
+        motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV, DemandType_ArbitraryFeedForward, scalar * pidfs.at(currentPIDSlot).aFF);
     } else
         motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV);
 }
@@ -130,9 +130,16 @@ void ValorFalconController::setPower(double speed)
     motor->Set(ControlMode::PercentOutput, speed);
 }
 
-void ValorFalconController::setProfile(int profile)
+void ValorFalconController::setProfile(int slot)
 {
-    motor->SelectProfileSlot(profile, 0);
+    currentPIDSlot = slot;
+    ValorPIDF pidf = pidfs.at(currentPIDSlot);
+    
+    motor->ConfigMotionCruiseVelocity(pidf.velocity);
+    motor->ConfigMotionAcceleration(pidf.velocity / pidf.acceleration);
+    motor->ConfigMotionSCurveStrength(pidf.sCurveStrength);
+
+    motor->SelectProfileSlot(slot, 0);
 }
 
 void ValorFalconController::preventBackwards()

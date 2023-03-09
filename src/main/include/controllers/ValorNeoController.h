@@ -28,8 +28,6 @@ public:
     double getPosition();
     double getSpeed();
 
-    int getProfile();
-
     void setEncoderPosition(double position);
 
     void setPosition(double);
@@ -56,6 +54,4 @@ private:
     rev::SparkMaxPIDController pidController;
     rev::SparkMaxRelativeEncoder encoder;
     rev::SparkMaxAbsoluteEncoder extEncoder;
-
-    int currentPidSlot;
 };

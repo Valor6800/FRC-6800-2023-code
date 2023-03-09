@@ -174,6 +174,7 @@ void Elevarm::init()
     armRotateMotor.setForwardLimit(ROTATE_FORWARD_LIMIT);
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
     armRotateMotor.setPIDF(rotatePID, 0);
+    armRotateMotor.setPIDF(autoRotatePID, 1);
 
     armCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
     armCANcoder.SetPositionToAbsolute();
@@ -464,6 +465,10 @@ frc::Pose2d Elevarm::forwardKinematics(Elevarm::Positions positions)
     return frc::Pose2d((units::length::meter_t)x,(units::length::meter_t)z,(units::angle::degree_t)w);
 }
 
+void Elevarm::setArmPIDF(int slot) {
+    armRotateMotor.setProfile(slot);
+}
+
 void Elevarm::InitSendable(wpi::SendableBuilder& builder)
 {
     builder.SetSmartDashboardType("Subsystem");
@@ -604,17 +609,13 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
     );
 }
 
-void Elevarm::setArmPIDF(bool isAuto) {
-    isAuto ? armRotateMotor.setPIDF(autoRotatePID,0) : armRotateMotor.setPIDF(rotatePID,0);
-}
-
-frc2::FunctionalCommand * Elevarm::getRotatePIDSetterCommand(bool isAuto){
+frc2::FunctionalCommand * Elevarm::getRotatePIDSetterCommand(int slot){
     return new frc2::FunctionalCommand(
         // OnInit
         [&]() {}, 
         //onExecute
-        [&, isAuto](){
-            setArmPIDF(isAuto);
+        [&, slot](){
+            armRotateMotor.setProfile(slot);
         }, 
         [&](bool){}, // onEnd
         [&](){

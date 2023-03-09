@@ -33,7 +33,8 @@ public:
 
     void setupFollower(int, bool = false);
     
-    void setPIDF(ValorPIDF pidf, int slot);
+    void setPIDF(ValorPIDF pidf, int slot = 0);
+
     void setForwardLimit(double forward);
     void setReverseLimit(double reverse);
     void setRange(int slot, double min, double max);
@@ -53,6 +54,4 @@ public:
     void setNeutralMode(ValorNeutralMode mode);
 
     void InitSendable(wpi::SendableBuilder& builder);
-private:
-    ValorPIDF pidf;
 };
