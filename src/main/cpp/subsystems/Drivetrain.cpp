@@ -405,9 +405,9 @@ void Drivetrain::setModuleStates(wpi::array<frc::SwerveModuleState, SWERVE_COUNT
 
 void Drivetrain::angleLock(){
     if (0 > getPose_m().Rotation().Degrees().to<double>()){
-        state.rot = 1 + (getPose_m().Rotation().Degrees().to<double>()/180);
+        state.rot = (-getPose_m().Rotation().Degrees().to<double>()/180) - 1.0;
     } else{
-        state.rot =  1 - (getPose_m().Rotation().Degrees().to<double>()/180);
+        state.rot = (-getPose_m().Rotation().Degrees().to<double>()/180) + 1.0;
     }
     
 }
