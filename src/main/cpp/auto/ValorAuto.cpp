@@ -145,8 +145,6 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
 
     drivetrain->setAutoMaxAcceleration(NULL, 1.0);
     
-    currentGroup->AddCommands(std::move(*elevarm->getRotatePIDSetterCommand(true)));
-
     for (int i = 0; i < actions.size(); i ++){
         table->PutString("Action " + std::to_string(i), commandToStringMap[actions[i].type]);
         ValorAutoAction & action = actions[i];
@@ -347,20 +345,28 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                drivetrain->setAutoMaxAcceleration(action.maxAccel, action.accelMultiplier);
             }
             else if (action.type == ValorAutoAction::ELEVARM){
-                Elevarm::ElevarmPieceState pieceState = elevarm->stringToPieceState(action.values[0]);
-                Elevarm::ElevarmDirectionState directionState = elevarm->stringToDirectionState(action.values[1]);
-                Elevarm::ElevarmPositionState positionState = elevarm->stringToPositionState(action.values[2]);
+                if (action.values[0] == "pidf") {
+                    if (action.values[1] == "arm") {
+                        currentGroup->AddCommands(std::move(*elevarm->getRotatePIDSetterCommand(action.slot)));
+                    }
+                } else {
+                    Elevarm::ElevarmPieceState pieceState = elevarm->stringToPieceState(action.values[0]);
+                    Elevarm::ElevarmDirectionState directionState = elevarm->stringToDirectionState(action.values[1]);
+                    Elevarm::ElevarmPositionState positionState = elevarm->stringToPositionState(action.values[2]);
 
-                if (!elevarmTable->GetBoolean("Pit Mode", false))
-                    currentGroup->AddCommands(
-                        std::move(*elevarm->getAutoCommand(
-                            action.values[0],
-                            action.values[1],
-                            action.values[2],
-                            action.parallel
-                        ))
-                    );
-                table->PutBoolean("Pit mode enabled for elevarm", elevarmTable->GetBoolean("Pit Mode", false));
+                    if (!elevarmTable->GetBoolean("Pit Mode", false))
+                        currentGroup->AddCommands(
+                            std::move(*elevarm->getAutoCommand(
+                                action.values[0],
+                                action.values[1],
+                                action.values[2],
+                                action.parallel
+                            ))
+                        );
+                    table->PutBoolean("Pit mode enabled for elevarm", elevarmTable->GetBoolean("Pit Mode", false));
+                }
+
+                
                 
                 table->PutBoolean("Action " + std::to_string(i) + " parallel", action.parallel);
             } else if (action.type == ValorAutoAction::BALANCE){
@@ -429,8 +435,6 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
             )
         );
     }
-
-    combinedGroup->AddCommands(std::move(*elevarm->getRotatePIDSetterCommand(false)));
 
     return combinedGroup;
 }

@@ -153,11 +153,16 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             error_message = "received " + std::to_string(items.size());
             return;
         }
-            
-        values = {items[1], items[2], items[3]};
+
         parallel = false;
-        if (items.size() >= 5)
-            parallel = items[4] == "parallel";
+        if (items[1] == "pidf") {
+            values = {items[1], items[2]};
+            slot = stod(items[3]);
+        } else {
+            values = {items[1], items[2], items[3]};
+            if (items.size() >= 5)
+                parallel = items[4] == "parallel";
+        }
     } else if (type == ValorAutoAction::Type::ACCELERATION) {
         if (items.size() == 2){
             maxAccel = stod(items[1]);
