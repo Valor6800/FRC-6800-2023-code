@@ -347,9 +347,9 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                drivetrain->setAutoMaxAcceleration(action.maxAccel, action.accelMultiplier);
             }
             else if (action.type == ValorAutoAction::ELEVARM){
-                Piece::PieceState pieceState = elevarm->stringToPieceState(action.values[0]);
-                Direction::DirectionState directionState = elevarm->stringToDirectionState(action.values[1]);
-                Position::PositionState positionState = elevarm->stringToPositionState(action.values[2]);
+                Piece pieceState = elevarm->stringToPieceState(action.values[0]);
+                Direction directionState = elevarm->stringToDirectionState(action.values[1]);
+                Position positionState = elevarm->stringToPositionState(action.values[2]);
 
                 if (!elevarmTable->GetBoolean("Pit Mode", false))
                     currentGroup->AddCommands(
