@@ -374,7 +374,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                     );
             } else if (action.type == ValorAutoAction::INTAKE) {
                 currentGroup->AddCommands(
-                    std::move(*intake->getAutoCommand(action.value))
+                    std::move(*intake->getAutoCommand(action.values[0], action.values[1]))
                 );
             }
         }

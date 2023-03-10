@@ -179,6 +179,12 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             error_message = "received " + std::to_string(items.size());
             return;
         }
-        value = items[1];
+
+        if (items[1] == "disabled") {
+            values = {items[1], "none"};
+        } else {
+           values = {items[1], items[2]}; 
+        }
+        
     }
 }

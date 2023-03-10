@@ -64,11 +64,8 @@ public:
      enum IntakeStates {
         DISABLED,
         SPIKED,
-        OUTTAKE_CONE,
-        OUTTAKE_CUBE,
         OUTTAKE,
-        INTAKE_CONE,
-        INTAKE_CUBE
+        INTAKE
      };
 
 
@@ -79,7 +76,6 @@ public:
 
          double intakeConeSpeed;
          double intakeCubeSpeed;
-         double outtakeSpeed;
          double outtakeConeSpeed;
          double outtakeCubeSpeed;
 
@@ -99,11 +95,8 @@ public:
     std::unordered_map<std::string, IntakeStates> stringToStateMap = {
         {"disable", IntakeStates::DISABLED},
         {"spiked", IntakeStates::SPIKED},
-        {"outtake_cone", IntakeStates::OUTTAKE_CONE},
-        {"outtake_cube", IntakeStates::OUTTAKE_CUBE},
         {"outtake", IntakeStates::OUTTAKE},
-        {"intake_cone", IntakeStates::INTAKE_CONE},
-        {"intake_cube", IntakeStates::INTAKE_CUBE}
+        {"intake", IntakeStates::INTAKE}
      };
      
      IntakeStates stringToIntakeState(std::string name){
@@ -111,8 +104,19 @@ public:
                return IntakeStates::DISABLED;
         return stringToStateMap.at(name);
      }
+     
+      std::unordered_map<std::string, Piece> stringToPieceMap = {
+            {"cone", Piece::CONE},
+            {"cube", Piece::CUBE}
+         };
 
-     frc2::FunctionalCommand * getAutoCommand(std::string);
+      Piece stringToPieceState(std::string piece) {
+            if (!stringToPieceMap.contains(piece))
+                     return Piece::CONE;
+            return stringToPieceMap.at(piece);
+      }
+
+     frc2::FunctionalCommand * getAutoCommand(std::string, std::string);
 
 private:
 
