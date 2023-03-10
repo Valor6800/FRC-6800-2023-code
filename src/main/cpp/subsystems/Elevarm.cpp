@@ -97,6 +97,7 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
                             armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
                             wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, true, "baseCAN"),
+                            candle(_robot, 0, CANIDs::CANDLE, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
                             carriageStallPower(P_MIN_CARRIAGE)
@@ -299,6 +300,28 @@ void Elevarm::analyzeDashboard()
     futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition(), wristMotor.getPosition()));
     futureState.frontMinAngle = minAngle(true);
     futureState.backMinAngle = minAngle(false);
+
+    futureState.atCarriage = std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND;
+    futureState.atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
+    futureState.atWrist = std::fabs(wristMotor.getPosition() - futureState.targetPose.wrist) <= PREVIOUS_WRIST_DEADBAND;
+
+    if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
+        candle.setColor(255,0,0);
+    } else {
+        if (robot->IsAutonomous()) {
+            if (futureState.atCarriage && futureState.atArm && futureState.atWrist)
+                candle.setColor(0,255,0);
+            else
+                candle.setColor(0,0,255);
+        } else if (robot->IsDisabled()) {
+            candle.setColor(255,255,255);
+        } else {
+            if (futureState.pieceState == Piece::CUBE)
+                candle.setColor(156,0,255);
+            else
+                candle.setColor(255,196,0);
+        }
+    }
 }
 
 void Elevarm::assignOutputs()
@@ -315,9 +338,6 @@ void Elevarm::assignOutputs()
     }
 
     table->PutBoolean("going from stow to not stow", false);
-    bool atCarriage = std::fabs(carriageMotors.getPosition() - futureState.targetPose.h)  <= PREVIOUS_HEIGHT_DEADBAND;
-    bool atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
-    bool atWrist = std::fabs(wristMotor.getPosition() - futureState.targetPose.wrist) <= PREVIOUS_WRIST_DEADBAND;
 
     if ((futureState.deadManEnabled && futureState.pitModeEnabled) || !futureState.pitModeEnabled) {
         if (futureState.positionState == Position::MANUAL) {
@@ -333,7 +353,7 @@ void Elevarm::assignOutputs()
 
             // Target in triangle
             if (futureState.targetPose.theta >= futureState.backMinAngle && futureState.targetPose.theta <= futureState.frontMinAngle){
-                if (atCarriage || std::fabs(armRotateMotor.getPosition()) > 45){
+                if (futureState.atCarriage || std::fabs(armRotateMotor.getPosition()) > 45){
                     armRotateMotor.setPosition(futureState.targetPose.theta);
                 }
                 else {
@@ -354,11 +374,11 @@ void Elevarm::assignOutputs()
             wristMotor.setPosition(futureState.targetPose.wrist);
             else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
             
-            if (atCarriage) {
+            if (futureState.atCarriage) {
                 carriageMotors.setPower(carriageStallPower);
             }
 
-            if (atCarriage && atArm) {
+            if (futureState.atCarriage && futureState.atArm) {
                 previousState = futureState;
                 if (inTransition)
                     previousState.positionState = Position::STOW;

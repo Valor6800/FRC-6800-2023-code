@@ -29,7 +29,7 @@ ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int
     ctre::phoenix::led::CANdleConfiguration config;
     // Should match the type of LED strip connected to the CANdle
     config.stripType = ctre::phoenix::led::LEDStripType::GRB;
-    config.brightnessScalar = 0.75;
+    config.brightnessScalar = 1.0;
     config.statusLedOffWhenActive = true;
     config.disableWhenLOS = false;
     // If the 12V line should be on, off, or modulated (for single LED colors)
@@ -41,9 +41,9 @@ ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int
 ValorCANdleSensor::RGBColor ValorCANdleSensor::toRGB(int color)
 {
     RGBColor outColor;
-    outColor.red = ((color & 0xFF0000) >> 16) * 255;
-    outColor.green = ((color & 0x00FF00) >> 8) * 255;
-    outColor.blue = ((color & 0x0000FF)) * 255;
+    outColor.red = ((color & 0xFF0000) >> 16);
+    outColor.green = ((color & 0x00FF00) >> 8);
+    outColor.blue = ((color & 0x0000FF));
     return outColor;
 }
 
@@ -54,14 +54,13 @@ ValorCANdleSensor::~ValorCANdleSensor()
 
 void ValorCANdleSensor::setColor(int r, int g, int b)
 {
-    candle.SetLEDs(r,g,b);
+    candle.SetLEDs(r,g,b,0,0,8 + ledCount);
 }
 
 void ValorCANdleSensor::setColor(int color)
 {
-    clearAnimation();
     currentColor = toRGB(color);
-    candle.SetLEDs(currentColor.red, currentColor.green, currentColor.blue,0,0,ledCount);
+    candle.SetLEDs(currentColor.red, currentColor.green, currentColor.blue,0,0,8 + ledCount);
 }
 
 void ValorCANdleSensor::setAnimation(ValorCANdleSensor::AnimationType animation)
