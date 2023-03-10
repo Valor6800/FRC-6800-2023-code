@@ -1,11 +1,11 @@
 reset_odom,wallLeft,180
 elevarm,cone,front,high_auto
 time,1000
-intake,outtake_cone
+intake,outtake,cone
 time,1000
-intake,disabled
+intake,disabled,cone
 trajectory,wallLeft,wallStartLeft,180,reversed
-intake,intake_cube
+intake,intake,cube
 elevarm,cone,front,stow,parallel
 trajectory,wallStartLeft,glados,180,reversed
 trajectory,glados,gladosFar,180,reversed
@@ -24,6 +24,6 @@ trajectory,glados,gladosNear,180
 //split,0.25,multiplier
 //trajectory,glados,wallBox,180
 //time,1000
-//intake,outtake_cube
+//intake,outtake,cube
 //time,1000
 //intake,disabled

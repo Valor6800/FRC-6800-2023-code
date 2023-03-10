@@ -5,7 +5,7 @@ intake,outtake_cone
 time,1000
 intake,disabled
 trajectory,barrierLeft,barrierStartLeft,180,reversed
-intake,intake_cube
+intake,intake,cube
 elevarm,cone,front,stow,parallel
 trajectory,barrierStartLeft,chell,180,reversed
 trajectory,chell,chellFar,180,reversed
@@ -24,6 +24,6 @@ trajectory,chell,chellNear,180
 //split,0.25,multiplier
 //trajectory,chell,barrierBox,180
 //time,1000
-//intake,outtake_cube
+//intake,outtake,cube
 //time,1000
 //intake,disabled

@@ -1,7 +1,7 @@
 reset_odom,coopRight,180
 elevarm,cone,front,high_auto
 time,1000
-intake,outtake_cone
+intake,outtake,cone
 time,1000
 intake,disabled
 elevarm,cone,front,stow
