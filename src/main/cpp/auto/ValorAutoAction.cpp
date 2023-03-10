@@ -117,11 +117,24 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         }
     }
     else if (type == ValorAutoAction::Type::RESET_ODOM){
+        if (items.size() < 2){
+            error = ValorAutoAction::Error::SIZE_MISMATCH;
+            error_message = "received " + std::to_string(items.size());
+            return;
+        }
+
+        vision = false;
+        if (items[1] == "\"vision\""){
+            vision = true;
+            return;
+        }
+
         if (items.size() < 3){
             error = ValorAutoAction::Error::SIZE_MISMATCH;
             error_message = "received " + std::to_string(items.size());
             return;
         }
+
         auto _start = points->at(items[1]);
         start = getPose(_start, atoi(items[2].c_str()));
     }

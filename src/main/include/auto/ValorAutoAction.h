@@ -56,6 +56,8 @@ struct ValorAutoAction {
     double accelMultiplier;
 
     bool parallel;
+
+    bool vision;
     
 public:
     static std::vector<std::string> parseCSVLine(std::string);

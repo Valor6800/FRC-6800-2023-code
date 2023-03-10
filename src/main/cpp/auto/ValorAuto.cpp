@@ -266,13 +266,21 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 currentGroup->AddCommands(frc2::WaitCommand((units::millisecond_t)action.duration_ms));
             }
             else if (action.type == ValorAutoAction::Type::RESET_ODOM){
-                currentGroup->AddCommands(
-                    frc2::InstantCommand(
-                        [&, action] {
-                            drivetrain->resetOdometry(action.start);
-                        }
-                    )
-                );
+                if (action.vision){
+                    currentGroup->AddCommands(
+                        std::move(*(drivetrain->getResetOdom()))
+                    );
+                }
+                else {
+                    currentGroup->AddCommands(
+                        frc2::InstantCommand(
+                            [&, action] {
+                                drivetrain->resetOdometry(action.start);
+                            }
+                        )
+                    );
+                }
+                
                 last_angle = action.start.Rotation();
             }
             else if (action.type == ValorAutoAction::Type::ACTION){
