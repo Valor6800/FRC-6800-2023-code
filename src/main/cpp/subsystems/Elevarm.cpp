@@ -306,8 +306,8 @@ void Elevarm::analyzeDashboard()
     futureState.atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
     futureState.atWrist = std::fabs(wristMotor.getPosition() - futureState.targetPose.wrist) <= PREVIOUS_WRIST_DEADBAND;
 
-    bool armInRange = armRotateMotor.getAbsEncoderPosition() > (CANCODER_OFFSET - 50) &&
-                      armRotateMotor.getAbsEncoderPosition() < (CANCODER_OFFSET + 50);
+    bool armInRange = armCANcoder.GetAbsolutePosition() > (CANCODER_OFFSET - 50) &&
+                      armCANcoder.GetAbsolutePosition() < (CANCODER_OFFSET + 50);
     table->PutBoolean("Arm In Range", armInRange);
 
     if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
