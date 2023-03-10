@@ -2,7 +2,7 @@
 //left and right are +5cm x from grid
 barrierLeft,1.78,5.03
 barrierStartLeft,2.095,5.03
-barrierBox,1.78,4.45
+barrierBox,2.25,4.45
 barrierStartRight,2.095,3.87
 barrierRight,1.78,3.87
 
