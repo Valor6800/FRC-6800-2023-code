@@ -34,7 +34,7 @@ dilation_steps:0
 direction_filter:0
 dual_close_sort_origin:0
 erosion_steps:0
-exposure:750
+exposure:295
 fiducial_decoder_strictness:strict
 fiducial_denoise:0.000000
 fiducial_idfilters:1,2,3,4,5,6,7,8

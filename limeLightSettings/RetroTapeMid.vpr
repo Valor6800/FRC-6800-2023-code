@@ -13,8 +13,8 @@ contour_sort_final:2
 convexity_max:100
 convexity_min:0
 corner_approx:2
-crop_x_max:0.35
-crop_x_min:-1
+crop_x_max:-0.13
+crop_x_min:-0.65
 crop_y_max:0.42
 crop_y_min:-1
 cross_a_a:0.002190
