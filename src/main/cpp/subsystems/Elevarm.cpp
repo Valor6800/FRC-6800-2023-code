@@ -188,7 +188,7 @@ void Elevarm::init()
     // STOW POSITION
     stowPos = frc::Pose2d(-0.428_m, 0.451_m, 0.0_deg);
     // FRONT CONE
-    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.196_m, 0.531_m, 200.0_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.196_m, 0.551_m, 200.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg);
@@ -202,7 +202,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.346_m, 0.909_m, 291.22_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.346_m, 0.959_m, 291.22_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.567_m, 1.28_m, 227.5_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(0.086_m, 1.2_m, 253.2_deg);
     // BACK CONE   
@@ -358,7 +358,7 @@ void Elevarm::assignOutputs()
 
             // Target in triangle
             if (futureState.targetPose.theta >= futureState.backMinAngle && futureState.targetPose.theta <= futureState.frontMinAngle){
-                if (futureState.atCarriage || std::fabs(armRotateMotor.getPosition()) > 45){
+                if (futureState.targetPose.h > (carriageMotors.getPosition() - 0.1)){
                     armRotateMotor.setPosition(futureState.targetPose.theta);
                 }
                 else {
