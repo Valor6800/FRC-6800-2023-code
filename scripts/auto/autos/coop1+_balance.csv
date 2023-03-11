@@ -1,9 +1,19 @@
-reset_odom,coopBox,180
+reset_odom,coopLeft,180
+elevarm,cone,front,high_auto
+time,250
+intake,outtake,cone
+time,350
+intake,disabled
+elevarm,cone,front,stow,parallel
 climb_over
 xmode
-reset_odom,"x",5.3
+time,1000
+// Do manual reset just in case we cant see tag
+reset_odom,"x",5.7
+//reset_odom,"vision"
 elevarm,cube,back,ground
-intake,intake_cube
+intake,intake,cube
 trajectory,chargeFinishLeft,wheatley,180,reversed
+elevarm,cube,front,stow,parallel
 trajectory,wheatley,chargeFar,180
 balance

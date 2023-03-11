@@ -58,7 +58,7 @@ struct ValorAutoAction {
     
     int duration_ms;
 
-    ValorAutoAction(std::string line, std::map<std::string, frc::Translation2d> *, bool, std::shared_ptr<nt::NetworkTable>);
+    ValorAutoAction(std::string line, std::map<std::string, frc::Translation2d> *, bool);
 
     std::string name;
     

@@ -135,7 +135,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
 
     std::vector<ValorAutoAction> actions;
     while (std::getline(infile, line)){
-        ValorAutoAction action(line, &points, blueSide, table);
+        ValorAutoAction action(line, &points, blueSide);
         if (action.type != ValorAutoAction::NONE)
             actions.push_back(action);
         table->PutString("line " + std::to_string(actions.size()), line);
