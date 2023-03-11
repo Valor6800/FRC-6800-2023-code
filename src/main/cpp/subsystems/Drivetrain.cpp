@@ -421,18 +421,23 @@ void Drivetrain::angleLock(){
 // }
 
 frc2::InstantCommand* Drivetrain::getResetOdom() {
-    std::vector<double> poseArray;
+    return new frc2::InstantCommand(
+        [&]{
+            limeTable->PutNumber("pipeline", 3);
+            std::vector<double> poseArray;
 
-    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
-        poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
-    } else {
-        poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
-    }
+            if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
+                poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
+            } else {
+                poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
+            }
 
-    double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
-    frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
+            double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
+            frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
 
-    resetOdometry(botpose);
+            resetOdometry(botpose);
+        }
+    );
 }
 
 frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
