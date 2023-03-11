@@ -229,6 +229,7 @@ void Elevarm::init()
     table->PutNumber("Carraige Stall", carriageStallPower);
     table->PutNumber("Carraige Offset", INITIAL_HEIGHT_OFFSET);
     table->PutBoolean("Enable Carraige Offset", false);
+    table->PutBoolean("Arm In Range", false);
 
     resetState();
     armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
@@ -305,21 +306,25 @@ void Elevarm::analyzeDashboard()
     futureState.atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
     futureState.atWrist = std::fabs(wristMotor.getPosition() - futureState.targetPose.wrist) <= PREVIOUS_WRIST_DEADBAND;
 
+    bool armInRange = armRotateMotor.getAbsEncoderPosition() > (CANCODER_OFFSET - 50) &&
+                      armRotateMotor.getAbsEncoderPosition() < (CANCODER_OFFSET + 50);
+    table->PutBoolean("Arm In Range", armInRange);
+
     if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
         candle.setColor(255,0,0);
+    } else if (robot->IsDisabled()) {
+        if (armInRange) candle.setColor(0,255,0);
+        else candle.setColor(255,0,0);
+    } else if (robot->IsAutonomous()) {
+        if (futureState.atCarriage && futureState.atArm && futureState.atWrist)
+            candle.setColor(0,255,0);
+        else
+            candle.setColor(0,0,255);
     } else {
-        if (robot->IsAutonomous()) {
-            if (futureState.atCarriage && futureState.atArm && futureState.atWrist)
-                candle.setColor(0,255,0);
-            else
-                candle.setColor(0,0,255);
-        } else if (robot->IsDisabled()) {
-            candle.setColor(255,255,255);
+        if (futureState.pieceState == Piece::CUBE) {
+            candle.setColor(156,0,255);
         } else {
-            if (futureState.pieceState == Piece::CUBE)
-                candle.setColor(156,0,255);
-            else
-                candle.setColor(255,196,0);
+            candle.setColor(255,196,0);
         }
     }
 }
