@@ -6,7 +6,7 @@
 #define DEFAULT_INTAKE_CONE_SPD 0.9f
 #define DEFAULT_OUTTAKE_SPD -0.7f
 //since intaking with cone vs cube is different, outtaking follows the same rule
-#define DEFAULT_OUTTAKE_CUBE_SPD 0.4f
+#define DEFAULT_OUTTAKE_CUBE_SPD 0.6f
 #define DEFAULT_OUTTAKE_CONE_SPD -0.8f
 
 #define CONE_HOLD_SPD 0.02f
