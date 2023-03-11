@@ -12,6 +12,7 @@
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
 // #define KP_LOCK 0.2f
+// #define KP_LIMELIGHT 0.2f
 
 #define KPX 60.0f //50
 #define KIX 0.0f //0
@@ -186,7 +187,7 @@ void Drivetrain::init()
     table->PutBoolean("Load Swerve Mag Encoder", false);
     state.saveToFileDebouncer = false;
 
-    table->PutNumber("KPLIMELIGHT", 1.25);
+    table->PutNumber("KPLIMELIGHT", 0.2);
 
     state.lock = false;
 
@@ -414,10 +415,11 @@ void Drivetrain::angleLock(){
 void Drivetrain::adas(){
     limeTable->PutNumber("pipeline", 1);
 
-    if (limeTable->GetNumber("tv",0) == 1){
+    if (limeTable->GetNumber("tv",0) == 1 && limeTable->GetNumber("pipeline", 0) == 1){
         double tx = limeTable->GetNumber("tx",0);
         double normalizedTx = tx / KLIMELIGHT;
-        state.ySpeedMPS = units::velocity::meters_per_second_t(((std::fabs(normalizedTx) <= 1 ? normalizedTx : std::copysignf(1.0, normalizedTx)) * driveMaxSpeed));
+        double kPlimeLight = limeTable->GetNumber("KPLIMELIGHT", 0.2);
+        state.ySpeedMPS = units::velocity::meters_per_second_t(((std::fabs(normalizedTx) <= 1 ? normalizedTx : std::copysignf(1.0, normalizedTx) ) * kPlimeLight * -driveMaxSpeed));
     }
 }
 
