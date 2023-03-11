@@ -11,7 +11,6 @@
 #define TXRANGE  30.0f
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
-#define KP_LIME_LIGHT 0.375f
 // #define KP_LOCK 0.2f
 
 #define KPX 60.0f //50
@@ -306,10 +305,10 @@ void Drivetrain::assignOutputs()
 
     if (state.xPose){
         setXMode();
-    // } else if (state.adas){
-    //     setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-    //     adas();
-    //     drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
+    } else if (state.adas){
+        setDriveMotorNeutralMode(ValorNeutralMode::Coast);
+        adas();
+        drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     } 
     else {
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
@@ -412,13 +411,15 @@ void Drivetrain::angleLock(){
     
 }
 
-// void Drivetrain::adas(){
-//     limeTable->PutNumber("pipeline", 1);
+void Drivetrain::adas(){
+    limeTable->PutNumber("pipeline", 1);
 
-//     if (limeTable->GetNumber("tv",0) == 1){
-//         state.ySpeedMPS = units::velocity::meters_per_second_t((limeTable->GetNumber("tx",0) / (KLIMELIGHT - limeTable->GetNumber("cx0", 0)) * KP_LIME_LIGHT) * driveMaxSpeed);
-//     }
-// }
+    if (limeTable->GetNumber("tv",0) == 1){
+        double tx = limeTable->GetNumber("tx",0);
+        double normalizedTx = tx / KLIMELIGHT;
+        state.ySpeedMPS = units::velocity::meters_per_second_t(((std::fabs(normalizedTx) <= 1 ? normalizedTx : std::copysignf(1.0, normalizedTx)) * driveMaxSpeed));
+    }
+}
 
 frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
     return new frc2::FunctionalCommand(
