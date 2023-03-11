@@ -1,0 +1,30 @@
+reset_odom,barrierLeft,180
+elevarm,cone,front,high_auto
+time,250
+intake,outtake,cone
+time,350
+intake,disabled
+trajectory,barrierLeft,barrierStartLeft,180,reversed
+split,4.0
+elevarm,cone,front,stow,parallel
+split,4.0
+trajectory,barrierStartLeft,chell,180,reversed
+trajectory,chell,chellFarMinus,180,reversed
+intake,intake,cube
+elevarm,cube,back,ground,parallel
+trajectory,chellFarMinus,cave,180,reversed
+//spit cave cube
+elevarm,cube,back,stow,parallel
+trajectory,cave,chargeFar,180
+elevarm,cube,front,mid
+time,1000
+intake,outtake,cube
+time,350
+//pick wheatley cube
+elevarm,cube,back,ground
+intake,intake,cube
+trajectory,chargeFar,wheatley,180,reversed
+elevarm,cube,back,stow,parallel
+trajectory,wheatley,chargeFar,180
+split,0.5,multiplier
+balance

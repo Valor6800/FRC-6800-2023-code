@@ -1,0 +1,30 @@
+reset_odom,wallRight,180
+elevarm,cone,front,high_auto
+time,250
+intake,outtake,cone
+time,350
+intake,disabled
+trajectory,wallRight,wallStartRight,180,reversed
+split,4.0
+elevarm,cone,front,stow,parallel
+split,4.0
+trajectory,wallStartRight,glados,180,reversed
+trajectory,glados,gladosFarMinus,180,reversed
+intake,intake,cube
+elevarm,cube,back,ground,parallel
+trajectory,gladosFarMinus,doug,180,reversed
+//spit doug cube
+elevarm,cube,back,stow,parallel
+trajectory,doug,chargeFar,180
+elevarm,cube,front,mid
+time,1000
+intake,outtake,cube
+time,350
+//pick johnson cube
+elevarm,cube,back,ground
+intake,intake,cube
+trajectory,chargeFar,johnson,180,reversed
+elevarm,cube,back,stow,parallel
+trajectory,johnson,chargeFar,180
+split,0.5,multiplier
+balance
