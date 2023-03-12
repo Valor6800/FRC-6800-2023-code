@@ -152,6 +152,8 @@ public:
 
     void setArmPIDF(bool);
 
+    //void wristZerotoMotor();
+
 private:
 
     /**
@@ -168,15 +170,16 @@ private:
     double minAngle(bool);
     bool minFloorAngle();
 
-     ValorNeoController carriageMotors;
-     ValorFalconController armRotateMotor;
+    ValorNeoController carriageMotors;
 
+    ValorFalconController armRotateMotor;
     ctre::phoenix::sensors::WPI_CANCoder armCANcoder;
 
-     ValorFalconController wristMotor;
+    ValorFalconController wristMotor;
+    ctre::phoenix::sensors::WPI_CANCoder wristCANcoder;
 
-     std::map<Piece, std::map<Direction, std::map<Position, frc::Pose2d>>> posMap;
-     frc::Pose2d stowPos;
+    std::map<Piece, std::map<Direction, std::map<Position, frc::Pose2d>>> posMap;
+    frc::Pose2d stowPos;
 
     Positions reverseKinematics(frc::Pose2d pose, ElevarmSolutions, Direction); 
     frc::Pose2d forwardKinematics(Positions positions);
