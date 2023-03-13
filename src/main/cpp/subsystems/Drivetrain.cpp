@@ -317,11 +317,12 @@ void Drivetrain::assignOutputs()
         limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);    
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     }
-
-    if(limeTable->GetNumber("pipeline", 0) == 1 && limeTable->GetNumber("tv",0) == 1){
-        candle.setColor(0x00ff00);
-    }else{
-        candle.setColor(0xff0000);
+    if(state.adas){
+        if(limeTable->GetNumber("pipeline", 0) == 1 && limeTable->GetNumber("tv",0) == 1){
+            candle.setColor(0x00ff00);
+        }else{
+            candle.setColor(0xff0000);
+        }
     }
 }
 
