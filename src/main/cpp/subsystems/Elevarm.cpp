@@ -195,17 +195,17 @@ void Elevarm::init()
     // FRONT CONE
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.005_m, 0.473_m, 113.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(-0.065_m, 0.414_m, 108.5_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.199_m, 1.225_m, 264.4_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.536_m, 1.458_m, 211.5_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.536_m, 1.458_m, 200.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(0.086_m, 1.2_m, 253.2_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH_AUTO] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
 
     // FRONT CUBE
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.287_m, 0.434_m, 245.65_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 200.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.469_m, 1.04_m, -34.73_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.567_m, 1.28_m, 231.0_deg);
@@ -213,7 +213,7 @@ void Elevarm::init()
     // BACK CONE   
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.913_m, 0.579_m, -204.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.798_m, 0.581_m, -200.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8_m, 1.525_m, 55.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
@@ -221,7 +221,7 @@ void Elevarm::init()
     // BACK CUBE
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.964_m, 0.24_m, -130.1_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.09_m, 141.4_deg);
-    posMap[Piece::CUBE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -155.8_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.823_m, 1.32_m, 78.7_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -237.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -180.0_deg);
