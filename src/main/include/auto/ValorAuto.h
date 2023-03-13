@@ -25,6 +25,12 @@
 #include <cstdint>
 #include <iostream>
 
+#include <pathplanner/lib/PathConstraints.h>
+#include <pathplanner/lib/PathPlanner.h>
+#include <pathplanner/lib/PathPlannerTrajectory.h>
+#include <pathplanner/lib/PathPoint.h>
+#include <pathplanner/lib/commands/FollowPathWithEvents.h>
+
 #ifndef VALOR_AUTO_H
 #define VALOR_AUTO_H
 
@@ -33,20 +39,25 @@ struct UsableCommand{
     frc2::WaitCommand waitCommand;
 };
 
+struct Point{
+    frc::Pose2d pose;
+    frc::Rotation2d heading; // Represents direction of travel, bot rotation is in the pose
+};
+
 class ValorAuto {
     public:
         ValorAuto(Drivetrain*, Intake*, Elevarm*);
         ~ValorAuto();
         bool readPointsCSV(std::string);
-        frc2::SequentialCommandGroup* makeAuto(std::string, bool);
-        void precompileActions(std::string);
+
+        frc2::Command * makeAuto(std::string);
         void fillAutoList();
-        frc2::SequentialCommandGroup* getCurrentAuto();
+        frc2::Command * getCurrentAuto();
 
     protected:
 
-        frc::Trajectory createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed, double, double);
-        frc2::SwerveControllerCommand<SWERVE_COUNT> createTrajectoryCommand(frc::Trajectory);
+        //pathplanner::PathPlannerTrajectory createTrajectory(std::vector<Point>&, double, double);
+        frc2::Command * createPPTrajectoryCommand(pathplanner::PathPlannerTrajectory);
 
         void readAuto(std::string);
 
@@ -87,6 +98,6 @@ class ValorAuto {
 
         std::shared_ptr<nt::NetworkTable> table;
 
-        frc2::SwerveControllerCommand<SWERVE_COUNT> * trajectoryCommand;
+        std::unordered_map<std::string, std::shared_ptr<frc2::Command> > eventMap;
 };
 #endif

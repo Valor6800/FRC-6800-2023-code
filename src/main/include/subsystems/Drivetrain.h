@@ -229,8 +229,6 @@ public:
 
      void setAutoMaxAcceleration(double acceleration, double multiplier);
 
-     frc::ProfiledPIDController<units::angle::radians> & getThetaController();
-
      ValorPIDF getXPIDF();
      ValorPIDF getYPIDF();
      ValorPIDF getThetaPIDF();
@@ -275,8 +273,6 @@ private:
      frc::SwerveDrivePoseEstimator<SWERVE_COUNT> * estimator;
 
      frc::TrajectoryConfig * config;
-
-     frc::ProfiledPIDController<units::radians> thetaController;
 
      ValorPIDF xPIDF;
      ValorPIDF yPIDF;
