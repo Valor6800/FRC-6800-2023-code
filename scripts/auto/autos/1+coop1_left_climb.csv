@@ -8,10 +8,10 @@ elevarm,cone,front,stow,parallel
 climb_over
 xmode
 // Do manual reset just in case we cant see tag
-reset_odom,"x",5.5
+reset_odom,"x",5.4
 //reset_odom,"vision"
-elevarm,cube,back,ground
-intake,intake,cube
+elevarm,cone,back,ground
+intake,intake,cone
 trajectory,chargeFinishLeft,wheatley,180,reversed
 elevarm,cube,front,stow,parallel
 trajectory,wheatley,chargeFinishLeft,180
