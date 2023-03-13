@@ -76,7 +76,6 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         kinematics(NULL),
                         estimator(NULL),
                         config(NULL),
-                        thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})},
                         swerveNoError(true)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
@@ -570,10 +569,6 @@ double Drivetrain::getRotationMaxAcceleration() {
     return rotMaxAccel;
 }
 
-frc::ProfiledPIDController<units::angle::radians> & Drivetrain::getThetaController() {
-    return thetaController;
-}
-
 frc::TrajectoryConfig & Drivetrain::getTrajectoryConfig() {    
     return *config;
 }
@@ -582,8 +577,12 @@ ValorPIDF Drivetrain::getXPIDF() {
     return xPIDF;
 }
 
-ValorPIDF  Drivetrain::getYPIDF() {
+ValorPIDF Drivetrain::getYPIDF() {
     return yPIDF;
+}
+
+ValorPIDF Drivetrain::getThetaPIDF() {
+    return thetaPIDF;
 }
 
 void Drivetrain::setAutoMaxAcceleration(double acceleration, double multiplier)  {
