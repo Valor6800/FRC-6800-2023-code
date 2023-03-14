@@ -16,6 +16,11 @@
 #include <frc2/command/CommandBase.h>
 #include <frc/DriverStation.h>
 
+#include <pathplanner/lib/PathConstraints.h>
+#include <pathplanner/lib/PathPlanner.h>
+#include <pathplanner/lib/PathPlannerTrajectory.h>
+#include <pathplanner/lib/PathPoint.h>
+
 #define ROOT_AUTO_PATH (std::string)"/home/lvuser/auto/"
 
 #define PI 3.14159265359
@@ -48,10 +53,10 @@ std::vector<std::string> listDirectory(std::string path_name){
     return files;
 }
 
-frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(frc::Trajectory trajectory)
+frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(pathplanner::PathPlannerTrajectory trajectory)
 {
     return frc2::SwerveControllerCommand<SWERVE_COUNT>(
-        trajectory,
+        trajectory.asWPILibTrajectory(),
         [&] () { return drivetrain->getPose_m(); },
         *drivetrain->getKinematics(),
         frc2::PIDController(drivetrain->getXPIDF().P, drivetrain->getXPIDF().I, drivetrain->getXPIDF().D),
@@ -62,14 +67,15 @@ frc2::SwerveControllerCommand<SWERVE_COUNT> ValorAuto::createTrajectoryCommand(f
     );
 }
 
-frc::Trajectory ValorAuto::createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed, double start_vel=0, double end_vel=0)
-{
-    frc::TrajectoryConfig & config = drivetrain->getTrajectoryConfig();
-    config.SetReversed(reversed);
-    config.SetStartVelocity(units::meters_per_second_t{start_vel});
-    config.SetEndVelocity(units::meters_per_second_t{end_vel});
-    
-    return frc::TrajectoryGenerator::GenerateTrajectory(poses, drivetrain->getTrajectoryConfig());
+pathplanner::PathPlannerTrajectory ValorAuto::createTrajectory(std::vector<Point>& points, double start_vel=0, double end_vel=0){
+    std::vector<pathplanner::PathPoint> pathPoints;
+    for (Point point: points){
+        pathPoints.push_back(pathplanner::PathPoint(point.pose.Translation(), point.heading, point.pose.Rotation()));
+    }
+    if (pathPoints.size() > 0){
+        pathPoints[0].m_velocityOverride = units::meters_per_second_t(start_vel);
+    }
+    return pathplanner::PathPlanner::generatePath(units::meters_per_second_t(drivetrain->getAutoMaxSpeed()), units::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration()), pathPoints);
 }
 
 /* Read in the points from a CSV file.
@@ -107,15 +113,15 @@ bool ValorAuto::readPointsCSV(std::string filename){
     return true;
 }
 
-void createTrajectoryDebugFile(frc::Trajectory& trajectory, int i){
+void createTrajectoryDebugFile(pathplanner::PathPlannerTrajectory& trajectory, int i){
     std::ofstream outfile("/home/lvuser/trajectory" + std::to_string(i) + ".csv");
     if (!outfile.good()){
         return;
     }
 
-    std::vector<frc::Trajectory::State> states = trajectory.States();
-    for (frc::Trajectory::State state: states){
-        outfile << std::to_string(state.t.to<double>()) + "," + std::to_string(state.pose.X().to<double>()) + "," + std::to_string(state.pose.Y().to<double>()) + "," + std::to_string(state.pose.Rotation().Degrees().to<double>()) + "," + std::to_string(state.velocity.to<double>()) + "\n";
+    std::vector<pathplanner::PathPlannerTrajectory::PathPlannerState> states = trajectory.getStates();
+    for (pathplanner::PathPlannerTrajectory::PathPlannerState state: states){
+        outfile << std::to_string(state.time.to<double>()) + "," + std::to_string(state.pose.X().to<double>()) + "," + std::to_string(state.pose.Y().to<double>()) + "," + std::to_string(state.pose.Rotation().Degrees().to<double>()) + "," + std::to_string(state.velocity.to<double>()) + "\n";
     }
 }
 
@@ -144,8 +150,7 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
     // Stores trajectory poses until a non-trajectory command is run,
     // in which case poses stored here are compiled into a single trajectory
     // and placed into the command group, and then this is reset
-    std::vector<frc::Pose2d> trajPoses = {};
-    bool trajReversed = false;
+    std::vector<Point> points = {};
     frc::Rotation2d last_angle;
 
     int trajCount = 0;
@@ -165,66 +170,22 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
         }
 
         if (action.type == ValorAutoAction::Type::TRAJECTORY){
-            if (trajPoses.size() == 0){ // starting a new trajectory, set poses inside to stored action.start and action.end
+            if (points.size() == 0){ // starting a new trajectory, set poses inside to stored action.start and action.end
                 action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
-                trajPoses = {action.start, action.end};
-                trajReversed = action.reversed;
-                last_angle = trajPoses.back().Rotation();
+                points = {{action.start, frc::Rotation2d(units::degree_t(action.heading))}, {action.end, frc::Rotation2d(units::degree_t(action.heading))}};
+                last_angle = points.back().pose.Rotation();
             }
             else {
-                // Create a new trajectory with each switch of normal <-> reversed, as they use different configs
-                if (action.reversed != trajReversed){ 
-                    if (trajPoses.size() > 0)
-                        last_angle = trajPoses.back().Rotation();
-
-                    double s_vel = 0, e_vel = 0;
-                    int ei = i - 1, si = i - 1;
-                    while (actions[si].type == ValorAutoAction::TRAJECTORY && actions[si].reversed == trajReversed)
-                        si--;
-                    si++;
-                    if (si >= 2 && actions[si - 1].type == ValorAutoAction::SPLIT) {
-                        s_vel = actions[si - 1].vel;
-                        if (si >=3 && actions[si - 2].type == ValorAutoAction::ACCELERATION) {
-                        }
-                    }
-                    if (ei + 2 < actions.size() && actions[ei + 1].type == ValorAutoAction::SPLIT)
-                        e_vel = actions[ei + 1].vel;
-
-                    if (si >= 2 && actions[si - 1].type == ValorAutoAction::ACCELERATION) {
-                        if (si >= 3 && actions[si - 2].type == ValorAutoAction::SPLIT) {
-                            s_vel = actions[si - 1].vel;
-                        }
-                    }
-                    table->PutNumber("trajectory " + std::to_string(trajCount) + " start velocity", s_vel);
-                    table->PutNumber("trajectory " + std::to_string(trajCount) + " end velocity", e_vel);
-                    
-                    frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-                    table->PutNumber("trajectory " + std::to_string(trajCount) + " time", std::fabs(trajectory.TotalTime().to<double>()));
-                    if (std::fabs(trajectory.TotalTime().to<double>()) < 0.001){
-                        table->PutString("Error", "On line " + std::to_string(i + 1) + ": malformed trajectory");
-                        return nullptr;
-                    }
-                    createTrajectoryDebugFile(trajectory, trajCount);
-                    trajCount++;
-                    currentGroup->AddCommands(createTrajectoryCommand(trajectory));
-                    trajPoses.clear();
-
-                    action.start = frc::Pose2d{action.start.X(), action.start.Y(), last_angle};
-                    trajPoses = {action.start, action.end};
-                    trajReversed = action.reversed;
-                }
-                else {
-                    trajPoses.push_back(action.end);
-                }
+                points.push_back({action.end, frc::Rotation2d(units::degree_t(action.heading))});
             }
         } else{
-            if (trajPoses.size() != 0){
-                if (trajPoses.size() > 0)
-                    last_angle = trajPoses.back().Rotation();
+            if (points.size() != 0){
+                if (points.size() > 0)
+                    last_angle = points.back().pose.Rotation();
                 
                 double s_vel = 0, e_vel = 0;
                 int ei = i - 1, si = i - 1;
-                while (actions[si].type == ValorAutoAction::TRAJECTORY && actions[si].reversed == trajReversed)
+                while (actions[si].type == ValorAutoAction::TRAJECTORY)
                     si--;
                 si++;
                 if (si >= 2 && actions[si - 1].type == ValorAutoAction::SPLIT) {
@@ -245,16 +206,16 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                 table->PutNumber("trajectory " + std::to_string(trajCount) + " start velocity", s_vel);
                 table->PutNumber("trajectory " + std::to_string(trajCount) + " end velocity", e_vel);
 
-                frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-                table->PutNumber("trajectory " + std::to_string(trajCount) + " time", std::fabs(trajectory.TotalTime().to<double>()));
-                if (std::fabs(trajectory.TotalTime().to<double>()) < 0.001){
+                pathplanner::PathPlannerTrajectory trajectory = createTrajectory(points, s_vel, e_vel);
+                table->PutNumber("trajectory " + std::to_string(trajCount) + " time", std::fabs(trajectory.getTotalTime().to<double>()));
+                if (std::fabs(trajectory.getTotalTime().to<double>()) < 0.001){
                     table->PutString("Error", "On line " + std::to_string(i + 1) + ": malformed trajectory");
                     return nullptr;
                 }
                 createTrajectoryDebugFile(trajectory, trajCount);
                 trajCount++;
                 currentGroup->AddCommands(createTrajectoryCommand(trajectory));
-                trajPoses.clear();
+                points.clear();
             }
 
             if (action.type == ValorAutoAction::Type::STATE){
@@ -427,8 +388,8 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
                             bool reversed = (((0 <= ang_d && ang_d < 90) || (270 <= ang_d && ang_d <= 360)) && left) || ((90 <= ang_d && ang_d < 270) && !left);
                             frc::Trajectory trajectory = createTrajectory({drivetrain->getPose_m(), action.end}, reversed);
                             */
-                            std::vector<frc::Pose2d> poses = {drivetrain->getPose_m(), action.end};
-                            frc::Trajectory trajectory = createTrajectory(poses, action.reversed);
+                            std::vector<Point> points = {{drivetrain->getPose_m(), frc::Rotation2d(units::degree_t(action.heading))}, {action.end, frc::Rotation2d(units::degree_t(action.heading))}};
+                            pathplanner::PathPlannerTrajectory trajectory = createTrajectory(points);
                             frc2::SwerveControllerCommand<SWERVE_COUNT> _trajectoryCommand = createTrajectoryCommand(trajectory);
                             trajectoryCommand = &_trajectoryCommand;
                             trajectoryCommand->Initialize();
@@ -450,12 +411,12 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
         } 
     }
 
-    if (trajPoses.size() != 0){
+    if (points.size() != 0){
         int i = actions.size() - 1;
         double s_vel = 0, e_vel = 0;
 
         int ei = i - 1, si = i - 1;
-        while (actions[si].type == ValorAutoAction::TRAJECTORY && actions[si].reversed == trajReversed)
+        while (actions[si].type == ValorAutoAction::TRAJECTORY)
             si--;
         si++;
         if (si >= 2 && actions[si - 1].type == ValorAutoAction::SPLIT) {
@@ -475,16 +436,16 @@ frc2::SequentialCommandGroup* ValorAuto::makeAuto(std::string filename, bool blu
         table->PutNumber("trajectory " + std::to_string(trajCount) + " end velocity", e_vel);
                         
         
-        frc::Trajectory trajectory = createTrajectory(trajPoses, trajReversed, s_vel, e_vel);
-        table->PutNumber("trajectory " + std::to_string(trajCount) + " time", std::fabs(trajectory.TotalTime().to<double>()));
-        if (std::fabs(trajectory.TotalTime().to<double>()) < 0.001){
+        pathplanner::PathPlannerTrajectory trajectory = createTrajectory(points, s_vel, e_vel);
+        table->PutNumber("trajectory " + std::to_string(trajCount) + " time", std::fabs(trajectory.getTotalTime().to<double>()));
+        if (std::fabs(trajectory.getTotalTime().to<double>()) < 0.001){
             table->PutString("Error", "On line " + std::to_string(i + 1) + ": malformed trajectory");
             return nullptr;
         }
         createTrajectoryDebugFile(trajectory, trajCount);
         trajCount++;
         currentGroup->AddCommands(createTrajectoryCommand(trajectory));
-        trajPoses.empty();
+        points.empty();
     }
     cmdGroups.push_back(std::move(*currentGroup));
 

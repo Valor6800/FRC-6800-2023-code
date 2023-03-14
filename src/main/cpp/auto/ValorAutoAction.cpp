@@ -85,7 +85,7 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
         value = items[2];
     }
     else if (type == ValorAutoAction::Type::TRAJECTORY) {
-        if (items.size() < 4) {
+        if (items.size() < 5) {
             error = ValorAutoAction::Error::SIZE_MISMATCH;
             error_message = "received " + std::to_string(items.size());
             return;
@@ -101,32 +101,17 @@ ValorAutoAction::ValorAutoAction(std::string line, std::map<std::string, frc::Tr
             return;
         }
 
-        if (!blueSide){
-            // Terrible way of dealing with it, but its the best way other than making a whole new set of autos for red side
-            // The issue here is that we're only flipping the points along the y axis - this leaves X untouched and Y must be flipped
-            // The problem with that is that what was "left" on the blue side stays "left" on the red side, but the actual point Y got flipped
-            // so what is called "left" on the red side appears to be on the right when viewed on the red side - our value became right but our name stayed "left"
-            // The workaround to this is to flip the points while interepreting what was written, so when we tell it to use the "right" point is uses the right value
-            // if (!isScoringPosition(items[1])) items[1] = flipPointName(items[1]);
-            // if (!isScoringPosition(items[2])) items[2] = flipPointName(items[2]);
-        }
-
         auto _start = points->at(items[1]);
         auto _end = points->at(items[2]);
 
-        double heading = stod(items[3]);
+        double rotation = stod(items[3]);
         if (!blueSide)
-            heading = -heading;
+            rotation = -rotation;
 
-        start = getPose(_start, heading);
-        end = getPose(_end, heading);
+        start = getPose(_start, rotation);
+        end = getPose(_end, rotation);
 
-        reversed = false;
-
-        if (items.size() == 5){
-            if (items[4] == "reversed" || items[4] == "reverse")
-                reversed = true;
-        }
+        heading = stod(items[4]);
     }
     else if (type == ValorAutoAction::Type::RESET_ODOM){
         if (items.size() < 2){

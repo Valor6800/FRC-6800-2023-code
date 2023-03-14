@@ -25,12 +25,22 @@
 #include <cstdint>
 #include <iostream>
 
+#include <pathplanner/lib/PathConstraints.h>
+#include <pathplanner/lib/PathPlanner.h>
+#include <pathplanner/lib/PathPlannerTrajectory.h>
+#include <pathplanner/lib/PathPoint.h>
+
 #ifndef VALOR_AUTO_H
 #define VALOR_AUTO_H
 
 struct UsableCommand{
     frc2::InstantCommand instantCommand;
     frc2::WaitCommand waitCommand;
+};
+
+struct Point{
+    frc::Pose2d pose;
+    frc::Rotation2d heading; // Represents direction of travel, bot rotation is in the pose
 };
 
 class ValorAuto {
@@ -45,8 +55,8 @@ class ValorAuto {
 
     protected:
 
-        frc::Trajectory createTrajectory(std::vector<frc::Pose2d>& poses, bool reversed, double, double);
-        frc2::SwerveControllerCommand<SWERVE_COUNT> createTrajectoryCommand(frc::Trajectory);
+        pathplanner::PathPlannerTrajectory createTrajectory(std::vector<Point>&, double, double);
+        frc2::SwerveControllerCommand<SWERVE_COUNT> createTrajectoryCommand(pathplanner::PathPlannerTrajectory);
 
         void readAuto(std::string);
 
