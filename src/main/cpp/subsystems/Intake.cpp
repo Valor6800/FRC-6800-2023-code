@@ -22,7 +22,8 @@
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
                             intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false, "baseCAN"),
-                            currentSensor(_robot, subsystemName)
+                            currentSensor(_robot, subsystemName),
+                            candle(robot, 286, CANIDs::CANDLE, "baseCAN")
 
 {  
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
@@ -175,6 +176,8 @@ void Intake::assignOutputs()
             state.isCubeStall = false;
         }
     }
+
+    state.intakeState == SPIKED?candle.setAnimation(candle.Strobe):candle.clearAnimation();
     prevState = state;
 }
 

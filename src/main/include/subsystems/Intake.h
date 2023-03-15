@@ -16,6 +16,7 @@
 #include "subsystems/Direction.h"
 #include "subsystems/Position.h"
 #include "subsystems/Piece.h"
+#include "sensors/ValorCANdleSensor.h"
 
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -131,4 +132,6 @@ private:
      ValorFalconController intakeMotor;
 
      ValorCurrentSensor currentSensor;
+
+     ValorCANdleSensor candle;
 };

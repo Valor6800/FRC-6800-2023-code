@@ -14,6 +14,7 @@
 #include "controllers/ValorFalconController.h"
 #include "controllers/ValorNeoController.h"
 #include "controllers/ValorPIDF.h"
+#include "sensors/ValorCANdleSensor.h"
 
 #include "AHRS.h"
 #include "ctre/phoenix/sensors/WPI_Pigeon2.h"
@@ -285,4 +286,6 @@ private:
      std::shared_ptr<nt::NetworkTable> limeTable;
 
      bool swerveNoError;
+
+     ValorCANdleSensor candle;
 };
