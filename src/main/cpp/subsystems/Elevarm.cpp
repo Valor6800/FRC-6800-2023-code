@@ -200,7 +200,7 @@ void Elevarm::init()
     // FRONT CUBE
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.13_m, 0.3_m, 173.85_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 180.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.346_m, 0.959_m, 291.22_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.567_m, 1.28_m, 227.5_deg);
@@ -216,7 +216,7 @@ void Elevarm::init()
     // BACK CUBE
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.42_m, -195.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.09_m, 141.4_deg);
-    posMap[Piece::CUBE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -180.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.823_m, 1.32_m, 78.7_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -237.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -180.0_deg);
@@ -327,6 +327,8 @@ void Elevarm::analyzeDashboard()
             candle.setColor(255,196,0);
         }
     }
+
+    intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
 }
 
 void Elevarm::assignOutputs()
