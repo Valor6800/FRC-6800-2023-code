@@ -437,7 +437,7 @@ frc2::InstantCommand* Drivetrain::getResetOdom() {
                 }
 
                 double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
-                frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
+                frc::Pose2d botpose{units::meter_t(x) - 0.7_m, units::meter_t(y), units::degree_t(angle)};
 
                 resetOdometry(botpose);
             }
@@ -521,12 +521,12 @@ frc2::FunctionalCommand* Drivetrain::getAutoClimbOver(){
         [&](){
             switch (state.stage){
                 case 0: // On the ground before we've started climbing
-                    state.xSpeed = 0.3;
+                    state.xSpeed = 0.5;
                     if (pigeon.GetPitch() < -16.0)
                         state.stage = 1;
                     break;
                 case 1: // Began climbing up -> became balanced -> starting to move down
-                    state.xSpeed = 0.3;
+                    state.xSpeed = 0.4;
                     if (pigeon.GetPitch() > 8.0)
                         state.stage = 2;
                     break;
