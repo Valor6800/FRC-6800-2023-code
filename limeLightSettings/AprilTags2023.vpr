@@ -65,11 +65,11 @@ pipeline_type:3
 red_balance:1200
 roi_x:0.000000
 roi_y:0.000000
-rsf:0.058547
+rsf:0.2112807814
 rspitch:25
 rsroll:0.000000
-rss:0.3834384
-rsu:1.0880598
+rss:0.2168026398
+rsu:1.1189645388
 rsyaw:0.000000
 sat_max:255
 sat_min:70

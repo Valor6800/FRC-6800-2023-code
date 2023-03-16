@@ -54,7 +54,7 @@ image_source:0
 img_to_show:0
 intersection_filter:0
 invert_hue:0
-lcgain:12
+lcgain:18
 multigroup_max:7
 multigroup_min:1
 multigroup_rejector:0
@@ -64,12 +64,12 @@ pipeline_res:1
 pipeline_type:3
 red_balance:1200
 roi_x:0.000000
-roi_y:0
-rsf:0.058547
+roi_y:1
+rsf:0.2112807814
 rspitch:25
 rsroll:0.000000
-rss:0.3834384
-rsu:1.0880598
+rss:0.2168026398
+rsu:1.1189645388
 rsyaw:0.000000
 sat_max:255
 sat_min:70
