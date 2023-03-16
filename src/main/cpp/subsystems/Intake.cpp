@@ -7,6 +7,7 @@
 //since intaking with cone vs cube is different, outtaking follows the same rule
 #define DEFAULT_OUTTAKE_CUBE_SPD 0.6f
 #define DEFAULT_OUTTAKE_CONE_SPD -0.8f
+#define GROUND_OUTTAKE_GROUND_CUBE_SPD 0.3f
 
 #define CONE_HOLD_SPD 0.02f
 #define CUBE_HOLD_SPD -0.03f
@@ -14,7 +15,7 @@
 #define CUBE_SPIKED_CURRENT 60.0f
 #define CONE_SPIKED_CURRENT 60.0f
 
-#define CUBE_CACHE_SIZE 120.0f
+#define CUBE_CACHE_SIZE 250.0f
 #define CONE_CACHE_SIZE 250.0f
 
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
@@ -154,7 +155,11 @@ void Intake::assignOutputs()
         }
     } else if (state.intakeState == OUTTAKE){
         if (state.pieceState == Piece::CUBE) {
-            intakeMotor.setPower(state.outtakeCubeSpeed);
+            if (state.elevarmGround){
+                intakeMotor.setPower(GROUND_OUTTAKE_GROUND_CUBE_SPD);
+            } else {
+                intakeMotor.setPower(DEFAULT_OUTTAKE_CUBE_SPD);
+            }
         } else {
             intakeMotor.setPower(state.outtakeConeSpeed);
         }  

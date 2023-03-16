@@ -2,7 +2,7 @@ reset_odom,barrierLeft,180
 elevarm,cone,front,high_auto
 time,250
 intake,outtake,cone
-time,350
+time,100
 intake,disabled
 trajectory,barrierLeft,barrierStartLeft,180,reversed
 elevarm,cone,front,stow,parallel
@@ -17,11 +17,12 @@ split,0.35,multiplier
 elevarm,cube,back,stow,parallel
 split,0.35,multiplier
 trajectory,farParallelBarrier,chellFar,180
-trajectory,chellFar,barrierBox,180
+trajectory,chellFar,shortParallelBarrier,180
 elevarm,cube,front,high
-time,1250
+time,1500
+trajectory,shortParallelBarrier,barrierBox,180
 intake,outtake,cube
-time,250
+time,60
 intake,disabled
 elevarm,cone,front,stow,parallel
 trajectory,barrierBox,chellFar,180,reversed

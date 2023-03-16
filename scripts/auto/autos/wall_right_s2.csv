@@ -12,14 +12,15 @@ elevarm,cube,back,ground
 intake,intake,cube
 trajectory,gladosFarMinus,doug,180,reversed
 //back to cube
-trajectory,doug,farParallelwall,180
+trajectory,doug,farParallelWall,180
 split,0.35,multiplier
 elevarm,cube,back,stow,parallel
 split,0.35,multiplier
-trajectory,farParallelwall,gladosFar,180
-trajectory,gladosFar,wallBox,180
+trajectory,farParallelWall,gladosFar,180
+trajectory,gladosFar,shortParallelWall,180
 elevarm,cube,front,high
-time,1250
+time,2000
+trajectory,shortParallelWall,wallBox,180
 intake,outtake,cube
 time,250
 intake,disabled

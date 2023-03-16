@@ -17,3 +17,4 @@ trajectory,chellFarMinus,cave,180,reversed
 elevarm,cube,back,stow,parallel
 trajectory,cave,chargeFar,180
 balance
+intake,outtake,cube

@@ -2,7 +2,7 @@
 //left and right are +5cm x from grid
 barrierLeft,1.78,5.03
 barrierStartLeft,2.095,5.03
-barrierBox,2.25,4.45
+barrierBox,2.0,4.45
 barrierStartRight,2.095,3.87
 barrierRight,1.78,3.87
 
@@ -12,28 +12,28 @@ coopRight,1.78,2.29
 
 wallLeft,1.78,1.81
 wallStartLeft,2.095,1.81
-wallBox,1.78,1.23
+wallBox,1.95,1.23
 wallStartRight,2.095,0.65
 wallRight,1.78,0.65
 
 cave,6.90,4.56
 wheatley,6.90,3.34
 johnson,6.90,2.12
-doug,6.90,0.9
+doug,7.10,0.9
 
 farParallelBarrier,6.5,4.57
 chellFar,5.0,4.69
 chellFarMinus,4.5,4.69
 chell,3.93,4.68
 chellNear,2.855,4.67
-shortParallelBarrier,2.15,4.47
+shortParallelBarrier,2.35,4.46
 
 farParallelWall,6.5,0.91
 gladosFar,6.0,0.76
 gladosFarMinus,5.0,0.76
 glados,3.93,0.77
 gladosNear,2.855,0.78
-shortParallelWall,2.15,0.78
+shortParallelWall,2.25,0.78
 
 chargeFar,6.3,2.77
 charge,0.8,2.77

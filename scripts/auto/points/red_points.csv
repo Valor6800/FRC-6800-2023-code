@@ -3,7 +3,7 @@
 
 barrierRight,1.78,3.19
 barrierStartRight,2.095,3.19
-barrierBox,1.78,3.57
+barrierBox,1.95,3.57
 barrierStartLeft,2.095,4.15
 barrierLeft,1.78,4.15
 
@@ -13,28 +13,28 @@ coopLeft,1.78,5.73
 
 wallRight,1.78,6.21
 wallStartRight,2.095,6.21
-wallBox,1.78,6.79
+wallBox,1.95,6.79
 wallStartLeft,2.095,7.57
 wallLeft,1.78,7.57
 
 cave,6.90,3.46
 wheatley,6.90,4.68
 johnson,6.90,5.9
-doug,6.90,7.12
+doug,7.10,7.12
 
 farParallelBarrier,6.5,3.45
 chellFar,5.0,3.33
 chellFarMinus,4.5,3.33
 chell,3.93,3.34
 chellNear,2.855,3.35
-shortParallelBarrier,2.15,3.55
+shortParallelBarrier,2.25,3.55
 
 farParallelWall,6.5,7.11
 gladosFar,6.0,7.26
 gladosFarMinus,5.0,7.26
 glados,3.93,7.25
 gladosNear,2.855,7.24
-shortParallelWall,2.15,7.24
+shortParallelWall,2.25,7.24
 
 chargeFar,6.3,5.25
 charge,0.8,5.25

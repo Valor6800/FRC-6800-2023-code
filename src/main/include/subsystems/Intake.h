@@ -90,6 +90,7 @@ public:
 
          bool intakeOp;
 
+         bool elevarmGround;
      }state, prevState;
     
     std::unordered_map<std::string, IntakeStates> stringToStateMap = {

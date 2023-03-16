@@ -1,3 +1,0 @@
-reset_odom,barrierLeft,180
-time,1000
-goto,chell,180,reversed
