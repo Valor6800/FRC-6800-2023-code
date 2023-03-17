@@ -2,6 +2,7 @@
 
 enum Position{
       STOW,
+      STOW_AUTO,
       GROUND,
       GROUND_TOPPLE,
       GROUND_SCORE,
