@@ -20,7 +20,7 @@
 #define WRIST_FORWARD_LIMIT 325.0f
 #define WRIST_REVERSE_LIMIT -325.0f
 
-#define CANCODER_OFFSET 161.8f
+#define CANCODER_OFFSET 173.5f
 
 #define INITIAL_HEIGHT_OFFSET 0.0f //cm
 #define STOW_HEIGHT_OFFSET 0.0f //cm
@@ -66,7 +66,7 @@
 #define WRIST_K_ACC_MUL 0.375f
 #define WRIST_S_CURVE_STRENGTH 3
 
-#define PREVIOUS_WRIST_DEADBAND 1.0f
+#define PREVIOUS_WRIST_DEADBAND 1.01f
 #define PREVIOUS_HEIGHT_DEADBAND 0.03f
 #define PREVIOUS_ROTATION_DEADBAND 3.5f
 
@@ -186,7 +186,10 @@ void Elevarm::init()
 
    
     // STOW POSITION
-    stowPos = frc::Pose2d(-0.428_m, 0.451_m, 0.0_deg);
+    stowPos = frc::Pose2d(-0.428_m, 0.436_m, 0.0_deg);
+
+    autoStowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
+
     // FRONT CONE
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.196_m, 0.551_m, 200.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
@@ -209,7 +212,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8_m, 1.455_m, 57.5_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8_m, 1.47_m, 57.5_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
@@ -337,11 +340,13 @@ void Elevarm::assignOutputs()
 
     if (futureState.positionState == Position::STOW || inTransition) {
         futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
+    } else if (futureState.positionState == Position::STOW_AUTO) {
+        futureState.targetPose = reverseKinematics(autoStowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
-            if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)  {
-                futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
-            } else 
-                futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
+        if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)  {
+            futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
+        } else 
+            futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
     }
 
     table->PutBoolean("going from stow to not stow", false);
@@ -377,7 +382,7 @@ void Elevarm::assignOutputs()
                 armRotateMotor.setPosition(futureState.targetPose.theta);
             }    
                     
-            if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 0.0) || (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -20.0))
+            if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 0.0) || (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -20.0) /*|| futureState.positionState == Position::STOW_AUTO || (futureState.positionState == Position::STOW && previousState.positionState == Position::STOW_AUTO)*/)
             wristMotor.setPosition(futureState.targetPose.wrist);
             else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
             
@@ -385,7 +390,7 @@ void Elevarm::assignOutputs()
                 carriageMotors.setPower(carriageStallPower);
             }
 
-            if (futureState.atCarriage && futureState.atArm) {
+            if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {
                 previousState = futureState;
                 if (inTransition)
                     previousState.positionState = Position::STOW;
