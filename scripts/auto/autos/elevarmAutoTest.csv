@@ -18,6 +18,8 @@ elevarm,cone,back,ground
 time,3000
 elevarm,cone,front,ground_score
 time,3000
+elevarm,cone,front,stow
+time,3000
 elevarm,cone,back,player
 time,3000
 elevarm,cube,back,mid
