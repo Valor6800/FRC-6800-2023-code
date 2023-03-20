@@ -18,6 +18,8 @@
 #define CUBE_CACHE_SIZE 250.0f
 #define CONE_CACHE_SIZE 250.0f
 
+#define POOP_FULL_SPEED 1.0f
+
 Intake::Intake(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Intake"),  
                             intakeMotor(CANIDs::INTAKE_LEAD_CAN, ValorNeutralMode::Coast, false, "baseCAN"),
                             currentSensor(_robot, subsystemName)
@@ -55,6 +57,8 @@ void Intake::init()
 
     state.intakeOp = false;
 
+    state.isCubeStall = false;
+
     prevState = state;
 
     currentSensor.setSpikeSetpoint(state.coneSpikeCurrent);
@@ -80,15 +84,15 @@ void Intake::init()
 void Intake::assessInputs()
 {
     // Driver/Operator scoring independently
-    if (operatorGamepad->GetYButton() || driverGamepad->GetYButton()) {
+    if (operatorGamepad->GetYButton() || driverGamepad->GetYButton() || operatorGamepad->GetAButton()) {
             state.pieceState = Piece::CUBE;
-    } else{
+    } else {
         state.pieceState = Piece::CONE;
     } 
 
     // SCORE
     if (driverGamepad->rightTriggerActive() || operatorGamepad->rightTriggerActive()) {
-        state.intakeState = OUTTAKE;    
+        state.intakeState = OUTTAKE;  
     // No game element in intake, driver/operator requesting intake
     } else if (state.intakeState != SPIKED) {
 
@@ -148,14 +152,18 @@ void Intake::assignOutputs()
     } else if (state.intakeState == DISABLED) {
         intakeMotor.setPower(0);
     } else if (state.intakeState == SPIKED) {
-        if (state.pieceState == Piece::CUBE){
+        if (state.isCubeStall){
             intakeMotor.setPower(state.cubeHoldSpeed);
         } else{
             intakeMotor.setPower(state.coneHoldSpeed);
         }
     } else if (state.intakeState == OUTTAKE){
+        state.isCubeStall = false;
+
         if (state.pieceState == Piece::CUBE) {
-            if (state.elevarmGround){
+            if (state.elevarmPoopFull) {
+                intakeMotor.setPower(POOP_FULL_SPEED);
+            } else if (state.elevarmGround){
                 intakeMotor.setPower(GROUND_OUTTAKE_GROUND_CUBE_SPD);
             } else {
                 intakeMotor.setPower(DEFAULT_OUTTAKE_CUBE_SPD);
@@ -165,9 +173,11 @@ void Intake::assignOutputs()
         }  
     } else if (state.intakeState == INTAKE){
         if (state.pieceState == Piece::CUBE) {
+            state.isCubeStall = true;
             intakeMotor.setPower(state.intakeCubeSpeed);
         } else {
             intakeMotor.setPower(state.intakeConeSpeed);
+            state.isCubeStall = false;
         }
     }
     prevState = state;
