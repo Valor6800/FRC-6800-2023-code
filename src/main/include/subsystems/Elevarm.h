@@ -112,6 +112,8 @@ public:
     } futureState, previousState;
 
     double heightDeadband, rotationDeadband;
+    
+    bool zeroArm;
 
     frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string, bool);
 
