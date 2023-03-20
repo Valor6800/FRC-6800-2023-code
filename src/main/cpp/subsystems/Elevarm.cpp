@@ -119,6 +119,7 @@ void Elevarm::resetState()
     futureState.manualArm = 0;
     futureState.deadManEnabled = false;
     futureState.pitModeEnabled = false;
+    zeroArm = false;
     previousState = futureState;
 
 }
@@ -233,6 +234,7 @@ void Elevarm::init()
     table->PutNumber("Carraige Offset", INITIAL_HEIGHT_OFFSET);
     table->PutBoolean("Enable Carraige Offset", false);
     table->PutBoolean("Arm In Range", false);
+    table->PutBoolean("Zero Arm", zeroArm);
 
     resetState();
     armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
@@ -294,6 +296,11 @@ void Elevarm::analyzeDashboard()
     manualMaxArmSpeed = table->GetNumber("Arm Rotate Max Manual Speed", MAN_MAX_ROTATE);
     futureState.pitModeEnabled = table->GetBoolean("Pit Mode", false);
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
+    zeroArm = table->GetBoolean("Zero Arm", false);
+
+    if (zeroArm) {
+        armRotateMotor.setEncoderPosition(180.0);
+    }
 
     if (table->GetBoolean("Enable Carraige Offset", false)) {
         futureState.carraigeOffset = table->GetNumber("Carraige Offset", INITIAL_HEIGHT_OFFSET);
