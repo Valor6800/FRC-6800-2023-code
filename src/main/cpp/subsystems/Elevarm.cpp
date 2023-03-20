@@ -329,7 +329,7 @@ void Elevarm::analyzeDashboard()
         candle.setColor(255,0,0);
     } else if (robot->IsDisabled()) {
         if (armInRange) candle.setColor(0,255,0);
-        else candle.setColor(255,0,0);
+        else candle.drawBounceAnimation();
     } else if (robot->IsAutonomous()) {
         if (futureState.atCarriage && futureState.atArm && futureState.atWrist)
             candle.setColor(0,255,0);

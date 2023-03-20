@@ -12,6 +12,10 @@
 
 #include "ctre/phoenix/led/CANdle.h"
 
+struct Color{
+    int r, g, b;
+};
+
 /**
  * @brief Sensor - control the CANdle and associated LEDs
  * 
@@ -95,6 +99,10 @@ public:
      * @param animation Animation to set. Will clear the previous color
      */
     void setAnimation(AnimationType animation);
+
+    void drawBounceAnimation();
+    void drawSnakeAnimation();
+    void drawSineAnimation();
 
     /**
      * @brief Clears any active animation
