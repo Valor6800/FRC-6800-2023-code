@@ -209,6 +209,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.346_m, 1.009_m, 291.22_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.567_m, 1.28_m, 227.5_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(0.086_m, 1.2_m, 253.2_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
     // BACK CONE   
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
@@ -225,6 +226,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -237.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -180.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
     
 
     table->PutNumber("Carriage Max Manual Speed", MAN_MAX_CARRIAGE);
@@ -268,13 +270,16 @@ void Elevarm::assessInputs()
     } else if(operatorGamepad->DPadRight()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::MID;
         else futureState.positionState = Position::STOW;
+    } else if (operatorGamepad->GetAButton()){
+        if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::POOPFULL;
+        else futureState.positionState = Position::STOW;
     } else {
         if (previousState.positionState != Position::MANUAL) {
                 futureState.positionState = Position::STOW;
         } 
     }
 
-    if (operatorGamepad->GetYButton() || driverGamepad->GetYButton()){
+    if (operatorGamepad->GetYButton() || driverGamepad->GetYButton() || operatorGamepad->GetAButton()){
         futureState.pieceState = Piece::CUBE;
     } else {
         futureState.pieceState = Piece::CONE;
@@ -339,6 +344,7 @@ void Elevarm::analyzeDashboard()
     }
 
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
+    intake->state.elevarmPoopFull = futureState.positionState == Position::POOPFULL;
 }
 
 void Elevarm::assignOutputs()

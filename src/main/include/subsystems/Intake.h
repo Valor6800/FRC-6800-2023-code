@@ -91,6 +91,10 @@ public:
          bool intakeOp;
 
          bool elevarmGround;
+         bool elevarmPoopFull;
+
+         bool isCubeStall;
+         
      }state, prevState;
     
     std::unordered_map<std::string, IntakeStates> stringToStateMap = {
