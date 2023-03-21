@@ -29,6 +29,7 @@
 #include <pathplanner/lib/PathPlanner.h>
 #include <pathplanner/lib/PathPlannerTrajectory.h>
 #include <pathplanner/lib/PathPoint.h>
+#include <pathplanner/lib/commands/FollowPathWithEvents.h>
 
 #ifndef VALOR_AUTO_H
 #define VALOR_AUTO_H
@@ -48,10 +49,10 @@ class ValorAuto {
         ValorAuto(Drivetrain*, Intake*, Elevarm*);
         ~ValorAuto();
         bool readPointsCSV(std::string);
-        frc2::SequentialCommandGroup* makeAuto(std::string, bool);
+        FollowPathWithEvents* makeAuto(std::string);
         void precompileActions(std::string);
         void fillAutoList();
-        frc2::SequentialCommandGroup* getCurrentAuto();
+        FollowPathWithEvents* getCurrentAuto();
 
     protected:
 

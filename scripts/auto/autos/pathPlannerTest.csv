@@ -1,2 +1,2 @@
-reset_odom,barrierLeft,180
-trajectory,barrierLeft,chell,0,180
+reset_odom,p1,180
+trajectory,p1,p2,180,0
