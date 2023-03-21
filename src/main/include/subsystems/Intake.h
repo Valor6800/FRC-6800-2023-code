@@ -103,6 +103,9 @@ public:
         {"outtake", IntakeStates::OUTTAKE},
         {"intake", IntakeStates::INTAKE}
      };
+
+     Piece getFuturePiece();
+     Piece getPrevPiece();
      
      IntakeStates stringToIntakeState(std::string name){
         if (!stringToStateMap.contains(name))

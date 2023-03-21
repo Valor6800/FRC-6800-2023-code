@@ -66,6 +66,9 @@ public:
 
      void InitSendable(wpi::SendableBuilder& builder);
 
+     void setPrevPiece(Piece piece);
+     void setFuturePiece(Piece piece);
+
     struct Positions {
         Positions() {
             Positions(0,0,0);
@@ -87,7 +90,6 @@ public:
 
     struct x
     {
-        Piece pieceState;
         Direction directionState;
         Position positionState;
 
