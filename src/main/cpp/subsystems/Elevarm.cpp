@@ -112,7 +112,7 @@ Elevarm::~Elevarm()
 
 void Elevarm::resetState()
 {
-    futureState.pieceState = Piece::CONE;
+    setFuturePiece(Piece::CONE);
     futureState.directionState = Direction::FRONT;
     futureState.positionState = Position::STOW;
     futureState.manualCarriage = 0;
@@ -121,6 +121,7 @@ void Elevarm::resetState()
     futureState.pitModeEnabled = false;
     zeroArm = false;
     previousState = futureState;
+    setPrevPiece(intake->getFuturePiece());
 
 }
 
@@ -278,11 +279,12 @@ void Elevarm::assessInputs()
                 futureState.positionState = Position::STOW;
         } 
     }
-
-    if (operatorGamepad->GetYButton() || driverGamepad->GetYButton() || operatorGamepad->GetAButton()){
-        futureState.pieceState = Piece::CUBE;
-    } else {
-        futureState.pieceState = Piece::CONE;
+    if(intake->state.intakeState != Intake::IntakeStates::OUTTAKE && (intake->state.intakeState != Intake::IntakeStates::SPIKED || driverGamepad->DPadRight() || operatorGamepad->GetBButton())){
+        if (operatorGamepad->GetYButton() || driverGamepad->GetYButton() || operatorGamepad->GetAButton()){
+            setFuturePiece(Piece::CUBE);
+        } else {
+            setFuturePiece(Piece::CONE);
+        }
     }
 
     
@@ -336,7 +338,7 @@ void Elevarm::analyzeDashboard()
         else
             candle.setColor(0,0,255);
     } else {
-        if (futureState.pieceState == Piece::CUBE) {
+        if (intake->getFuturePiece() == Piece::CUBE) {
             candle.setColor(156,0,255);
         } else {
             candle.setColor(255,196,0);
@@ -357,9 +359,9 @@ void Elevarm::assignOutputs()
         futureState.targetPose = reverseKinematics(autoStowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
         if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)  {
-            futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
+            futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
         } else 
-            futureState.targetPose = reverseKinematics(posMap[futureState.pieceState][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
+            futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
     }
 
     table->PutBoolean("going from stow to not stow", false);
@@ -405,6 +407,7 @@ void Elevarm::assignOutputs()
 
             if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {
                 previousState = futureState;
+                setPrevPiece(intake->getFuturePiece());
                 if (inTransition)
                     previousState.positionState = Position::STOW;
             }
@@ -516,7 +519,7 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
 
     builder.AddDoubleProperty(
         "Previous State Piece",
-        [this] { return previousState.pieceState; },
+        [this] { return intake->getPrevPiece(); },
         nullptr
     );
 
@@ -546,7 +549,7 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
 
     builder.AddDoubleProperty(
         "Future State Piece",
-        [this] { return futureState.pieceState; },
+        [this] { return intake->getFuturePiece(); },
         nullptr
     );
 
@@ -633,15 +636,16 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
             }, 
         //onExecute
         [&, eaPieceState, eaDirectionState, eaPositionState](){
-            futureState.pieceState = eaPieceState;
+            setFuturePiece(eaPieceState);
             futureState.directionState = eaDirectionState;
             futureState.positionState = eaPositionState;
-            table->PutNumber("piece", futureState.pieceState);
+            table->PutNumber("piece", intake->getFuturePiece());
             table->PutNumber("dir", futureState.directionState);
             table->PutNumber("pos", futureState.positionState);
         }, 
         [&](bool){
             previousState = futureState;
+            setPrevPiece(intake->getFuturePiece());
         }, // onEnd
         [&, eaPieceState, eaDirectionState, eaPositionState, parallel](){ //isFinished
             return parallel || (previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState);
@@ -652,6 +656,14 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
 
 void Elevarm::setArmPIDF(bool isAuto) {
     isAuto ? armRotateMotor.setPIDF(autoRotatePID,0) : armRotateMotor.setPIDF(rotatePID,0);
+}
+
+
+void Elevarm::setPrevPiece(Piece piece){
+     intake->prevState.pieceState = piece;
+}
+void Elevarm::setFuturePiece(Piece piece){
+    intake->state.pieceState = piece;
 }
 
 frc2::FunctionalCommand * Elevarm::getRotatePIDSetterCommand(bool isAuto){

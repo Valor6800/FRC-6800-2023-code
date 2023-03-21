@@ -36,7 +36,6 @@ Intake::~Intake()
 void Intake::resetState()
 {
    state.intakeState = DISABLED;
-   state.pieceState = Piece::CONE;
    currentSensor.reset();
 }
 
@@ -84,11 +83,7 @@ void Intake::init()
 void Intake::assessInputs()
 {
     // Driver/Operator scoring independently
-    if (operatorGamepad->GetYButton() || driverGamepad->GetYButton() || operatorGamepad->GetAButton()) {
-            state.pieceState = Piece::CUBE;
-    } else {
-        state.pieceState = Piece::CONE;
-    } 
+    
 
     // SCORE
     if (driverGamepad->rightTriggerActive() || operatorGamepad->rightTriggerActive()) {
@@ -284,3 +279,10 @@ void Intake::InitSendable(wpi::SendableBuilder& builder)
             nullptr
         );
     }
+
+Piece Intake::getPrevPiece(){
+    return prevState.pieceState;
+}
+Piece Intake::getFuturePiece(){
+    return state.pieceState;
+}
