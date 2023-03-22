@@ -279,7 +279,7 @@ void Elevarm::assessInputs()
                 futureState.positionState = Position::STOW;
         } 
     }
-    if((intake->state.intakeState != Intake::IntakeStates::OUTTAKE && driverGamepad->leftTriggerActive()) && (intake->state.intakeState != Intake::IntakeStates::SPIKED || driverGamepad->DPadRight() || operatorGamepad->GetBButton())){
+    if((intake->state.intakeState != Intake::IntakeStates::OUTTAKE && !driverGamepad->leftTriggerActive()) && (intake->state.intakeState != Intake::IntakeStates::SPIKED || driverGamepad->DPadRight() || operatorGamepad->GetBButton())){
         if (operatorGamepad->GetYButton() || driverGamepad->GetYButton() || operatorGamepad->GetAButton()){
             setFuturePiece(Piece::CUBE);
         } else {
