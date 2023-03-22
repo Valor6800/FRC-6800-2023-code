@@ -1,9 +1,0 @@
-reset_odom,coopLeft,180
-elevarm,cone,front,high_auto
-time,1000
-intake,outtake,cone
-time,1000
-intake,disabled
-trajectory,coopLeft,chargeNear,180
-elevarm,cone,front,stow
-balance,reversed

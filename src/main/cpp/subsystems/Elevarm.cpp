@@ -39,7 +39,7 @@
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
 #define ROTATE_K_VEL 120.0f
-#define ROTATE_K_ACC_MUL 0.66f
+#define ROTATE_K_ACC_MUL 0.4f
 #define ROTATE_K_AFF 0.115f
 #define ROTATE_K_AFF_CUBE 0.11f
 #define ROTATE_K_AFF_POS 90.0f
@@ -626,7 +626,7 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
     );
 }
 
-frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState, bool parallel){
+frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState){
     Piece eaPieceState = stringToPieceState(pieceState);
     Direction eaDirectionState = stringToDirectionState(directionState);
     Position eaPositionState = stringToPositionState(positionState);
@@ -648,8 +648,8 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
             previousState = futureState;
             setPrevPiece(intake->getFuturePiece());
         }, // onEnd
-        [&, eaPieceState, eaDirectionState, eaPositionState, parallel](){ //isFinished
-            return parallel || (previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState);
+        [&, eaPieceState, eaDirectionState, eaPositionState](){ //isFinished
+            return (previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState) || futureState.pitModeEnabled;
         },
         {}
     );
