@@ -11,6 +11,9 @@
 #include "ctre/phoenix/led/TwinkleOffAnimation.h"
 
 #include <frc/DriverStation.h>
+#include <networktables/NetworkTableEntry.h>
+#include <networktables/NetworkTableInstance.h>
+#include <networktables/NetworkTable.h>
 
 #include <math.h>
 #include <string>
@@ -100,11 +103,10 @@ void ValorCANdleSensor::setAnimation(ValorCANdleSensor::AnimationType animation)
         candle.Animate(*activeAnimation);
 }
 
-void ValorCANdleSensor::drawBounceAnimation(){
-    Color color = frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue ? Color{0, 0, 255} : Color{255, 0, 0};
-    int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * 60);
+void ValorCANdleSensor::drawBounceAnimation(int r, int g, int b){
+    int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * 240);
     int nt = t % ledCount;
-    t % (ledCount * 4); // Led count * 4 is the relevant number of time steps, so work off of that
+    t %= (ledCount * 4); // Led count * 4 is the relevant number of time steps, so work off of that
 
     int start, stop;
     if (t <= ledCount){ // nt represents lit leds from bottom
@@ -121,7 +123,8 @@ void ValorCANdleSensor::drawBounceAnimation(){
         stop = ledCount - nt;
     }
 
-    candle.SetLEDs(color.r, color.g, color.b, 0, start, stop - start + 1);
+    candle.SetLEDs(0, 0, 0);
+    candle.SetLEDs(r, g, b, 0, start - 1, stop - start + 1);
 }
 
 struct Snake{
@@ -133,28 +136,38 @@ struct Snake{
 Snake snake = Snake{0, 0, 267, 0_s,};
 
 void ValorCANdleSensor::drawSnakeAnimation(){
-    if (frc::Timer::GetFPGATimestamp() - snake.lastUpdated > 0.1_s){
-        if (snake.stop == snake.apple){
-            snake.start--;
+    int expansion = 3, speed = 2;
+    if (frc::Timer::GetFPGATimestamp() - snake.lastUpdated > 0.002_s){
+        if (snake.stop >= snake.apple && snake.stop - speed <= snake.apple){
+            snake.start-=expansion;
             snake.apple = (rand() % (snake.start)) + 0;
         } else if (snake.start == snake.apple){
-            snake.stop++;
+            snake.stop+=expansion;
             snake.apple = (rand() % (ledCount - snake.stop)) + snake.stop;
-        } 
-        else if (snake.apple > snake.stop)
-            snake.stop++;
-        else if (snake.apple < snake.start)
-            snake.start--;
+        } else if (snake.apple > snake.stop){
+            snake.stop+=speed;
+            snake.start+=speed;
+        } else if (snake.apple < snake.start){
+            snake.start-=speed;
+            snake.stop-=speed;
+        }  
+
+        if (snake.stop - snake.start >= ledCount - 3)
+            snake = Snake{0, 0, 267, 0_s,};
+        snake.lastUpdated = frc::Timer::GetFPGATimestamp();
     }
+    
+    candle.SetLEDs(0, 0, 0);
     candle.SetLEDs(0, 255, 0, 0, snake.start, snake.stop - snake.start + 1);
-    candle.SetLEDs(255, 0, 0, 0, snake.apple, 1);
+    candle.SetLEDs(255, 0, 0, 0, snake.apple - 1, 3);
 }
 
-void ValorCANdleSensor::drawSineAnimation(){
-    Color color = frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue ? Color{0, 0, 255} : Color{255, 0, 0};
-    int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * 60);
-    int width = (int)(sin(std::fmod(t, 60.0) / 60.0) * 0.5 * ledCount);
-    candle.SetLEDs(color.r, color.g, color.b, 0, ledCount / 2 - width, width * 2);
+void ValorCANdleSensor::drawSineAnimation(int r, int g, int b){
+    double rate = 60; // ticks/s
+    int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * rate);
+    int width = (int)(sin(std::fmod(t, rate * 2) / rate * 2) * 0.5 * ledCount);
+    candle.SetLEDs(0, 0, 0);
+    candle.SetLEDs(r, g, b, 0, ledCount / 2 - width, width * 2);
 }
 
 void ValorCANdleSensor::clearAnimation()

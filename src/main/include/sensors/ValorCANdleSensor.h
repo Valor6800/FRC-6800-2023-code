@@ -100,9 +100,9 @@ public:
      */
     void setAnimation(AnimationType animation);
 
-    void drawBounceAnimation();
+    void drawBounceAnimation(int, int, int);
     void drawSnakeAnimation();
-    void drawSineAnimation();
+    void drawSineAnimation(int, int, int);
 
     /**
      * @brief Clears any active animation
