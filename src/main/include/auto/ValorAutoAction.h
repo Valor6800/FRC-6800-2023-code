@@ -37,7 +37,7 @@ struct ValorAutoAction {
     } error;
     std::string error_message;
     
-    frc::Pose2d pose;
+    //frc::Pose2d pose;
 
     double heading; // This is NOT the robots rotation, this is its direction of travel. Robot's rotation is stored in the pose
     bool reversed;

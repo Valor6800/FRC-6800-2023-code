@@ -49,13 +49,16 @@ class ValorAuto {
         ValorAuto(Drivetrain*, Intake*, Elevarm*);
         ~ValorAuto();
         bool readPointsCSV(std::string);
-
-        frc2::Command * makeAuto(std::string);
+        
+        frc2::Command* makePathAuto(std::string path);
+        frc2::SequentialCommandGroup * makeAuto(std::string path);
 
         void precompileEvents(std::string);
 
+        frc2::SequentialCommandGroup* compileCommands(std::vector<ValorAutoAction>);
+
         void fillAutoList();
-        frc2::Command * getCurrentAuto();
+        frc2::Command* getCurrentAuto();
 
     protected:
 
@@ -96,9 +99,11 @@ class ValorAuto {
         nt::NetworkTableEntry entry;
 
         std::shared_ptr<nt::NetworkTable> table;
+        std::shared_ptr<nt::NetworkTable> elevarmTable;
 
         frc2::SwerveControllerCommand<SWERVE_COUNT> * trajectoryCommand;
 
         std::unordered_map<std::string, std::shared_ptr<frc2::Command> > eventMap;
+        std::unordered_map<std::string, frc2::SequentialCommandGroup> sequentialEventMap;
 };
 #endif
