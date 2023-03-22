@@ -49,10 +49,16 @@ class ValorAuto {
         ValorAuto(Drivetrain*, Intake*, Elevarm*);
         ~ValorAuto();
         bool readPointsCSV(std::string);
+        
+        frc2::Command* makePathAuto(std::string path);
+        frc2::SequentialCommandGroup * makeAuto(std::string path);
 
-        frc2::Command * makeAuto(std::string);
+        void precompileEvents(std::string);
+
+        frc2::SequentialCommandGroup* compileCommands(std::vector<ValorAutoAction>);
+
         void fillAutoList();
-        frc2::Command * getCurrentAuto();
+        frc2::Command* getCurrentAuto();
 
     protected:
 
@@ -66,10 +72,7 @@ class ValorAuto {
             {ValorAutoAction::NONE, "none"},
             {ValorAutoAction::TIME, "time"},
             {ValorAutoAction::STATE, "state"},
-            {ValorAutoAction::TRAJECTORY, "trajectory"},
             {ValorAutoAction::RESET_ODOM, "reset_odom"},
-            {ValorAutoAction::ACTION, "action"},
-            {ValorAutoAction::SPLIT, "split"},
             {ValorAutoAction::XMODE, "xmode"},
             {ValorAutoAction::ACCELERATION, "acceleration"},
             {ValorAutoAction::CLIMB_OVER, "climb over"},
@@ -78,7 +81,6 @@ class ValorAuto {
 
         std::unordered_map<ValorAutoAction::Error, std::string> errorToStringMap = {
             {ValorAutoAction::NONE_ERROR, "no error"},
-            {ValorAutoAction::POINT_MISSING, "non-existent point used"},
             {ValorAutoAction::SIZE_MISMATCH, "insufficient number of parameters passed in"},
             {ValorAutoAction::COMMAND_MISSING, "non-existent command used"}
         };
@@ -97,7 +99,11 @@ class ValorAuto {
         nt::NetworkTableEntry entry;
 
         std::shared_ptr<nt::NetworkTable> table;
+        std::shared_ptr<nt::NetworkTable> elevarmTable;
+
+        frc2::SwerveControllerCommand<SWERVE_COUNT> * trajectoryCommand;
 
         std::unordered_map<std::string, std::shared_ptr<frc2::Command> > eventMap;
+        std::unordered_map<std::string, frc2::SequentialCommandGroup> sequentialEventMap;
 };
 #endif
