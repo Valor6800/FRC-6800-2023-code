@@ -51,6 +51,9 @@ class ValorAuto {
         bool readPointsCSV(std::string);
 
         frc2::Command * makeAuto(std::string);
+
+        void precompileEvents(std::string);
+
         void fillAutoList();
         frc2::Command * getCurrentAuto();
 
@@ -66,10 +69,7 @@ class ValorAuto {
             {ValorAutoAction::NONE, "none"},
             {ValorAutoAction::TIME, "time"},
             {ValorAutoAction::STATE, "state"},
-            {ValorAutoAction::TRAJECTORY, "trajectory"},
             {ValorAutoAction::RESET_ODOM, "reset_odom"},
-            {ValorAutoAction::ACTION, "action"},
-            {ValorAutoAction::SPLIT, "split"},
             {ValorAutoAction::XMODE, "xmode"},
             {ValorAutoAction::ACCELERATION, "acceleration"},
             {ValorAutoAction::CLIMB_OVER, "climb over"},
@@ -78,7 +78,6 @@ class ValorAuto {
 
         std::unordered_map<ValorAutoAction::Error, std::string> errorToStringMap = {
             {ValorAutoAction::NONE_ERROR, "no error"},
-            {ValorAutoAction::POINT_MISSING, "non-existent point used"},
             {ValorAutoAction::SIZE_MISMATCH, "insufficient number of parameters passed in"},
             {ValorAutoAction::COMMAND_MISSING, "non-existent command used"}
         };
@@ -97,6 +96,8 @@ class ValorAuto {
         nt::NetworkTableEntry entry;
 
         std::shared_ptr<nt::NetworkTable> table;
+
+        frc2::SwerveControllerCommand<SWERVE_COUNT> * trajectoryCommand;
 
         std::unordered_map<std::string, std::shared_ptr<frc2::Command> > eventMap;
 };

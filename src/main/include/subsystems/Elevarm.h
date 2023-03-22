@@ -117,7 +117,7 @@ public:
     
     bool zeroArm;
 
-    frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string, bool);
+    frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string);
 
     frc2::FunctionalCommand * getRotatePIDSetterCommand(bool);
 

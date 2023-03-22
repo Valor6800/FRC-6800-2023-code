@@ -625,7 +625,7 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
     );
 }
 
-frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState, bool parallel){
+frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::string directionState, std::string positionState){
     Piece eaPieceState = stringToPieceState(pieceState);
     Direction eaDirectionState = stringToDirectionState(directionState);
     Position eaPositionState = stringToPositionState(positionState);
@@ -647,8 +647,8 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
             previousState = futureState;
             setPrevPiece(intake->getFuturePiece());
         }, // onEnd
-        [&, eaPieceState, eaDirectionState, eaPositionState, parallel](){ //isFinished
-            return parallel || (previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState);
+        [&, eaPieceState, eaDirectionState, eaPositionState](){ //isFinished
+            return (previousState.directionState == eaDirectionState && previousState.positionState == eaPositionState) || futureState.pitModeEnabled;
         },
         {}
     );

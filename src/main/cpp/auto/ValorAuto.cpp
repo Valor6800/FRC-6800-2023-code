@@ -26,7 +26,7 @@
 #include <pathplanner/lib/commands/PPSwerveControllerCommand.h>
 
 #define PATHS_PATH (std::string)"/home/lvuser/deploy/"
-#define EVENTS_PATH (std::string)"home/lvuser/events/"
+#define EVENTS_PATH (std::string)"/home/lvuser/auto/events/"
 
 ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
     drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
@@ -34,6 +34,8 @@ ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm
     drivetrain->getTrajectoryConfig().SetKinematics(*drivetrain->getKinematics());
 
     table = nt::NetworkTableInstance::GetDefault().GetTable("Auto");
+
+    precompileEvents(EVENTS_PATH);
 }
 
 ValorAuto::~ValorAuto()
@@ -48,9 +50,175 @@ ValorAuto::~ValorAuto()
 std::vector<std::string> listDirectory(std::string path_name){
     std::vector<std::string> files;
 
-    for (auto &entry : ghc::filesystem::directory_iterator(path_name))
-        files.push_back(entry.path());
+    for (auto &entry : ghc::filesystem::directory_iterator(path_name)) {
+        std::string path = entry.path();
+        if (path.find("backup") != std::string::npos) {
+            files.push_back(entry.path());
+        }
+    }
     return files;
+}
+
+void ValorAuto::precompileEvents(std::string path_name) {
+    
+    auto elevarmTable = nt::NetworkTableInstance::GetDefault().GetTable("Elevarm");
+
+    eventMap.clear();
+
+    std::vector<std::string> event_paths = listDirectory(path_name);
+    for (std::string event_path: event_paths){
+
+        std::string name = event_path.substr(event_path.find_last_of('/') + 1, event_path.find_last_of('.') - event_path.find_last_of('/') - 1);
+
+        std::ifstream infile(event_path); 
+        if (!infile.good()){
+            return;
+        }
+
+        std::string line;
+
+        std::vector<ValorAutoAction> actions;
+        while (std::getline(infile, line)){
+            ValorAutoAction action(line);
+            if (action.type != ValorAutoAction::NONE) {
+                actions.push_back(action);
+            }
+        }
+
+        frc2::SequentialCommandGroup * commandGroup = new frc2::SequentialCommandGroup();
+
+        for (int i = 0; i < actions.size(); i ++) {
+            ValorAutoAction & action = actions[i];
+
+            // Error encountered: stop trying to compile and output error
+            if (action.error != ValorAutoAction::NONE_ERROR){
+
+                table->PutString("Error in Event: " + name, "On line " + std::to_string(i + 1) + ": " + errorToStringMap[action.error] + " - " + action.error_message);
+                return;
+            }
+
+            if (action.type == ValorAutoAction::Type::STATE){
+                std::function<void(void)> func;
+                /* Example state setting command
+                if (action.state == "flywheel"){
+                    func = [&, action] {
+                        shooter->state.flywheelState = shooter->stringToFlywheelState(action.value);
+                    };
+                }
+                */ 
+                commandGroup->AddCommands(frc2::InstantCommand(func));
+            }
+            else if (action.type == ValorAutoAction::Type::TIME){
+                commandGroup->AddCommands(frc2::WaitCommand((units::millisecond_t)action.duration_ms));
+            }
+            else if (action.type == ValorAutoAction::Type::RESET_ODOM){
+                if (action.vision){
+                    commandGroup->AddCommands(
+                        std::move(*(drivetrain->getResetOdom()))
+                    );
+                }
+                else {
+                    commandGroup->AddCommands(
+                        frc2::InstantCommand(
+                            [&, action] {
+                                // frc::Pose2d p = action.start;
+                                // table->PutBoolean("Using x", action.used_vals.at("x"));
+                                // table->PutBoolean("Using y", action.used_vals.at("y"));
+                                // table->PutBoolean("Using angle", action.used_vals.at("angle"));
+                                // p = frc::Pose2d{
+                                //     (action.used_vals.at("x") ? p.X() : drivetrain->getPose_m().X()),
+                                //     (action.used_vals.at("y") ? p.Y() : drivetrain->getPose_m().Y()),
+                                //     (action.used_vals.at("angle") ? p.Rotation() : drivetrain->getPose_m().Rotation())
+                                // };
+                                // table->PutNumber("target pose x", p.X().to<double>());
+                                // table->PutNumber("target pose y", p.Y().to<double>());
+                                // table->PutNumber("target pose angle", p.Rotation().Degrees().to<double>());
+
+                                //drivetrain->resetOdometry(p);
+                            }
+                        )
+                    );
+                }
+            } else if (action.type == ValorAutoAction::Type::XMODE){
+                commandGroup->AddCommands(
+                    std::move(*(drivetrain->getSetXMode()))
+                );
+            } else if (action.type == ValorAutoAction::ACCELERATION){
+               drivetrain->setAutoMaxAcceleration(action.maxAccel, action.accelMultiplier);
+            }
+            else if (action.type == ValorAutoAction::ELEVARM){
+                Piece pieceState = elevarm->stringToPieceState(action.values[0]);
+                Direction directionState = elevarm->stringToDirectionState(action.values[1]);
+                Position positionState = elevarm->stringToPositionState(action.values[2]);
+
+                if (!elevarmTable->GetBoolean("Pit Mode", false)) {
+                    commandGroup->AddCommands(
+                        std::move(*elevarm->getAutoCommand(
+                            action.values[0],
+                            action.values[1],
+                            action.values[2]
+                        ))
+                    );
+                }
+                table->PutBoolean("Pit mode enabled for elevarm", elevarmTable->GetBoolean("Pit Mode", false));                
+            } else if (action.type == ValorAutoAction::BALANCE){
+                if (!action.reversed)
+                    commandGroup->AddCommands(
+                        std::move(*drivetrain->getAutoLevel())
+                    );
+                else
+                    commandGroup->AddCommands(
+                        std::move(*drivetrain->getAutoLevelReversed())
+                    );
+            } else if (action.type == ValorAutoAction::INTAKE) {
+                commandGroup->AddCommands(
+                    std::move(*intake->getAutoCommand(action.values[0], action.values[1]))
+                );
+            } else if (action.type == ValorAutoAction::CLIMB_OVER) {
+                commandGroup->AddCommands(
+                    std::move(*drivetrain->getAutoClimbOver())
+                );
+            } //else if (action.type == ValorAutoAction::GO_TO){
+            //     table->PutNumber("driving to", action.end.X().to<double>());
+            //     commandGroup->AddCommands(
+            //         frc2::FunctionalCommand(
+            //             [&, action]() {
+            //                 /*
+            //                 frc::Pose2d & curPos = drivetrain->getPose_m();
+            //                 double ang = curPos.Rotation().Radians().to<double>(), ang_d = curPos.Rotation().Degrees().to<double>();
+            //                 ang = std::fmod(ang + 2 * PI, 2 * PI); // Normalize angle [0, 2 * pi]
+            //                 ang_d = std::fmod(ang_d + 360, 360);
+            //                 double x1 = std::cos(ang) * -20, y1 = std::sin(ang) * -20, x2 = std::cos(ang) * 20, y2 = std::sin(ang) * 20;
+            //                 double x = action.end.X().to<double>(), y = action.end.Y().to<double>(); 
+            //                 // Gives if the point is to the left of our line (or above it if the line is flat)
+            //                 bool left = ((x1 - x2)*(y - y1) - (y2 - y1)*(x - x1)) > 0; // https://stackoverflow.com/questions/1560492/how-to-tell-whether-a-point-is-to-the-right-or-left-side-of-a-line
+            //                 bool reversed = (((0 <= ang_d && ang_d < 90) || (270 <= ang_d && ang_d <= 360)) && left) || ((90 <= ang_d && ang_d < 270) && !left);
+            //                 frc::Trajectory trajectory = createTrajectory({drivetrain->getPose_m(), action.end}, reversed);
+            //                 */
+            //                 std::vector<frc::Pose2d> poses = {drivetrain->getPose_m(), action.end};
+            //                 frc::Trajectory trajectory = createTrajectory(poses, action.reversed);
+            //                 frc2::SwerveControllerCommand<SWERVE_COUNT> _trajectoryCommand = createTrajectoryCommand(trajectory);
+            //                 trajectoryCommand = &_trajectoryCommand;
+            //                 trajectoryCommand->Initialize();
+            //                 table->PutBoolean("initialized", true);
+            //             },
+            //             [&](){
+            //                 // trajectoryCommand->Execute();
+            //             },
+            //             [&](bool interrupted){
+            //                 // trajectoryCommand->End(interrupted);
+            //             },
+            //             [&](){
+            //                 return trajectoryCommand->IsFinished();
+            //             },
+            //             {drivetrain}
+            //         )
+            //     );
+            // }
+        } 
+        eventMap.emplace("name", commandGroup);
+        table->PutString("Loaded Event", name);
+    }
 }
 
 frc2::Command * ValorAuto::createPPTrajectoryCommand(pathplanner::PathPlannerTrajectory trajectory){
@@ -118,8 +286,9 @@ std::string makeFriendlyName(std::string filename){
 }
 
 frc2::Command * ValorAuto::getCurrentAuto(){
-    // return makeAuto(m_chooser.GetSelected());
-    return makeAuto("New Path");
+    precompileEvents(EVENTS_PATH);
+
+    return makeAuto("New Path"/*m_chooser.GetSelected()*/);
 }
 
 void ValorAuto::fillAutoList(){
