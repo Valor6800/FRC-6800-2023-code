@@ -16,6 +16,8 @@
 #include <frc2/command/CommandBase.h>
 #include <frc/DriverStation.h>
 
+#include <frc2/command/PrintCommand.h>
+
 #include <pathplanner/lib/PathConstraints.h>
 #include <pathplanner/lib/PathPlanner.h>
 #include <pathplanner/lib/PathPlannerTrajectory.h>
@@ -23,27 +25,20 @@
 #include <pathplanner/lib/auto/SwerveAutoBuilder.h>
 #include <pathplanner/lib/commands/PPSwerveControllerCommand.h>
 
-using namespace pathplanner;
-
 #define PATHS_PATH (std::string)"/home/lvuser/deploy/"
 #define EVENTS_PATH (std::string)"home/lvuser/events/"
-
-#define PI 3.14159265359
 
 ValorAuto::ValorAuto(Drivetrain *_drivetrain, Intake *_intake, Elevarm *_elevarm) :
     drivetrain(_drivetrain), intake(_intake), elevarm(_elevarm)
 {
     drivetrain->getTrajectoryConfig().SetKinematics(*drivetrain->getKinematics());
 
-    // @TODO look at angle wrapping and modding
-    drivetrain->getThetaController().EnableContinuousInput(units::radian_t(-M_PI),
-                                          units::radian_t(M_PI));
-
     table = nt::NetworkTableInstance::GetDefault().GetTable("Auto");
 }
 
-ValorAuto::~ValorAuto(){
-    delete trajectoryCommand;
+ValorAuto::~ValorAuto()
+{
+
 }
 
 // directory_iterator doesn't exist in vanilla c++11, luckily wpilib has it in their library
@@ -58,54 +53,36 @@ std::vector<std::string> listDirectory(std::string path_name){
     return files;
 }
 
-void ValorAuto::generateEventMap(){
+frc2::Command * ValorAuto::createPPTrajectoryCommand(pathplanner::PathPlannerTrajectory trajectory){
+
+    frc2::PIDController thetaController = frc2::PIDController(drivetrain->getThetaPIDF().P, drivetrain->getThetaPIDF().I, drivetrain->getThetaPIDF().D);
+    thetaController.EnableContinuousInput(units::radian_t(-M_PI).to<double>(),
+                                          units::radian_t(M_PI).to<double>());
+
+    return new pathplanner::PPSwerveControllerCommand(trajectory,
+			[&] () { return drivetrain->getPose_m(); },
+			*drivetrain->getKinematics(),
+			frc2::PIDController(drivetrain->getXPIDF().P, drivetrain->getXPIDF().I, drivetrain->getXPIDF().D),
+            frc2::PIDController(drivetrain->getYPIDF().P, drivetrain->getYPIDF().I, drivetrain->getYPIDF().D),
+			thetaController,
+			[this] (auto states) { drivetrain->setModuleStates(states); },
+			{drivetrain},
+			false); //change to true after testing
+}
+
+frc2::Command * ValorAuto::makeAuto(std::string pathname){
     eventMap.clear();
-    /*eventMap.emplace("score_high_cone", frc2::SequentialCommandGroup(
-        std::move(*elevarm->getAutoCommand("cone", "front", "high", false)),
-        frc2::WaitCommand(0.150_s),
-        std::move(*intake->getAutoCommand("outtake", "cone"))
-    ));*/
-    eventMap.emplace("event", std::make_shared<frc2::InstantCommand>([&](){
-        table->PutString("haii", "hewwwo");
-    }));
-}
+    eventMap.emplace("test_event", frc2::PrintCommand("test event occured"));
 
-PPSwerveControllerCommand * ValorAuto::createTrajectoryCommand(PathPlannerTrajectory trajectory){
-    frc::ProfiledPIDController<units::radians>& tPID = drivetrain->getThetaController();
-    return new PPSwerveControllerCommand(
-        trajectory,
-        [&] () { return drivetrain->getPose_m(); },
-        *drivetrain->getKinematics(),
-        frc2::PIDController(drivetrain->getXPIDF().P, drivetrain->getXPIDF().I, drivetrain->getXPIDF().D),
-        frc2::PIDController(drivetrain->getYPIDF().P, drivetrain->getYPIDF().I, drivetrain->getYPIDF().D),
-        frc2::PIDController(tPID.GetP(), tPID.GetI(), tPID.GetD()),
-        [this] (std::array<frc::SwerveModuleState, SWERVE_COUNT> states) { drivetrain->setModuleStates(states); },
-        {drivetrain},
-        true
-    );
-}
-
-std::unique_ptr<frc2::Command> ValorAuto::makeAuto(std::string pathname){
-    generateEventMap();
-    PathPlannerTrajectory path = PathPlanner::loadPath(pathname, PathConstraints(units::meters_per_second_t(drivetrain->getAutoMaxSpeed()), units::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration())));
+    pathplanner::PathPlannerTrajectory trajectory = pathplanner::PathPlanner::loadPath(pathname, pathplanner::PathConstraints(units::meters_per_second_t(drivetrain->getAutoMaxSpeed()), units::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration())));
     // path = PathPlannerTrajectory::transformTrajectoryForAlliance(path, frc::DriverStation::GetAlliance());
-    drivetrain->resetOdometry(path.getInitialPose());
+    drivetrain->resetOdometry(trajectory.getInitialPose());
     // FollowPathWithEvents command(
-    //     std::unique_ptr<frc2::SwerveControllerCommand<SWERVE_COUNT> >{createTrajectoryCommand(path)},
+    //     createPPTrajectoryCommand(path),
     //     path.getMarkers(),
     //     eventMap
     // );
-    // SwerveAutoBuilder autoBuilder(
-    //     [this]() { return drivetrain->getPose_m(); }, // Function to supply current robot pose
-    //     [this](auto initPose) { drivetrain->resetOdometry(initPose); }, // Function used to reset odometry at the beginning of auto
-    //     PIDConstants(60.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-    //     PIDConstants(15.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
-    //     [this](auto speeds) { drivetrain->drive(speeds.vx, speeds.vy, speeds.omega, true); }, // Output function that accepts field relative ChassisSpeeds
-    //     eventMap, // Our event map
-    //     { drivetrain }, // Drive requirements, usually just a single drive subsystem
-    //     true // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-    // );
-    return std::unique_ptr<PPSwerveControllerCommand>{createTrajectoryCommand(path)};
+    return createPPTrajectoryCommand(trajectory);
 }
 
 bool is_alpha(char c){
@@ -139,7 +116,7 @@ std::string makeFriendlyName(std::string filename){
     return n_name;
 }
 
-std::unique_ptr<frc2::Command> ValorAuto::getCurrentAuto(){
+frc2::Command * ValorAuto::getCurrentAuto(){
     // return makeAuto(m_chooser.GetSelected());
     return makeAuto("New Path");
 }

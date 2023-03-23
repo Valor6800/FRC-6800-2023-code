@@ -31,8 +31,6 @@
 #include <pathplanner/lib/PathPoint.h>
 #include <pathplanner/lib/commands/FollowPathWithEvents.h>
 
-#include <pathplanner/lib/commands/PPSwerveControllerCommand.h>
-
 #ifndef VALOR_AUTO_H
 #define VALOR_AUTO_H
 
@@ -52,15 +50,14 @@ class ValorAuto {
         ~ValorAuto();
         bool readPointsCSV(std::string);
 
-        std::unique_ptr<frc2::Command> makeAuto(std::string);
-        void generateEventMap();
+        frc2::Command * makeAuto(std::string);
         void fillAutoList();
-       std::unique_ptr<frc2::Command> getCurrentAuto();
+        frc2::Command * getCurrentAuto();
 
     protected:
 
-        pathplanner::PathPlannerTrajectory createTrajectory(std::vector<Point>&, double, double);
-        pathplanner::PPSwerveControllerCommand * createTrajectoryCommand(pathplanner::PathPlannerTrajectory);
+        //pathplanner::PathPlannerTrajectory createTrajectory(std::vector<Point>&, double, double);
+        frc2::Command * createPPTrajectoryCommand(pathplanner::PathPlannerTrajectory);
 
         void readAuto(std::string);
 
@@ -101,7 +98,6 @@ class ValorAuto {
 
         std::shared_ptr<nt::NetworkTable> table;
 
-        frc2::SwerveControllerCommand<SWERVE_COUNT> * trajectoryCommand;
         std::unordered_map<std::string, std::shared_ptr<frc2::Command> > eventMap;
 };
 #endif
