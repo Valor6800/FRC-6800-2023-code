@@ -20,10 +20,12 @@
 #include <pathplanner/lib/PathPlanner.h>
 #include <pathplanner/lib/PathPlannerTrajectory.h>
 #include <pathplanner/lib/PathPoint.h>
+#include <pathplanner/lib/auto/SwerveAutoBuilder.h>
 
 using namespace pathplanner;
 
-#define PATHS_PATH (std::string)"/home/lvuser/"
+#define PATHS_PATH (std::string)"/home/lvuser/deploy/"
+#define EVENTS_PATH (std::string)"home/lvuser/events/"
 
 #define PI 3.14159265359
 
@@ -55,16 +57,52 @@ std::vector<std::string> listDirectory(std::string path_name){
     return files;
 }
 
-FollowPathWithEvents* ValorAuto::makeAuto(std::string pathname){
-    PathPlannerTrajectory path = PathPlanner::loadPath(pathname, PathConstraints(units::meters_per_second_t(drivetrain->getAutoMaxSpeed()), units::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration())));
-    std::unordered_map<std::string, std::shared_ptr<frc2::Command> > eventMap;
-    eventMap.emplace("prep cube intake", std::move(*elevarm->getAutoCommand("cube", "back", "ground", false)));
+void ValorAuto::generateEventMap(){
+    eventMap.clear();
+    /*eventMap.emplace("score_high_cone", frc2::SequentialCommandGroup(
+        std::move(*elevarm->getAutoCommand("cone", "front", "high", false)),
+        frc2::WaitCommand(0.150_s),
+        std::move(*intake->getAutoCommand("outtake", "cone"))
+    ));*/
+    eventMap.emplace("event", std::make_shared<frc2::InstantCommand>([&](){
+        table->PutString("haii", "hewwwo");
+    }));
+}
 
-    return new FollowPathWithEvents(
-        getPathFollowingCommand(path),
-        path.getMarkers(),
-        eventMap
+frc2::SwerveControllerCommand<SWERVE_COUNT> * ValorAuto::createTrajectoryCommand(PathPlannerTrajectory trajectory){
+    return new frc2::SwerveControllerCommand<SWERVE_COUNT>(
+        trajectory.asWPILibTrajectory(),
+        [&] () { return drivetrain->getPose_m(); },
+        *drivetrain->getKinematics(),
+        frc2::PIDController(drivetrain->getXPIDF().P, drivetrain->getXPIDF().I, drivetrain->getXPIDF().D),
+        frc2::PIDController(drivetrain->getYPIDF().P, drivetrain->getYPIDF().I, drivetrain->getYPIDF().D),
+        drivetrain->getThetaController(),
+        [this] (auto states) { drivetrain->setModuleStates(states); },
+        {drivetrain}
     );
+}
+
+std::unique_ptr<frc2::Command> ValorAuto::makeAuto(std::string pathname){
+    generateEventMap();
+    PathPlannerTrajectory path = PathPlanner::loadPath(pathname, PathConstraints(units::meters_per_second_t(drivetrain->getAutoMaxSpeed()), units::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration())));
+    // path = PathPlannerTrajectory::transformTrajectoryForAlliance(path, frc::DriverStation::GetAlliance());
+    drivetrain->resetOdometry(path.getInitialPose());
+    // FollowPathWithEvents command(
+    //     std::unique_ptr<frc2::SwerveControllerCommand<SWERVE_COUNT> >{createTrajectoryCommand(path)},
+    //     path.getMarkers(),
+    //     eventMap
+    // );
+    SwerveAutoBuilder autoBuilder(
+        [this]() { return drivetrain->getPose_m(); }, // Function to supply current robot pose
+        [this](auto initPose) { drivetrain->resetOdometry(initPose); }, // Function used to reset odometry at the beginning of auto
+        PIDConstants(60.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+        PIDConstants(15.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+        [this](auto speeds) { drivetrain->drive(speeds.vx, speeds.vy, speeds.omega, true); }, // Output function that accepts field relative ChassisSpeeds
+        eventMap, // Our event map
+        { drivetrain }, // Drive requirements, usually just a single drive subsystem
+        true // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+    );
+    return autoBuilder.fullAuto(path).Unwrap();
 }
 
 bool is_alpha(char c){
@@ -98,8 +136,9 @@ std::string makeFriendlyName(std::string filename){
     return n_name;
 }
 
-FollowPathWithEvents * ValorAuto::getCurrentAuto(){
-    return makeAuto(m_chooser.GetSelected());
+std::unique_ptr<frc2::Command> ValorAuto::getCurrentAuto(){
+    // return makeAuto(m_chooser.GetSelected());
+    return makeAuto("New Path");
 }
 
 void ValorAuto::fillAutoList(){

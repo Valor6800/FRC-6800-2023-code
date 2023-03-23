@@ -49,15 +49,16 @@ class ValorAuto {
         ValorAuto(Drivetrain*, Intake*, Elevarm*);
         ~ValorAuto();
         bool readPointsCSV(std::string);
-        FollowPathWithEvents* makeAuto(std::string);
-        void precompileActions(std::string);
+
+        std::unique_ptr<frc2::Command> makeAuto(std::string);
+        void generateEventMap();
         void fillAutoList();
-        FollowPathWithEvents* getCurrentAuto();
+       std::unique_ptr<frc2::Command> getCurrentAuto();
 
     protected:
 
         pathplanner::PathPlannerTrajectory createTrajectory(std::vector<Point>&, double, double);
-        frc2::SwerveControllerCommand<SWERVE_COUNT> createTrajectoryCommand(pathplanner::PathPlannerTrajectory);
+        frc2::SwerveControllerCommand<SWERVE_COUNT> * createTrajectoryCommand(pathplanner::PathPlannerTrajectory);
 
         void readAuto(std::string);
 
@@ -99,5 +100,6 @@ class ValorAuto {
         std::shared_ptr<nt::NetworkTable> table;
 
         frc2::SwerveControllerCommand<SWERVE_COUNT> * trajectoryCommand;
+        std::unordered_map<std::string, std::shared_ptr<frc2::Command> > eventMap;
 };
 #endif
