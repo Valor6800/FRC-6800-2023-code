@@ -21,6 +21,7 @@
 #include <pathplanner/lib/PathPlannerTrajectory.h>
 #include <pathplanner/lib/PathPoint.h>
 #include <pathplanner/lib/auto/SwerveAutoBuilder.h>
+#include <pathplanner/lib/commands/PPSwerveControllerCommand.h>
 
 using namespace pathplanner;
 
@@ -69,16 +70,18 @@ void ValorAuto::generateEventMap(){
     }));
 }
 
-frc2::SwerveControllerCommand<SWERVE_COUNT> * ValorAuto::createTrajectoryCommand(PathPlannerTrajectory trajectory){
-    return new frc2::SwerveControllerCommand<SWERVE_COUNT>(
-        trajectory.asWPILibTrajectory(),
+PPSwerveControllerCommand * ValorAuto::createTrajectoryCommand(PathPlannerTrajectory trajectory){
+    frc::ProfiledPIDController<units::radians>& tPID = drivetrain->getThetaController();
+    return new PPSwerveControllerCommand(
+        trajectory,
         [&] () { return drivetrain->getPose_m(); },
         *drivetrain->getKinematics(),
         frc2::PIDController(drivetrain->getXPIDF().P, drivetrain->getXPIDF().I, drivetrain->getXPIDF().D),
         frc2::PIDController(drivetrain->getYPIDF().P, drivetrain->getYPIDF().I, drivetrain->getYPIDF().D),
-        drivetrain->getThetaController(),
-        [this] (auto states) { drivetrain->setModuleStates(states); },
-        {drivetrain}
+        frc2::PIDController(tPID.GetP(), tPID.GetI(), tPID.GetD()),
+        [this] (std::array<frc::SwerveModuleState, SWERVE_COUNT> states) { drivetrain->setModuleStates(states); },
+        {drivetrain},
+        true
     );
 }
 
@@ -92,17 +95,17 @@ std::unique_ptr<frc2::Command> ValorAuto::makeAuto(std::string pathname){
     //     path.getMarkers(),
     //     eventMap
     // );
-    SwerveAutoBuilder autoBuilder(
-        [this]() { return drivetrain->getPose_m(); }, // Function to supply current robot pose
-        [this](auto initPose) { drivetrain->resetOdometry(initPose); }, // Function used to reset odometry at the beginning of auto
-        PIDConstants(60.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-        PIDConstants(15.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
-        [this](auto speeds) { drivetrain->drive(speeds.vx, speeds.vy, speeds.omega, true); }, // Output function that accepts field relative ChassisSpeeds
-        eventMap, // Our event map
-        { drivetrain }, // Drive requirements, usually just a single drive subsystem
-        true // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-    );
-    return autoBuilder.fullAuto(path).Unwrap();
+    // SwerveAutoBuilder autoBuilder(
+    //     [this]() { return drivetrain->getPose_m(); }, // Function to supply current robot pose
+    //     [this](auto initPose) { drivetrain->resetOdometry(initPose); }, // Function used to reset odometry at the beginning of auto
+    //     PIDConstants(60.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+    //     PIDConstants(15.0, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+    //     [this](auto speeds) { drivetrain->drive(speeds.vx, speeds.vy, speeds.omega, true); }, // Output function that accepts field relative ChassisSpeeds
+    //     eventMap, // Our event map
+    //     { drivetrain }, // Drive requirements, usually just a single drive subsystem
+    //     true // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+    // );
+    return std::unique_ptr<PPSwerveControllerCommand>{createTrajectoryCommand(path)};
 }
 
 bool is_alpha(char c){

@@ -31,6 +31,8 @@
 #include <pathplanner/lib/PathPoint.h>
 #include <pathplanner/lib/commands/FollowPathWithEvents.h>
 
+#include <pathplanner/lib/commands/PPSwerveControllerCommand.h>
+
 #ifndef VALOR_AUTO_H
 #define VALOR_AUTO_H
 
@@ -58,7 +60,7 @@ class ValorAuto {
     protected:
 
         pathplanner::PathPlannerTrajectory createTrajectory(std::vector<Point>&, double, double);
-        frc2::SwerveControllerCommand<SWERVE_COUNT> * createTrajectoryCommand(pathplanner::PathPlannerTrajectory);
+        pathplanner::PPSwerveControllerCommand * createTrajectoryCommand(pathplanner::PathPlannerTrajectory);
 
         void readAuto(std::string);
 
