@@ -176,8 +176,6 @@ void Intake::assignOutputs()
             state.isCubeStall = false;
         }
     }
-
-    state.intakeState == SPIKED?candle.setAnimation(candle.Strobe):candle.clearAnimation();
     prevState = state;
 }
 

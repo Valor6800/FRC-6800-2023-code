@@ -102,6 +102,8 @@ public:
      * Also responsible for clearing the appropriate memory associated with the animation
      */
     void clearAnimation();
+
+    void setCurrentColor(RGBColor color);
     
     /**
      * @brief Resets the CANdle and its' configuration

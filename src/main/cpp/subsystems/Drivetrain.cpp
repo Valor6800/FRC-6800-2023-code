@@ -77,8 +77,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         estimator(NULL),
                         config(NULL),
                         thetaController{KPT, KIT, KDT, frc::ProfiledPIDController<units::radians>::Constraints(units::angular_velocity::radians_per_second_t{rotMaxSpeed}, units::angular_acceleration::radians_per_second_squared_t{rotMaxAccel})},
-                        swerveNoError(true),
-                        candle(robot, 286, 60, "baseCAN")
+                        swerveNoError(true)
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -316,10 +315,6 @@ void Drivetrain::assignOutputs()
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
         limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);    
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
-    }
-
-    if((fabs(state.xSpeed) + fabs(state.ySpeed))/2.0 > 0.8){
-        candle.setAnimation(candle.Rainbow);
     }
 }
 

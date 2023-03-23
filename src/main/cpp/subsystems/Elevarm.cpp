@@ -329,6 +329,7 @@ void Elevarm::analyzeDashboard()
 
     if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
         candle.setColor(255,0,0);
+        candle.setAnimation(ValorCANdleSensor::AnimationType::Strobe);
     } else if (robot->IsDisabled()) {
         if (armInRange) candle.setColor(0,255,0);
         else candle.setColor(255,0,0);
@@ -344,6 +345,10 @@ void Elevarm::analyzeDashboard()
             candle.setColor(255,196,0);
         }
     }
+
+    // if (intake->prevState.intakeState == Intake::IntakeStates::SPIKED && intake->state.intakeState != Intake::IntakeStates::SPIKED){
+    //     candle.clearAnimation();
+    // }
 
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
     intake->state.elevarmPoopFull = futureState.positionState == Position::POOPFULL;

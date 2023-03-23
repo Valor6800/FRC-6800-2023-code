@@ -54,12 +54,13 @@ ValorCANdleSensor::~ValorCANdleSensor()
 
 void ValorCANdleSensor::setColor(int r, int g, int b)
 {
-    candle.SetLEDs(r,g,b,0,0,8 + ledCount);
+    setCurrentColor(RGBColor(r,g,b));
+    candle.SetLEDs(currentColor.red, currentColor.green, currentColor.blue,0,0,8 + ledCount);
 }
 
 void ValorCANdleSensor::setColor(int color)
 {
-    currentColor = toRGB(color);
+    setCurrentColor(toRGB(color));
     candle.SetLEDs(currentColor.red, currentColor.green, currentColor.blue,0,0,8 + ledCount);
 }
 
@@ -86,7 +87,7 @@ void ValorCANdleSensor::setAnimation(ValorCANdleSensor::AnimationType animation)
         else if (animation == AnimationType::SingleFade)
             activeAnimation = new ctre::phoenix::led::SingleFadeAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed,ledCount,startLED);
         else if (animation == AnimationType::Strobe)
-            activeAnimation = new ctre::phoenix::led::StrobeAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed,ledCount,startLED);
+            activeAnimation = new ctre::phoenix::led::StrobeAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed/10,ledCount,startLED);
         else if (animation == AnimationType::Twinkle)
             activeAnimation = new ctre::phoenix::led::TwinkleAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed,ledCount,ctre::phoenix::led::TwinkleAnimation::TwinklePercent::Percent100,startLED);
         else if (animation == AnimationType::TwinkleOff)
@@ -111,6 +112,10 @@ void ValorCANdleSensor::reset()
     clearAnimation();
     prevState = 0xFFFFFF;
     currState = 0xFFFFFF;
+}
+
+void ValorCANdleSensor::setCurrentColor(RGBColor color){
+    currentColor = color;
 }
 
 void ValorCANdleSensor::calculate()
