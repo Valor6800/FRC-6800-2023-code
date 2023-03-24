@@ -98,7 +98,7 @@ public:
      }state, prevState;
     
     std::unordered_map<std::string, IntakeStates> stringToStateMap = {
-        {"disable", IntakeStates::DISABLED},
+        {"disabled", IntakeStates::DISABLED},
         {"spiked", IntakeStates::SPIKED},
         {"outtake", IntakeStates::OUTTAKE},
         {"intake", IntakeStates::INTAKE}

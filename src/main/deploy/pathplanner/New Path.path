@@ -24,11 +24,11 @@
     },
     {
       "anchorPoint": {
-        "x": 4.0,
+        "x": 4.5,
         "y": 5.03
       },
       "prevControl": {
-        "x": 2.8121789465980673,
+        "x": 3.9490181114001475,
         "y": 5.03
       },
       "nextControl": null,
@@ -45,5 +45,18 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.46868686868681986,
+      "names": [
+        "test_event"
+      ]
+    },
+    {
+      "position": 0.7393939393939494,
+      "names": [
+        "test_event2"
+      ]
+    }
+  ]
 }

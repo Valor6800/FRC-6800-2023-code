@@ -72,17 +72,18 @@ frc2::Command * ValorAuto::createPPTrajectoryCommand(pathplanner::PathPlannerTra
 
 frc2::Command * ValorAuto::makeAuto(std::string pathname){
     eventMap.clear();
-    eventMap.emplace("test_event", frc2::PrintCommand("test event occured"));
+    eventMap.emplace("test_event", intake->getAutoCommand("outtake", "cube"));
+    eventMap.emplace("test_event2", intake->getAutoCommand("disabled", "cube"));
 
     pathplanner::PathPlannerTrajectory trajectory = pathplanner::PathPlanner::loadPath(pathname, pathplanner::PathConstraints(units::meters_per_second_t(drivetrain->getAutoMaxSpeed()), units::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration())));
     // path = PathPlannerTrajectory::transformTrajectoryForAlliance(path, frc::DriverStation::GetAlliance());
     drivetrain->resetOdometry(trajectory.getInitialPose());
-    // FollowPathWithEvents command(
-    //     createPPTrajectoryCommand(path),
-    //     path.getMarkers(),
-    //     eventMap
-    // );
-    return createPPTrajectoryCommand(trajectory);
+
+    return new pathplanner::FollowPathWithEvents (
+        std::unique_ptr<frc2::Command>(createPPTrajectoryCommand(trajectory)),
+        trajectory.getMarkers(),
+        eventMap
+    );
 }
 
 bool is_alpha(char c){
