@@ -79,7 +79,8 @@
 #define Z_CARRIAGE_FLOOR_OFFSET 0.230f
 
 // #define X_CHASSIS_FRONT_BOUND 0.0f
-#define X_CHASSIS_FRONT_BOUND 0.2113f
+// #define X_CHASSIS_FRONT_BOUND 0.2113f
+#define X_CHASSIS_FRONT_BOUND 0.1016f
 // #define X_CHASSIS_BACK_BOUND  -0.6604f
 #define X_CHASSIS_BACK_BOUND  -1.0f
 #define Z_FORK 0.42f
@@ -424,7 +425,7 @@ double Elevarm::minAngle(bool isFront)
     double Xt = -X_BUMPER_WIDTH - X_HALF_WIDTH + X_CARRIAGE_OFFSET;
     double Zs = Z_FORK;
     if (isFront)
-        return (atan2(X_CHASSIS_FRONT_BOUND - Xt, Zt - Zs) * 180 / M_PI) - 6.0;
+        return (atan2(X_CHASSIS_FRONT_BOUND - Xt, Zt - Zs) * 180 / M_PI);
     return atan2(X_CHASSIS_BACK_BOUND - Xt, Zt - Zs) * 180 / M_PI;
 }
 
