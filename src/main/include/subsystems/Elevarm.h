@@ -29,6 +29,8 @@
 
 #include <ctre/phoenix/sensors/WPI_CANCoder.h>
 
+#include <frc/smartdashboard/SendableChooser.h>
+
 /**
  * @brief Subsystem - Elevarm
  */
@@ -197,4 +199,6 @@ private:
      double manualMaxCarriageSpeed;
      double manualMaxArmSpeed;
      double carriageStallPower;
+
+    frc::SendableChooser<ValorCANdleSensor::AnimationType> pattern_chooser;
 };

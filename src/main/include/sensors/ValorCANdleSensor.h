@@ -45,7 +45,13 @@ public:
         SingleFade,
         Strobe,
         Twinkle,
-        TwinkleOff
+        TwinkleOff,
+        Bounce,
+        Snake,
+        Sine,
+        Swirl,
+        Slash,
+        Breathe
     };
 
     /**
@@ -103,6 +109,9 @@ public:
     void drawBounceAnimation(int, int, int);
     void drawSnakeAnimation();
     void drawSineAnimation(int, int, int);
+    void drawSwirlAnimation(int, int, int);
+    void drawSlashAnimation(int, int, int);
+    void drawBreatheAnimation(int, int, int);
 
     /**
      * @brief Clears any active animation

@@ -17,6 +17,7 @@
 
 #include <math.h>
 #include <string>
+#include <vector>
 
 #define VALOR_GOLD 0xEEA800
 
@@ -103,6 +104,8 @@ void ValorCANdleSensor::setAnimation(ValorCANdleSensor::AnimationType animation)
         candle.Animate(*activeAnimation);
 }
 
+units::time::second_t lastUpdated;
+
 void ValorCANdleSensor::drawBounceAnimation(int r, int g, int b){
     int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * 240);
     int nt = t % ledCount;
@@ -124,42 +127,36 @@ void ValorCANdleSensor::drawBounceAnimation(int r, int g, int b){
     }
 
     candle.SetLEDs(0, 0, 0);
-    candle.SetLEDs(r, g, b, 0, start - 1, stop - start + 1);
+    candle.SetLEDs(r, g, b, 0, 8 + start - 1, stop - start + 1);
 }
 
-struct Snake{
-    int start, stop;
-    int apple;
-    units::time::second_t lastUpdated;
-};
-
-Snake snake = Snake{0, 0, 267, 0_s,};
+std::vector<int> snake = {0, 0, 267};
 
 void ValorCANdleSensor::drawSnakeAnimation(){
     int expansion = 3, speed = 2;
-    if (frc::Timer::GetFPGATimestamp() - snake.lastUpdated > 0.002_s){
-        if (snake.stop >= snake.apple && snake.stop - speed <= snake.apple){
-            snake.start-=expansion;
-            snake.apple = (rand() % (snake.start)) + 0;
-        } else if (snake.start == snake.apple){
-            snake.stop+=expansion;
-            snake.apple = (rand() % (ledCount - snake.stop)) + snake.stop;
-        } else if (snake.apple > snake.stop){
-            snake.stop+=speed;
-            snake.start+=speed;
-        } else if (snake.apple < snake.start){
-            snake.start-=speed;
-            snake.stop-=speed;
+    if (frc::Timer::GetFPGATimestamp() - lastUpdated > 0.002_s){
+        if (snake[1] >= snake[2] && snake[1] - speed <= snake[2]){
+            snake[0]-=expansion;
+            snake[2] = (rand() % (snake[0])) + 0;
+        } else if (snake[0] <= snake[2] && snake[0] + speed >= snake[2]){
+            snake[1]+=expansion;
+            snake[2] = (rand() % (ledCount - snake[1])) + snake[1];
+        } else if (snake[2] > snake[1]){
+            snake[1]+=speed;
+            snake[0]+=speed;
+        } else if (snake[2] < snake[0]){
+            snake[0]-=speed;
+            snake[1]-=speed;
         }  
 
-        if (snake.stop - snake.start >= ledCount - 3)
-            snake = Snake{0, 0, 267, 0_s,};
-        snake.lastUpdated = frc::Timer::GetFPGATimestamp();
+        if (snake[1] - snake[0] >= ledCount - 3)
+            snake = {0, 0, 267};
+        lastUpdated = frc::Timer::GetFPGATimestamp();
     }
     
     candle.SetLEDs(0, 0, 0);
-    candle.SetLEDs(0, 255, 0, 0, snake.start, snake.stop - snake.start + 1);
-    candle.SetLEDs(255, 0, 0, 0, snake.apple - 1, 3);
+    candle.SetLEDs(0, 255, 0, 0, 8 + snake[0], snake[1] - snake[0] + 1);
+    candle.SetLEDs(255, 0, 0, 0, 8 + snake[2] - 1, 3);
 }
 
 void ValorCANdleSensor::drawSineAnimation(int r, int g, int b){
@@ -167,7 +164,63 @@ void ValorCANdleSensor::drawSineAnimation(int r, int g, int b){
     int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * rate);
     int width = (int)(sin(std::fmod(t, rate * 2) / rate * 2) * 0.5 * ledCount);
     candle.SetLEDs(0, 0, 0);
-    candle.SetLEDs(r, g, b, 0, ledCount / 2 - width, width * 2);
+    candle.SetLEDs(r, g, b, 0, 8 + ledCount / 2 - width, width * 2);
+}
+
+void ValorCANdleSensor::drawSwirlAnimation(int r, int g, int b){
+    int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * 10);
+    // period = 18 leds
+    int p = 16; // making this not = 18 will give and offset to the line, making it a spiral
+    t %= p;
+    candle.SetLEDs(0, 0, 0);
+    for (int i = t; i < ledCount; i += p){
+        candle.SetLEDs(r, g, b, 0, 8 + i, 5); // Add thickiness
+    }
+}
+
+std::vector<std::pair<std::vector<double>, int> > cuts;
+
+void ValorCANdleSensor::drawSlashAnimation(int r, int g, int b){
+    int size = 36;
+    double fadeSpeed = 0.0001;
+    if (frc::Timer::GetFPGATimestamp() - lastUpdated > 1_s){
+        cuts.push_back({{1.0}, 8 + size + (rand() % ledCount)});
+        lastUpdated = frc::Timer::GetFPGATimestamp();
+    }
+
+    if (cuts[0].first == std::vector<double>(size))
+        cuts.erase(cuts.begin());
+
+    auto table = nt::NetworkTableInstance::GetDefault().GetTable("LEDs");
+
+    for (int i = 0; i < cuts.size(); i ++){
+        if (cuts[i].first.size() == size){
+            for (int j = 0; j < cuts[i].first.size(); j++){
+                cuts[i].first[j] -= fadeSpeed;
+                cuts[i].first[j] = std::max(cuts[i].first[j], 0.0);
+            }
+        } else {
+            cuts[i].first.push_back(1.0 + cuts[i].first.size() * fadeSpeed);
+        }
+
+        table->PutNumberArray("cs", std::span<double>{cuts[0].first.data(), cuts[0].first.size()});
+
+        for (int j = 0; j < size; j ++){
+            int scalar = std::min(cuts[i].first[j], 1.0);
+            candle.SetLEDs(r * scalar, g * scalar, b * scalar, 0, 8 + cuts[i].second - j, 1);
+        }
+
+    }
+}
+
+void ValorCANdleSensor::drawBreatheAnimation(int r, int g, int b){
+    int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * 30.0);
+    t %= 60;
+    double s = t / 30.0;
+    if (s >= 1.0)
+        s = 2.0 - s;
+
+    candle.SetLEDs(r * s, g * s, b * s);
 }
 
 void ValorCANdleSensor::clearAnimation()

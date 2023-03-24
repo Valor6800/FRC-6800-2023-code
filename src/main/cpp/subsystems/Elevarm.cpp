@@ -242,6 +242,14 @@ void Elevarm::init()
     armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
     carriageMotors.setEncoderPosition(0.0);
     wristMotor.setEncoderPosition(0.0);
+
+    pattern_chooser.AddOption("Bounce", ValorCANdleSensor::Bounce);
+    pattern_chooser.AddOption("Snake", ValorCANdleSensor::Snake);
+    pattern_chooser.AddOption("Sine", ValorCANdleSensor::Sine);
+    pattern_chooser.AddOption("Swirl", ValorCANdleSensor::Swirl);
+    pattern_chooser.AddOption("Slash", ValorCANdleSensor::Slash);
+    pattern_chooser.AddOption("Breathe", ValorCANdleSensor::Breathe);
+    frc::SmartDashboard::PutData(&pattern_chooser);
 }
 
 void Elevarm::assessInputs()
@@ -330,8 +338,26 @@ void Elevarm::analyzeDashboard()
     if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
         candle.setColor(255,0,0);
     } else if (robot->IsDisabled()) {
-        table->PutBoolean("drawing",true);
-        candle.drawSnakeAnimation(255, 153, 0);
+        switch (pattern_chooser.GetSelected()){
+            case ValorCANdleSensor::Bounce:
+                candle.drawBounceAnimation(255, 125, 0);
+                break;
+            case ValorCANdleSensor::Snake:
+                candle.drawSnakeAnimation();
+                break;
+            case ValorCANdleSensor::Sine:
+                candle.drawSineAnimation(255, 125, 0);
+                break;
+            case ValorCANdleSensor::Swirl:
+                candle.drawSwirlAnimation(255, 125, 0);
+                break;
+            case ValorCANdleSensor::Slash:
+                candle.drawSlashAnimation(0, 0, 255);
+                break;
+            case ValorCANdleSensor::Breathe:
+                candle.drawBreatheAnimation(255, 255, 255);
+                break;
+        }
     } else if (robot->IsAutonomous()) {
         if (futureState.atCarriage && futureState.atArm && futureState.atWrist)
             candle.setColor(0,255,0);
