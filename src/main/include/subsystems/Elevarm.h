@@ -111,6 +111,8 @@ public:
         bool atArm;
         bool atWrist;
 
+        bool armInRange;
+
     } futureState, previousState;
 
     double heightDeadband, rotationDeadband;

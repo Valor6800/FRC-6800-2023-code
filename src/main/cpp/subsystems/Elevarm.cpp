@@ -374,25 +374,6 @@ void Elevarm::analyzeDashboard()
                         wristCANcoder.GetAbsolutePosition() < (WRIST_CANCODER_OFFSET + 50);
     table->PutBoolean("Wrist In Range", wristInRange);
 
-    if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
-        candle.setColor(255,0,0);
-    } else if (robot->IsDisabled()) {
-        if (armInRange) candle.setColor(0,255,0);
-        else candle.setColor(255,0,0);
-    } else 
-    if (robot->IsAutonomous()) {
-        if (futureState.atCarriage && futureState.atArm && futureState.atWrist)
-            candle.setColor(0,255,0);
-        else
-            candle.setColor(0,0,255);
-    } else {
-        if (intake->getFuturePiece() == Piece::CUBE) {
-            candle.setColor(156,0,255);
-        } else {
-            candle.setColor(255,196,0);
-        }
-    }
-
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
 }
 
