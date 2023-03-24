@@ -376,6 +376,8 @@ void Drivetrain::resetGyro(){
 void Drivetrain::resetOdometry(frc::Pose2d pose)
 {
 
+    limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
+
     wpi::array<frc::SwerveModulePosition, SWERVE_COUNT> modulePositions = wpi::array<frc::SwerveModulePosition, SWERVE_COUNT>(wpi::empty_array);
 
     for (size_t i = 0; i < swerveModules.size(); i++)
