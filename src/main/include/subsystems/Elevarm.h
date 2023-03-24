@@ -16,7 +16,6 @@
 #include "subsystems/Direction.h"
 #include "subsystems/Position.h"
 #include "subsystems/Piece.h"
-#include "sensors/ValorCANdleSensor.h"
 
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -112,6 +111,9 @@ public:
         bool atArm;
         bool atWrist;
 
+        bool armInRange;
+        bool wristInRange;
+
     } futureState, previousState;
 
     double heightDeadband, rotationDeadband;
@@ -192,7 +194,6 @@ private:
     Positions detectionBoxManual(double, double);
 
     Intake *intake;
-    ValorCANdleSensor candle;
 
     ValorPIDF carriagePID;
     ValorPIDF rotatePID;

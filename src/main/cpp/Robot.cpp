@@ -12,7 +12,7 @@
 
 #include <ctime>
 
-Robot::Robot() : drivetrain(this), intake(this), elevarm(this, &intake), autonomous(&drivetrain, &intake, &elevarm)
+Robot::Robot() : drivetrain(this), intake(this), elevarm(this, &intake), leds(this, &elevarm, &intake, &drivetrain), autonomous(&drivetrain, &intake, &elevarm)
 {
     frc::TimedRobot();
 }
@@ -56,6 +56,7 @@ void Robot::AutonomousInit() {
     intake.setConeHoldSpeed(true);
     drivetrain.resetState();
     elevarm.resetState();
+    leds.resetState();
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Brake);
     drivetrain.pullSwerveModuleZeroReference();
 

@@ -114,7 +114,6 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
                             wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, false, "baseCAN"),
                             wristCANcoder(CANIDs::WRIST_CANCODER, "baseCAN"),
-                            candle(_robot, 286, CANIDs::CANDLE, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
                             carriageStallPower(P_MIN_CARRIAGE)
@@ -380,32 +379,13 @@ void Elevarm::analyzeDashboard()
     futureState.atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
     futureState.atWrist = std::fabs(wristMotor.getPosition() - futureState.targetPose.wrist) <= PREVIOUS_WRIST_DEADBAND;
 
-    bool armInRange = armCANcoder.GetAbsolutePosition() > (ARM_CANCODER_OFFSET - 5) &&
+    futureState.armInRange = armCANcoder.GetAbsolutePosition() > (ARM_CANCODER_OFFSET - 5) &&
                       armCANcoder.GetAbsolutePosition() < (ARM_CANCODER_OFFSET + 8);
-    table->PutBoolean("Arm In Range", armInRange);
+    table->PutBoolean("Arm In Range", futureState.armInRange);
 
-    bool wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 50) &&
+    futureState.wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 50) &&
                         wristCANcoder.GetAbsolutePosition() < (WRIST_CANCODER_OFFSET + 50);
-    table->PutBoolean("Wrist In Range", wristInRange);
-
-    if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
-        candle.setColor(255,0,0);
-    } else if (robot->IsDisabled()) {
-        if (armInRange) candle.setColor(0,255,0);
-        else candle.setColor(255,0,0);
-    } else 
-    if (robot->IsAutonomous()) {
-        if (futureState.atCarriage && futureState.atArm && futureState.atWrist)
-            candle.setColor(0,255,0);
-        else
-            candle.setColor(0,0,255);
-    } else {
-        if (intake->getFuturePiece() == Piece::CUBE) {
-            candle.setColor(156,0,255);
-        } else {
-            candle.setColor(255,196,0);
-        }
-    }
+    table->PutBoolean("Wrist In Range", futureState.wristInRange);
 
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
 }
