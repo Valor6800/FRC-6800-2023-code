@@ -39,7 +39,7 @@
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
 #define ROTATE_K_VEL 120.0f
-#define ROTATE_K_ACC_MUL 0.4f
+#define ROTATE_K_ACC_MUL 0.55f
 #define ROTATE_K_AFF 0.115f
 #define ROTATE_K_AFF_CUBE 0.11f
 #define ROTATE_K_AFF_POS 90.0f
@@ -641,10 +641,6 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
     Position eaPositionState = stringToPositionState(positionState);
     return new frc2::FunctionalCommand(
         // OnInit
-        [&]() {
-            
-            }, 
-        //onExecute
         [&, eaPieceState, eaDirectionState, eaPositionState](){
             setFuturePiece(eaPieceState);
             futureState.directionState = eaDirectionState;
@@ -652,6 +648,10 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
             table->PutNumber("piece", intake->getFuturePiece());
             table->PutNumber("dir", futureState.directionState);
             table->PutNumber("pos", futureState.positionState);
+        },
+        //onExecute
+        [](){
+           
         }, 
         [&](bool){
             previousState = futureState;
