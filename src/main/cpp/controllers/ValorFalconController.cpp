@@ -150,6 +150,7 @@ void ValorFalconController::setNeutralMode(ValorNeutralMode mode){
     neutralMode = mode;
 }
 
+
 void ValorFalconController::InitSendable(wpi::SendableBuilder& builder)
 {
     builder.SetSmartDashboardType("Subsystem");

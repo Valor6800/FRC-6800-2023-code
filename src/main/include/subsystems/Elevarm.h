@@ -116,6 +116,7 @@ public:
     double heightDeadband, rotationDeadband;
     
     bool zeroArm;
+    bool coastMode;
 
     frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string);
 

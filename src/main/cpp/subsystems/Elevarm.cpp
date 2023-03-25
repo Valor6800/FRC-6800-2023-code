@@ -121,6 +121,7 @@ void Elevarm::resetState()
     futureState.deadManEnabled = false;
     futureState.pitModeEnabled = false;
     zeroArm = false;
+    coastMode = false;
     previousState = futureState;
     setPrevPiece(intake->getFuturePiece());
 
@@ -239,6 +240,7 @@ void Elevarm::init()
     table->PutBoolean("Enable Carraige Offset", false);
     table->PutBoolean("Arm In Range", false);
     table->PutBoolean("Zero Arm", zeroArm);
+    table->PutBoolean("Coast Mode", coastMode);
 
     resetState();
     armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
@@ -305,9 +307,17 @@ void Elevarm::analyzeDashboard()
     futureState.pitModeEnabled = table->GetBoolean("Pit Mode", false);
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
     zeroArm = table->GetBoolean("Zero Arm", false);
+    coastMode = table->GetBoolean("Coast Mode", false);
 
     if (zeroArm) {
         armRotateMotor.setEncoderPosition(180.0);
+    }
+
+    if(coastMode && armRotateMotor.getNeutralMode() == ValorNeutralMode::Brake){
+        
+        armRotateMotor.setNeutralMode(ValorNeutralMode::Coast);
+    } else if(armRotateMotor.getNeutralMode() == ValorNeutralMode::Coast && !coastMode){
+        armRotateMotor.setNeutralMode(ValorNeutralMode::Brake);
     }
 
     if (table->GetBoolean("Enable Carraige Offset", false)) {
@@ -401,7 +411,6 @@ void Elevarm::assignOutputs()
                 }
             }
             
-
             if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {
                 previousState = futureState;
                 setPrevPiece(intake->getFuturePiece());
