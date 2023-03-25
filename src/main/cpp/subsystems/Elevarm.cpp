@@ -26,7 +26,7 @@
 #define STOW_HEIGHT_OFFSET 0.0f //cm
 
 #define CARRIAGE_K_F 0.000156f  
-#define CARRIAGE_K_P 1.5e-4f
+#define CARRIAGE_K_P 2e-4f
 #define CARRIAGE_K_I 0.0f
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
@@ -58,7 +58,7 @@
 #define ROTATE_S_CURVE_STRENGTH 3
 
 #define WRIST_K_F 0.75f
-#define WRIST_K_P 0.12f
+#define WRIST_K_P 0.48f //0.24f
 #define WRIST_K_I 0.0f
 #define WRIST_K_D 0.0f
 #define WRIST_K_ERROR 0.25f
@@ -96,8 +96,8 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             intake(_intake),
                             carriageMotors(CANIDs::CARRIAGE_MAIN, ValorNeutralMode::Brake, false),
                             armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
-                            armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
-                            wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, true, "baseCAN"),
+                            // armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
+                            wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, false, "baseCAN"),
                             candle(_robot, 286, CANIDs::CANDLE, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
@@ -180,8 +180,8 @@ void Elevarm::init()
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
     armRotateMotor.setPIDF(rotatePID, 0);
 
-    armCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
-    armCANcoder.SetPositionToAbsolute();
+    // armCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
+    // armCANcoder.SetPositionToAbsolute();
     
     wristMotor.setConversion((1.0 / WRIST_GEAR_RATIO) * 360.0);
     wristMotor.setForwardLimit(WRIST_FORWARD_LIMIT);
@@ -189,12 +189,12 @@ void Elevarm::init()
     wristMotor.setPIDF(wristPID, 0);
 
     // STOW POSITION
-    stowPos = frc::Pose2d(-0.428_m, 0.451_m, 0.0_deg);
+    stowPos = frc::Pose2d(-0.428_m, 0.436_m, 0.0_deg);
 
     autoStowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
     
     // FRONT CONE
-    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.196_m, 0.551_m, 200.0_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.086_m, 0.4_m, 121.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg); // new points
@@ -204,7 +204,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH_AUTO] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
 
     // FRONT CUBE
-    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.13_m, 0.3_m, 173.85_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.145_m, 0.409_m, 216.57_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
@@ -214,7 +214,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
 
     // BACK CONE   
-    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.98_m, 0.652_m, -233.5_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8_m, 1.455_m, 57.5_deg);
@@ -223,7 +223,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
 
     // BACK CUBE
-    posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.42_m, -195.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.969_m, 0.306_m, -139.13_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.09_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.823_m, 1.32_m, 78.7_deg);
@@ -246,7 +246,8 @@ void Elevarm::init()
     table->PutBoolean("Coast Mode", coastMode);
 
     resetState();
-    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
+    // armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
+    armRotateMotor.setEncoderPosition(180.0);
     carriageMotors.setEncoderPosition(0.0);
     wristMotor.setEncoderPosition(0.0);
 }
@@ -337,9 +338,9 @@ void Elevarm::analyzeDashboard()
     futureState.atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
     futureState.atWrist = std::fabs(wristMotor.getPosition() - futureState.targetPose.wrist) <= PREVIOUS_WRIST_DEADBAND;
 
-    bool armInRange = armCANcoder.GetAbsolutePosition() > (CANCODER_OFFSET - 50) &&
-                      armCANcoder.GetAbsolutePosition() < (CANCODER_OFFSET + 50);
-    table->PutBoolean("Arm In Range", armInRange);
+    // bool armInRange = armCANcoder.GetAbsolutePosition() > (CANCODER_OFFSET - 50) &&
+    //                   armCANcoder.GetAbsolutePosition() < (CANCODER_OFFSET + 50);
+    // table->PutBoolean("Arm In Range", armInRange);
 
     if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
         candle.setColor(255,0,0);
@@ -625,9 +626,24 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
         [this]{ return futureState.backMinAngle; },
         nullptr
     );
-    builder.AddDoubleProperty(
-        "Arm CANcoder",
-        [this]{ return armCANcoder.GetAbsolutePosition(); },
+    // builder.AddDoubleProperty(
+    //     "Arm CANcoder",
+    //     [this]{ return armCANcoder.GetAbsolutePosition(); },
+    //     nullptr
+    // );
+    builder.AddBooleanProperty(
+        "atWrist",
+        [this]{ return futureState.atWrist; },
+        nullptr
+    );
+    builder.AddBooleanProperty(
+        "atCarriage",
+        [this]{ return futureState.atCarriage; },
+        nullptr
+    );
+    builder.AddBooleanProperty(
+        "atArm",
+        [this]{ return futureState.atArm; },
         nullptr
     );
     builder.AddBooleanProperty(
