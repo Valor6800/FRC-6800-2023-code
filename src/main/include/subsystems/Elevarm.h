@@ -177,7 +177,7 @@ private:
      ValorNeoController carriageMotors;
      ValorFalconController armRotateMotor;
 
-    // ctre::phoenix::sensors::WPI_CANCoder armCANcoder;
+    ctre::phoenix::sensors::WPI_CANCoder armCANcoder;
 
      ValorFalconController wristMotor;
      ctre::phoenix::sensors::WPI_CANCoder wristCANcoder;
