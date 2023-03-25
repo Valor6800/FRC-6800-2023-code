@@ -12,6 +12,21 @@
 
 #include "ctre/phoenix/led/CANdle.h"
 
+#include "ctre/phoenix/led/ColorFlowAnimation.h"
+#include "ctre/phoenix/led/FireAnimation.h"
+#include "ctre/phoenix/led/LarsonAnimation.h"
+#include "ctre/phoenix/led/RainbowAnimation.h"
+#include "ctre/phoenix/led/RgbFadeAnimation.h"
+#include "ctre/phoenix/led/SingleFadeAnimation.h"
+#include "ctre/phoenix/led/StrobeAnimation.h"
+#include "ctre/phoenix/led/TwinkleAnimation.h"
+#include "ctre/phoenix/led/TwinkleOffAnimation.h"
+
+#include <iostream>
+#include <unordered_map>
+
+#define LED_COUNT 286
+
 /**
  * @brief Sensor - control the CANdle and associated LEDs
  * 
@@ -57,6 +72,15 @@ public:
         int blue;
     };
 
+    struct SegmentSettings{
+        RGBColor currentColor;
+        ctre::phoenix::led::Animation *activeAnimation;
+        AnimationType activeAnimationType;
+        int startLed;
+        int endLed;
+    };
+
+
     /**
      * @brief Convert an RGB hex code to the RGBColor struct
      * 
@@ -73,7 +97,7 @@ public:
      * @param _canID the CAN ID the CANdle is assigned to
      * @param _canbus the CAN bus the CANdle is attached to
      */
-    ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int _canID, std::string _canbus = "");
+    ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int _segments, int _canID, std::string _canbus = "");
 
     /**
      * @brief Destroy the Valor CANdle Sensor object
@@ -84,23 +108,35 @@ public:
     /**
      * @brief Set the color of the CANdle LEDs and attached LEDs
      * 
-     * @param color The color to change all the LEDs to. Will clear the previous animation
+     * @param segment The segment that will be changed
+     * @param color The color to change all the LEDs in the segment to. Will clear the previous animation
      */
-    void setColor(int color);
-    void setColor(int r, int g, int b);
+    void setColor(int segment, int color);
 
+        /**
+     * @brief Set the color of the CANdle LEDs and attached LEDs
+     * 
+     * @param segment The segment that will be changed
+     * @param rgb The RGB code to change all the LEDs in the segment to. Will clear the previous animation
+     */
+    void setColor(int segment, RGBColor rgb);
+    void setColor(RGBColor rgb);
     /**
      * @brief Set the animation the LEDs should follow
      * 
+     * @param segment The segment that will get animated
      * @param animation Animation to set. Will clear the previous color
+     * @param speed The speed that the animation will go at
      */
-    void setAnimation(AnimationType animation);
+    void setAnimation(int segment, AnimationType animation, double speed=1.0);
 
     /**
      * @brief Clears any active animation
      * 
      * Also responsible for clearing the appropriate memory associated with the animation
+     * @param segment The segment that will be cleared
      */
+    void clearAnimation(int segment);
     void clearAnimation();
     
     /**
@@ -110,13 +146,15 @@ public:
 
     void InitSendable(wpi::SendableBuilder& builder) override;
 
+    std::vector<ValorCANdleSensor::AnimationType> currentAnimations;
+
 private:
     ctre::phoenix::led::CANdle candle;
     int ledCount;
-    RGBColor currentColor;
+    int segments;
 
-    ctre::phoenix::led::Animation *activeAnimation;
-    AnimationType activeAnimationType;
+    std::unordered_map<int, SegmentSettings> segmentMap;
+
 
     void calculate();
 };

@@ -1,26 +1,14 @@
 #include "sensors/ValorCANdleSensor.h"
 
-#include "ctre/phoenix/led/ColorFlowAnimation.h"
-#include "ctre/phoenix/led/FireAnimation.h"
-#include "ctre/phoenix/led/LarsonAnimation.h"
-#include "ctre/phoenix/led/RainbowAnimation.h"
-#include "ctre/phoenix/led/RgbFadeAnimation.h"
-#include "ctre/phoenix/led/SingleFadeAnimation.h"
-#include "ctre/phoenix/led/StrobeAnimation.h"
-#include "ctre/phoenix/led/TwinkleAnimation.h"
-#include "ctre/phoenix/led/TwinkleOffAnimation.h"
-
 #include <string>
 
 #define VALOR_GOLD 0xEEA800
 
-ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int _canID, std::string _canbus) :
+ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int _segments, int _canID, std::string _canbus) :
     ValorSensor(_robot, std::string("ID ").append(std::to_string(_canID)).c_str()),
     candle(_canID, _canbus),
     ledCount(_ledCount),
-    currentColor(toRGB(VALOR_GOLD)),
-    activeAnimation(NULL),
-    activeAnimationType(AnimationType::None)
+    segments(_segments)
 {
     wpi::SendableRegistry::AddLW(this, "ValorDebounceSensor", sensorName);
 
@@ -36,6 +24,24 @@ ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int
     config.vBatOutputMode = ctre::phoenix::led::VBatOutputMode::Off;
     candle.ConfigFactoryDefault(100);
     candle.ConfigAllSettings(config, 100);
+    //12/3 = 4
+    int segmentLEDCount = (LED_COUNT-8)/segments;
+    //
+    for (int i = 0; i<segments + 1; i++){
+        SegmentSettings newSegment;
+        newSegment.currentColor = toRGB(VALOR_GOLD);
+        newSegment.activeAnimation = NULL;
+        newSegment.activeAnimationType = AnimationType::None;
+        if (i == 0){
+            newSegment.startLed = 0;
+            newSegment.endLed = 7;
+        }
+        else{
+            newSegment.startLed = (segmentLEDCount*(i-1))+8;
+            newSegment.endLed = (segmentLEDCount*(i)-1)+8;
+        }
+        segmentMap[i] = newSegment;
+    }
 }
 
 ValorCANdleSensor::RGBColor ValorCANdleSensor::toRGB(int color)
@@ -49,67 +55,185 @@ ValorCANdleSensor::RGBColor ValorCANdleSensor::toRGB(int color)
 
 ValorCANdleSensor::~ValorCANdleSensor()
 {
-    clearAnimation();
+    for (int i = 0; i <= segments; i++){
+        clearAnimation(i);
+    }
 }
 
-void ValorCANdleSensor::setColor(int r, int g, int b)
+void ValorCANdleSensor::setColor(int segment, RGBColor rgb)
 {
-    currentColor = RGBColor(r, g, b);
-    candle.SetLEDs(r,g,b,0,0,8 + ledCount);
+    segmentMap[segment].currentColor = rgb;
+    candle.SetLEDs(
+        segmentMap[segment].currentColor.red,
+        segmentMap[segment].currentColor.green,
+        segmentMap[segment].currentColor.blue,
+        0,
+        segmentMap[segment].startLed,
+        segmentMap[segment].endLed
+    );
+}
+void ValorCANdleSensor::setColor(RGBColor rgb)
+{
+    for(int i = 0; i<segmentMap.size(); i++){
+    segmentMap[i].currentColor = rgb;
+    candle.SetLEDs(
+        segmentMap[i].currentColor.red,
+        segmentMap[i].currentColor.green,
+        segmentMap[i].currentColor.blue,
+        0,
+        segmentMap[i].startLed,
+        segmentMap[i].endLed
+    );
+    }
 }
 
-void ValorCANdleSensor::setColor(int color)
+void ValorCANdleSensor::setColor(int segment, int color)
 {
-    currentColor = toRGB(color);
-    candle.SetLEDs(currentColor.red, currentColor.green, currentColor.blue,0,0,8 + ledCount);
+    segmentMap[segment].currentColor = toRGB(color);
+    candle.SetLEDs(
+        segmentMap[segment].currentColor.red, 
+        segmentMap[segment].currentColor.green, 
+        segmentMap[segment].currentColor.blue,
+        0,
+        segmentMap[segment].startLed,
+        segmentMap[segment].endLed
+    );
 }
 
-void ValorCANdleSensor::setAnimation(ValorCANdleSensor::AnimationType animation)
+void ValorCANdleSensor::setAnimation(int segment, AnimationType animation, double speed)
 {
-    int startLED = 8;
-    int speed = 1;
     int brightness = 1;
 
-    if (animation != activeAnimationType) {
-        clearAnimation();
-        activeAnimationType = animation;
+    if (animation != segmentMap[segment].activeAnimationType) {
+        clearAnimation(segment);
+        segmentMap[segment].activeAnimationType = animation;
 
-        if (animation == AnimationType::ColorFlow)
-            activeAnimation = new ctre::phoenix::led::ColorFlowAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed,ledCount,ctre::phoenix::led::ColorFlowAnimation::Forward, startLED);
-        else if (animation == AnimationType::Fire)
-            activeAnimation = new ctre::phoenix::led::FireAnimation(brightness,speed,ledCount,1,1,false,startLED);
-        else if (animation == AnimationType::Larson)
-            activeAnimation = new ctre::phoenix::led::LarsonAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed,ledCount,ctre::phoenix::led::LarsonAnimation::Front,5,startLED);
-        else if (animation == AnimationType::Rainbow)
-            activeAnimation = new ctre::phoenix::led::RainbowAnimation(brightness,speed,ledCount,false,startLED);
-        else if (animation == AnimationType::RgbFade)
-            activeAnimation = new ctre::phoenix::led::RgbFadeAnimation(brightness,speed,ledCount,startLED);
-        else if (animation == AnimationType::SingleFade)
-            activeAnimation = new ctre::phoenix::led::SingleFadeAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed,ledCount,startLED);
-        else if (animation == AnimationType::Strobe)
-            activeAnimation = new ctre::phoenix::led::StrobeAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed/10,ledCount,startLED);
-        else if (animation == AnimationType::Twinkle)
-            activeAnimation = new ctre::phoenix::led::TwinkleAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed,ledCount,ctre::phoenix::led::TwinkleAnimation::TwinklePercent::Percent100,startLED);
-        else if (animation == AnimationType::TwinkleOff)
-            activeAnimation = new ctre::phoenix::led::TwinkleOffAnimation(currentColor.red,currentColor.green,currentColor.blue,0,speed,ledCount,ctre::phoenix::led::TwinkleOffAnimation::TwinkleOffPercent::Percent100,startLED);
+        if (animation == AnimationType::ColorFlow){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::ColorFlowAnimation(
+                segmentMap[segment].currentColor.red,
+                segmentMap[segment].currentColor.green,
+                segmentMap[segment].currentColor.blue,
+                0,
+                speed,
+                segmentMap[segment].endLed,
+                ctre::phoenix::led::ColorFlowAnimation::Forward,
+                segmentMap[segment].startLed
+            );
+        } else if (animation == AnimationType::Fire){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::FireAnimation(
+                brightness,
+                speed,
+                segmentMap[segment].endLed,
+                1,
+                1,
+                false,
+                segmentMap[segment].startLed
+            );
+        } else if (animation == AnimationType::Larson){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::LarsonAnimation(
+                segmentMap[segment].currentColor.red,
+                segmentMap[segment].currentColor.green,
+                segmentMap[segment].currentColor.blue,
+                0,
+                speed,
+                segmentMap[segment].endLed,
+                ctre::phoenix::led::LarsonAnimation::Front,
+                5,
+                segmentMap[segment].startLed
+            );
+        } else if (animation == AnimationType::Rainbow){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::RainbowAnimation(
+                brightness,
+                speed,
+                segmentMap[segment].endLed,
+                false,
+                segmentMap[segment].startLed
+            );
+        } else if (animation == AnimationType::RgbFade){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::RgbFadeAnimation(
+                brightness,
+                speed,
+                segmentMap[segment].endLed,
+                segmentMap[segment].startLed
+            );
+        } else if (animation == AnimationType::SingleFade){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::SingleFadeAnimation(
+                segmentMap[segment].currentColor.red,
+                segmentMap[segment].currentColor.green,
+                segmentMap[segment].currentColor.blue,
+                0,
+                speed,
+                segmentMap[segment].endLed,
+                segmentMap[segment].startLed
+            );
+        } else if (animation == AnimationType::Strobe){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::StrobeAnimation(
+                segmentMap[segment].currentColor.red,
+                segmentMap[segment].currentColor.green,
+                segmentMap[segment].currentColor.blue,
+                0,
+                speed,
+                segmentMap[segment].endLed,
+                segmentMap[segment].startLed
+            );
+        } else if (animation == AnimationType::Twinkle){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::TwinkleAnimation(
+                segmentMap[segment].currentColor.red,
+                segmentMap[segment].currentColor.green,
+                segmentMap[segment].currentColor.blue,
+                0,
+                speed,
+                segmentMap[segment].endLed,
+                ctre::phoenix::led::TwinkleAnimation::TwinklePercent::Percent100,
+                segmentMap[segment].startLed
+            );
+        } else if (animation == AnimationType::TwinkleOff){
+            segmentMap[segment].activeAnimation = new ctre::phoenix::led::TwinkleOffAnimation(
+                segmentMap[segment].currentColor.red,
+                segmentMap[segment].currentColor.green,
+                segmentMap[segment].currentColor.blue,
+                0,
+                speed,
+                segmentMap[segment].endLed,
+                ctre::phoenix::led::TwinkleOffAnimation::TwinkleOffPercent::Percent100,
+                segmentMap[segment].startLed
+            );
+        }
     }
 
-    if (activeAnimation)
-        candle.Animate(*activeAnimation);
+    if (segmentMap[segment].activeAnimation)
+        candle.Animate(*(segmentMap[segment].activeAnimation));
+}
+
+void ValorCANdleSensor::clearAnimation(int segment)
+{
+    
+    segmentMap[segment].activeAnimationType = AnimationType::None;
+
+    if (segmentMap[segment].activeAnimation != NULL) {
+        candle.ClearAnimation(segment);
+        delete segmentMap[segment].activeAnimation;
+    }
+    
 }
 
 void ValorCANdleSensor::clearAnimation()
 {
-    activeAnimationType = AnimationType::None;
-    if (activeAnimation != NULL) {
-        candle.ClearAnimation(0);
-        delete activeAnimation;
+    for(int segment =0; segment < segmentMap.size();segment++){
+    segmentMap[segment].activeAnimationType = AnimationType::None;
+
+    if (segmentMap[segment].activeAnimation != NULL) {
+        candle.ClearAnimation(segment);
+        delete segmentMap[segment].activeAnimation;
+    }
     }
 }
 
 void ValorCANdleSensor::reset()
 {
-    clearAnimation();
+    for (int i = 0; i<=segments; i++){
+        clearAnimation(i);
+    }
     prevState = 0xFFFFFF;
     currState = 0xFFFFFF;
 }
@@ -128,5 +252,9 @@ void ValorCANdleSensor::InitSendable(wpi::SendableBuilder& builder)
     builder.AddDoubleProperty(
         "Current State", 
         [this] { return currState; },
+        nullptr);
+    builder.AddDoubleProperty(
+        "Max Animations",
+        [this] {return candle.GetMaxSimultaneousAnimationCount();},
         nullptr);
 }
