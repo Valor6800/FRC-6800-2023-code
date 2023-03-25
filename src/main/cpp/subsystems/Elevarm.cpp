@@ -26,7 +26,7 @@
 #define STOW_HEIGHT_OFFSET 0.0f //cm
 
 #define CARRIAGE_K_F 0.000156f  
-#define CARRIAGE_K_P 1e-4f
+#define CARRIAGE_K_P 1.5e-4f
 #define CARRIAGE_K_I 0.0f
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
@@ -379,24 +379,28 @@ void Elevarm::assignOutputs()
             previousState.positionState = Position::MANUAL;
         } else {
                     
+            table->PutBoolean("stowH minus 3", (carriageMotors.getPosition() >= (stowPose.h - 0.03)) ? true : false);
+
             if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 6.0) ||
                 (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -20.0)) {
                 wristMotor.setPosition(futureState.targetPose.wrist);
                 armRotateMotor.setPosition(futureState.targetPose.theta);
                 carriageMotors.setPosition(futureState.targetPose.h);
+                
+                if (futureState.atCarriage) {
+                    carriageMotors.setPower(carriageStallPower);
+                }
+                
             } else {
                 wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
                 carriageMotors.setPosition(stowPose.h);
-                if (carriageMotors.getPosition() >= (stowPose.h - 0.05)) {
+                if (carriageMotors.getPosition() >= (stowPose.h - 0.03)) {
                     armRotateMotor.setPosition(futureState.targetPose.theta);
                 } else {
                     armRotateMotor.setPower(0);
                 }
             }
             
-            if (futureState.atCarriage) {
-                carriageMotors.setPower(carriageStallPower);
-            }
 
             if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {
                 previousState = futureState;
@@ -612,6 +616,21 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
     builder.AddDoubleProperty(
         "Arm CANcoder",
         [this]{ return armCANcoder.GetAbsolutePosition(); },
+        nullptr
+    );
+    builder.AddBooleanProperty(
+        "atWrist",
+        [this]{ return futureState.atWrist; },
+        nullptr
+    );
+    builder.AddBooleanProperty(
+        "atArm",
+        [this]{ return futureState.atArm; },
+        nullptr
+    );
+    builder.AddBooleanProperty(
+        "atCarriage",
+        [this]{ return futureState.atCarriage; },
         nullptr
     );
 }
