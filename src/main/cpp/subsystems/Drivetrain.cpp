@@ -485,17 +485,20 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
             state.isLeveled = false;
         }, // OnInit
         [&](){
-            if (state.abovePitchThreshold) {
-                state.xSpeed = 0.3 * -pigeon.GetPitch() / 20;
-                if (std::fabs(pigeon.GetPitch()) < 8.0){
-                    state.isLeveled = true;
-                    state.xSpeed = 0;
-                }
-            } else if (pigeon.GetPitch() < -16.0) {
+            if (pigeon.GetPitch() < -16.0) {
                 state.abovePitchThreshold = true;
                 state.xSpeed = 0.4;
+            } else if (state.abovePitchThreshold) {
+                if (pigeon.GetPitch() > -11.5 ){
+                    state.isLeveled = true;
+                    state.xSpeed = -0.02;
+                }else if(pigeon.GetPitch() > -16){
+                    state.xSpeed = 0.15;
+                }else{
+                    state.xSpeed = 0.3;
+                }
             } else {
-                state.xSpeed = 0.5;
+                state.xSpeed = 0.3;
             }
         }, //onExecute
         [&](bool){

@@ -242,7 +242,7 @@ frc2::Command * ValorAuto::createPPTrajectoryCommand(pathplanner::PathPlannerTra
 			thetaController,
 			[this] (auto states) { drivetrain->setModuleStates(states); },
 			{drivetrain},
-			false); //change to true after testing
+			true);
 }
 
 frc2::Command * ValorAuto::makePathAuto(std::string pathname){
@@ -253,7 +253,8 @@ frc2::Command * ValorAuto::makePathAuto(std::string pathname){
     }
     table->PutString("Running Path:", pathname);
     // path = PathPlannerTrajectory::transformTrajectoryForAlliance(path, frc::DriverStation::GetAlliance()); //NEEDS TESTING
-    drivetrain->resetOdometry(trajectory.getInitialHolonomicPose());
+    pathplanner::PathPlannerTrajectory::PathPlannerState intitalState = pathplanner::PathPlannerTrajectory::transformStateForAlliance(trajectory.getInitialState(), frc::DriverStation::GetAlliance());
+    drivetrain->resetOdometry(frc::Pose2d(intitalState.pose.X(), intitalState.pose.Y(), intitalState.holonomicRotation));
 
     frc2::SequentialCommandGroup * commandGroup = new frc2::SequentialCommandGroup();
 
@@ -261,7 +262,7 @@ frc2::Command * ValorAuto::makePathAuto(std::string pathname){
     for (std::string name : trajectory.getStartStopEvent().names) {
         commandGroup->AddCommands(std::move(sequentialEventMap.at(name)));
     }
-
+    
     commandGroup->AddCommands(
         pathplanner::FollowPathWithEvents (
             std::unique_ptr<frc2::Command>(createPPTrajectoryCommand(trajectory)),
