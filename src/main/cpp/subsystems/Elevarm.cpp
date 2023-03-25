@@ -190,9 +190,12 @@ void Elevarm::init()
 
    
     // STOW POSITION
-    stowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
+    stowPos = frc::Pose2d(-0.428_m, 0.436_m, 0.0_deg);
 
     autoStowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
+    
+    stowPoopPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
+    
 
     // FRONT CONE
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.196_m, 0.551_m, 200.0_deg);
@@ -279,7 +282,11 @@ void Elevarm::assessInputs()
         else futureState.positionState = Position::STOW;
     } else {
         if (previousState.positionState != Position::MANUAL) {
+            if (intake->state.intakeState == Intake::IntakeStates::SPIKED && intake->getFuturePiece() == Piece::CUBE){
+                futureState.positionState = Position::STOW_POOP;
+            } else{
                 futureState.positionState = Position::STOW;
+            }
         } 
     }
     if((intake->state.intakeState != Intake::IntakeStates::OUTTAKE && !driverGamepad->leftTriggerActive()) && (intake->state.intakeState != Intake::IntakeStates::SPIKED || driverGamepad->DPadRight() || operatorGamepad->GetBButton())){
@@ -368,6 +375,8 @@ void Elevarm::assignOutputs()
         futureState.targetPose = stowPose;
     } else if (futureState.positionState == Position::STOW_AUTO) {
         futureState.targetPose = reverseKinematics(autoStowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
+    } else if (futureState.positionState == Position::STOW_POOP) {
+        futureState.targetPose = reverseKinematics(stowPoopPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
         if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)  {
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
@@ -402,7 +411,8 @@ void Elevarm::assignOutputs()
                 }
                 
             } else {
-                wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
+                if(futureState.positionState == Position::STOW_POOP) wristMotor.setPosition(stowPoopPos.Rotation().Degrees().to<double>());
+                else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
                 carriageMotors.setPosition(stowPose.h);
                 if (carriageMotors.getPosition() >= (stowPose.h - 0.03)) {
                     armRotateMotor.setPosition(futureState.targetPose.theta);

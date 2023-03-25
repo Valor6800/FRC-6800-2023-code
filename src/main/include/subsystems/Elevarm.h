@@ -184,6 +184,7 @@ private:
      std::map<Piece, std::map<Direction, std::map<Position, frc::Pose2d>>> posMap;
      frc::Pose2d stowPos;
      frc::Pose2d autoStowPos;
+     frc::Pose2d stowPoopPos;
 
     Positions reverseKinematics(frc::Pose2d pose, ElevarmSolutions, Direction); 
     frc::Pose2d forwardKinematics(Positions positions);
