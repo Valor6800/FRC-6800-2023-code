@@ -17,7 +17,7 @@
 #define CARRIAGE_UPPER_LIMIT 0.86f 
 #define CARRIAGE_LOWER_LIMIT 0.0f
 #define ROTATE_FORWARD_LIMIT 180.0f
-#define ROTATE_REVERSE_LIMIT -180.0f
+#define ROTATE_REVERSE_LIMIT -250.0f
 #define WRIST_FORWARD_LIMIT 325.0f
 #define WRIST_REVERSE_LIMIT -325.0f
 
@@ -205,7 +205,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg); // new points
     posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.173_m, 1.163_m, 253.14_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.566_m, 1.416_m, 193.69_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(0.086_m, 1.2_m, 253.2_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH_AUTO] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
 
     // FRONT CUBE
@@ -225,8 +225,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.86_m, 1.565_m, 59.3_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
-
+    posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     // BACK CUBE
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.42_m, -195.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.09_m, 141.4_deg);
@@ -275,21 +274,26 @@ void Elevarm::assessInputs()
         else futureState.positionState = Position::STOW;
     } else if(operatorGamepad->DPadLeft()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
+        else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
         else futureState.positionState = Position::STOW;
     } else if (operatorGamepad->DPadUp()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::HIGH;
+        else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
         else futureState.positionState = Position::STOW;
     } else if(operatorGamepad->DPadRight()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::MID;
+        else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
         else futureState.positionState = Position::STOW;
     } else if (operatorGamepad->GetAButton()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::POOPFULL;
         else futureState.positionState = Position::STOW;
     } else {
         if (previousState.positionState != Position::MANUAL) {
-            if (intake->state.intakeState == Intake::IntakeStates::SPIKED && intake->getFuturePiece() == Piece::CUBE){
+            if (intake->getFuturePiece() == Piece::CONE) {
+                futureState.positionState = Position::SNAKE; 
+            } else if (intake->state.intakeState == Intake::IntakeStates::SPIKED && intake->getFuturePiece() == Piece::CUBE){
                 futureState.positionState = Position::STOW_POOP;
-            } else{
+            } else {
                 futureState.positionState = Position::STOW;
             }
         } 
@@ -379,7 +383,6 @@ void Elevarm::analyzeDashboard()
 
 void Elevarm::assignOutputs()
 {
-
     Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
     if (futureState.positionState == Position::STOW) {
         futureState.targetPose = stowPose;
@@ -393,6 +396,10 @@ void Elevarm::assignOutputs()
     }
 
     table->PutBoolean("going from stow to not stow", false);
+
+    if (futureState.positionState == Position::HIGH && futureState.directionState == Direction::FRONT && intake->getFuturePiece() == Piece::CONE) {
+        futureState.targetPose.theta -= 360.0;
+    }
 
     if ((futureState.deadManEnabled && futureState.pitModeEnabled) || !futureState.pitModeEnabled) {
         if (futureState.positionState == Position::MANUAL) {
