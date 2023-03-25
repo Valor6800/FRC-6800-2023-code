@@ -190,7 +190,7 @@ void Elevarm::init()
 
    
     // STOW POSITION
-    stowPos = frc::Pose2d(-0.428_m, 0.436_m, 0.0_deg);
+    stowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
 
     autoStowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
 
