@@ -8,7 +8,7 @@
 #include <iostream>
 
 #define ROTATE_GEAR_RATIO 74.25f
-#define WRIST_GEAR_RATIO 15.43f
+#define WRIST_GEAR_RATIO 41.14f
 #define CARRIAGE_GEAR_RATIO 4.0f
 #define ARM_CANCODER_GEAR_RATIO 9.75f
 #define WRIST_CANCODER_GEAR_RATIO 1.0f
@@ -199,30 +199,30 @@ void Elevarm::init()
     autoStowPos = frc::Pose2d(-0.428_m, 0.406_m, 45.0_deg);
     
     // FRONT CONE
-    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.196_m, 0.551_m, 200.0_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.196_m, 0.4_m, 200.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg); // new points
-    posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.173_m, 1.163_m, 253.14_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.566_m, 1.416_m, -166.31_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.286_m, 1.335_m, 274.5_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH_AUTO] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
 
     // FRONT CUBE
-    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.185_m, 0.409_m, 216.57_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.13_m, 0.3_m, 173.85_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.273_m, 1.054_m, -46.93_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.577_m, 1.255_m, 231.25_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.346_m, 1.009_m, 291.22_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.567_m, 1.28_m, 227.5_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(0.086_m, 1.2_m, 253.2_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
 
     // BACK CONE   
-    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.98_m, 0.622_m, -233.5_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.86_m, 1.565_m, 59.3_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8_m, 1.47_m, 57.5_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
