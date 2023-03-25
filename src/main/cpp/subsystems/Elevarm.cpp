@@ -351,11 +351,11 @@ void Elevarm::analyzeDashboard()
 }
 
 void Elevarm::assignOutputs()
-{    
-    bool inTransition = futureState.directionState != previousState.directionState;
+{
 
-    if (futureState.positionState == Position::STOW || inTransition) {
-        futureState.targetPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
+    Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
+    if (futureState.positionState == Position::STOW) {
+        futureState.targetPose = stowPose;
     } else if (futureState.positionState == Position::STOW_AUTO) {
         futureState.targetPose = reverseKinematics(autoStowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
@@ -378,29 +378,21 @@ void Elevarm::assignOutputs()
             wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
             previousState.positionState = Position::MANUAL;
         } else {
-
-            // Target in triangle
-            if (futureState.targetPose.theta >= futureState.backMinAngle && futureState.targetPose.theta <= futureState.frontMinAngle){
-                if (futureState.targetPose.h > (carriageMotors.getPosition() - 0.1)){
-                    armRotateMotor.setPosition(futureState.targetPose.theta);
-                }
-                else {
-                    armRotateMotor.setPower(0.0);
-                }
-                carriageMotors.setPosition(futureState.targetPose.h);
-            // Target oustside triangle
-            } else {
-                if (armRotateMotor.getPosition() > futureState.frontMinAngle || armRotateMotor.getPosition() < futureState.backMinAngle){
-                    carriageMotors.setPosition(futureState.targetPose.h);
-                } else {
-                    carriageMotors.setPower(carriageStallPower);
-                }
-                armRotateMotor.setPosition(futureState.targetPose.theta);
-            }    
                     
-            if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 0.0) || (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -20.0) /*|| futureState.positionState == Position::STOW_AUTO || (futureState.positionState == Position::STOW && previousState.positionState == Position::STOW_AUTO)*/)
-            wristMotor.setPosition(futureState.targetPose.wrist);
-            else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
+            if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 6.0) ||
+                (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -20.0)) {
+                wristMotor.setPosition(futureState.targetPose.wrist);
+                armRotateMotor.setPosition(futureState.targetPose.theta);
+                carriageMotors.setPosition(futureState.targetPose.h);
+            } else {
+                wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
+                carriageMotors.setPosition(stowPose.h);
+                if (carriageMotors.getPosition() >= (stowPose.h - 0.05)) {
+                    armRotateMotor.setPosition(futureState.targetPose.theta);
+                } else {
+                    armRotateMotor.setPower(0);
+                }
+            }
             
             if (futureState.atCarriage) {
                 carriageMotors.setPower(carriageStallPower);
@@ -409,8 +401,6 @@ void Elevarm::assignOutputs()
             if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {
                 previousState = futureState;
                 setPrevPiece(intake->getFuturePiece());
-                if (inTransition)
-                    previousState.positionState = Position::STOW;
             }
         }
             
