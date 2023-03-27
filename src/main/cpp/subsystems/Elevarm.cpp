@@ -14,7 +14,7 @@
 #define WRIST_CANCODER_GEAR_RATIO 1.0f
 #define CARRAIAGE_OUTPUT_DIAMETER 0.0364f
 
-#define CARRIAGE_UPPER_LIMIT 0.89f 
+#define CARRIAGE_UPPER_LIMIT 0.86f 
 #define CARRIAGE_LOWER_LIMIT 0.0f
 #define ROTATE_FORWARD_LIMIT 180.0f
 #define ROTATE_REVERSE_LIMIT -180.0f
@@ -40,8 +40,8 @@
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
-#define ROTATE_K_VEL 140.0f
-#define ROTATE_K_ACC_MUL 0.66f
+#define ROTATE_K_VEL 150.0f
+#define ROTATE_K_ACC_MUL 0.4f
 #define ROTATE_K_AFF 0.115f
 #define ROTATE_K_AFF_CUBE 0.11f
 #define ROTATE_K_AFF_POS 90.0f
@@ -88,7 +88,7 @@
 #define Z_FORK 0.42f
 #define Z_GROUND 0.1f
 
-#define P_MIN_CARRIAGE 0.01f
+#define P_MIN_CARRIAGE 0.005f
 #define P_MIN_ARM 0.0f
 
 #define MAN_MAX_CARRIAGE 0.3f
@@ -194,35 +194,35 @@ void Elevarm::init()
     wristMotor.setPIDF(wristPID, 0);
 
     // STOW POSITION
-    stowPos = frc::Pose2d(-0.428_m, 0.436_m, 0.0_deg);
+    stowPos = frc::Pose2d(-0.428_m, 0.406_m, 0.0_deg);
 
-    autoStowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
+    autoStowPos = frc::Pose2d(-0.428_m, 0.406_m, 45.0_deg);
     
     // FRONT CONE
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.196_m, 0.551_m, 200.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg); // new points
-    posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.286_m, 1.335_m, 274.5_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.516_m, 1.53_m, 220.0_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.173_m, 1.163_m, 253.14_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.566_m, 1.416_m, 193.69_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(0.086_m, 1.2_m, 253.2_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH_AUTO] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
 
     // FRONT CUBE
-    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.13_m, 0.3_m, 173.85_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.185_m, 0.409_m, 216.57_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.346_m, 0.959_m, 291.22_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.567_m, 1.28_m, 227.5_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.273_m, 1.054_m, -46.93_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.577_m, 1.255_m, 231.25_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(0.086_m, 1.2_m, 253.2_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
 
     // BACK CONE   
-    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.98_m, 0.622_m, -233.5_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8_m, 1.455_m, 57.5_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.86_m, 1.565_m, 59.3_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
@@ -357,9 +357,10 @@ void Elevarm::analyzeDashboard()
     if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
         candle.setColor(255,0,0);
     } else if (robot->IsDisabled()) {
-        if (armInRange) candle.setColor(0,255,0);
-        else candle.setColor(255,0,0);
-    } else if (robot->IsAutonomous()) {
+        // if (armInRange) candle.setColor(0,255,0);
+        // else candle.setColor(255,0,0);
+    } else 
+    if (robot->IsAutonomous()) {
         if (futureState.atCarriage && futureState.atArm && futureState.atWrist)
             candle.setColor(0,255,0);
         else
