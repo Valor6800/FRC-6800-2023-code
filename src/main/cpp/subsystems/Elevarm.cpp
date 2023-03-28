@@ -33,7 +33,7 @@
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
 #define CARRIAGE_K_VEL 4.0f
-#define CARRIAGE_K_ACC_MUL 5.0f
+#define CARRIAGE_K_ACC_MUL 0.18f
 
 #define ROTATE_K_F 0.75f
 #define ROTATE_K_P 0.045f
@@ -41,7 +41,7 @@
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
 #define ROTATE_K_VEL 150.0f
-#define ROTATE_K_ACC_MUL 0.4f
+#define ROTATE_K_ACC_MUL 0.66f
 #define ROTATE_K_AFF 0.115f
 #define ROTATE_K_AFF_CUBE 0.11f
 #define ROTATE_K_AFF_POS 90.0f
@@ -133,7 +133,7 @@ void Elevarm::resetState()
 void Elevarm::init()
 { 
     carriagePID.velocity = CARRIAGE_K_VEL;
-    carriagePID.acceleration = carriagePID.velocity * CARRIAGE_K_ACC_MUL;
+    carriagePID.acceleration = carriagePID.velocity / CARRIAGE_K_ACC_MUL;
     carriagePID.F = CARRIAGE_K_F;
     carriagePID.P = CARRIAGE_K_P;
     carriagePID.I = CARRIAGE_K_I;
@@ -204,7 +204,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg); // new points
     posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.173_m, 1.163_m, 253.14_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.566_m, 1.416_m, 193.69_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.566_m, 1.416_m, -166.31_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH_AUTO] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
 
@@ -383,18 +383,19 @@ void Elevarm::analyzeDashboard()
 
 void Elevarm::assignOutputs()
 {
+    if (futureState.positionState == Position::SNAKE) futureState.directionState = Direction::BACK;
+    
     Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
     if (futureState.positionState == Position::STOW) {
         futureState.targetPose = stowPose;
     } else if (futureState.positionState == Position::STOW_POOP) {
         futureState.targetPose = reverseKinematics(stowPoopPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
-        if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)  {
+        if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
-        } else 
+        else 
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
     }
-
     table->PutBoolean("going from stow to not stow", false);
 
     if (futureState.positionState == Position::HIGH && futureState.directionState == Direction::FRONT && intake->getFuturePiece() == Piece::CONE) {
@@ -411,23 +412,19 @@ void Elevarm::assignOutputs()
             armRotateMotor.setPower(manualOutputs.theta);
             wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
             previousState.positionState = Position::MANUAL;
-        } else {
-                    
-            table->PutBoolean("stowH minus 3", (carriageMotors.getPosition() >= (stowPose.h - 0.03)) ? true : false);
-
+        } else { 
             if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 6.0) ||
-                (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -20.0)) {
-                wristMotor.setPosition(futureState.targetPose.wrist);
+                (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -26.0) ||
+                 (armRotateMotor.getPosition() > 90.0) ||
+                 (armRotateMotor.getPosition() < -90.0)) {
+                // wristMotor.setPosition(futureState.targetPose.wrist);
                 armRotateMotor.setPosition(futureState.targetPose.theta);
                 carriageMotors.setPosition(futureState.targetPose.h);
-                
+
                 if (futureState.atCarriage) {
                     carriageMotors.setPower(carriageStallPower);
                 }
-                
             } else {
-                if(futureState.positionState == Position::STOW_POOP) wristMotor.setPosition(stowPoopPos.Rotation().Degrees().to<double>());
-                else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
                 carriageMotors.setPosition(stowPose.h);
                 if (carriageMotors.getPosition() >= (stowPose.h - 0.03)) {
                     armRotateMotor.setPosition(futureState.targetPose.theta);
@@ -436,12 +433,22 @@ void Elevarm::assignOutputs()
                 }
             }
             
+            if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 6.0) ||
+                (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -26.0) ||
+                (futureState.targetPose.theta < -180.0 && armRotateMotor.getPosition() < -180.0)) {
+                wristMotor.setPosition(futureState.targetPose.wrist);
+            } else {
+                if(futureState.positionState == Position::STOW_POOP) wristMotor.setPosition(stowPoopPos.Rotation().Degrees().to<double>());
+                else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
+            }
+    
+
+
             if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {
                 previousState = futureState;
                 setPrevPiece(intake->getFuturePiece());
             }
-        }
-            
+        }    
     } else {
         carriageMotors.setPower(carriageStallPower);
         armRotateMotor.setPower(0);
