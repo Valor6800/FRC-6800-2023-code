@@ -251,13 +251,13 @@ frc2::Command * ValorAuto::makePathAuto(std::string pathname){
         table->PutString("Error in Path:", pathname + " does not exist");
         return nullptr;
     }
+
     table->PutString("Running Path:", pathname);
-    // path = PathPlannerTrajectory::transformTrajectoryForAlliance(path, frc::DriverStation::GetAlliance()); //NEEDS TESTING
+
     pathplanner::PathPlannerTrajectory::PathPlannerState intitalState = pathplanner::PathPlannerTrajectory::transformStateForAlliance(trajectory.getInitialState(), frc::DriverStation::GetAlliance());
     drivetrain->resetOdometry(frc::Pose2d(intitalState.pose.X(), intitalState.pose.Y(), intitalState.holonomicRotation));
 
     frc2::SequentialCommandGroup * commandGroup = new frc2::SequentialCommandGroup();
-
 
     for (std::string name : trajectory.getStartStopEvent().names) {
         commandGroup->AddCommands(std::move(sequentialEventMap.at(name)));
