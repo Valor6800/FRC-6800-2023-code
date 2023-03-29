@@ -191,8 +191,6 @@ void Elevarm::init()
    
     // STOW POSITION
     stowPos = frc::Pose2d(-0.428_m, 0.436_m, 0.0_deg);
-
-    autoStowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
     
     stowPoopPos = frc::Pose2d(-0.428_m, 0.436_m, 60.0_deg);
     
@@ -373,8 +371,6 @@ void Elevarm::assignOutputs()
     Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
     if (futureState.positionState == Position::STOW) {
         futureState.targetPose = stowPose;
-    } else if (futureState.positionState == Position::STOW_AUTO) {
-        futureState.targetPose = reverseKinematics(autoStowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else if (futureState.positionState == Position::STOW_POOP) {
         futureState.targetPose = reverseKinematics(stowPoopPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
