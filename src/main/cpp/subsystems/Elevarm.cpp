@@ -38,7 +38,7 @@
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
-#define ROTATE_K_VEL 150.0f
+#define ROTATE_K_VEL 140.0f
 #define ROTATE_K_ACC_MUL 0.66f
 #define ROTATE_K_AFF 0.115f
 #define ROTATE_K_AFF_CUBE 0.11f
@@ -97,7 +97,7 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             carriageMotors(CANIDs::CARRIAGE_MAIN, ValorNeutralMode::Brake, false),
                             armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
                             // armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
-                            wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, false, "baseCAN"),
+                            wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, true, "baseCAN"),
                             candle(_robot, 286, CANIDs::CANDLE, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
