@@ -33,7 +33,7 @@
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
 #define CARRIAGE_K_VEL 4.0f
-#define CARRIAGE_K_ACC_MUL 0.18f
+#define CARRIAGE_K_ACC_MUL 0.1f
 
 #define ROTATE_K_F 0.75f
 #define ROTATE_K_P 0.045f
@@ -133,7 +133,7 @@ void Elevarm::resetState()
 void Elevarm::init()
 { 
     carriagePID.velocity = CARRIAGE_K_VEL;
-    carriagePID.acceleration = carriagePID.velocity / CARRIAGE_K_ACC_MUL;
+    carriagePID.acceleration = CARRIAGE_K_ACC_MUL;
     carriagePID.F = CARRIAGE_K_F;
     carriagePID.P = CARRIAGE_K_P;
     carriagePID.I = CARRIAGE_K_I;
