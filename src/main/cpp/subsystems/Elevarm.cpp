@@ -194,7 +194,7 @@ void Elevarm::init()
 
     autoStowPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
     
-    stowPoopPos = frc::Pose2d(-0.428_m, 0.436_m, 45.0_deg);
+    stowPoopPos = frc::Pose2d(-0.428_m, 0.436_m, 60.0_deg);
     
 
     // FRONT CONE
