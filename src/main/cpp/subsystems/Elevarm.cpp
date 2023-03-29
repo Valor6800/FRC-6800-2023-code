@@ -213,9 +213,9 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.346_m, 1.009_m, 291.22_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.567_m, 1.28_m, 227.5_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(0.086_m, 1.2_m, 253.2_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.346_m, 1.009_m, -68.78_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.567_m, 1.28_m, -132.5_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
 
     // BACK CONE   
@@ -234,7 +234,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.823_m, 1.32_m, 78.7_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -237.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -180.0_deg);
-    posMap[Piece::CUBE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
 
 
@@ -279,12 +279,10 @@ void Elevarm::assessInputs()
         else futureState.positionState = Position::STOW;
     } else if (operatorGamepad->DPadUp()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::HIGH;
-        else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
-        else futureState.positionState = Position::STOW;
+        else futureState.positionState = Position::SNAKE;
     } else if(operatorGamepad->DPadRight()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::MID;
-        else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
-        else futureState.positionState = Position::STOW;
+        else futureState.positionState = Position::SNAKE;
     } else if (operatorGamepad->GetAButton()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::POOPFULL;
         else futureState.positionState = Position::STOW;
@@ -399,7 +397,7 @@ void Elevarm::assignOutputs()
     }
     table->PutBoolean("going from stow to not stow", false);
 
-    if ((futureState.positionState == Position::HIGH || futureState.positionState == Position::MID) && futureState.directionState == Direction::FRONT && intake->getFuturePiece() == Piece::CONE) {
+    if ((futureState.positionState == Position::HIGH || futureState.positionState == Position::MID) && futureState.directionState == Direction::FRONT) {
         futureState.targetPose.theta -= 360.0;
     }
 
