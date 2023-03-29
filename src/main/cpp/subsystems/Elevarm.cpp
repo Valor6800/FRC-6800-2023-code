@@ -203,7 +203,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg); // new points
-    posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.286_m, 1.335_m, 274.5_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.286_m, 1.335_m, -85.5_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH_AUTO] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
@@ -219,7 +219,8 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
 
     // BACK CONE   
-    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
+    // posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg); //snake pos
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8_m, 1.47_m, 57.5_deg);
@@ -398,7 +399,7 @@ void Elevarm::assignOutputs()
     }
     table->PutBoolean("going from stow to not stow", false);
 
-    if (futureState.positionState == Position::HIGH && futureState.directionState == Direction::FRONT && intake->getFuturePiece() == Piece::CONE) {
+    if ((futureState.positionState == Position::HIGH || futureState.positionState == Position::MID) && futureState.directionState == Direction::FRONT && intake->getFuturePiece() == Piece::CONE) {
         futureState.targetPose.theta -= 360.0;
     }
 
@@ -415,7 +416,7 @@ void Elevarm::assignOutputs()
         } else { 
             if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 6.0) ||
                 (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -26.0) ||
-                 (armRotateMotor.getPosition() > 90.0) ||
+                 (armRotateMotor.getPosition() > 100.0) ||
                  (armRotateMotor.getPosition() < -90.0)) {
                 // wristMotor.setPosition(futureState.targetPose.wrist);
                 armRotateMotor.setPosition(futureState.targetPose.theta);
