@@ -35,7 +35,7 @@
 #define AZIMUTH_K_E 0.0027f
 
 #define AZIMUTH_K_VEL 10.0f
-#define AZIMUTH_K_ACC_MUL 20.0f
+#define AZIMUTH_K_ACC_MUL 0.05f
 
 #define DRIVE_K_P 0.001f
 #define DRIVE_K_I 0.0f
@@ -43,7 +43,7 @@
 #define DRIVE_K_E 0.0027f
 
 #define DRIVE_K_VEL 6.0f
-#define DRIVE_K_ACC_MUL 20.0f
+#define DRIVE_K_ACC_MUL 0.05f
 
 #define MOTOR_FREE_SPEED 6380.0f
 #define WHEEL_DIAMETER_M 0.0973f //0.1016
@@ -107,7 +107,7 @@ void Drivetrain::configSwerveModule(int i)
 
     ValorPIDF azimuthPID;
     azimuthPID.velocity = AZIMUTH_K_VEL;
-    azimuthPID.acceleration = azimuthPID.velocity * AZIMUTH_K_ACC_MUL;
+    azimuthPID.acceleration = AZIMUTH_K_ACC_MUL;
     azimuthPID.P = AZIMUTH_K_P;
     azimuthPID.I = AZIMUTH_K_I;
     azimuthPID.D = AZIMUTH_K_D;
@@ -122,7 +122,7 @@ void Drivetrain::configSwerveModule(int i)
 
     ValorPIDF drivePID;
     drivePID.velocity = DRIVE_K_VEL;
-    drivePID.acceleration = drivePID.velocity * DRIVE_K_ACC_MUL;
+    drivePID.acceleration = DRIVE_K_ACC_MUL;
     drivePID.P = DRIVE_K_P;
     drivePID.I = DRIVE_K_I;
     drivePID.D = DRIVE_K_D;
