@@ -547,6 +547,18 @@ frc::Pose2d Elevarm::forwardKinematics(Elevarm::Positions positions)
     return frc::Pose2d((units::length::meter_t)x,(units::length::meter_t)z,(units::angle::degree_t)w);
 }
 
+double Elevarm::getArmPosition(){
+    return armRotateMotor.getPosition();
+}
+
+double Elevarm::getCarriagePosition(){
+    return carriageMotors.getPosition();
+}
+
+double Elevarm::getWristPosition(){
+    return wristMotor.getPosition();
+}
+
 void Elevarm::InitSendable(wpi::SendableBuilder& builder)
 {
     builder.SetSmartDashboardType("Subsystem");

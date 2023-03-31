@@ -160,6 +160,10 @@ public:
 
     void setArmPIDF(bool);
 
+    double getArmPosition();
+    double getCarriagePosition();
+    double getWristPosition();
+
 private:
 
     /**

@@ -71,7 +71,9 @@ public:
         int green;
         int blue;
     };
-
+    /**
+     * @brief Represents a Segment of LEDs with their own settings
+    */
     struct SegmentSettings{
         RGBColor currentColor;
         ctre::phoenix::led::Animation *activeAnimation;
@@ -109,7 +111,7 @@ public:
      * @brief Set the color of the CANdle LEDs and attached LEDs
      * 
      * @param segment The segment that will be changed
-     * @param color The color to change all the LEDs in the segment to. Will clear the previous animation
+     * @param color The color to change all the LEDs in the segment to.
      */
     void setColor(int segment, int color);
 
@@ -117,18 +119,33 @@ public:
      * @brief Set the color of the CANdle LEDs and attached LEDs
      * 
      * @param segment The segment that will be changed
-     * @param rgb The RGB code to change all the LEDs in the segment to. Will clear the previous animation
+     * @param rgb The RGB code to change all the LEDs in the segment to.
      */
     void setColor(int segment, RGBColor rgb);
+    /**
+     * @brief Sets the color of the entire strip of LEDs
+     * 
+     * @param rgb The RGB code to change all the LEDs in the strip to.
+    */
     void setColor(RGBColor rgb);
     /**
      * @brief Set the animation the LEDs should follow
      * 
      * @param segment The segment that will get animated
      * @param animation Animation to set. Will clear the previous color
+     * @param color Color of the animation
      * @param speed The speed that the animation will go at
      */
-    void setAnimation(int segment, AnimationType animation, double speed=1.0);
+    void setAnimation(int segment, AnimationType animation, RGBColor color, double speed=1.0);
+
+    /**
+     * @brief Sets the animation for all segments
+     * 
+     * @param animation Animation to set
+     * @param color Color of the animation
+     * @param speed The speed that the animation will go at
+    */
+    void setAnimation(AnimationType animation, RGBColor, double speed=1.0);
 
     /**
      * @brief Clears any active animation
@@ -137,6 +154,9 @@ public:
      * @param segment The segment that will be cleared
      */
     void clearAnimation(int segment);
+    /**
+     * @brief Clears all active animations
+    */
     void clearAnimation();
     
     /**
@@ -146,7 +166,21 @@ public:
 
     void InitSendable(wpi::SendableBuilder& builder) override;
 
-    std::vector<ValorCANdleSensor::AnimationType> currentAnimations;
+    /**
+     * @brief Gets the animation type of the segment
+     * 
+     * @param segment the segment to get the animation type from
+     * @return The active animation type
+    */
+    ValorCANdleSensor::AnimationType getActiveAnimationType(int segment);
+
+    /**
+     * @brief Gets the color of the segment
+     * 
+     * @param segment The segment to get the color from
+     * @return The color of the segment
+    */
+    ValorCANdleSensor::RGBColor getColor(int segment);
 
 private:
     ctre::phoenix::led::CANdle candle;
@@ -155,6 +189,6 @@ private:
 
     std::unordered_map<int, SegmentSettings> segmentMap;
 
-
     void calculate();
+
 };

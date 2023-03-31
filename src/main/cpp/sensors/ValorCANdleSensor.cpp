@@ -26,7 +26,7 @@ ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int
     candle.ConfigAllSettings(config, 100);
     //12/3 = 4
     int segmentLEDCount = (LED_COUNT-8)/segments;
-    //
+    //286
     for (int i = 0; i<segments + 1; i++){
         SegmentSettings newSegment;
         newSegment.currentColor = toRGB(VALOR_GOLD);
@@ -34,7 +34,7 @@ ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int
         newSegment.activeAnimationType = AnimationType::None;
         if (i == 0){
             newSegment.startLed = 0;
-            newSegment.endLed = 7;
+            newSegment.endLed = 8;
         }
         else{
             newSegment.startLed = (segmentLEDCount*(i-1))+8;
@@ -75,37 +75,29 @@ void ValorCANdleSensor::setColor(int segment, RGBColor rgb)
 void ValorCANdleSensor::setColor(RGBColor rgb)
 {
     for(int i = 0; i<segmentMap.size(); i++){
-    segmentMap[i].currentColor = rgb;
-    candle.SetLEDs(
-        segmentMap[i].currentColor.red,
-        segmentMap[i].currentColor.green,
-        segmentMap[i].currentColor.blue,
-        0,
-        segmentMap[i].startLed,
-        segmentMap[i].endLed
-    );
+        setColor(i, rgb);
     }
 }
 
 void ValorCANdleSensor::setColor(int segment, int color)
 {
-    segmentMap[segment].currentColor = toRGB(color);
-    candle.SetLEDs(
-        segmentMap[segment].currentColor.red, 
-        segmentMap[segment].currentColor.green, 
-        segmentMap[segment].currentColor.blue,
-        0,
-        segmentMap[segment].startLed,
-        segmentMap[segment].endLed
-    );
+    setColor(segment, toRGB(color));
 }
 
-void ValorCANdleSensor::setAnimation(int segment, AnimationType animation, double speed)
+void ValorCANdleSensor::setAnimation(AnimationType animation, RGBColor color, double speed){
+    for (auto segment : segmentMap){
+        setAnimation(segment.first, animation, color, speed);
+    }
+}
+
+void ValorCANdleSensor::setAnimation(int segment, AnimationType animation,RGBColor color, double speed)
 {
     int brightness = 1;
 
     if (animation != segmentMap[segment].activeAnimationType) {
         clearAnimation(segment);
+        // setColor(segment, color);
+        // setColor(segmentMap[segment].currentColor);
         segmentMap[segment].activeAnimationType = animation;
 
         if (animation == AnimationType::ColorFlow){
@@ -207,11 +199,10 @@ void ValorCANdleSensor::setAnimation(int segment, AnimationType animation, doubl
 
 void ValorCANdleSensor::clearAnimation(int segment)
 {
-    
     segmentMap[segment].activeAnimationType = AnimationType::None;
 
     if (segmentMap[segment].activeAnimation != NULL) {
-        candle.ClearAnimation(segment);
+        candle.ClearAnimation(segmentMap[segment].activeAnimation->GetAnimationIdx());
         delete segmentMap[segment].activeAnimation;
     }
     
@@ -219,21 +210,22 @@ void ValorCANdleSensor::clearAnimation(int segment)
 
 void ValorCANdleSensor::clearAnimation()
 {
-    for(int segment =0; segment < segmentMap.size();segment++){
-    segmentMap[segment].activeAnimationType = AnimationType::None;
+    for(auto segment : segmentMap) {
+        clearAnimation(segment.first);
+    }
+}
 
-    if (segmentMap[segment].activeAnimation != NULL) {
-        candle.ClearAnimation(segment);
-        delete segmentMap[segment].activeAnimation;
-    }
-    }
+ValorCANdleSensor::AnimationType ValorCANdleSensor::getActiveAnimationType(int segment) {
+    return segmentMap[segment].activeAnimationType;
+}
+
+ValorCANdleSensor::RGBColor ValorCANdleSensor::getColor(int segment) {
+    return segmentMap[segment].currentColor;
 }
 
 void ValorCANdleSensor::reset()
 {
-    for (int i = 0; i<=segments; i++){
-        clearAnimation(i);
-    }
+    clearAnimation();
     prevState = 0xFFFFFF;
     currState = 0xFFFFFF;
 }
