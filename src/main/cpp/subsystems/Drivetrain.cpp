@@ -182,9 +182,7 @@ void Drivetrain::init()
     thetaPIDF.F = KFT;
 
     table->PutNumber("Vision Std", 3.0);
-    table->PutBoolean("Save Swerve Mag Encoder", false);
     table->PutBoolean("Load Swerve Mag Encoder", false);
-    state.saveToFileDebouncer = false;
 
     table->PutNumber("KPLIMELIGHT", 0.2);
 
@@ -235,18 +233,6 @@ void Drivetrain::assessInputs()
 
 void Drivetrain::analyzeDashboard()
 {
-
-    // Only save to file once. Wait until switch is toggled to run again
-    if (table->GetBoolean("Save Swerve Mag Encoder",false) && !state.saveToFileDebouncer) {
-        for (ValorSwerve<SwerveAzimuthMotor, SwerveDriveMotor> *module : swerveModules)
-        {
-            module->storeAzimuthZeroReference();
-        }
-        state.saveToFileDebouncer = true;
-    } else if (!table->GetBoolean("Save Swerve Mag Encoder",false)) {
-        state.saveToFileDebouncer = false;
-    }
-
     if (table->GetBoolean("Load Swerve Mag Encoder",false))
         pullSwerveModuleZeroReference();
 
