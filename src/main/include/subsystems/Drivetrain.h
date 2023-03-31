@@ -119,8 +119,6 @@ public:
           double ySpeed;
           double rot;
           
-          bool saveToFileDebouncer;
-
           bool adas;
           bool lock;
 

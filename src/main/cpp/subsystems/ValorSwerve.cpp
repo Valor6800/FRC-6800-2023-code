@@ -7,6 +7,11 @@
 #include <iostream>
 #include <string>
 
+#define WHEEL_0_INIT 0.3097f
+#define WHEEL_1_INIT 0.4349f
+#define WHEEL_2_INIT 0.4792f
+#define WHEEL_3_INIT 0.7331f
+
 #define DRIVE_DEADBAND 0.05f
 #define MAG_ENCODER_TICKS_PER_REV 4096.0f
 
@@ -75,22 +80,6 @@ void ValorSwerve<AzimuthMotor, DriveMotor>::resetDriveEncoder()
 }
 
 template<class AzimuthMotor, class DriveMotor>
-void ValorSwerve<AzimuthMotor, DriveMotor>::storeAzimuthZeroReference()
-{
-    // Encoder position in rotations via the mag encoder
-    double position = getMagEncoderCount();
-
-    std::ofstream ofs;
-    std::stringstream stream;
-    stream << "/home/lvuser/SwerveModule.wheel.";
-    stream << std::to_string(wheelIdx);
-    stream << ".txt";
-    ofs.open(stream.str(), std::ofstream::out);
-    ofs << std::to_string(position);
-    ofs.close();
-}
-
-template<class AzimuthMotor, class DriveMotor>
 bool ValorSwerve<AzimuthMotor, DriveMotor>::loadAndSetAzimuthZeroReference()
 {
     // Read the encoder position. If the encoder position isn't returned, set the position to what the wheels
@@ -101,20 +90,18 @@ bool ValorSwerve<AzimuthMotor, DriveMotor>::loadAndSetAzimuthZeroReference()
     if (currPos == 0) {
         return false;
     }
-
-    std::ifstream infile("/home/lvuser/SwerveModule.wheel." + std::to_string(wheelIdx) + ".txt");
-    if (!infile.good()) {
-        return false;
+    double storedPos = 0.0;
+    if(wheelIdx == 0){
+        storedPos = WHEEL_0_INIT;
+    } else if(wheelIdx == 1){
+        storedPos = WHEEL_1_INIT;
+    } else if(wheelIdx == 2){
+        storedPos = WHEEL_2_INIT;
+    } else if(wheelIdx == 3){
+        storedPos = WHEEL_3_INIT;
     }
-
-    // Encoder position for the mag encoder read from storage
-    std::string line;
-    std::getline(infile, line);
-    double storedPos = atof(line.c_str());
-    infile.close();
-
     // Get the remainder of the delta so the encoder can wrap
-    azimuthMotor->setEncoderPosition(currPos - storedPos);
+    azimuthMotor->setEncoderPosition(std::fmod(currPos - storedPos,1.0));
     return true;
 }
 
