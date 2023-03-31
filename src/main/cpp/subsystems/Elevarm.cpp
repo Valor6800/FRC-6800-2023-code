@@ -42,8 +42,8 @@
 #define ROTATE_K_ERROR 0.5f
 #define ROTATE_K_VEL 140.0f
 #define ROTATE_K_ACC_MUL 0.66f
-#define ROTATE_K_AFF 0.115f
-#define ROTATE_K_AFF_CUBE 0.11f
+#define ROTATE_K_AFF 0.145f //0.155f
+#define ROTATE_K_AFF_CUBE 0.14f
 #define ROTATE_K_AFF_POS 90.0f
 
 #define AUTO_ROTATE_K_F 0.75f
@@ -60,7 +60,7 @@
 #define ROTATE_S_CURVE_STRENGTH 3
 
 #define WRIST_K_F 0.75f
-#define WRIST_K_P 0.12f
+#define WRIST_K_P 0.55f // 0.48f //0.24f
 #define WRIST_K_I 0.0f
 #define WRIST_K_D 0.0f
 #define WRIST_K_ERROR 0.25f
