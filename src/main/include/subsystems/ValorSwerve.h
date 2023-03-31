@@ -74,7 +74,6 @@ public:
      * Call this method following physical alignment of the module wheel in its zeroed position.
      * Used during module instantiation to initialize the relative encoder.
      */
-    void storeAzimuthZeroReference();
 
     /**
      * Loads the current azimuth absolute encoder reference position and sets selected sensor encoder
