@@ -101,7 +101,7 @@ bool ValorSwerve<AzimuthMotor, DriveMotor>::loadAndSetAzimuthZeroReference()
         storedPos = WHEEL_3_INIT;
     }
     // Get the remainder of the delta so the encoder can wrap
-    azimuthMotor->setEncoderPosition(std::fmod(currPos - storedPos,1.0));
+    azimuthMotor->setEncoderPosition(currPos - storedPos);
     return true;
 }
 
