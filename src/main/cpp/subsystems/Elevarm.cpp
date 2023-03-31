@@ -10,7 +10,8 @@
 #define ROTATE_GEAR_RATIO 74.25f
 #define WRIST_GEAR_RATIO 41.14f
 #define CARRIAGE_GEAR_RATIO 4.0f
-#define CANCODER_GEAR_RATIO 9.75f
+#define ARM_CANCODER_GEAR_RATIO 9.75f
+#define WRIST_CANCODER_GEAR_RATIO 1.0f
 #define CARRAIAGE_OUTPUT_DIAMETER 0.0364f
 
 #define CARRIAGE_UPPER_LIMIT 0.89f 
@@ -20,7 +21,8 @@
 #define WRIST_FORWARD_LIMIT 325.0f
 #define WRIST_REVERSE_LIMIT -325.0f
 
-#define CANCODER_OFFSET 74.0f
+#define ARM_CANCODER_OFFSET 74.0f
+#define WRIST_CANCODER_OFFSET 0.0f
 
 #define INITIAL_HEIGHT_OFFSET 0.0f //cm
 #define STOW_HEIGHT_OFFSET 0.0f //cm
@@ -98,6 +100,7 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
                             armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
                             wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, true, "baseCAN"),
+                            wristCANcoder(CANIDs::WRIST_CANCODER, "baseCan"),
                             candle(_robot, 286, CANIDs::CANDLE, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
@@ -182,6 +185,8 @@ void Elevarm::init()
 
     armCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
     armCANcoder.SetPositionToAbsolute();
+    wristCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
+    wristCANcoder.SetPositionToAbsolute();
     
     wristMotor.setConversion((1.0 / WRIST_GEAR_RATIO) * 360.0);
     wristMotor.setForwardLimit(WRIST_FORWARD_LIMIT);
@@ -244,9 +249,9 @@ void Elevarm::init()
     table->PutBoolean("Coast Mode", coastMode);
 
     resetState();
-    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - CANCODER_OFFSET) / CANCODER_GEAR_RATIO + 180.0);
+    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - ARM_CANCODER_OFFSET) / ARM_CANCODER_GEAR_RATIO + 180.0);
     carriageMotors.setEncoderPosition(0.0);
-    wristMotor.setEncoderPosition(0.0);
+    wristMotor.setEncoderPosition((wristCANcoder.GetAbsolutePosition() - WRIST_CANCODER_OFFSET) / WRIST_CANCODER_GEAR_RATIO);
 }
 
 void Elevarm::assessInputs()
@@ -339,9 +344,13 @@ void Elevarm::analyzeDashboard()
     futureState.atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
     futureState.atWrist = std::fabs(wristMotor.getPosition() - futureState.targetPose.wrist) <= PREVIOUS_WRIST_DEADBAND;
 
-    bool armInRange = armCANcoder.GetAbsolutePosition() > (CANCODER_OFFSET - 50) &&
-                      armCANcoder.GetAbsolutePosition() < (CANCODER_OFFSET + 50);
+    bool armInRange = armCANcoder.GetAbsolutePosition() > (ARM_CANCODER_OFFSET - 50) &&
+                      armCANcoder.GetAbsolutePosition() < (ARM_CANCODER_OFFSET + 50);
     table->PutBoolean("Arm In Range", armInRange);
+
+    bool wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 50) &&
+                        wristCANcoder.GetAbsolutePosition() < (WRIST_CANCODER_OFFSET + 50);
+    table->PutBoolean("Wrist In Range", wristInRange);
 
     if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {
         candle.setColor(255,0,0);
@@ -631,6 +640,11 @@ void Elevarm::InitSendable(wpi::SendableBuilder& builder)
     builder.AddDoubleProperty(
         "Arm CANcoder",
         [this]{ return armCANcoder.GetAbsolutePosition(); },
+        nullptr
+    );
+    builder.AddDoubleProperty(
+        "Wrist CANcoder",
+        [this]{ return wristCANcoder.GetAbsolutePosition(); },
         nullptr
     );
     builder.AddBooleanProperty(
