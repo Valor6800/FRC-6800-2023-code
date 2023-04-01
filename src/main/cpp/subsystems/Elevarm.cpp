@@ -195,7 +195,7 @@ void Elevarm::init()
     wristMotor.setPIDF(wristPID, 0);
 
     // STOW POSITION
-    stowPos = frc::Pose2d(-0.4185_m, 0.354_m, -26.3_deg);
+    stowPos = frc::Pose2d(-0.4185_m, 0.354_m, -15.0_deg);
     
     // FRONT CONE
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.086_m, 0.4_m, 137.4_deg);
@@ -299,7 +299,7 @@ void Elevarm::assessInputs()
         setFuturePiece(Piece::CONE);
     }
 
-    if(operatorGamepad->GetYButton() && driverGamepad->GetYButton()){
+    if(operatorGamepad->GetYButton() || driverGamepad->GetYButton()){
         setFuturePiece(Piece::CUBE);
     }
     
