@@ -294,14 +294,14 @@ void Elevarm::assessInputs()
             }
         } 
     }
-    if((intake->state.intakeState != Intake::IntakeStates::OUTTAKE && !driverGamepad->leftTriggerActive()) && (intake->state.intakeState != Intake::IntakeStates::SPIKED || driverGamepad->DPadRight() || operatorGamepad->GetBButton())){
-        if (operatorGamepad->GetYButton() || driverGamepad->GetYButton() || operatorGamepad->GetAButton()){
-            setFuturePiece(Piece::CUBE);
-        } else {
-            setFuturePiece(Piece::CONE);
-        }
+    
+    if(operatorGamepad->GetYButton()){
+        setFuturePiece(Piece::CONE);
     }
 
+    if(operatorGamepad->GetBButton()){
+        setFuturePiece(Piece::CUBE);
+    }
     
     if (driverGamepad->GetRightBumper() || operatorGamepad->GetLeftBumper()) {
         futureState.directionState = Direction::BACK;
