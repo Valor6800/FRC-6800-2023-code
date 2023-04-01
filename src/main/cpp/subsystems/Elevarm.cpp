@@ -68,7 +68,7 @@
 #define AUTO_ROTATE_K_AFF_CUBE 0.11f
 #define AUTO_ROTATE_K_AFF_POS 90.0f
 
-#define ROTATE_S_CURVE_STRENGTH 3
+#define ROTATE_S_CURVE_STRENGTH 0
 
 #define WRIST_K_F 0.75f
 #define WRIST_K_P 0.18f
@@ -289,7 +289,8 @@ void Elevarm::assessInputs()
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::GROUND_SCORE;
         else futureState.positionState = Position::STOW;
     } else if(operatorGamepad->DPadLeft()){
-        if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
+        if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = Position::SNAKE;
+        else if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
         else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
         else futureState.positionState = Position::STOW;
     } else if (operatorGamepad->DPadUp()){
