@@ -41,7 +41,7 @@
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
 #define ROTATE_K_VEL 140.0f
-#define ROTATE_K_ACC_MUL 0.58f
+#define ROTATE_K_ACC_MUL 0.50f
 #define ROTATE_K_AFF 0.145f //0.155f
 #define ROTATE_K_AFF_CUBE 0.14f
 #define ROTATE_K_AFF_POS 90.0f
@@ -64,8 +64,8 @@
 #define WRIST_K_I 0.0f
 #define WRIST_K_D 0.0f
 #define WRIST_K_ERROR 0.25f
-#define WRIST_K_VEL 540.0f
-#define WRIST_K_ACC_MUL 0.375f
+#define WRIST_K_VEL 360.0f
+#define WRIST_K_ACC_MUL 0.2f
 #define WRIST_S_CURVE_STRENGTH 0
 
 #define PREVIOUS_WRIST_DEADBAND 1.01f
@@ -197,7 +197,7 @@ void Elevarm::init()
     // STOW POSITION
     stowPos = frc::Pose2d(-0.4185_m, 0.354_m, -26.3_deg);
 
-    stowPoopPos = frc::Pose2d(-0.428_m, 0.406_m, 60.0_deg);
+    stowPoopPos = frc::Pose2d(-0.428_m, 0.406_m, 50.0_deg);
     
     // FRONT CONE
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.086_m, 0.4_m, 137.4_deg);
@@ -212,10 +212,10 @@ void Elevarm::init()
     // FRONT CUBE
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.147_m, 0.375_m, 197.47_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.521_m, 165.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.274_m, 1.054_m, -62.93_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.576_m, 1.255_m, -137.65_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.274_m, 1.104_m, -62.93_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.576_m, 1.305_m, -137.65_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 81.0_deg);
 
@@ -227,7 +227,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.619_m, 40.7_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, -60.0_deg);
     // BACK CUBE
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.914_m, 0.272_m, -146.23_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.09_m, 141.4_deg);
