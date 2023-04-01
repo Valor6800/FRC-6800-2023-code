@@ -12,7 +12,7 @@
 #define KPIGEON 2.0f
 #define KLIMELIGHT -29.8f
 // #define KP_LOCK 0.2f
-// #define KP_LIMELIGHT 0.2f
+#define KP_LIMELIGHT 0.7f
 
 #define KPX 60.0f //50
 #define KIX 0.0f //0
@@ -153,8 +153,6 @@ void Drivetrain::init()
     limeTable = nt::NetworkTableInstance::GetDefault().GetTable("limelight");
     pigeon.Calibrate();    
 
-    state.limeLocation = APRIL_TAGS;
-
     initPositions.fill(frc::SwerveModulePosition{0_m, frc::Rotation2d(0_rad)});
 
     for (int i = 0; i < SWERVE_COUNT; i++)
@@ -184,7 +182,10 @@ void Drivetrain::init()
     table->PutNumber("Vision Std", 3.0);
     table->PutBoolean("Load Swerve Mag Encoder", false);
 
-    table->PutNumber("KPLIMELIGHT", 0.2);
+    table->PutNumber("KPLIMELIGHT", 0.325);
+
+    limeTable->PutNumber("pipeline", LimelightPipes::TAPE_HIGH);    
+    limeTable->PutNumber("ledMode", 1);
 
     state.lock = false;
 
@@ -220,6 +221,8 @@ void Drivetrain::assessInputs()
     }
 
     state.adas = driverGamepad->GetAButton();
+    state.topTape = operatorGamepad->DPadUp();
+    state.bottomTape = operatorGamepad->DPadRight();
     state.lock = state.adas || driverGamepad->GetBButton();
 
     state.xSpeed = driverGamepad->leftStickY(2);
@@ -292,13 +295,18 @@ void Drivetrain::assignOutputs()
     if (state.xPose){
         setXMode();
     } else if (state.adas){
-        setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-        adas();
+        limeTable->PutNumber("ledMode", 3);
+        if (state.bottomTape) {
+            adas(LimelightPipes::TAPE_MID);
+        } else {
+            adas(LimelightPipes::TAPE_HIGH);
+        }
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     } 
     else {
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-        limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);    
+        limeTable->PutNumber("pipeline", LimelightPipes::TAPE_HIGH);    
+        limeTable->PutNumber("ledMode", 1);
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     }
 }
@@ -397,14 +405,15 @@ void Drivetrain::angleLock(){
     
 }
 
-void Drivetrain::adas(){
-    limeTable->PutNumber("pipeline", 1);
-
-    if (limeTable->GetNumber("tv",0) == 1 && limeTable->GetNumber("pipeline", 0) == 1){
-        double tx = limeTable->GetNumber("tx",0);
-        double normalizedTx = tx / KLIMELIGHT;
-        double kPlimeLight = limeTable->GetNumber("KPLIMELIGHT", 0.2);
-        state.ySpeedMPS = units::velocity::meters_per_second_t(((std::fabs(normalizedTx) <= 1 ? normalizedTx : std::copysignf(1.0, normalizedTx) ) * kPlimeLight * -driveMaxSpeed));
+void Drivetrain::adas(LimelightPipes pipe){
+    limeTable->PutNumber("pipeline", pipe);
+    if (limeTable->GetNumber("pipeline", -1) == LimelightPipes::TAPE_HIGH || limeTable->GetNumber("pipeline", -1) == LimelightPipes::TAPE_MID){
+        if (limeTable->GetNumber("tv",0) == 1){
+            double tx = limeTable->GetNumber("tx",0);
+            double normalizedTx = tx / KLIMELIGHT;
+            double kPlimeLight = KP_LIMELIGHT;
+            state.ySpeedMPS = units::velocity::meters_per_second_t(((std::fabs(normalizedTx) <= 1 ? normalizedTx : std::copysignf(1.0, normalizedTx) ) * kPlimeLight * -driveMaxSpeed));
+        }
     }
 }
 
