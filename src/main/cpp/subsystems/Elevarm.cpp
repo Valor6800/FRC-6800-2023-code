@@ -22,7 +22,8 @@
 #define WRIST_REVERSE_LIMIT -325.0f
 
 #define ARM_CANCODER_OFFSET  303.925f //59.0625f
-#define WRIST_CANCODER_OFFSET 307.969f
+// #define WRIST_CANCODER_OFFSET 307.969f
+#define WRIST_CANCODER_OFFSET 50.8f
 
 #define INITIAL_HEIGHT_OFFSET 0.0f //cm
 #define STOW_HEIGHT_OFFSET 0.0f //cm
@@ -100,7 +101,7 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             armRotateMotor(CANIDs::ARM_ROTATE, ValorNeutralMode::Brake, false, "baseCAN"),
                             armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
                             wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, false, "baseCAN"),
-                            wristCANcoder(CANIDs::WRIST_CANCODER, "baseCan"),
+                            wristCANcoder(CANIDs::WRIST_CANCODER, "baseCAN"),
                             candle(_robot, 286, CANIDs::CANDLE, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
@@ -178,7 +179,7 @@ void Elevarm::init()
 
     carriageMotors.setupFollower(CANIDs::CARRIAGE_FOLLOW, false);
 
-    armRotateMotor.setVoltageCompensation(11.0);
+    armRotateMotor.setVoltageCompensation(12.0);
     armRotateMotor.setConversion(1.0 / ROTATE_GEAR_RATIO * 360.0);
     armRotateMotor.setForwardLimit(ROTATE_FORWARD_LIMIT);
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
@@ -188,7 +189,9 @@ void Elevarm::init()
     armCANcoder.SetPositionToAbsolute();
     wristCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
     wristCANcoder.SetPositionToAbsolute();
-    
+    wristCANcoder.ConfigSensorDirection(true);
+
+    wristMotor.setVoltageCompensation(12.0);
     wristMotor.setConversion((1.0 / WRIST_GEAR_RATIO) * 360.0);
     wristMotor.setForwardLimit(WRIST_FORWARD_LIMIT);
     wristMotor.setReverseLimit(WRIST_REVERSE_LIMIT);
@@ -250,8 +253,10 @@ void Elevarm::init()
     resetState();
     armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - ARM_CANCODER_OFFSET) / ARM_CANCODER_GEAR_RATIO + 180.0);
     carriageMotors.setEncoderPosition(0.0);
-    // wristMotor.setEncoderPosition((wristCANcoder.GetAbsolutePosition() - WRIST_CANCODER_OFFSET) / WRIST_CANCODER_GEAR_RATIO);
-    wristMotor.setEncoderPosition(0.0);
+    wristMotor.setEncoderPosition((wristCANcoder.GetAbsolutePosition() - WRIST_CANCODER_OFFSET) / WRIST_CANCODER_GEAR_RATIO);
+    wristCANcoder.SetStatusFramePeriod(CANCoderStatusFrame_SensorData, 50, 1000); // changes the period of the sensor data frame to 50ms
+    //armCANcoder.SetStatusFramePeriod(CANCoderStatusFrame_SensorData, 50); // changes the period of the sensor data frame to 50ms
+
 }
 
 void Elevarm::assessInputs()
