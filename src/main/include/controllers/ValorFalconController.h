@@ -27,6 +27,7 @@ public:
 
     void setEncoderPosition(double position);
     
+    void setPositionDependent(double, double);
     void setPosition(double);
     void setSpeed(double);
     void setPower(double);

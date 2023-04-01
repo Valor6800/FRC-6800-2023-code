@@ -435,9 +435,9 @@ void Elevarm::assignOutputs()
             if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 6.0) ||
                 (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -26.0) ||
                 (futureState.targetPose.theta < -180.0 && armRotateMotor.getPosition() < -180.0)) {
-                wristMotor.setPosition(futureState.targetPose.wrist);
+                wristMotor.setPositionDependent(futureState.targetPose.wrist, armRotateMotor.getPosition());
             } else {
-                wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
+                wristMotor.setPositionDependent(stowPos.Rotation().Degrees().to<double>(), armRotateMotor.getPosition());
             }
     
             if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {

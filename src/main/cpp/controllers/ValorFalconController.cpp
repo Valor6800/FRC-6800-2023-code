@@ -110,6 +110,17 @@ void ValorFalconController::setRange(int slot, double min, double max)
     
 }
 
+void ValorFalconController::setPositionDependent(double position, double armAngle)
+{
+    if (pidf.aFF != 0) {
+        double angleFromHor = getPosition() - 90 - armAngle;
+        double scalar = std::cos(angleFromHor * M_PI / 180.0);
+
+        motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV, DemandType_ArbitraryFeedForward, scalar * pidf.aFF);
+    } else
+        motor->Set(ControlMode::MotionMagic, position / conversion * FALCON_TICKS_PER_REV);
+}
+
 void ValorFalconController::setPosition(double position)
 {
     if (pidf.aFF != 0) {
