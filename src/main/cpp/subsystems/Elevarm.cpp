@@ -21,8 +21,8 @@
 #define WRIST_FORWARD_LIMIT 325.0f
 #define WRIST_REVERSE_LIMIT -325.0f
 
-#define ARM_CANCODER_OFFSET 59.0625f
-#define WRIST_CANCODER_OFFSET 0.0f
+#define ARM_CANCODER_OFFSET  303.925f //59.0625f
+#define WRIST_CANCODER_OFFSET 307.969f
 
 #define INITIAL_HEIGHT_OFFSET 0.0f //cm
 #define STOW_HEIGHT_OFFSET 0.0f //cm
@@ -33,7 +33,7 @@
 #define CARRIAGE_K_D 0.0f
 #define CARRIAGE_K_ERROR 0.005f
 #define CARRIAGE_K_VEL 4.0f
-#define CARRIAGE_K_ACC_MUL 0.1f
+#define CARRIAGE_K_ACC_MUL 0.15f
 
 #define ROTATE_K_F 0.75f
 #define ROTATE_K_P 0.045f
@@ -178,13 +178,13 @@ void Elevarm::init()
 
     carriageMotors.setupFollower(CANIDs::CARRIAGE_FOLLOW, false);
 
+    armRotateMotor.setVoltageCompensation(11.0);
     armRotateMotor.setConversion(1.0 / ROTATE_GEAR_RATIO * 360.0);
     armRotateMotor.setForwardLimit(ROTATE_FORWARD_LIMIT);
     armRotateMotor.setReverseLimit(ROTATE_REVERSE_LIMIT);
     armRotateMotor.setPIDF(rotatePID, 0);
 
     armCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
-    armCANcoder.ConfigSensorDirection(true);
     armCANcoder.SetPositionToAbsolute();
     wristCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
     wristCANcoder.SetPositionToAbsolute();
@@ -200,43 +200,43 @@ void Elevarm::init()
     stowPoopPos = frc::Pose2d(-0.428_m, 0.406_m, 60.0_deg);
     
     // FRONT CONE
-    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.086_m, 0.4_m, 121.4_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.086_m, 0.4_m, 137.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg); // new points
-    posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.173_m, 1.163_m, -106.86_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.566_m, 1.416_m, -166.31_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.173_m, 1.163_m, -90.86_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.566_m, 1.416_m, -150.31_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH_AUTO] =frc::Pose2d(0.516_m, 1.53_m, -140.0_deg);
 
     // FRONT CUBE
-    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.185_m, 0.409_m, 216.57_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.185_m, 0.409_m, 232.57_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.037_m, 1.34_m, 318.0_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.273_m, 1.054_m, -46.93_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.577_m, 1.255_m, -128.75_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.273_m, 1.054_m, -30.93_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.577_m, 1.255_m, -112.75_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 81.0_deg);
 
     // BACK CONE   
     // posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg); //snake pos
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.86_m, 1.565_m, 59.3_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.86_m, 1.565_m, 75.3_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
     // BACK CUBE
-    posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.969_m, 0.306_m, -139.13_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.969_m, 0.306_m, -123.13_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.09_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.823_m, 1.32_m, 78.7_deg);
-    posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -237.0_deg);
-    posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -180.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -221.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -164.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
-    posMap[Piece::CUBE][Direction::BACK][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 65.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 81.0_deg);
 
 
     table->PutNumber("Carriage Max Manual Speed", MAN_MAX_CARRIAGE);
@@ -252,7 +252,8 @@ void Elevarm::init()
     resetState();
     armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - ARM_CANCODER_OFFSET) / ARM_CANCODER_GEAR_RATIO + 180.0);
     carriageMotors.setEncoderPosition(0.0);
-    wristMotor.setEncoderPosition((wristCANcoder.GetAbsolutePosition() - WRIST_CANCODER_OFFSET) / WRIST_CANCODER_GEAR_RATIO);
+    // wristMotor.setEncoderPosition((wristCANcoder.GetAbsolutePosition() - WRIST_CANCODER_OFFSET) / WRIST_CANCODER_GEAR_RATIO);
+    wristMotor.setEncoderPosition(0.0);
 }
 
 void Elevarm::assessInputs()
@@ -386,6 +387,8 @@ void Elevarm::assignOutputs()
     Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
     if (futureState.positionState == Position::STOW) {
         futureState.targetPose = stowPose;
+    } else if (futureState.positionState == Position::STOW_POOP) {
+        futureState.targetPose = reverseKinematics(stowPoopPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
         if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);

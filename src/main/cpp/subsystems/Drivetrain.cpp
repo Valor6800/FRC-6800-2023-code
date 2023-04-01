@@ -721,4 +721,21 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
             },
             nullptr
         );
+        builder.AddDoubleArrayProperty(
+            "swerve states",
+            [this] 
+            { 
+                std::vector<double> states;
+                states.push_back(swerveModules[0]->getState().angle.Degrees().to<double>());
+                states.push_back(swerveModules[0]->getState().speed.to<double>());
+                states.push_back(swerveModules[1]->getState().angle.Degrees().to<double>());
+                states.push_back(swerveModules[1]->getState().speed.to<double>());
+                states.push_back(swerveModules[2]->getState().angle.Degrees().to<double>());
+                states.push_back(swerveModules[2]->getState().speed.to<double>());
+                states.push_back(swerveModules[3]->getState().angle.Degrees().to<double>());
+                states.push_back(swerveModules[3]->getState().speed.to<double>());
+                return states;
+            },
+            nullptr
+        );
     }
