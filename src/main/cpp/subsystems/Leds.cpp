@@ -20,6 +20,8 @@ Leds::Leds(frc::TimedRobot *_robot, Elevarm *_elevarm, Intake *_intake, Drivetra
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
+
+    state.startedAnimating = std::vector<units::second_t>(4, -1_s);
 }
 
 void Leds::init(){resetState();}
@@ -32,6 +34,17 @@ void Leds::resetState(){
 void Leds::assessInputs(){}
 
 void Leds::analyzeDashboard(){
+    if (intake){
+        switch (intake->state.intakeState){
+            case (Intake::SPIKED):
+                if (state.startedAnimating[3] == -1_s)
+                    state.startedAnimating[3] = frc::Timer::GetFPGATimestamp();
+                break;
+            default:
+                state.startedAnimating[3] = -1_s;
+                break;
+        }
+    }
 
     if (elevarm->futureState.pitModeEnabled){
         candle.setColor(2, ValorCANdleSensor::RGBColor(255, 80, 0));
@@ -54,7 +67,13 @@ void Leds::analyzeDashboard(){
         }
     } else {//Teleop
         if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {//spiked
-            candle.setColor(3, ValorCANdleSensor::RGBColor(255, 192, 203));
+            int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * 30.0); // Multiplier indicates # updates/second
+            t %= 2; // Constrict to relevant step frame
+                
+            if (frc::Timer::GetFPGATimestamp() - state.startedAnimating[3] < 0.5_s && t == 0)
+                    candle.setColor(3, ValorCANdleSensor::RGBColor(255, 255, 255));
+            else
+                candle.setColor(3, candle.getColor(4));
         } else {
             candle.setColor(3, candle.getColor(4));
         }

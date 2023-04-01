@@ -13,6 +13,8 @@
 #include "ctre/Phoenix.h"
 #include "ctre/phoenix/led/CANdle.h"
 #include "ctre/phoenix/led/StrobeAnimation.h"
+
+#include <vector>
 class Leds : public ValorSubsystem
 {
     public:
@@ -25,6 +27,10 @@ class Leds : public ValorSubsystem
         void assignOutputs();
         void resetState();
         void InitSendable(wpi::SendableBuilder& builder) override;
+
+        struct State{
+            std::vector<units::second_t> startedAnimating; 
+        } state;
         
     private:
         ValorCANdleSensor candle;
