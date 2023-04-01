@@ -161,7 +161,7 @@ void Intake::assignOutputs()
             } else if (state.elevarmGround){
                 intakeMotor.setPower(GROUND_OUTTAKE_GROUND_CUBE_SPD);
             } else {
-                intakeMotor.setPower(DEFAULT_OUTTAKE_CUBE_SPD);
+                intakeMotor.setPower(state.outtakeCubeSpeed);
             }
         } else {
             intakeMotor.setPower(state.outtakeConeSpeed);
