@@ -295,11 +295,11 @@ void Elevarm::assessInputs()
         } 
     }
     
-    if(operatorGamepad->GetYButton()){
+    if(operatorGamepad->GetBButton()){
         setFuturePiece(Piece::CONE);
     }
 
-    if(operatorGamepad->GetBButton()){
+    if(operatorGamepad->GetYButton() && driverGamepad->GetYButton()){
         setFuturePiece(Piece::CUBE);
     }
     
