@@ -182,6 +182,7 @@ void Elevarm::init()
 
     armCANcoder.ConfigAbsoluteSensorRange(AbsoluteSensorRange::Unsigned_0_to_360);
     armCANcoder.SetPositionToAbsolute();
+    armCANcoder.SetStatusFramePeriod();
     
     wristMotor.setConversion((1.0 / WRIST_GEAR_RATIO) * 360.0);
     wristMotor.setForwardLimit(WRIST_FORWARD_LIMIT);
@@ -287,12 +288,11 @@ void Elevarm::assessInputs()
             }
         } 
     }
-    if((intake->state.intakeState != Intake::IntakeStates::OUTTAKE && !driverGamepad->leftTriggerActive()) && (intake->state.intakeState != Intake::IntakeStates::SPIKED || driverGamepad->DPadRight() || operatorGamepad->GetBButton())){
-        if (operatorGamepad->GetYButton() || driverGamepad->GetYButton() || operatorGamepad->GetAButton()){
-            setFuturePiece(Piece::CUBE);
-        } else {
-            setFuturePiece(Piece::CONE);
-        }
+    if(operatorGamepad->GetYButton()){
+        setFuturePiece(Piece::CONE);
+    }
+    if(operatorGamepad->GetBButton()){
+        setFuturePiece(Piece::CUBE);
     }
 
     
