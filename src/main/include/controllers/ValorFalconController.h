@@ -39,6 +39,8 @@ public:
     void setRange(int slot, double min, double max);
     
     void setConversion(double);
+    void setVoltageCompensation(double);
+    
 
     void setProfile(int slot);
     double getAbsEncoderPosition();

@@ -7,10 +7,10 @@
 #include <iostream>
 #include <string>
 
-#define WHEEL_0_INIT 0.3097f
-#define WHEEL_1_INIT 0.4349f
-#define WHEEL_2_INIT 0.4792f
-#define WHEEL_3_INIT 0.7331f
+#define WHEEL_0_INIT 0.3729f
+#define WHEEL_1_INIT 0.0547f
+#define WHEEL_2_INIT 0.6242f
+#define WHEEL_3_INIT 0.5154f
 
 #define DRIVE_DEADBAND 0.05f
 #define MAG_ENCODER_TICKS_PER_REV 4096.0f

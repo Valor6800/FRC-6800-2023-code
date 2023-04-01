@@ -150,6 +150,10 @@ void ValorFalconController::setNeutralMode(ValorNeutralMode mode){
     neutralMode = mode;
 }
 
+void ValorFalconController::setVoltageCompensation(double voltage){
+    motor->ConfigVoltageCompSaturation(voltage);
+}
+
 
 void ValorFalconController::InitSendable(wpi::SendableBuilder& builder)
 {
