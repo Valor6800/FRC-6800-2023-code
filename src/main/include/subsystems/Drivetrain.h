@@ -109,8 +109,8 @@ public:
 
      enum LimelightPipes{
           APRIL_TAGS,
-          TAPE_HIGH,
-          TAPE_MID
+          TAPE_MID,
+          TAPE_HIGH
      };
 
      struct x
@@ -128,6 +128,9 @@ public:
 
           bool isLeveled;
           bool abovePitchThreshold;
+
+          bool topTape;
+          bool bottomTape;
 
           int stage;
 
@@ -211,7 +214,7 @@ public:
 
      void limelightHoming(LimelightPipes pipe);
      void angleLock();
-     void adas();
+     void adas(LimelightPipes pipe);
 
      frc2::InstantCommand* getResetOdom();
      
