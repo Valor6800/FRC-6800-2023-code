@@ -196,8 +196,6 @@ void Elevarm::init()
 
     // STOW POSITION
     stowPos = frc::Pose2d(-0.4185_m, 0.354_m, -26.3_deg);
-
-    stowPoopPos = frc::Pose2d(-0.428_m, 0.406_m, 50.0_deg);
     
     // FRONT CONE
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.086_m, 0.4_m, 137.4_deg);
@@ -291,8 +289,6 @@ void Elevarm::assessInputs()
         if (previousState.positionState != Position::MANUAL) {
             if (intake->getFuturePiece() == Piece::CONE) {
                 futureState.positionState = Position::SNAKE; 
-            } else if (intake->state.intakeState == Intake::IntakeStates::SPIKED && intake->getFuturePiece() == Piece::CUBE){
-                futureState.positionState = Position::STOW_POOP;
             } else {
                 futureState.positionState = Position::STOW;
             }
@@ -388,8 +384,6 @@ void Elevarm::assignOutputs()
     Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
     if (futureState.positionState == Position::STOW) {
         futureState.targetPose = stowPose;
-    } else if (futureState.positionState == Position::STOW_POOP) {
-        futureState.targetPose = reverseKinematics(stowPoopPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
         if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
@@ -438,8 +432,7 @@ void Elevarm::assignOutputs()
                 (futureState.targetPose.theta < -180.0 && armRotateMotor.getPosition() < -180.0)) {
                 wristMotor.setPosition(futureState.targetPose.wrist);
             } else {
-                if(futureState.positionState == Position::STOW_POOP) wristMotor.setPosition(stowPoopPos.Rotation().Degrees().to<double>());
-                else wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
+                wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
             }
     
             if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {
