@@ -37,12 +37,12 @@
 #define CARRIAGE_K_ACC_MUL 0.15f
 
 #define ROTATE_K_F 0.75f
-#define ROTATE_K_P 0.045f
+#define ROTATE_K_P 0.028f // 0.03375f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
 #define ROTATE_K_VEL 140.0f
-#define ROTATE_K_ACC_MUL 0.50f
+#define ROTATE_K_ACC_MUL 0.58f
 #define ROTATE_K_AFF 0.145f //0.155f
 #define ROTATE_K_AFF_CUBE 0.14f
 #define ROTATE_K_AFF_POS 90.0f
