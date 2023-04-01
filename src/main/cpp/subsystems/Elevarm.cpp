@@ -402,6 +402,8 @@ void Elevarm::assignOutputs()
     Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
     if (futureState.positionState == Position::STOW) {
         futureState.targetPose = stowPose;
+    } else if (futureState.positionState == Position::STOW_POOP) {
+        futureState.targetPose = reverseKinematics(stowPoopPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
         if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::VERTICAL || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
