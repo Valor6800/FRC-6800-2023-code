@@ -369,10 +369,15 @@ frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
     precompileEvents(EVENTS_PATH);
     std::string selection = m_chooser.GetSelected();
 
+    frc2::SequentialCommandGroup * commandGroup = new frc2::SequentialCommandGroup();
+    commandGroup->AddCommands(std::move(*intake->getAutoCommand("spiked", "cone")));
+
     if (directoryContainsPath(AUTOS_PATH, selection)) {
-        return makeAuto(selection);
+        commandGroup->AddCommands(std::move(*makeAuto(selection)));
+    } else {
+        commandGroup->AddCommands(std::move(*makePathAuto(selection)));
     }
-    return makePathAuto(selection);
+    return commandGroup;
 }
 
 void ValorAuto::fillAutoList(){

@@ -109,13 +109,7 @@
     {
       "position": 1.1757575757574878,
       "names": [
-        "stage_back_cube"
-      ]
-    },
-    {
-      "position": 1.3212121212121184,
-      "names": [
-        "intake_cube"
+        "pickup_back_cube"
       ]
     }
   ]
