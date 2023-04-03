@@ -426,13 +426,15 @@ void Elevarm::assignOutputs()
                 (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -26.0) ||
                  (armRotateMotor.getPosition() > 100.0) ||
                  (armRotateMotor.getPosition() < -90.0)) {
-                // wristMotor.setPosition(futureState.targetPose.wrist);
-                armRotateMotor.setPosition(futureState.targetPose.theta);
-                carriageMotors.setPosition(futureState.targetPose.h);
 
-                if (futureState.atCarriage) {
+                armRotateMotor.setPosition(futureState.targetPose.theta);
+                
+                if ((futureState.positionState == Position::HIGH && armRotateMotor.getPosition() > -200.0) 
+                || futureState.atCarriage) {
                     carriageMotors.setPower(carriageStallPower);
-                }
+                } else 
+                    carriageMotors.setPosition(futureState.targetPose.h);
+                
             } else {
                 if (intake->getFuturePiece() == Piece::CUBE && futureState.positionState == Position::STOW && previousState.positionState == Position::STOW && futureState.atCarriage) {
                     carriageMotors.setPower(carriageStallPower);
@@ -452,7 +454,7 @@ void Elevarm::assignOutputs()
             } else {
                 wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
             }
-    
+
             if (futureState.atCarriage && futureState.atArm && futureState.atWrist) {
                 previousState = futureState;
                 setPrevPiece(intake->getFuturePiece());
