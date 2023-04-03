@@ -447,7 +447,7 @@ void Elevarm::assignOutputs()
             
             if ((futureState.directionState == Direction::FRONT && armRotateMotor.getPosition() > 6.0) ||
                 (futureState.directionState == Direction::BACK && armRotateMotor.getPosition() < -26.0) ||
-                (futureState.targetPose.theta < -180.0 && armRotateMotor.getPosition() < -180.0)) {
+                (futureState.targetPose.theta < -135.0 && armRotateMotor.getPosition() < -135.0)) {
                 wristMotor.setPosition(futureState.targetPose.wrist);
             } else {
                 wristMotor.setPosition(stowPos.Rotation().Degrees().to<double>());
