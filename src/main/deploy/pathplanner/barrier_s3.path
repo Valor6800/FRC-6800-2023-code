@@ -37,7 +37,7 @@
         "x": 5.903251806503613,
         "y": 4.641809783619568
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 0.0,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
@@ -154,7 +154,7 @@
     {
       "position": 0.02,
       "names": [
-        "pickup_back_cube"
+        "stage_back_cube"
       ]
     },
     {
