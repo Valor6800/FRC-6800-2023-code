@@ -99,7 +99,7 @@
 #define Z_FORK 0.42f
 #define Z_GROUND 0.1f
 
-#define P_MIN_CARRIAGE 0.005f
+#define P_MIN_CARRIAGE 0.01f
 #define P_MIN_ARM 0.0f
 
 #define MAN_MAX_CARRIAGE 0.3f
@@ -253,7 +253,7 @@ void Elevarm::init()
     table->PutNumber("Carriage Max Manual Speed", MAN_MAX_CARRIAGE);
     table->PutNumber("Arm Rotate Max Manual Speed", MAN_MAX_ROTATE);
     table->PutBoolean("Pit Mode", futureState.pitModeEnabled);
-    table->PutNumber("Carraige Stall", carriageStallPower);
+    table->PutNumber("Carriage Stall Power", P_MIN_CARRIAGE);
     table->PutNumber("Carraige Offset", INITIAL_HEIGHT_OFFSET);
     table->PutBoolean("Enable Carraige Offset", false);
     table->PutBoolean("Arm In Range", false);
@@ -434,7 +434,10 @@ void Elevarm::assignOutputs()
                     carriageMotors.setPower(carriageStallPower);
                 }
             } else {
-                carriageMotors.setPosition(stowPose.h);
+                if (intake->getFuturePiece() == Piece::CUBE && futureState.positionState == Position::STOW && previousState.positionState == Position::STOW && futureState.atCarriage) {
+                    carriageMotors.setPower(carriageStallPower);
+                } else
+                    carriageMotors.setPosition(stowPose.h);
                 if (carriageMotors.getPosition() >= (stowPose.h - 0.03)) {
                     armRotateMotor.setPosition(futureState.targetPose.theta);
                 } else {
