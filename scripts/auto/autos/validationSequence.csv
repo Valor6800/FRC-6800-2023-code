@@ -1,0 +1,5 @@
+elevarm,cone,front,high_auto
+time,3000
+elevarm,cube,back,ground
+time,3000
+elevarm,cube,front,stow
