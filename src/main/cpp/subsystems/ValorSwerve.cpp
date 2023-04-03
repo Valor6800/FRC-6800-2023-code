@@ -7,10 +7,19 @@
 #include <iostream>
 #include <string>
 
+#define IS_COMP
+
+#ifdef IS_COMP
+#define WHEEL_0_INIT 0.3106f
+#define WHEEL_1_INIT 0.4369f
+#define WHEEL_2_INIT 0.4780f
+#define WHEEL_3_INIT 0.7372f
+#else
 #define WHEEL_0_INIT 0.3729f
 #define WHEEL_1_INIT 0.0547f
 #define WHEEL_2_INIT 0.6242f
 #define WHEEL_3_INIT 0.5154f
+#endif
 
 #define DRIVE_DEADBAND 0.05f
 #define MAG_ENCODER_TICKS_PER_REV 4096.0f
