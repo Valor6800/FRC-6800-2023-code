@@ -64,7 +64,7 @@
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": 1.75,
+      "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -101,20 +101,20 @@
     },
     {
       "anchorPoint": {
-        "x": 4.2,
-        "y": 0.77
+        "x": 5.15,
+        "y": 0.8347666302808733
       },
       "prevControl": {
-        "x": 5.998152503304065,
-        "y": 0.7468503898117194
+        "x": 5.872373897906743,
+        "y": 0.8347666302808734
       },
       "nextControl": {
-        "x": 3.2143344286688578,
-        "y": 0.7826895653791309
+        "x": 5.872373897906743,
+        "y": 0.8347666302808734
       },
       "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": 0.5,
+      "isReversal": true,
+      "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -126,37 +126,62 @@
     },
     {
       "anchorPoint": {
-        "x": 2.4,
-        "y": 1.1
+        "x": 6.892612941204616,
+        "y": 2.0257197941967493
       },
       "prevControl": {
-        "x": 2.5559007118014234,
-        "y": 1.0288580577161164
+        "x": 6.176348337966859,
+        "y": 1.3993718703311966
       },
       "nextControl": {
-        "x": 2.5559007118014234,
-        "y": 1.0288580577161164
+        "x": 6.176348337966859,
+        "y": 1.3993718703311966
       },
-      "holonomicAngle": 180.0,
+      "holonomicAngle": 225.0,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [],
-        "executionBehavior": "sequential",
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 2.6,
-        "y": 2.39
+        "x": 3.932812163068988,
+        "y": 0.7024009497237735
       },
       "prevControl": {
-        "x": 2.4695169390338783,
-        "y": 2.0009080018160046
+        "x": 5.5261674374838625,
+        "y": 0.7024009497237738
+      },
+      "nextControl": {
+        "x": 3.282711815804039,
+        "y": 0.7024009497237734
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": 1.0,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.1377943092393346,
+        "y": 1.033785850286544
+      },
+      "prevControl": {
+        "x": 2.7593736291937647,
+        "y": 0.8369756092539526
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -165,50 +190,58 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "balance_reversed"
-        ],
-        "executionBehavior": "sequential",
+        "names": [],
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
+  "maxVelocity": null,
+  "maxAcceleration": 1.875,
+  "isReversed": null,
   "markers": [
     {
-      "position": 0.02,
+      "position": 1.4590570623224435,
       "names": [
-        "stow_low"
-      ]
-    },
-    {
-      "position": 1.18,
-      "names": [
+        "reset_odom_vision",
         "pickup_back_cube"
       ]
     },
     {
-      "position": 4.2181818181817485,
+      "position": 6.509401078657676,
       "names": [
-        "stage_high_cube"
+        "reset_odom_vision"
       ]
     },
     {
-      "position": 4.824242424242392,
+      "position": 3.09295487837358,
+      "names": [
+        "stage_poop"
+      ]
+    },
+    {
+      "position": 4.0,
       "names": [
         "outtake_cube"
       ]
     },
     {
-      "position": 5.3,
+      "position": 4.076739501953119,
       "names": [
-        "stow_low"
+        "pickup_back_cube"
       ]
     },
     {
-      "position": 3.369696969696947,
+      "position": 6.282121693004263,
       "names": [
-        "stow_low"
+        "stage_low_cube"
+      ]
+    },
+    {
+      "position": 7.0,
+      "names": [
+        "outtake_cube"
       ]
     }
   ]

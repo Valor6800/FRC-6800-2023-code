@@ -126,6 +126,8 @@ public:
 
      frc2::FunctionalCommand * getAutoCommand(std::string, std::string);
 
+   void setConeHoldSpeed(double isAuto);
+
 private:
 
      ValorFalconController intakeMotor;

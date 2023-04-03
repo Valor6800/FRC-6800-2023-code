@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string>
 
-// #define IS_COMP
+#define IS_COMP
 
 #ifdef IS_COMP
 #define WHEEL_0_INIT 0.3106f

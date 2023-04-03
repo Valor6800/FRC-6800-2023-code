@@ -50,7 +50,7 @@ class ValorAuto {
         ~ValorAuto();
         bool readPointsCSV(std::string);
         
-        frc2::Command* makePathAuto(std::string path);
+        frc2::SequentialCommandGroup* makePathAuto(std::string path);
         frc2::SequentialCommandGroup * makeAuto(std::string path);
 
         void precompileEvents(std::string);
@@ -58,7 +58,7 @@ class ValorAuto {
         frc2::SequentialCommandGroup* compileCommands(std::vector<ValorAutoAction>);
 
         void fillAutoList();
-        frc2::Command* getCurrentAuto();
+        frc2::SequentialCommandGroup* getCurrentAuto();
 
     protected:
 
