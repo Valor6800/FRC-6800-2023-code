@@ -245,7 +245,7 @@ frc2::Command * ValorAuto::createPPTrajectoryCommand(pathplanner::PathPlannerTra
 			true);
 }
 
-frc2::Command * ValorAuto::makePathAuto(std::string pathname){
+frc2::SequentialCommandGroup * ValorAuto::makePathAuto(std::string pathname){
     pathplanner::PathPlannerTrajectory trajectory = pathplanner::PathPlanner::loadPath(pathname, pathplanner::PathConstraints(units::meters_per_second_t(drivetrain->getAutoMaxSpeed()), units::meters_per_second_squared_t(drivetrain->getAutoMaxAcceleration())));
     if (trajectory.getStates().size() < 1) {
         table->PutString("Error in Path:", pathname + " does not exist");
@@ -350,7 +350,7 @@ std::string removeFileType(std::string fileName) {
     return fileName.substr(fileName.find_last_of('/') + 1, fileName.find_last_of('.') - fileName.find_last_of('/') - 1);
 }
 
-frc2::Command * ValorAuto::getCurrentAuto(){
+frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
     precompileEvents(EVENTS_PATH);
     std::string selection = m_chooser.GetSelected();
 

@@ -1,4 +1,5 @@
-elevarm,cone,front,high_auto
+intake,spiked,cone
+elevarm,cone,front,mid
 time,250
 intake,outtake,cone
 time,350
