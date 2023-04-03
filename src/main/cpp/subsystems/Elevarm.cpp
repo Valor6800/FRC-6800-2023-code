@@ -7,8 +7,22 @@
 #include "subsystems/Elevarm.h"
 #include <iostream>
 
+#define IS_COMP
+
+#ifdef IS_COMP
+#define ROTATE_GEAR_RATIO 83.53f
+#define WRIST_GEAR_RATIO 24.3f
+
+#define ARM_CANCODER_OFFSET  323.61f
+#define WRIST_CANCODER_OFFSET 57.83f
+#else
 #define ROTATE_GEAR_RATIO 74.25f
 #define WRIST_GEAR_RATIO 15.43f
+
+#define ARM_CANCODER_OFFSET  303.925f
+#define WRIST_CANCODER_OFFSET 50.8f
+#endif
+
 #define CARRIAGE_GEAR_RATIO 4.0f
 #define ARM_CANCODER_GEAR_RATIO 1.0f
 #define WRIST_CANCODER_GEAR_RATIO 1.0f
@@ -20,10 +34,6 @@
 #define ROTATE_REVERSE_LIMIT -250.0f
 #define WRIST_FORWARD_LIMIT 325.0f
 #define WRIST_REVERSE_LIMIT -325.0f
-
-#define ARM_CANCODER_OFFSET  303.925f //59.0625f
-// #define WRIST_CANCODER_OFFSET 307.969f
-#define WRIST_CANCODER_OFFSET 50.8f
 
 #define INITIAL_HEIGHT_OFFSET 0.0f //cm
 #define STOW_HEIGHT_OFFSET 0.0f //cm
