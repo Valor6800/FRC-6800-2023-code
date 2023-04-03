@@ -47,13 +47,13 @@
 #define CARRIAGE_K_ACC_MUL 0.15f
 
 #define ROTATE_K_F 0.75f
-#define ROTATE_K_P 0.045f
+#define ROTATE_K_P 0.04f
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
 #define ROTATE_K_VEL 140.0f
-#define ROTATE_K_ACC_MUL 0.66f
-#define ROTATE_K_AFF 0.115f
+#define ROTATE_K_ACC_MUL 0.9f
+#define ROTATE_K_AFF 0.14f
 #define ROTATE_K_AFF_CUBE 0.11f
 #define ROTATE_K_AFF_POS 90.0f
 
@@ -71,12 +71,12 @@
 #define ROTATE_S_CURVE_STRENGTH 3
 
 #define WRIST_K_F 0.75f
-#define WRIST_K_P 0.12f
+#define WRIST_K_P 0.18f
 #define WRIST_K_I 0.0f
 #define WRIST_K_D 0.0f
 #define WRIST_K_ERROR 0.25f
-#define WRIST_K_VEL 540.0f
-#define WRIST_K_ACC_MUL 0.375f
+#define WRIST_K_VEL 750.0f
+#define WRIST_K_ACC_MUL 0.425f
 #define WRIST_S_CURVE_STRENGTH 3
 
 #define PREVIOUS_WRIST_DEADBAND 1.01f
