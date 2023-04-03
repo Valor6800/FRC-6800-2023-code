@@ -178,7 +178,7 @@
     {
       "position": 0.02,
       "names": [
-        "stage_back_cube"
+        "pickup_back_cube"
       ]
     },
     {
@@ -197,12 +197,6 @@
       "position": 4.9,
       "names": [
         "outtake_cube"
-      ]
-    },
-    {
-      "position": 2.01,
-      "names": [
-        "intake_cube"
       ]
     }
   ]

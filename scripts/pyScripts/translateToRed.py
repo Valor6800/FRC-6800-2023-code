@@ -8,6 +8,7 @@ for i in range(len(wps['waypoints'])):
         if wps['waypoints'][i][point] == None:
             continue
         wps['waypoints'][i][point]['y'] = 8.02 - wps['waypoints'][i][point]['y']
+    wps['waypoints'][i]['holonomicAngle'] = 180 - wps['waypoints'][i]['holonomicAngle']
 
-with open('.'.join(pathpath.split('.')[:-1]) + ' red.path', 'w') as f:
+with open('.'.join(pathpath.split('.')[:-1]) + '_red.path', 'w') as f:
     f.write(json.dumps(wps))

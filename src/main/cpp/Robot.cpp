@@ -58,6 +58,8 @@ void Robot::AutonomousInit() {
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Brake);
     drivetrain.pullSwerveModuleZeroReference();
 
+    //intake.state.intakeState = Intake::SPIKED;
+
     autoCommand = autonomous.getCurrentAuto();
 
     if (autoCommand != nullptr) {
