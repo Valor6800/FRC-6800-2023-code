@@ -7,7 +7,7 @@
 #include "subsystems/Elevarm.h"
 #include <iostream>
 
-#define IS_COMP
+// #define IS_COMP
 
 #ifdef IS_COMP
 #define ROTATE_GEAR_RATIO 83.53f
@@ -16,11 +16,11 @@
 #define ARM_CANCODER_OFFSET  323.61f
 #define WRIST_CANCODER_OFFSET 57.83f
 #else
-#define ROTATE_GEAR_RATIO 74.25f
-#define WRIST_GEAR_RATIO 15.43f
+#define ROTATE_GEAR_RATIO 83.53f
+#define WRIST_GEAR_RATIO 24.3f
 
-#define ARM_CANCODER_OFFSET  303.925f
-#define WRIST_CANCODER_OFFSET 50.8f
+#define ARM_CANCODER_OFFSET  300.925f
+#define WRIST_CANCODER_OFFSET 122.81f
 #endif
 
 #define CARRIAGE_GEAR_RATIO 4.0f
@@ -261,7 +261,7 @@ void Elevarm::init()
     table->PutBoolean("Coast Mode", coastMode);
 
     resetState();
-    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - ARM_CANCODER_OFFSET) / ARM_CANCODER_GEAR_RATIO + 180.0);
+    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - ARM_CANCODER_OFFSET) / ARM_CANCODER_GEAR_RATIO - 180.0);
     carriageMotors.setEncoderPosition(0.0);
     wristMotor.setEncoderPosition((wristCANcoder.GetAbsolutePosition() - WRIST_CANCODER_OFFSET) / WRIST_CANCODER_GEAR_RATIO);
     wristCANcoder.SetStatusFramePeriod(CANCoderStatusFrame_SensorData, 50, 1000); // changes the period of the sensor data frame to 50ms
