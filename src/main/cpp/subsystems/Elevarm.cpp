@@ -7,13 +7,13 @@
 #include "subsystems/Elevarm.h"
 #include <iostream>
 
-// #define IS_COMP
+#define IS_COMP
 
 #ifdef IS_COMP
 #define ROTATE_GEAR_RATIO 83.53f
 #define WRIST_GEAR_RATIO 24.3f
 
-#define ARM_CANCODER_OFFSET  323.61f
+#define ARM_CANCODER_OFFSET  333.61f
 #define WRIST_CANCODER_OFFSET 57.83f
 #else
 #define ROTATE_GEAR_RATIO 83.53f
@@ -235,12 +235,12 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg); //snake pos
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5575_m, 40.7_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5975_m, 40.7_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, -60.0_deg);
     // BACK CUBE
-    posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.914_m, 0.222_m, -146.23_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.914_m, 0.222_m, -140.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.09_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.823_m, 1.32_m, 78.7_deg);
