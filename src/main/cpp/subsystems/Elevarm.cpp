@@ -235,7 +235,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg); //snake pos
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5975_m, 40.7_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5775_m, 40.7_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, -60.0_deg);
