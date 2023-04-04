@@ -370,7 +370,7 @@ frc2::SequentialCommandGroup * ValorAuto::getCurrentAuto(){
     std::string selection = m_chooser.GetSelected();
 
     frc2::SequentialCommandGroup * commandGroup = new frc2::SequentialCommandGroup();
-    commandGroup->AddCommands(std::move(*intake->getAutoCommand("spiked", "cone")));
+    //commandGroup->AddCommands(std::move(*intake->getAutoCommand("spiked", "cone")));
 
     if (directoryContainsPath(AUTOS_PATH, selection)) {
         commandGroup->AddCommands(std::move(*makeAuto(selection)));

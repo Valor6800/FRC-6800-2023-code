@@ -166,7 +166,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "balance"
+          "balance_reversed"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
