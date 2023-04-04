@@ -101,12 +101,6 @@
   ],
   "markers": [
     {
-      "position": 0.02,
-      "names": [
-        "stow_low"
-      ]
-    },
-    {
       "position": 2.48,
       "names": [
         "stow_low"

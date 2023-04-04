@@ -53,6 +53,7 @@ void Robot::DisabledPeriodic() { }
  * RobotContainer} class.
  */
 void Robot::AutonomousInit() {
+    intake.setConeHoldSpeed(true);
     drivetrain.resetState();
     elevarm.resetState();
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Brake);
@@ -72,6 +73,7 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousExit() {
     outfile.close();
     drivetrain.state.xPose = true;
+    intake.setConeHoldSpeed(false);
 }
 
 std::string makePoseLog(frc::Pose2d pose){
