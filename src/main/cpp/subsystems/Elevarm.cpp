@@ -10,7 +10,7 @@
 #define IS_COMP
 
 #ifdef IS_COMP
-#define ROTATE_GEAR_RATIO 83.53f
+#define ROTATE_GEAR_RATIO 101.25f
 #define WRIST_GEAR_RATIO 24.3f
 
 #define ARM_CANCODER_OFFSET  333.61f
