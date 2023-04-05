@@ -8,7 +8,7 @@
 #define CONE_HOLD_SPD 0.04f
 #define CUBE_HOLD_SPD -0.04f
 
-#define AUTO_CONE_HOLD_SPD 0.09f
+#define AUTO_CONE_HOLD_SPD 0.12f
 #else
 #define CONE_HOLD_SPD 0.03f
 #define CUBE_HOLD_SPD -0.03f

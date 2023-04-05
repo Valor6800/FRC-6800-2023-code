@@ -463,12 +463,12 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
                     break;
                 case 2:
                     state.xSpeed = -0.3;
-                    if (globalPitch < -14.5)
+                    if (globalPitch < -14.7)
                         state.stage++;
                     break;
                 case 3:
                     state.xSpeed = -0.3;
-                    if (globalPitch > -13.95)
+                    if (globalPitch > -14.5)
                         state.stage++;
                     break;
                 case 4:
