@@ -261,7 +261,7 @@ void Elevarm::init()
     table->PutBoolean("Coast Mode", coastMode);
 
     resetState();
-    armRotateMotor.setEncoderPosition((armCANcoder.GetAbsolutePosition() - ARM_CANCODER_OFFSET) / ARM_CANCODER_GEAR_RATIO - 180.0);
+    armRotateMotor.setEncoderPosition((ARM_CANCODER_OFFSET - armCANcoder.GetAbsolutePosition() ) / ARM_CANCODER_GEAR_RATIO - 180.0);
     carriageMotors.setEncoderPosition(0.0);
     wristMotor.setEncoderPosition((wristCANcoder.GetAbsolutePosition() - WRIST_CANCODER_OFFSET) / WRIST_CANCODER_GEAR_RATIO);
     wristCANcoder.SetStatusFramePeriod(CANCoderStatusFrame_SensorData, 50, 1000); // changes the period of the sensor data frame to 50ms

@@ -12,6 +12,8 @@
 #include <unordered_map>
 #include <networktables/NetworkTable.h>
 
+#include <frc/geometry/Pose2d.h>
+
 #ifndef VALOR_AUTO_ACTION_H
 #define VALOR_AUTO_ACTION_H
 
@@ -36,8 +38,6 @@ struct ValorAutoAction {
         COMMAND_MISSING
     } error;
     std::string error_message;
-    
-    //frc::Pose2d pose;
 
     double heading; // This is NOT the robots rotation, this is its direction of travel. Robot's rotation is stored in the pose
     bool reversed;
@@ -50,6 +50,8 @@ struct ValorAutoAction {
 
     ValorAutoAction(std::string line);
 
+    frc::Pose2d getPose();
+
     std::string name;
     
     double vel;
@@ -57,9 +59,14 @@ struct ValorAutoAction {
     double accelMultiplier;
 
     bool vision;
+    frc::Pose2d pose;
     
 public:
     static std::vector<std::string> parseCSVLine(std::string);
+
+private:
+
+    
 };
 
 #endif

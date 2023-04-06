@@ -1,4 +1,6 @@
 #include "auto/ValorAutoAction.h"
+#include <units/length.h>
+#include <units/angle.h>
 
 #define TRANS_VELOCITY 4.952f
 
@@ -96,6 +98,8 @@ ValorAutoAction::ValorAutoAction(std::string line)
         // change to output just a pose then reset to that pose in valorAuto.cpp
         //now only needed for climbing the charging station
         // now only for mid auto changes
+
+        pose = frc::Pose2d(units::length::meter_t{std::stod(items[1])}, units::length::meter_t{std::stod(items[2])}, units::degree_t{std::stod(items[3])});
         
         // if (points->contains(items[1])){
         //     auto _start = points->at(items[1]);
@@ -174,4 +178,8 @@ ValorAutoAction::ValorAutoAction(std::string line)
         // if (items.size() >= 4 && items[3] == "reverse" || items[3] == "reversed")
         //     reversed = true;
     }
+}
+
+frc::Pose2d ValorAutoAction::getPose() {
+    return pose;
 }
