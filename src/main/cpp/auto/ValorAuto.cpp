@@ -93,6 +93,10 @@ frc2::SequentialCommandGroup* ValorAuto::compileCommands(std::vector<ValorAutoAc
                 commandGroup->AddCommands(
                     frc2::InstantCommand(
                         [&, action] {
+
+                            frc::Pose2d p = action.pose;
+                            drivetrain->resetOdometry(p);
+
                             // frc::Pose2d p = action.start;
                             // table->PutBoolean("Using x", action.used_vals.at("x"));
                             // table->PutBoolean("Using y", action.used_vals.at("y"));
