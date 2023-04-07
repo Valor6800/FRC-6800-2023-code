@@ -6,7 +6,7 @@
 ValorCurrentSensor::ValorCurrentSensor(frc::TimedRobot *_robot, const char *_name) :
     ValorSensor(_robot, _name),
     spikedSetpoint(DEFAULT_SPIKE_VALUE),
-    cacheSize(DEFAULT_CACHE_SIZE)
+    cacheSize(DEFAULT_CACHE_SIZE / 20.0)
 {
     wpi::SendableRegistry::AddLW(this, "ValorCurrentSensor", sensorName);
     reset();
@@ -19,7 +19,7 @@ void ValorCurrentSensor::setSpikeSetpoint(double _setpoint)
 
 void ValorCurrentSensor::setCacheSize(int _size)
 {
-    cacheSize = _size;
+    cacheSize = _size / 20.0;
     reset();
 }
 

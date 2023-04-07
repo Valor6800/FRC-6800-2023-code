@@ -458,17 +458,17 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
                     break;
                 case 1:
                     state.xSpeed = -0.4;
-                    if (globalPitch > -13.0)
+                    if (globalPitch > -14.7)
                         state.stage++;
                     break;
                 case 2:
-                    state.xSpeed = -0.3;
-                    if (globalPitch < -14.7)
+                    state.xSpeed = -0.2;
+                    if (globalPitch < -14.8)
                         state.stage++;
                     break;
                 case 3:
-                    state.xSpeed = -0.3;
-                    if (globalPitch > -14.5)
+                    state.xSpeed = -0.2;
+                    if (globalPitch > -14.9)
                         state.stage++;
                     break;
                 case 4:
@@ -525,17 +525,17 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
                     break;
                 case 1:
                     state.xSpeed = 0.4;
-                    if (globalPitch < 13.0)
+                    if (globalPitch < 15.0)
                         state.stage++;
                     break;
                 case 2:
                     state.xSpeed = 0.3;
-                    if (globalPitch > 15.6)
+                    if (globalPitch > 15.5)
                         state.stage++;
                     break;
                 case 3:
                     state.xSpeed = 0.3;
-                    if (globalPitch < 15.2)
+                    if (globalPitch < 14.5)
                         state.stage++;
                     break;
                 case 4:
