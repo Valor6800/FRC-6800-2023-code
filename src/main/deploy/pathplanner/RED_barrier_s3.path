@@ -1,0 +1,191 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.78,
+        "y": 5.03
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.3153266306532614,
+        "y": 4.746633493266987
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "score_mid_cone"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.8500537001074,
+        "y": 4.58
+      },
+      "prevControl": {
+        "x": 5.903251806503613,
+        "y": 4.641809783619568
+      },
+      "nextControl": {
+        "x": 5.903251806503613,
+        "y": 4.641809783619568
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.89242178484357,
+        "y": 4.721385442770886
+      },
+      "prevControl": {
+        "x": 3.698236169088905,
+        "y": 4.721385442770886
+      },
+      "nextControl": {
+        "x": 3.698236169088905,
+        "y": 4.721385442770886
+      },
+      "holonomicAngle": -0.5,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.32,
+        "y": 4.36
+      },
+      "prevControl": {
+        "x": 5.631990623981248,
+        "y": 5.112730225460451
+      },
+      "nextControl": {
+        "x": 6.5583604294558855,
+        "y": 4.099217071657628
+      },
+      "holonomicAngle": -45.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 7.11,
+        "y": 3.56
+      },
+      "prevControl": {
+        "x": 6.958511697023395,
+        "y": 3.7114883029766053
+      },
+      "nextControl": {
+        "x": 6.958511697023395,
+        "y": 3.7114883029766053
+      },
+      "holonomicAngle": -45.0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.00242800485601,
+        "y": 4.443656887313775
+      },
+      "prevControl": {
+        "x": 5.98530797061594,
+        "y": 5.232658465316931
+      },
+      "nextControl": null,
+      "holonomicAngle": 0.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "maxVelocity": null,
+  "maxAcceleration": 1.88,
+  "isReversed": null,
+  "markers": [
+    {
+      "position": 0.02,
+      "names": [
+        "pickup_back_cube"
+      ]
+    },
+    {
+      "position": 2.48,
+      "names": [
+        "pickup_front_cube"
+      ]
+    },
+    {
+      "position": 1.88,
+      "names": [
+        "outtake_cube"
+      ]
+    },
+    {
+      "position": 1.13,
+      "names": [
+        "stow_low"
+      ]
+    },
+    {
+      "position": 3.8181818181818183,
+      "names": [
+        "stow_low"
+      ]
+    },
+    {
+      "position": 4.96,
+      "names": [
+        "outtake_cube"
+      ]
+    }
+  ]
+}
