@@ -8,7 +8,7 @@
 #define CONE_HOLD_SPD 0.04f
 #define CUBE_HOLD_SPD -0.04f
 
-#define AUTO_CONE_HOLD_SPD 0.12f
+#define AUTO_CONE_HOLD_SPD 0.15f
 #else
 #define CONE_HOLD_SPD 0.03f
 #define CUBE_HOLD_SPD -0.03f
@@ -18,17 +18,17 @@
 
 //intaking with cone and cube has different directions, so flipped
 #define DEFAULT_INTAKE_CUBE_SPD -0.7f
-#define DEFAULT_INTAKE_CONE_SPD 0.9f
+#define DEFAULT_INTAKE_CONE_SPD 1.0f
 //since intaking with cone vs cube is different, outtaking follows the same rule
 #define DEFAULT_OUTTAKE_CUBE_SPD 0.4f
 #define DEFAULT_OUTTAKE_CONE_SPD -0.8f
 #define GROUND_OUTTAKE_GROUND_CUBE_SPD 0.3f
 
 #define CUBE_SPIKED_CURRENT 60.0f
-#define CONE_SPIKED_CURRENT 60.0f
+#define CONE_SPIKED_CURRENT 90.0f
 
 #define CUBE_CACHE_SIZE 250.0f
-#define CONE_CACHE_SIZE 250.0f
+#define CONE_CACHE_SIZE 650.0f
 
 #define POOP_FULL_SPEED 1.0f
 
@@ -86,7 +86,8 @@ void Intake::init()
     table->PutNumber("Cone Cache Size", state.coneCacheSize);
     table->PutNumber("Cube Cache Size", state.cubeCacheSize);
 
-    intakeMotor.getMotor()->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 40, 60, .75));
+    intakeMotor.getMotor()->ConfigSupplyCurrentLimit(SupplyCurrentLimitConfiguration(true, 60, 90, .75));
+    intakeMotor.setVoltageCompensation(12.0);
 
 
     resetState();
@@ -300,5 +301,5 @@ Piece Intake::getFuturePiece(){
 }
 
 void Intake::setConeHoldSpeed(double isAuto) {
-    state.intakeCubeSpeed = (isAuto ? AUTO_CONE_HOLD_SPD : CONE_HOLD_SPD); 
+    state.intakeConeSpeed = (isAuto ? AUTO_CONE_HOLD_SPD : CONE_HOLD_SPD); 
 }

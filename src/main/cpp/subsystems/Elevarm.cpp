@@ -214,7 +214,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.086_m, 0.4_m, 137.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.463_m, 303.3_deg); // new points
+    posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.428_m, 303.3_deg); // new points
     posMap[Piece::CONE][Direction::FRONT][Position::MID] =frc::Pose2d(0.142_m, 1.253_m, -118.16_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.576_m, 1.356_m, -187.76_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
@@ -235,7 +235,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg); //snake pos
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.150_m, 141.4_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5575_m, 40.7_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5425_m, 40.7_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, -60.0_deg);
@@ -287,8 +287,7 @@ void Elevarm::assessInputs()
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::GROUND_SCORE;
         else futureState.positionState = Position::STOW;
     } else if(operatorGamepad->DPadLeft()){
-        if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = Position::SNAKE;
-        else if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
+        if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
         else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
         else futureState.positionState = Position::STOW;
     } else if (operatorGamepad->DPadUp()){
