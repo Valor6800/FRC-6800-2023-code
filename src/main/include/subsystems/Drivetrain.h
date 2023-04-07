@@ -222,6 +222,9 @@ public:
      frc2::FunctionalCommand* getAutoLevelReversed();
      frc2::FunctionalCommand* getAutoClimbOver();
 
+     frc2::FunctionalCommand* getOLDAutoLevel();
+     frc2::FunctionalCommand* getOLDAutoLevelReversed();
+
      double getDriveMaxSpeed();
      double getAutoMaxSpeed();
      double getAutoMaxAcceleration();

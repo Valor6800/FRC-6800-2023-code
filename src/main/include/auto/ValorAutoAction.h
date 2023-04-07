@@ -41,6 +41,7 @@ struct ValorAutoAction {
 
     double heading; // This is NOT the robots rotation, this is its direction of travel. Robot's rotation is stored in the pose
     bool reversed;
+    bool oldBalance;
 
     std::string state;
     std::string value;

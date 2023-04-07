@@ -1,0 +1,7 @@
+elevarm,cube,back,stow
+time,2000
+elevarm,cube,front,ground
+time,2000
+elevarm,cube,back,mid
+time,2000
+elevarm,cone,back,snake

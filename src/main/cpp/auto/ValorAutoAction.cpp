@@ -142,8 +142,12 @@ ValorAutoAction::ValorAutoAction(std::string line)
             accelMultiplier = 1.0;
     } else if (type == ValorAutoAction::BALANCE){
         reversed = false;
-        if (items.size() > 1)
+        oldBalance = false;
+        if (items.size() > 1) {
             reversed = items[1] == "reversed";
+            if (items.size() > 2) 
+                oldBalance = items[2] == "old";
+        }
     } else if (type == ValorAutoAction::Type::INTAKE) {
         if (items.size() < 2){
             error + ValorAutoAction::SIZE_MISMATCH;

@@ -525,17 +525,17 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
                     break;
                 case 1:
                     state.xSpeed = 0.4;
-                    if (globalPitch < 15.0)
+                    if (globalPitch < 14.7)
                         state.stage++;
                     break;
                 case 2:
-                    state.xSpeed = 0.3;
-                    if (globalPitch > 15.5)
+                    state.xSpeed = 0.2;
+                    if (globalPitch > 14.8)
                         state.stage++;
                     break;
                 case 3:
-                    state.xSpeed = 0.3;
-                    if (globalPitch < 14.5)
+                    state.xSpeed = 0.2;
+                    if (globalPitch < 14.8)
                         state.stage++;
                     break;
                 case 4:
@@ -585,6 +585,76 @@ frc2::FunctionalCommand* Drivetrain::getAutoClimbOver(){
         }, // onEnd
         [&](){
             return state.stage == 3;
+        },//isFinished
+        {}
+    );
+}
+
+//OLD BALANCE
+frc2::FunctionalCommand* Drivetrain::getOLDAutoLevel(){
+    return new frc2::FunctionalCommand(
+        [&](){
+            state.abovePitchThreshold = false;
+            state.isLeveled = false;
+        }, // OnInit
+        [&](){
+            if (pigeon.GetPitch() > 16.0) {
+                state.abovePitchThreshold = true;
+                state.xSpeed = -0.4;
+            } else if (state.abovePitchThreshold) {
+                if (pigeon.GetPitch() < 11.5 ){
+                    state.isLeveled = true;
+                    state.xSpeed = 0.02;
+                }else if(pigeon.GetPitch() < 16){
+                    state.xSpeed = -0.15;
+                }else{
+                    state.xSpeed = -0.3;
+                }
+            } else {
+                state.xSpeed = -0.3;
+            }
+        }, //onExecute
+        [&](bool){
+            state.xSpeed = 0.0;
+            state.xPose = true;
+        }, // onEnd
+        [&](){
+            return state.isLeveled;
+        },//isFinished
+        {}
+    );
+}
+
+//OLD BALANCE
+frc2::FunctionalCommand* Drivetrain::getOLDAutoLevelReversed(){
+    return new frc2::FunctionalCommand(
+        [&](){
+            state.abovePitchThreshold = false;
+            state.isLeveled = false;
+        }, // OnInit
+        [&](){
+            if (pigeon.GetPitch() < -16.0) {
+                state.abovePitchThreshold = true;
+                state.xSpeed = 0.4;
+            } else if (state.abovePitchThreshold) {
+                if (pigeon.GetPitch() > -11.5 ){
+                    state.isLeveled = true;
+                    state.xSpeed = -0.02;
+                }else if(pigeon.GetPitch() > -16){
+                    state.xSpeed = 0.15;
+                }else{
+                    state.xSpeed = 0.3;
+                }
+            } else {
+                state.xSpeed = 0.3;
+            }
+        }, //onExecute
+        [&](bool){
+            state.xSpeed = 0.0;
+            state.xPose = true;
+        }, // onEnd
+        [&](){
+            return state.isLeveled;
         },//isFinished
         {}
     );
