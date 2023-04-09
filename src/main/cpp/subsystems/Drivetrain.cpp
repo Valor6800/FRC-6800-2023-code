@@ -59,6 +59,8 @@
 
 #define MODULE_DIFF 0.206375f
 
+#define X_TIME 14.85f
+
 #define MODULE_DIFF_XS {1, 1, -1, -1}
 #define MODULE_DIFF_YS {1, -1, -1, 1}
 
@@ -463,12 +465,12 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
                     break;
                 case 2:
                     state.xSpeed = -0.2;
-                    if (globalPitch < -14.8)
+                    if (globalPitch < -14.6)
                         state.stage++;
                     break;
                 case 3:
                     state.xSpeed = -0.2;
-                    if (globalPitch > -14.9)
+                    if (globalPitch > -14.6)
                         state.stage++;
                     break;
                 case 4:
@@ -481,7 +483,7 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
             state.xPose = true;
         }, // onEnd
         [&](){
-            return state.stage == 4;
+            return state.stage == 4  || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME);
         },//isFinished
         {}
     );
@@ -530,12 +532,12 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
                     break;
                 case 2:
                     state.xSpeed = 0.2;
-                    if (globalPitch > 14.8)
+                    if (globalPitch > 14.6)
                         state.stage++;
                     break;
                 case 3:
                     state.xSpeed = 0.2;
-                    if (globalPitch < 14.8)
+                    if (globalPitch < 14.6)
                         state.stage++;
                     break;
                 case 4:
@@ -548,7 +550,7 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
             state.xPose = true;
         }, // onEnd
         [&](){
-            return state.stage == 4;
+            return state.stage == 4 || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME);
         },//isFinished
         {}
     );

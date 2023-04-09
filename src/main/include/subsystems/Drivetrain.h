@@ -137,6 +137,8 @@ public:
           int trackingID;
           double visionOdomDiff;
 
+          double matchStart;
+
           frc::Pose2d visionPose;
           frc::Pose2d prevVisionPose;
 

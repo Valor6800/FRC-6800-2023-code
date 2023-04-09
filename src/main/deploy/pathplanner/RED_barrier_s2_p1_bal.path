@@ -51,16 +51,16 @@
     },
     {
       "anchorPoint": {
-        "x": 2.89242178484357,
-        "y": 4.721385442770886
+        "x": 2.8671737343474692,
+        "y": 4.645641291282583
       },
       "prevControl": {
-        "x": 3.698236169088905,
-        "y": 4.721385442770886
+        "x": 3.6729881185928046,
+        "y": 4.645641291282583
       },
       "nextControl": {
-        "x": 3.698236169088905,
-        "y": 4.721385442770886
+        "x": 3.6729881185928046,
+        "y": 4.645641291282583
       },
       "holonomicAngle": -0.5,
       "isReversal": true,
@@ -77,15 +77,15 @@
     {
       "anchorPoint": {
         "x": 6.24,
-        "y": 4.2
+        "y": 4.28
       },
       "prevControl": {
-        "x": 5.551990623981248,
-        "y": 4.952730225460451
+        "x": 5.355946352998713,
+        "y": 5.164053647001287
       },
       "nextControl": {
-        "x": 6.478360429455885,
-        "y": 3.9392170716576276
+        "x": 6.489823367647244,
+        "y": 4.030176632352757
       },
       "holonomicAngle": -45.0,
       "isReversal": false,
@@ -126,29 +126,31 @@
     },
     {
       "anchorPoint": {
-        "x": 2.00242800485601,
-        "y": 4.443656887313775
+        "x": 5.8969397938795876,
+        "y": 3.0423900847801706
       },
       "prevControl": {
-        "x": 5.98530797061594,
-        "y": 5.232658465316931
+        "x": 6.61019722039444,
+        "y": 2.998205996411994
       },
       "nextControl": null,
       "holonomicAngle": 0.0,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 0.4,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "balance"
+        ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "maxVelocity": null,
-  "maxAcceleration": 1.88,
+  "maxVelocity": 10.0,
+  "maxAcceleration": 1.875,
   "isReversed": null,
   "markers": [
     {
@@ -158,33 +160,27 @@
       ]
     },
     {
+      "position": 1.131313131313122,
+      "names": [
+        "stow_low"
+      ]
+    },
+    {
+      "position": 1.876978093927557,
+      "names": [
+        "outtake_cube"
+      ]
+    },
+    {
       "position": 2.44,
       "names": [
         "pickup_front_cube"
       ]
     },
     {
-      "position": 1.88,
-      "names": [
-        "outtake_cube"
-      ]
-    },
-    {
-      "position": 1.13,
+      "position": 4.363636363636468,
       "names": [
         "stow_low"
-      ]
-    },
-    {
-      "position": 3.8181818181818183,
-      "names": [
-        "stow_low"
-      ]
-    },
-    {
-      "position": 4.96,
-      "names": [
-        "outtake_cube"
       ]
     }
   ]
