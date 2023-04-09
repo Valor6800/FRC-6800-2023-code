@@ -59,6 +59,8 @@ void Robot::AutonomousInit() {
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Brake);
     drivetrain.pullSwerveModuleZeroReference();
 
+    drivetrain.state.matchStart = frc::Timer::GetFPGATimestamp().to<double>();
+
     //intake.state.intakeState = Intake::SPIKED;
 
     autoCommand = autonomous.getCurrentAuto();
