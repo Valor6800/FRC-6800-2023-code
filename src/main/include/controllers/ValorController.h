@@ -280,6 +280,8 @@ public:
 
     virtual void setNeutralMode(ValorNeutralMode mode) = 0;
 
+    virtual void setOpenLoopRamp(double time) = 0;
+
     ValorNeutralMode getNeutralMode(){
         return neutralMode;
     }

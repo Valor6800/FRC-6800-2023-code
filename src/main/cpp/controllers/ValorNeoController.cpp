@@ -154,6 +154,10 @@ void ValorNeoController::setNeutralMode(ValorNeutralMode mode){
     neutralMode = mode;
 }
 
+void ValorNeoController::setOpenLoopRamp(double time){
+    motor->SetOpenLoopRampRate(time);
+}
+
 void ValorNeoController::InitSendable(wpi::SendableBuilder& builder)
 {
     builder.SetSmartDashboardType("Subsystem");
