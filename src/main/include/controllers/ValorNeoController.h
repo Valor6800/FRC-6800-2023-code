@@ -48,6 +48,8 @@ public:
     void setProfile(int slot);
     void setNeutralMode(ValorNeutralMode nmode);
 
+    void setOpenLoopRamp(double time);
+
     double getAbsEncoderPosition() override;
     
     void InitSendable(wpi::SendableBuilder& builder) override;

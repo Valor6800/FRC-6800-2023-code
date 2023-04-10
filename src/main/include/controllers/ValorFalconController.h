@@ -54,6 +54,8 @@ public:
 
     void setNeutralMode(ValorNeutralMode mode);
 
+    void setOpenLoopRamp(double time);
+
     void InitSendable(wpi::SendableBuilder& builder);
 private:
     ValorPIDF pidf;

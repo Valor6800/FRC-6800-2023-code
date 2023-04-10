@@ -154,6 +154,10 @@ void ValorFalconController::setVoltageCompensation(double voltage){
     motor->ConfigVoltageCompSaturation(voltage);
 }
 
+void ValorFalconController::setOpenLoopRamp(double time){
+    motor->ConfigOpenloopRamp(time);
+}
+
 
 void ValorFalconController::InitSendable(wpi::SendableBuilder& builder)
 {
