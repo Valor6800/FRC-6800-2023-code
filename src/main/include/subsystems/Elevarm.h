@@ -105,7 +105,7 @@ public:
         double frontMinAngle;
         double backMinAngle;
 
-        double carraigeOffset;
+        double carriageOffset;
 
         bool atCarriage;
         bool atArm;
