@@ -263,7 +263,7 @@ void Drivetrain::analyzeDashboard()
 
         if (poseArray.size() >= 6){
             double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
-            frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
+            frc::Pose2d botpose = getVisionPose();
             state.prevVisionPose = state.visionPose;
             state.visionPose = frc::Pose2d{botpose.X(), botpose.Y(), getPose_m().Rotation()};
 
@@ -330,6 +330,38 @@ frc::SwerveDriveKinematics<SWERVE_COUNT>* Drivetrain::getKinematics()
 frc::Pose2d Drivetrain::getPose_m()
 {
     return estimator->GetEstimatedPosition();
+}
+
+frc::Pose2d Drivetrain::getVisionPose(){
+    limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
+
+    if (limeTable->GetNumber("tv", 0) != 1.0)
+        return frc::Pose2d{0_m, 0_m, 0_deg};
+
+    std::vector<double> poseArray;
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
+        poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
+    } else {
+        poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
+    }
+
+    if (poseArray.size() < 6)
+        return frc::Pose2d{0_m, 0_m, 0_deg}; 
+
+    return frc::Pose2d{
+        units::meter_t{poseArray[0]},
+        units::meter_t{poseArray[1]},
+        units::degree_t{poseArray[5]}
+    };
+}
+
+void Drivetrain::addVisionMeasurement(frc::Pose2d visionPose, double doubt=1){
+    if (limeTable->GetNumber("tv", 0) == 1.0)   
+        estimator->AddVisionMeasurement(
+            visionPose,  
+            frc::Timer::GetFPGATimestamp(),
+            {doubt, doubt, doubt}
+        ); 
 }
 
 void Drivetrain::resetGyro(){
@@ -432,18 +464,7 @@ frc2::InstantCommand* Drivetrain::getResetOdom() {
         [&]{
             limeTable->PutNumber("pipeline", 3);
             if (limeTable->GetNumber("tv", 0) == 1){
-                std::vector<double> poseArray;
-
-                if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
-                    poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
-                } else {
-                    poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
-                }
-
-                double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
-                frc::Pose2d botpose{units::meter_t(x) - 0.7_m, units::meter_t(y), units::degree_t(angle)};
-
-                resetOdometry(botpose);
+                resetOdometry(getVisionPose());
             }
         }
     );
@@ -458,6 +479,7 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
         [&](){
             if (!state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) > 20)
                 state.abovePitchThreshold = true;
+            // limeTable->GetNumberArray()
         },
         [&](bool){
             state.xSpeed = 0.0;

@@ -208,6 +208,8 @@ public:
       * @return the pose of the robot (x and y are in meters)
       */
      frc::Pose2d getPose_m();
+     frc::Pose2d getVisionPose();
+     void addVisionMeasurement(frc::Pose2d visionPose, double doubt);
 
      /**
       * Returns the kinematics object in use by the swerve drive
