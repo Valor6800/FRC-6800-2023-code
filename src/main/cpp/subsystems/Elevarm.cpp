@@ -231,7 +231,6 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.274_m, 1.104_m, -62.93_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.576_m, 1.305_m, -137.65_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 81.0_deg);
 
     // BACK CONE   
     // posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
@@ -252,15 +251,13 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -221.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -164.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
-    posMap[Piece::CUBE][Direction::BACK][Position::POOPFULL] =frc::Pose2d(0.05_m, 0.436_m, 81.0_deg);
 
 
     table->PutNumber("Carriage Max Manual Speed", MAN_MAX_CARRIAGE);
     table->PutNumber("Arm Rotate Max Manual Speed", MAN_MAX_ROTATE);
     table->PutBoolean("Pit Mode", futureState.pitModeEnabled);
     table->PutNumber("Carriage Stall Power", P_MIN_CARRIAGE);
-    table->PutNumber("Carraige Offset", INITIAL_HEIGHT_OFFSET);
-    table->PutBoolean("Enable Carraige Offset", false);
+    table->PutNumber("Carriage Offset", INITIAL_HEIGHT_OFFSET);
     table->PutBoolean("Arm In Range", false);
     table->PutBoolean("Zero Arm", zeroArm);
     table->PutBoolean("Coast Mode", coastMode);
@@ -301,9 +298,6 @@ void Elevarm::assessInputs()
     } else if(operatorGamepad->DPadRight()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::MID;
         else futureState.positionState = Position::SNAKE;
-    } else if (operatorGamepad->GetAButton()){
-        if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::POOPFULL;
-        else futureState.positionState = Position::STOW;
     } else {
         if (previousState.positionState != Position::MANUAL) {
             if (intake->getFuturePiece() == Piece::CONE) {
@@ -352,11 +346,16 @@ void Elevarm::analyzeDashboard()
         armRotateMotor.setNeutralMode(ValorNeutralMode::Brake);
     }
 
-    if (table->GetBoolean("Enable Carraige Offset", false)) {
-        futureState.carraigeOffset = table->GetNumber("Carraige Offset", INITIAL_HEIGHT_OFFSET);
+    if (driverGamepad->leftTriggerActive()) {
+        if (operatorGamepad->GetXButtonPressed()){
+            futureState.carriageOffset += 1.0;
+        } else if (operatorGamepad->GetAButtonPressed()){
+            futureState.carriageOffset -= 1.0;
+        }   
     } else {
-        futureState.carraigeOffset = INITIAL_HEIGHT_OFFSET;
+        futureState.carriageOffset = INITIAL_HEIGHT_OFFSET;
     }
+    table->PutNumber("Carriage Offset", futureState.carriageOffset);
     // armStallPower = table->GetNumber("Arm Stall Power", P_MIN_ARM);
     futureState.resultKinematics = forwardKinematics(Elevarm::Positions(carriageMotors.getPosition(), armRotateMotor.getPosition(), wristMotor.getPosition()));
     futureState.frontMinAngle = minAngle(true);
@@ -394,7 +393,6 @@ void Elevarm::analyzeDashboard()
     }
 
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
-    intake->state.elevarmPoopFull = futureState.positionState == Position::POOPFULL;
 }
 
 void Elevarm::assignOutputs()
@@ -525,7 +523,7 @@ Elevarm::Positions Elevarm::reverseKinematics(frc::Pose2d pose, ElevarmSolutions
         height = pose.Y().to<double>() + (X_ARM_LENGTH * std::cos(theta));
     }
     height -= (Z_CARRIAGE_FLOOR_OFFSET + Z_CARRIAGE_JOINT_OFFSET);
-    height += futureState.carraigeOffset / 100.0; //convert fron cm on dashboard to m in logic
+    height += futureState.carriageOffset / 100.0; //convert fron cm on dashboard to m in logic
 
 
     return Positions(height,theta * 180.0 / M_PI, pose.Rotation().Degrees().to<double>());
