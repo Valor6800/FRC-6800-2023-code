@@ -356,6 +356,12 @@ frc::Rotation2d Drivetrain::getPigeon()
     return pigeon.GetRotation2d();
 }
 
+units::degree_t Drivetrain::getGlobalPitch(){
+    double pitch = pigeon.GetPitch() / 180 * M_PI, yaw = getPose_m().Rotation().Degrees().to<double>() / 180 * M_PI, roll = pigeon.GetRoll() / 180 * M_PI;
+    double globalPitch = (std::cos(yaw) * pitch + std::sin(yaw) * roll) * 180 / M_PI; 
+    return units::degree_t{globalPitch};
+}
+
 void Drivetrain::resetDriveEncoders()
 {
     for (size_t i = 0; i < swerveModules.size(); i++)
@@ -446,44 +452,19 @@ frc2::InstantCommand* Drivetrain::getResetOdom() {
 frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
     return new frc2::FunctionalCommand(
         [&](){
-            state.stage = 0;
+            state.abovePitchThreshold = false;
+            limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
         },
         [&](){
-            double pitch = pigeon.GetPitch() / 180 * M_PI, yaw = getPose_m().Rotation().Degrees().to<double>() / 180 * M_PI, roll = pigeon.GetRoll() / 180 * M_PI;
-            double globalPitch = (std::cos(yaw) * pitch + std::sin(yaw) * roll) * 180 / M_PI;
-            switch (state.stage){
-                // There should be a stage for each change in slope between positive and negative, otherwise the stage change might happen at unexpected places
-                case 0: // 
-                    state.xSpeed = -0.5;
-                    if (globalPitch < -20.0)
-                        state.stage++;
-                    break;
-                case 1:
-                    state.xSpeed = -0.4;
-                    if (globalPitch > -14.7)
-                        state.stage++;
-                    break;
-                case 2:
-                    state.xSpeed = -0.2;
-                    if (globalPitch < -14.6)
-                        state.stage++;
-                    break;
-                case 3:
-                    state.xSpeed = -0.2;
-                    if (globalPitch > -14.6)
-                        state.stage++;
-                    break;
-                case 4:
-                    state.xSpeed = +0.02;
-                    break;
-            }
+            if (!state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) > 20)
+                state.abovePitchThreshold = true;
         },
         [&](bool){
             state.xSpeed = 0.0;
             state.xPose = true;
         }, // onEnd
         [&](){
-            return state.stage == 4  || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME);
+            return state.stage == 4  || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) < 10);
         },//isFinished
         {}
     );

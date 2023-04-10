@@ -108,9 +108,9 @@ public:
      void InitSendable(wpi::SendableBuilder& builder);
 
      enum LimelightPipes{
-          APRIL_TAGS,
-          TAPE_MID,
-          TAPE_HIGH
+          APRIL_TAGS = 0,
+          TAPE_MID = 1,
+          TAPE_HIGH = 2
      };
 
      struct x
@@ -174,6 +174,7 @@ public:
 
 
      frc::Rotation2d getPigeon();
+     units::degree_t getGlobalPitch();
 
      /**
       * Reset the robot's position on the field. Any accumulted gyro drift will be noted and
