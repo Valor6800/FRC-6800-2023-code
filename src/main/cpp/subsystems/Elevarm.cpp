@@ -68,7 +68,7 @@
 #define AUTO_ROTATE_K_AFF_CUBE 0.11f
 #define AUTO_ROTATE_K_AFF_POS 90.0f
 
-#define ROTATE_S_CURVE_STRENGTH 0
+#define ROTATE_S_CURVE_STRENGTH 3
 
 #define WRIST_K_F 0.75f
 #define WRIST_K_P 0.18f
@@ -114,7 +114,6 @@ Elevarm::Elevarm(frc::TimedRobot *_robot, Intake *_intake) : ValorSubsystem(_rob
                             armCANcoder(CANIDs::ARM_CANCODER, "baseCAN"),
                             wristMotor(CANIDs::WRIST, ValorNeutralMode::Brake, false, "baseCAN"),
                             wristCANcoder(CANIDs::WRIST_CANCODER, "baseCAN"),
-                            candle(_robot, 286, CANIDs::CANDLE, "baseCAN"),
                             manualMaxArmSpeed(MAN_MAX_ROTATE),
                             manualMaxCarriageSpeed(MAN_MAX_CARRIAGE),
                             carriageStallPower(P_MIN_CARRIAGE)
@@ -384,8 +383,6 @@ void Elevarm::assignOutputs()
     Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
     if (futureState.positionState == Position::STOW) {
         futureState.targetPose = stowPose;
-    } else if (futureState.positionState == Position::STOW_POOP) {
-        futureState.targetPose = reverseKinematics(stowPoopPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     } else {
         if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::VERTICAL || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
@@ -545,18 +542,6 @@ frc::Pose2d Elevarm::forwardKinematics(Elevarm::Positions positions)
         }
     }
     return frc::Pose2d((units::length::meter_t)x,(units::length::meter_t)z,(units::angle::degree_t)w);
-}
-
-double Elevarm::getArmPosition(){
-    return armRotateMotor.getPosition();
-}
-
-double Elevarm::getCarriagePosition(){
-    return carriageMotors.getPosition();
-}
-
-double Elevarm::getWristPosition(){
-    return wristMotor.getPosition();
 }
 
 void Elevarm::InitSendable(wpi::SendableBuilder& builder)

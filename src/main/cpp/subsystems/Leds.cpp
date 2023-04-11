@@ -16,7 +16,7 @@ Leds::Leds(frc::TimedRobot *_robot, Elevarm *_elevarm, Intake *_intake, Drivetra
     elevarm(_elevarm),
     intake(_intake),
     drivetrain(_drivetrain),
-    candle(_robot, LED_COUNT, 4, CANIDs::CANDLE, "baseCAN")
+    candle(_robot, LED_COUNT, 3, CANIDs::CANDLE, "baseCAN")
 {
     frc2::CommandScheduler::GetInstance().RegisterSubsystem(this);
     init();
@@ -34,62 +34,34 @@ void Leds::resetState(){
 void Leds::assessInputs(){}
 
 void Leds::analyzeDashboard(){
-    if (intake){
-        switch (intake->state.intakeState){
-            case (Intake::SPIKED):
-                if (state.startedAnimating[3] == -1_s)
-                    state.startedAnimating[3] = frc::Timer::GetFPGATimestamp();
-                break;
-            default:
-                state.startedAnimating[3] = -1_s;
-                break;
+
+    if (elevarm->futureState.pitModeEnabled && !elevarm->futureState.deadManEnabled) {
+        candle.setColor(ValorCANdleSensor::RGBColor(255, 90, 0));
+    } else if (robot->IsDisabled()) {
+        if (table->GetBoolean("Arm In Range", false)) candle.setColor(ValorCANdleSensor::RGBColor(0, 255, 0));
+        else candle.setColor(ValorCANdleSensor::RGBColor(255, 0, 0));
+    } else if (robot->IsAutonomous()) {
+        if (elevarm->futureState.atCarriage && elevarm->futureState.atArm && elevarm->futureState.atWrist){
+            candle.setColor(ValorCANdleSensor::RGBColor(0, 255, 0));
+        } else{
+            candle.setColor(ValorCANdleSensor::RGBColor(0, 0, 255));
+        }
+    } else {
+        if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED){
+            candle.setColor(3,ValorCANdleSensor::RGBColor(255, 0, 0));
+        } else {
+            candle.setColor(3, ValorCANdleSensor::RGBColor(255, 255, 255));
+        }
+        
+        if (intake->getFuturePiece() == Piece::CUBE) {
+            candle.setColor(1, ValorCANdleSensor::RGBColor(156, 0, 255));
+            candle.setColor(2, candle.getColor(1));
+        } else {
+            candle.setColor(1, ValorCANdleSensor::RGBColor(255, 196, 0));
+            candle.setColor(2, candle.getColor(1));
         }
     }
 
-    if (elevarm->futureState.pitModeEnabled){
-        candle.setColor(2, ValorCANdleSensor::RGBColor(255, 80, 0));
-        candle.setColor(1, ValorCANdleSensor::RGBColor(255, 80, 0));
-    } else{
-        candle.setColor(2,ValorCANdleSensor::RGBColor(0,0,0));
-        candle.setColor(1,ValorCANdleSensor::RGBColor(0,0,0));
-    }
-    if (robot->IsDisabled()) {//Disabled
-        if (elevarm->futureState.armInRange) {
-            candle.setColor(4, ValorCANdleSensor::RGBColor(0, 255, 0));
-        } else {
-            candle.setColor(4, ValorCANdleSensor::RGBColor(255, 0, 0));
-        }
-    } else if (robot->IsAutonomous()) {//Checks if robot is in auto
-        if (elevarm->futureState.atCarriage && elevarm->futureState.atArm && elevarm->futureState.atWrist){
-            candle.setColor(4, ValorCANdleSensor::RGBColor(0, 255, 0));
-        } else {//When the elevarm is not at the correct state
-            candle.setColor(4, ValorCANdleSensor::RGBColor(0, 0, 255));
-        }
-    } else {//Teleop
-        if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED) {//spiked
-            int t = (int)(frc::Timer::GetFPGATimestamp().to<double>() * 30.0); // Multiplier indicates # updates/second
-            t %= 2; // Constrict to relevant step frame
-                
-            if (frc::Timer::GetFPGATimestamp() - state.startedAnimating[3] < 0.5_s && t == 0)
-                    candle.setColor(3, ValorCANdleSensor::RGBColor(255, 255, 255));
-            else
-                candle.setColor(3, candle.getColor(4));
-        } else {
-            candle.setColor(3, candle.getColor(4));
-        }
-        
-        if (intake->getFuturePiece() == Piece::CUBE){
-            candle.setColor(4, ValorCANdleSensor::RGBColor(156, 0, 255));
-        } else if(intake->getFuturePiece() == Piece::CONE){
-            candle.setColor(4, ValorCANdleSensor::RGBColor(255, 196, 0));
-        }
-        //elevarm being set up with candle
-        // candle.setColor(2, ValorCANdleSensor::RGBColor(
-        //     255*(elevarm->getCarriagePosition()/CARRIAGE_UPPER_LIMIT),
-        //     255*((elevarm->getArmPosition()+180)/(ROTATE_FORWARD_LIMIT*2)),
-        //     255*((elevarm->getWristPosition()+325)/(WRIST_FORWARD_LIMIT*2))
-        // ));
-    }
 }
 
 void Leds::assignOutputs(){}
