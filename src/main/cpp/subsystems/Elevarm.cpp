@@ -51,7 +51,7 @@
 #define ROTATE_K_I 0.0f
 #define ROTATE_K_D 0.0f
 #define ROTATE_K_ERROR 0.5f
-#define ROTATE_K_VEL 140.0f
+#define ROTATE_K_VEL 254.0f
 #define ROTATE_K_ACC_MUL 0.9f
 #define ROTATE_K_AFF 0.14f
 #define ROTATE_K_AFF_CUBE 0.11f
