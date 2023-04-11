@@ -11,5 +11,6 @@ enum Position{
       HIGH_AUTO,
       MANUAL,
       SNAKE,
+      VERTICAL,
       POOPFULL
    };

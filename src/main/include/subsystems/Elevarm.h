@@ -118,6 +118,8 @@ public:
     bool zeroArm;
     bool coastMode;
 
+    double teleopStart;
+
     frc2::FunctionalCommand * getAutoCommand(std::string, std::string, std::string);
 
     frc2::FunctionalCommand * getRotatePIDSetterCommand(bool);
