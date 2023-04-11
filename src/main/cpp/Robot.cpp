@@ -89,6 +89,8 @@ void Robot::AutonomousPeriodic(){
 void Robot::TeleopInit() {
     drivetrain.pullSwerveModuleZeroReference();
     drivetrain.setDriveMotorNeutralMode(ValorNeutralMode::Coast);
+
+    elevarm.teleopStart = frc::Timer::GetFPGATimestamp().to<double>();
     elevarm.setArmPIDF(false);
 
     if (autoCommand != nullptr) {
