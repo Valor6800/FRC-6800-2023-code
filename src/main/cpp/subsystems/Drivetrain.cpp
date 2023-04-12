@@ -459,18 +459,25 @@ void Drivetrain::adas(LimelightPipes pipe){
     }
 }
 
-frc2::InstantCommand* Drivetrain::getResetOdom() {
-    return new frc2::InstantCommand(
+frc2::FunctionalCommand* Drivetrain::getResetOdom() {
+    return new frc2::FunctionalCommand(
         [&]{
-            limeTable->PutNumber("pipeline", 3);
-            if (limeTable->GetNumber("tv", 0) == 1){
-                resetOdometry(getVisionPose());
-            }
-        }
+            limeTable->PutNumber("pipeline", 0);
+        },
+        [&]{
+            
+        },
+        [&](bool){
+            resetOdometry(state.visionPose);
+        },
+        [&]{
+            return limeTable->GetNumber("tv", 0.0) == 1.0;
+        },
+        {}
     );
 }
 
-frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
+frc2::FunctionalCommand* Drivetrain::getVisionAutoLevel(){
     return new frc2::FunctionalCommand(
         [&](){
             state.abovePitchThreshold = false;
@@ -479,41 +486,69 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
         [&](){
             if (!state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) > 20)
                 state.abovePitchThreshold = true;
-            // limeTable->GetNumberArray()
+
+            if (limeTable->GetNumber("tv", 0.0) == 1.0)
+                addVisionMeasurement(getVisionPose(), 1.0);
+
+            state.xSpeed = -0.2;
         },
         [&](bool){
             state.xSpeed = 0.0;
             state.xPose = true;
         }, // onEnd
         [&](){
-            return state.stage == 4  || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) < 10);
+            return getPose_m().X() < 3.00_m || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) < 10);
+        },//isFinished
+        {}
+    );
+}
+
+frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
+    return new frc2::FunctionalCommand(
+        [&](){
+            state.stage = 0;
+        },
+        [&](){
+            units::degree_t globalPitch = getGlobalPitch();
+            switch (state.stage){
+                // There should be a stage for each change in slope between positive and negative, otherwise the stage change might happen at unexpected places
+                case 0: // 
+                    state.xSpeed = -0.5;
+                    if (globalPitch < -20.0_deg)
+                        state.stage++;
+                    break;
+                case 1:
+                    state.xSpeed = -0.3;
+                    if (globalPitch > -14.7_deg)
+                        state.stage++;
+                    break;
+                case 2:
+                    state.xSpeed = -0.2;
+                    if (globalPitch < -14.6_deg)
+                        state.stage++;
+                    break;
+                case 3:
+                    state.xSpeed = -0.1;
+                    if (globalPitch > -14.6_deg)
+                        state.stage++;
+                    break;
+                case 4:
+                    state.xSpeed = +0.02;
+                    break;
+            }
+        },
+        [&](bool){
+            state.xSpeed = 0.0;
+            state.xPose = true;
+        }, // onEnd
+        [&](){
+            return state.stage == 4 || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME);
         },//isFinished
         {}
     );
 }
 
 frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
-    /*return new frc2::FunctionalCommand(
-        [&](){
-
-        }, // OnInit
-        [&](){
-            if (!state.abovePitchThreshold && std::fabs(pigeon.GetPitch()) > 5.0){
-                resetOdometry(frc::Pose2d{0_m, 0_m, getPose_m().Rotation()});
-                state.abovePitchThreshold = true;
-            }
-            state.xSpeed = state.abovePitchThreshold ? 0.3 : 0.5;
-        }, //onExecute
-        [&](bool){
-            state.xSpeed = 0.0;
-            state.xPose = true;
-            state.abovePitchThreshold = false;
-        }, // onEnd
-        [&](){
-            return (getPose_m().X().to<double>() - 1.70 >= 0) && state.abovePitchThreshold;
-        },//isFinished
-        {}
-    );*/
     return new frc2::FunctionalCommand(
         [&](){
             state.stage = 0;
@@ -884,6 +919,14 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
                 double pitch = pigeon.GetPitch() / 180 * M_PI, yaw = getPose_m().Rotation().Degrees().to<double>() / 180 * M_PI, roll = pigeon.GetRoll() / 180 * M_PI;
                 double globalPitch = (std::cos(yaw) * pitch + std::sin(yaw) * roll) * 180 / M_PI;
                 return globalPitch;
+            },
+            nullptr
+        );
+
+        builder.AddBooleanProperty(
+            "abovePitchThreshold",
+            [this]{
+                return state.abovePitchThreshold;
             },
             nullptr
         );

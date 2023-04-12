@@ -224,6 +224,7 @@ public:
      frc2::InstantCommand* getResetOdom();
      
      frc2::FunctionalCommand* getAutoLevel();
+     frc2::FunctionalCommand* getVisionAutoLevel();
      frc2::FunctionalCommand* getAutoLevelReversed();
      frc2::FunctionalCommand* getAutoClimbOver();
 
