@@ -221,7 +221,7 @@ public:
      void angleLock();
      void adas(LimelightPipes pipe);
 
-     frc2::InstantCommand* getResetOdom();
+     frc2::FunctionalCommand* getResetOdom();
      
      frc2::FunctionalCommand* getAutoLevel();
      frc2::FunctionalCommand* getVisionAutoLevel();
