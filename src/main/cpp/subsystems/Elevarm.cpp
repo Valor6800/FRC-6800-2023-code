@@ -135,6 +135,7 @@ void Elevarm::resetState()
     futureState.manualCarriage = 0;
     futureState.manualArm = 0;
     futureState.pitModeEnabled = false;
+    futureState.highStow = true;
     zeroArm = false;
     coastMode = false;
     previousState = futureState;
@@ -278,7 +279,15 @@ void Elevarm::assessInputs()
 {   
     futureState.manualCarriage = 0;
     futureState.manualArm = 0;
+
+    if (operatorGamepad->GetRightBumperPressed()) {
+        futureState.highStow = true;
+    } 
     
+    if (operatorGamepad->GetLeftBumperPressed()) {
+        futureState.highStow = false;
+    }
+
     if (operatorGamepad->leftStickYActive() || operatorGamepad->rightStickYActive()) {
         futureState.manualCarriage = operatorGamepad->leftStickY() * manualMaxCarriageSpeed;
         futureState.manualArm = operatorGamepad->rightStickY() * manualMaxArmSpeed;
@@ -288,33 +297,30 @@ void Elevarm::assessInputs()
     } else if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper()){
         if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = Position::STOW;
         else futureState.positionState = Position::GROUND;
+    } else if (driverGamepad->DPadDown()) {
+        futureState.positionState = Position::GROUND_TOPPLE;
     } else if (operatorGamepad->DPadDown()) {
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::GROUND_SCORE;
         else futureState.positionState = Position::STOW;
     } else if(operatorGamepad->DPadLeft()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
-        else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
         else futureState.positionState = Position::STOW;
-    } else if(operatorGamepad->GetLeftBumper()){
+    } else if(operatorGamepad->rightTriggerActive()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::BIRD;
         else futureState.positionState = Position::STOW;
     } else if (operatorGamepad->DPadUp()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::HIGH;
-        else futureState.positionState = Position::SNAKE;
+        else futureState.positionState = Position::STOW;
     } else if(operatorGamepad->DPadRight()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::MID;
-        else futureState.positionState = Position::SNAKE;
+        else futureState.positionState = Position::STOW;
     } else {
         if (previousState.positionState != Position::MANUAL) {
-            if (intake->getFuturePiece() == Piece::CONE) {
-                if (frc::Timer::GetFPGATimestamp().to<double>() - teleopStart > TIME_TELEOP_VERT) futureState.positionState = Position::VERTICAL;
-                else futureState.positionState = Position::SNAKE; 
-            } else {
-                futureState.positionState = Position::STOW;
-            }
+            futureState.positionState = Position::STOW;
         } 
     }
-    
+
+   
     if(operatorGamepad->GetBButton()){
         setFuturePiece(Piece::CONE);
     }
@@ -401,14 +407,21 @@ void Elevarm::analyzeDashboard()
 }
 
 void Elevarm::assignOutputs()
-{
-    if (futureState.positionState == Position::SNAKE || futureState.positionState == Position::VERTICAL) futureState.directionState = Direction::BACK;
-    
-    Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);;
+{    
+    Positions stowPose = reverseKinematics(stowPos, ElevarmSolutions::ELEVARM_LEGS, Direction::FRONT);
     if (futureState.positionState == Position::STOW) {
-        futureState.targetPose = stowPose;
+        if (futureState.highStow) {
+            futureState.directionState = Direction::BACK;
+            if (frc::Timer::GetFPGATimestamp().to<double>() - teleopStart > TIME_TELEOP_VERT) 
+                futureState.positionState = Position::VERTICAL;
+            else 
+                futureState.positionState = Position::SNAKE; 
+            futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
+        } else {
+            futureState.targetPose = stowPose;
+        }
     } else {
-        if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::SNAKE || futureState.positionState == Position::VERTICAL || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)
+        if (futureState.positionState == Position::PLAYER || futureState.positionState == Position::MID || futureState.positionState == Position::HIGH || futureState.positionState == Position::HIGH_AUTO)
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_ARMS , futureState.directionState);
         else 
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
