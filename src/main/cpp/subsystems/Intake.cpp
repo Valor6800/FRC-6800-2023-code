@@ -99,7 +99,7 @@ void Intake::assessInputs()
     
 
     // SCORE
-    if (driverGamepad->rightTriggerActive() || operatorGamepad->rightTriggerActive()) {
+    if (driverGamepad->rightTriggerActive()) {
         state.intakeState = OUTTAKE;  
     // No game element in intake, driver/operator requesting intake
     } else if (state.intakeState != SPIKED) {
