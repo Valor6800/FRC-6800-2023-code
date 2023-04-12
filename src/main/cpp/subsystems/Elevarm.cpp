@@ -340,7 +340,7 @@ void Elevarm::analyzeDashboard()
         armRotateMotor.setNeutralMode(ValorNeutralMode::Brake);
     }
 
-    if (driverGamepad->leftTriggerActive()) {
+    if (driverGamepad->leftTriggerActive() || driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper()) {
         if (operatorGamepad->GetXButtonPressed()){
             futureState.carriageOffset += 1.0;
         } else if (operatorGamepad->GetAButtonPressed()){
