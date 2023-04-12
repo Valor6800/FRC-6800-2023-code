@@ -107,7 +107,9 @@ void Intake::assessInputs()
         // Driver or operator ground pickup
         if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || 
         (operatorGamepad->DPadLeft() && driverGamepad->leftTriggerActive()) || 
-        driverGamepad->DPadLeft()) {
+        driverGamepad->DPadLeft() || 
+        driverGamepad->DPadDown() ||
+        (driverGamepad->leftTriggerActive() && operatorGamepad->rightTriggerActive())) {
             state.intakeState = INTAKE;
         // Nothing pressed
         } else{
