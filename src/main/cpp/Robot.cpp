@@ -61,6 +61,8 @@ void Robot::AutonomousInit() {
 
     drivetrain.state.matchStart = frc::Timer::GetFPGATimestamp().to<double>();
 
+    elevarm.futureState.highStow = false;
+
     //intake.state.intakeState = Intake::SPIKED;
 
     autoCommand = autonomous.getCurrentAuto();
