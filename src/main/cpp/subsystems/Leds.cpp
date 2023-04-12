@@ -38,8 +38,11 @@ void Leds::analyzeDashboard(){
     if (elevarm->futureState.pitModeEnabled && !elevarm->futureState.deadManEnabled) {
         candle.setColor(ValorCANdleSensor::RGBColor(255, 90, 0));
     } else if (robot->IsDisabled()) {
-        if (table->GetBoolean("Arm In Range", false)) candle.setColor(ValorCANdleSensor::RGBColor(0, 255, 0));
-        else candle.setColor(ValorCANdleSensor::RGBColor(255, 0, 0));
+        candle.setColor(1,ValorCANdleSensor::RGBColor(0,0,0));
+        if (elevarm->futureState.wristInRange) candle.setColor(2, ValorCANdleSensor::RGBColor(0, 255, 0));
+        else candle.setColor(2, ValorCANdleSensor::RGBColor(255, 0, 0));
+        if (elevarm->futureState.armInRange) candle.setColor(3, ValorCANdleSensor::RGBColor(0, 255, 0));
+        else candle.setColor(3, ValorCANdleSensor::RGBColor(255, 0, 0));
     } else if (robot->IsAutonomous()) {
         if (elevarm->futureState.atCarriage && elevarm->futureState.atArm && elevarm->futureState.atWrist){
             candle.setColor(ValorCANdleSensor::RGBColor(0, 255, 0));
@@ -47,18 +50,18 @@ void Leds::analyzeDashboard(){
             candle.setColor(ValorCANdleSensor::RGBColor(0, 0, 255));
         }
     } else {
-        if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED){
-            candle.setColor(3,ValorCANdleSensor::RGBColor(255, 0, 0));
-        } else {
-            candle.setColor(3, ValorCANdleSensor::RGBColor(255, 255, 255));
-        }
-        
         if (intake->getFuturePiece() == Piece::CUBE) {
             candle.setColor(1, ValorCANdleSensor::RGBColor(156, 0, 255));
             candle.setColor(2, candle.getColor(1));
         } else {
             candle.setColor(1, ValorCANdleSensor::RGBColor(255, 196, 0));
             candle.setColor(2, candle.getColor(1));
+        }
+
+        if (intake && intake->state.intakeState == Intake::IntakeStates::SPIKED){
+            candle.setColor(3,ValorCANdleSensor::RGBColor(255, 0, 0));
+        } else {
+            candle.setColor(3, ValorCANdleSensor::RGBColor(255, 255, 255));
         }
     }
 

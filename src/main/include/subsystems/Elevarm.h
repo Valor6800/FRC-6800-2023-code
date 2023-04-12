@@ -111,6 +111,7 @@ public:
         bool atWrist;
 
         bool armInRange;
+        bool wristInRange;
 
     } futureState, previousState;
 
@@ -159,10 +160,6 @@ public:
     }
 
     void setArmPIDF(bool);
-
-    double getArmPosition();
-    double getCarriagePosition();
-    double getWristPosition();
 
 private:
 

@@ -53,7 +53,7 @@
 #define ROTATE_K_ERROR 0.5f
 #define ROTATE_K_VEL 254.0f
 #define ROTATE_K_ACC_MUL 0.9f
-#define ROTATE_K_AFF 0.14f
+#define ROTATE_K_AFF 0.07f
 #define ROTATE_K_AFF_CUBE 0.11f
 #define ROTATE_K_AFF_POS 90.0f
 
@@ -288,8 +288,7 @@ void Elevarm::assessInputs()
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::GROUND_SCORE;
         else futureState.positionState = Position::STOW;
     } else if(operatorGamepad->DPadLeft()){
-        if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = Position::SNAKE;
-        else if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
+        if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
         else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
         else futureState.positionState = Position::STOW;
     } else if (operatorGamepad->DPadUp()){
@@ -365,13 +364,13 @@ void Elevarm::analyzeDashboard()
     futureState.atArm = std::fabs(armRotateMotor.getPosition() - futureState.targetPose.theta) <= PREVIOUS_ROTATION_DEADBAND;
     futureState.atWrist = std::fabs(wristMotor.getPosition() - futureState.targetPose.wrist) <= PREVIOUS_WRIST_DEADBAND;
 
-    bool armInRange = armCANcoder.GetAbsolutePosition() > (ARM_CANCODER_OFFSET - 5) &&
+    futureState.armInRange = armCANcoder.GetAbsolutePosition() > (ARM_CANCODER_OFFSET - 5) &&
                       armCANcoder.GetAbsolutePosition() < (ARM_CANCODER_OFFSET + 8);
-    table->PutBoolean("Arm In Range", armInRange);
+    table->PutBoolean("Arm In Range", futureState.armInRange);
 
-    bool wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 50) &&
+    futureState.wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 50) &&
                         wristCANcoder.GetAbsolutePosition() < (WRIST_CANCODER_OFFSET + 50);
-    table->PutBoolean("Wrist In Range", wristInRange);
+    table->PutBoolean("Wrist In Range", futureState.wristInRange);
 
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
 }

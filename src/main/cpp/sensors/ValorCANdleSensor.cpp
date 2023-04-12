@@ -24,8 +24,7 @@ ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int
     config.vBatOutputMode = ctre::phoenix::led::VBatOutputMode::Off;
     candle.ConfigFactoryDefault(100);
     candle.ConfigAllSettings(config, 100);
-    //12/3 = 4
-    int segmentLEDCount = (LED_COUNT-8)/segments;
+    int segmentLEDCount = (ledCount-8)/segments;
     //286
     for (int i = 0; i<segments + 1; i++){
         SegmentSettings newSegment;
@@ -38,7 +37,7 @@ ValorCANdleSensor::ValorCANdleSensor(frc::TimedRobot *_robot, int _ledCount, int
         }
         else{
             newSegment.startLed = (segmentLEDCount*(i-1))+8;
-            newSegment.endLed = (segmentLEDCount*(i)-1)+8;
+            newSegment.endLed = segmentLEDCount;
         }
         segmentMap[i] = newSegment;
     }

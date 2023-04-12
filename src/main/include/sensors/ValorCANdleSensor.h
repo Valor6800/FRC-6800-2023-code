@@ -25,8 +25,6 @@
 #include <iostream>
 #include <unordered_map>
 
-#define LED_COUNT 286
-
 /**
  * @brief Sensor - control the CANdle and associated LEDs
  * 
