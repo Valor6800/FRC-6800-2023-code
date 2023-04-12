@@ -101,6 +101,8 @@ public:
 
         bool pitModeEnabled;
 
+        bool highStow;
+
         double frontMinAngle;
         double backMinAngle;
 
