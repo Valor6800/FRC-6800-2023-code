@@ -295,8 +295,9 @@ void Elevarm::assessInputs()
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::PLAYER;
         else if (intake->getFuturePiece() == Piece::CONE) futureState.positionState = Position::SNAKE;
         else futureState.positionState = Position::STOW;
-    } else if(driverGamepad->DPadLeft()){
-        futureState.positionState = Position::BIRD;
+    } else if(operatorGamepad->GetLeftBumper()){
+        if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::BIRD;
+        else futureState.positionState = Position::STOW;
     } else if (operatorGamepad->DPadUp()){
         if (driverGamepad->leftTriggerActive()) futureState.positionState = Position::HIGH;
         else futureState.positionState = Position::SNAKE;
