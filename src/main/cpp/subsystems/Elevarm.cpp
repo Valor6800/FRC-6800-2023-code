@@ -136,6 +136,7 @@ void Elevarm::resetState()
     futureState.manualArm = 0;
     futureState.pitModeEnabled = false;
     futureState.highStow = true;
+
     zeroArm = false;
     coastMode = false;
     previousState = futureState;
@@ -214,7 +215,7 @@ void Elevarm::init()
     
     // FRONT CONE
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.266_m, 0.483_m, 134.03_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.190_m, 141.4_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.287_m, 0.138_m, 137.4_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.428_m, 303.3_deg); 
     posMap[Piece::CONE][Direction::FRONT][Position::BIRD] =frc::Pose2d(-0.4185_m, 0.354_m, -15.0_deg); 
@@ -232,7 +233,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::BIRD] =frc::Pose2d(-0.4185_m, 0.354_m, -15.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.274_m, 1.104_m, -62.93_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.576_m, 1.305_m, -137.65_deg);
-    posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.592_m, 1.179_m, -60.0_deg);
 
     // BACK CONE   
     // posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
@@ -254,7 +255,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::BACK][Position::BIRD] =frc::Pose2d(-0.4185_m, 0.354_m, -15.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -221.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -164.0_deg);
-    posMap[Piece::CUBE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.592_m, 1.179_m, -60.0_deg);
 
 
     table->PutNumber("Carriage Max Manual Speed", MAN_MAX_CARRIAGE);
@@ -457,7 +458,7 @@ void Elevarm::assignOutputs()
                     carriageMotors.setPosition(futureState.targetPose.h);
                 
             } else {
-                if (intake->getFuturePiece() == Piece::CUBE && futureState.positionState == Position::STOW && previousState.positionState == Position::STOW && futureState.atCarriage) {
+                if (futureState.positionState == Position::STOW && previousState.positionState == Position::STOW && futureState.atCarriage) {
                     carriageMotors.setPower(carriageStallPower);
                 } else
                     carriageMotors.setPosition(stowPose.h);
