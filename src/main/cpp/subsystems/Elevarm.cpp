@@ -317,7 +317,7 @@ void Elevarm::assessInputs()
         setFuturePiece(Piece::CUBE);
     }
     
-    if (driverGamepad->GetRightBumper() || operatorGamepad->GetLeftBumper()) {
+    if (driverGamepad->GetRightBumper() || operatorGamepad->DPadLeft()) {
         futureState.directionState = Direction::BACK;
     } else {
         futureState.directionState = Direction::FRONT;
