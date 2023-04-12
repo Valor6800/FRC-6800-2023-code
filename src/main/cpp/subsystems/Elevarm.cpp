@@ -134,7 +134,6 @@ void Elevarm::resetState()
     futureState.positionState = Position::STOW;
     futureState.manualCarriage = 0;
     futureState.manualArm = 0;
-    futureState.deadManEnabled = false;
     futureState.pitModeEnabled = false;
     zeroArm = false;
     coastMode = false;
@@ -323,7 +322,6 @@ void Elevarm::assessInputs()
         futureState.directionState = Direction::FRONT;
     }
 
-    futureState.deadManEnabled = operatorGamepad->GetRightBumper();
 }
 
 void Elevarm::analyzeDashboard()
@@ -414,7 +412,7 @@ void Elevarm::assignOutputs()
         futureState.targetPose.theta -= 360.0;
     }
 
-    if ((futureState.deadManEnabled && futureState.pitModeEnabled) || !futureState.pitModeEnabled) {
+    if (!futureState.pitModeEnabled) {
         if (futureState.positionState == Position::MANUAL) {
             auto manualOutputs = detectionBoxManual(futureState.manualCarriage, futureState.manualArm);
             if (manualOutputs.h == 0.0) 

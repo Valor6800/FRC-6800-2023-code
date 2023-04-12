@@ -99,7 +99,6 @@ public:
         Positions targetPose;
         frc::Pose2d resultKinematics;
 
-        bool deadManEnabled;
         bool pitModeEnabled;
 
         double frontMinAngle;
