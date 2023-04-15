@@ -187,7 +187,7 @@
     {
       "position": 0.02,
       "names": [
-        "pickup_back_cube"
+        "stage_back_cube"
       ]
     },
     {
@@ -206,6 +206,12 @@
       "position": 5.31068115234375,
       "names": [
         "stow_low"
+      ]
+    },
+    {
+      "position": 1.5272727272725906,
+      "names": [
+        "intake_cube"
       ]
     }
   ]

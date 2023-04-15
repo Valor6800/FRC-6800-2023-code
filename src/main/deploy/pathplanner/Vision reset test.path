@@ -1,0 +1,56 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 2.2961920549627775,
+        "y": 4.729900569935689
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.2961920549627775,
+        "y": 4.729900569935689
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 4.956023364629195,
+        "y": 4.730711495358538
+      },
+      "prevControl": {
+        "x": 3.9560233646291953,
+        "y": 4.730711495358538
+      },
+      "nextControl": null,
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 0.38346002752130676,
+      "names": [
+        "reset_odom_vision"
+      ]
+    }
+  ]
+}
