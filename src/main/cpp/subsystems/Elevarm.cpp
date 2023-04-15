@@ -29,7 +29,7 @@
 #define CARRAIAGE_OUTPUT_DIAMETER 0.0364f
 
 #define CARRIAGE_UPPER_LIMIT 0.86f 
-#define CARRIAGE_LOWER_LIMIT 0.0f
+#define CARRIAGE_LOWER_LIMIT 0.02f
 #define ROTATE_FORWARD_LIMIT 180.0f
 #define ROTATE_REVERSE_LIMIT -250.0f
 #define WRIST_FORWARD_LIMIT 325.0f
@@ -234,6 +234,8 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::MID] =frc::Pose2d(0.274_m, 1.104_m, -62.93_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::HIGH] =frc::Pose2d(0.576_m, 1.305_m, -137.65_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.33_m, 1.2376_m, 0.0_deg);
+    posMap[Piece::CUBE][Direction::FRONT][Position::VERTICAL] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
+
 
     // BACK CONE   
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-1.027_m, 0.5931_m, -247.3_deg);
@@ -247,7 +249,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::VERTICAL] =frc::Pose2d(-0.288_m, 1.25_m, -60.0_deg);
 
     // BACK CUBE
-    posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.914_m, 0.222_m, -140.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.914_m, 0.242_m, -140.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(0.151_m, 0.09_m, 141.4_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.823_m, 1.32_m, 78.7_deg);
@@ -255,6 +257,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::BACK][Position::MID] =frc::Pose2d(-0.849_m, 1.042_m, -221.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.849_m, 1.042_m, -164.0_deg);
     posMap[Piece::CUBE][Direction::BACK][Position::SNAKE] =frc::Pose2d(-0.33_m, 1.2376_m, 0.0_deg);
+    posMap[Piece::CUBE][Direction::BACK][Position::VERTICAL] =frc::Pose2d(-0.288_m, 1.25_m, -60.0_deg);
 
 
     table->PutNumber("Carriage Max Manual Speed", MAN_MAX_CARRIAGE);
@@ -427,6 +430,9 @@ void Elevarm::assignOutputs()
         else 
             futureState.targetPose = reverseKinematics(posMap[intake->getFuturePiece()][futureState.directionState][futureState.positionState], ElevarmSolutions::ELEVARM_LEGS, futureState.directionState);
     }
+
+    if (futureState.targetPose.h < 0.0) futureState.targetPose.h = 0.0;
+
     table->PutBoolean("going from stow to not stow", false);
 
     if ((futureState.positionState == Position::HIGH || futureState.positionState == Position::MID) && futureState.directionState == Direction::FRONT) {

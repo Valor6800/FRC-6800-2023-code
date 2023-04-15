@@ -263,7 +263,8 @@ void Drivetrain::analyzeDashboard()
 
         if (poseArray.size() >= 6){
             double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
-            frc::Pose2d botpose = getVisionPose();
+            
+            frc::Pose2d botpose = frc::Pose2d{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
             state.prevVisionPose = state.visionPose;
             state.visionPose = frc::Pose2d{botpose.X(), botpose.Y(), getPose_m().Rotation()};
 
