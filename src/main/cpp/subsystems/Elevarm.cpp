@@ -361,9 +361,9 @@ void Elevarm::analyzeDashboard()
 
     if (driverGamepad->leftTriggerActive()) {
         if (operatorGamepad->GetXButtonPressed()){
-            futureState.carriageOffset += 1.0;
+            futureState.carriageOffset += 2.0;
         } else if (operatorGamepad->GetAButtonPressed()){
-            futureState.carriageOffset -= 1.0;
+            futureState.carriageOffset -= 2.0;
         }   
     } else {
         futureState.carriageOffset = INITIAL_HEIGHT_OFFSET;
