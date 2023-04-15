@@ -108,7 +108,7 @@ void Intake::assessInputs()
         if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper() || 
         (operatorGamepad->DPadLeft() && driverGamepad->leftTriggerActive()) || 
         driverGamepad->DPadLeft() || 
-        driverGamepad->DPadDown() ||
+        driverGamepad->DPadRight() ||
         (driverGamepad->leftTriggerActive() && operatorGamepad->rightTriggerActive())) {
             state.intakeState = INTAKE;
         // Nothing pressed
