@@ -145,6 +145,8 @@ public:
           units::velocity::meters_per_second_t xSpeedMPS;
           units::velocity::meters_per_second_t ySpeedMPS;
           units::angular_velocity::radians_per_second_t rotRPS;
+
+          frc::Pose2d prevPose;
      } state;
      
      
@@ -174,6 +176,7 @@ public:
 
 
      frc::Rotation2d getPigeon();
+     units::degree_t getGlobalPitch();
 
      /**
       * Reset the robot's position on the field. Any accumulted gyro drift will be noted and
@@ -207,6 +210,8 @@ public:
       * @return the pose of the robot (x and y are in meters)
       */
      frc::Pose2d getPose_m();
+     frc::Pose2d getVisionPose();
+     void addVisionMeasurement(frc::Pose2d visionPose, double doubt);
 
      /**
       * Returns the kinematics object in use by the swerve drive
@@ -218,9 +223,10 @@ public:
      void angleLock();
      void adas(LimelightPipes pipe);
 
-     frc2::InstantCommand* getResetOdom();
+     frc2::FunctionalCommand* getResetOdom();
      
      frc2::FunctionalCommand* getAutoLevel();
+     frc2::FunctionalCommand* getVisionAutoLevel();
      frc2::FunctionalCommand* getAutoLevelReversed();
      frc2::FunctionalCommand* getAutoClimbOver();
 

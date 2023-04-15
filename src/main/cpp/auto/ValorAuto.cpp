@@ -139,10 +139,16 @@ frc2::SequentialCommandGroup* ValorAuto::compileCommands(std::vector<ValorAutoAc
             table->PutBoolean("Pit mode enabled for elevarm", elevarmTable->GetBoolean("Pit Mode", false));                
         } else if (action.type == ValorAutoAction::BALANCE){
             if (!action.oldBalance) {
-                if (!action.reversed)
-                    commandGroup->AddCommands(
-                        std::move(*drivetrain->getAutoLevel())
-                    );
+                if (!action.reversed){
+                    if (!action.vision)
+                        commandGroup->AddCommands(
+                            std::move(*drivetrain->getAutoLevel())
+                        );
+                    else
+                        commandGroup->AddCommands(
+                            std::move(*drivetrain->getVisionAutoLevel())
+                        );
+                }
                 else
                     commandGroup->AddCommands(
                         std::move(*drivetrain->getAutoLevelReversed())

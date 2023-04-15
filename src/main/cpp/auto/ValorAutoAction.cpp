@@ -145,8 +145,10 @@ ValorAutoAction::ValorAutoAction(std::string line)
         oldBalance = false;
         if (items.size() > 1) {
             reversed = items[1] == "reversed";
-            if (items.size() > 2) 
+            if (items.size() > 2){
                 oldBalance = items[2] == "old";
+                vision = items[2] == "vision";
+            }
         }
     } else if (type == ValorAutoAction::Type::INTAKE) {
         if (items.size() < 2){

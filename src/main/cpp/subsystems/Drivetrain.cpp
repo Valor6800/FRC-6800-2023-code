@@ -263,7 +263,7 @@ void Drivetrain::analyzeDashboard()
 
         if (poseArray.size() >= 6){
             double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
-            frc::Pose2d botpose{units::meter_t(x), units::meter_t(y), units::degree_t(angle)};
+            frc::Pose2d botpose = getVisionPose();
             state.prevVisionPose = state.visionPose;
             state.visionPose = frc::Pose2d{botpose.X(), botpose.Y(), getPose_m().Rotation()};
 
@@ -309,8 +309,10 @@ void Drivetrain::assignOutputs()
     } 
     else {
         setDriveMotorNeutralMode(ValorNeutralMode::Coast);
-        limeTable->PutNumber("pipeline", LimelightPipes::TAPE_HIGH);    
-        limeTable->PutNumber("ledMode", 1);
+        if (robot->IsTeleop()){
+            limeTable->PutNumber("pipeline", LimelightPipes::TAPE_HIGH);    
+            limeTable->PutNumber("ledMode", 1);
+        }
         drive(state.xSpeedMPS, state.ySpeedMPS, state.rotRPS, true);
     }
 }
@@ -330,6 +332,38 @@ frc::SwerveDriveKinematics<SWERVE_COUNT>* Drivetrain::getKinematics()
 frc::Pose2d Drivetrain::getPose_m()
 {
     return estimator->GetEstimatedPosition();
+}
+
+frc::Pose2d Drivetrain::getVisionPose(){
+    limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
+
+    if (limeTable->GetNumber("tv", 0) != 1.0)
+        return frc::Pose2d{0_m, 0_m, 0_deg};
+
+    std::vector<double> poseArray;
+    if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
+        poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
+    } else {
+        poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
+    }
+
+    if (poseArray.size() < 6)
+        return frc::Pose2d{0_m, 0_m, 0_deg}; 
+
+    return frc::Pose2d{
+        units::meter_t{poseArray[0]},
+        units::meter_t{poseArray[1]},
+        units::degree_t{poseArray[5]}
+    };
+}
+
+void Drivetrain::addVisionMeasurement(frc::Pose2d visionPose, double doubt=1){
+    if (limeTable->GetNumber("tv", 0) == 1.0)   
+        estimator->AddVisionMeasurement(
+            visionPose,  
+            frc::Timer::GetFPGATimestamp(),
+            {doubt, doubt, doubt}
+        ); 
 }
 
 void Drivetrain::resetGyro(){
@@ -354,6 +388,12 @@ void Drivetrain::resetOdometry(frc::Pose2d pose)
 frc::Rotation2d Drivetrain::getPigeon() 
 {
     return pigeon.GetRotation2d();
+}
+
+units::degree_t Drivetrain::getGlobalPitch(){
+    double pitch = pigeon.GetPitch() / 180 * M_PI, yaw = getPose_m().Rotation().Degrees().to<double>() / 180 * M_PI, roll = pigeon.GetRoll() / 180 * M_PI;
+    double globalPitch = (std::cos(yaw) * pitch + std::sin(yaw) * roll) * 180 / M_PI; 
+    return units::degree_t{globalPitch};
 }
 
 void Drivetrain::resetDriveEncoders()
@@ -421,25 +461,55 @@ void Drivetrain::adas(LimelightPipes pipe){
     }
 }
 
-frc2::InstantCommand* Drivetrain::getResetOdom() {
-    return new frc2::InstantCommand(
+frc2::FunctionalCommand* Drivetrain::getResetOdom() {
+    return new frc2::FunctionalCommand(
         [&]{
-            limeTable->PutNumber("pipeline", 3);
-            if (limeTable->GetNumber("tv", 0) == 1){
-                std::vector<double> poseArray;
+            limeTable->PutNumber("pipeline", 0);
+        },
+        [&]{
+            
+        },
+        [&](bool){
+            resetOdometry(state.visionPose);
+        },
+        [&]{
+            return limeTable->GetNumber("tv", 0.0) == 1.0;
+        },
+        {}
+    );
+}
 
-                if (frc::DriverStation::GetAlliance() == frc::DriverStation::Alliance::kBlue) {
-                    poseArray = limeTable->GetNumberArray("botpose_wpiblue", std::span<const double>());
-                } else {
-                    poseArray = limeTable->GetNumberArray("botpose_wpired", std::span<const double>());
-                }
+frc2::FunctionalCommand* Drivetrain::getVisionAutoLevel(){
+    return new frc2::FunctionalCommand(
+        [&](){
+            state.abovePitchThreshold = false;
+            limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
+            state.prevPose = getPose_m();
+        },
+        [&](){
+            limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
+            if (!state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) > 20)
+                state.abovePitchThreshold = true;
 
-                double x = poseArray[0], y = poseArray[1], angle = poseArray[5];
-                frc::Pose2d botpose{units::meter_t(x) - 0.7_m, units::meter_t(y), units::degree_t(angle)};
+            if (!state.abovePitchThreshold){
+                state.prevPose = getPose_m();
+                state.xSpeed = -0.5;
+            } else
+                state.xSpeed = -0.2;
+                
 
-                resetOdometry(botpose);
-            }
-        }
+            frc::Pose2d visionPose = getVisionPose();
+            if (std::fabs(state.visionPose.X().to<double>() - state.prevPose.X().to<double>()) < 1.00)
+                state.prevPose = state.visionPose;
+        },
+        [&](bool){
+            state.xSpeed = 0.0;
+            state.xPose = true;
+        }, // onEnd
+        [&](){
+            return (state.prevPose.X() < 3.85_m) || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) < 10);
+        },//isFinished
+        {}
     );
 }
 
@@ -483,34 +553,13 @@ frc2::FunctionalCommand* Drivetrain::getAutoLevel(){
             state.xPose = true;
         }, // onEnd
         [&](){
-            return state.stage == 4  || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME);
+            return state.stage == 4 || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME);
         },//isFinished
         {}
     );
 }
 
 frc2::FunctionalCommand* Drivetrain::getAutoLevelReversed(){
-    /*return new frc2::FunctionalCommand(
-        [&](){
-
-        }, // OnInit
-        [&](){
-            if (!state.abovePitchThreshold && std::fabs(pigeon.GetPitch()) > 5.0){
-                resetOdometry(frc::Pose2d{0_m, 0_m, getPose_m().Rotation()});
-                state.abovePitchThreshold = true;
-            }
-            state.xSpeed = state.abovePitchThreshold ? 0.3 : 0.5;
-        }, //onExecute
-        [&](bool){
-            state.xSpeed = 0.0;
-            state.xPose = true;
-            state.abovePitchThreshold = false;
-        }, // onEnd
-        [&](){
-            return (getPose_m().X().to<double>() - 1.70 >= 0) && state.abovePitchThreshold;
-        },//isFinished
-        {}
-    );*/
     return new frc2::FunctionalCommand(
         [&](){
             state.stage = 0;
@@ -825,6 +874,18 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
             },
             nullptr
         );
+        builder.AddDoubleArrayProperty(
+            "prevPose",
+            [this] 
+            { 
+                std::vector<double> pose;
+                pose.push_back(state.prevPose.X().to<double>());
+                pose.push_back(state.prevPose.Y().to<double>());
+                pose.push_back(state.prevPose.Rotation().Degrees().to<double>());
+                return pose;
+            },
+            nullptr
+        );
         builder.AddDoubleProperty(
             "pigeonPitch",
             [this]
@@ -881,6 +942,14 @@ void Drivetrain::InitSendable(wpi::SendableBuilder& builder)
                 double pitch = pigeon.GetPitch() / 180 * M_PI, yaw = getPose_m().Rotation().Degrees().to<double>() / 180 * M_PI, roll = pigeon.GetRoll() / 180 * M_PI;
                 double globalPitch = (std::cos(yaw) * pitch + std::sin(yaw) * roll) * 180 / M_PI;
                 return globalPitch;
+            },
+            nullptr
+        );
+
+        builder.AddBooleanProperty(
+            "abovePitchThreshold",
+            [this]{
+                return state.abovePitchThreshold;
             },
             nullptr
         );
