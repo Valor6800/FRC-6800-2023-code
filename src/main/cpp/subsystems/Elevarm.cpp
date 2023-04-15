@@ -214,8 +214,8 @@ void Elevarm::init()
     stowPos = frc::Pose2d(-0.4185_m, 0.354_m, -15.0_deg);
     
     // FRONT CONE
-    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.266_m, 0.483_m, 134.03_deg);
-    posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.1676_m, 0.0846_m, 108.11_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::GROUND] =frc::Pose2d(0.266_m, 0.523_m, 134.03_deg);
+    posMap[Piece::CONE][Direction::FRONT][Position::GROUND_TOPPLE] =frc::Pose2d(0.1676_m, 0.0816_m, 108.11_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::GROUND_SCORE] =frc::Pose2d(0.112_m, 0.471_m, 165.0_deg);
     posMap[Piece::CONE][Direction::FRONT][Position::PLAYER] =frc::Pose2d(-0.033_m, 1.428_m, 303.3_deg); 
     posMap[Piece::CONE][Direction::FRONT][Position::BIRD] =frc::Pose2d(-0.2218_m, 0.4257_m, 10.37_deg); 
@@ -236,8 +236,7 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.33_m, 1.2376_m, 0.0_deg);
 
     // BACK CONE   
-    // posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-0.99_m, 0.5_m, -208.5_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-1.027_m, 0.5531_m, -247.3_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-1.027_m, 0.5931_m, -247.3_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(-0.9229_m, 0.2195_m, -192.67_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5625_m, 40.7_deg);
@@ -295,10 +294,10 @@ void Elevarm::assessInputs()
         table->PutNumber("L stick Y", futureState.manualCarriage);
         table->PutNumber("R stick X", futureState.manualArm);
         futureState.positionState = Position::MANUAL;
-    } else if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper()){
+    } else if (driverGamepad->DPadLeft() || driverGamepad->DPadRight() || ((driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper()) && intake->getFuturePiece() == Piece::CUBE)){
         if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = Position::STOW;
         else futureState.positionState = Position::GROUND;
-    } else if (driverGamepad->DPadLeft() || driverGamepad->DPadRight()) {
+    } else if (driverGamepad->GetLeftBumper() || driverGamepad->GetRightBumper()) {
         if (intake->state.intakeState == Intake::IntakeStates::SPIKED) futureState.positionState = Position::STOW;
         else futureState.positionState = Position::GROUND_TOPPLE;
     } else if (operatorGamepad->DPadDown()) {
@@ -359,7 +358,7 @@ void Elevarm::analyzeDashboard()
         armRotateMotor.setNeutralMode(ValorNeutralMode::Brake);
     }
 
-    if (driverGamepad->leftTriggerActive()) {
+    if (driverGamepad->leftTriggerActive() || driverGamepad->GetRightBumper() || driverGamepad->GetLeftBumper() || driverGamepad->DPadRight() || driverGamepad->DPadLeft()) {
         if (operatorGamepad->GetXButtonPressed()){
             futureState.carriageOffset += 2.0;
         } else if (operatorGamepad->GetAButtonPressed()){
