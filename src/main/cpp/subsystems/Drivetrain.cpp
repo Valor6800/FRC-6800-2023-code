@@ -51,7 +51,7 @@
 #define DRIVE_GEAR_RATIO 5.51f
 #define AZIMUTH_GEAR_RATIO 13.37f
 #define AUTO_MAX_SPEED 10.0f
-#define AUTO_MAX_ACCEL 1.875f //1.5
+#define AUTO_MAX_ACCEL_SECONDS 5.33f //5.33
 #define ROT_SPEED_MUL 2.0f
 
 #define AUTO_VISION_THRESHOLD 4.0f //meters
@@ -72,7 +72,7 @@ Drivetrain::Drivetrain(frc::TimedRobot *_robot) : ValorSubsystem(_robot, "Drivet
                         swerveModuleDiff(units::meter_t(MODULE_DIFF)),
                         rotMaxSpeed(ROT_SPEED_MUL * 2 * M_PI),
                         autoMaxSpeed(AUTO_MAX_SPEED),
-                        autoMaxAccel(AUTO_MAX_ACCEL),
+                        autoMaxAccel(AUTO_MAX_SPEED/AUTO_MAX_ACCEL_SECONDS),
                         rotMaxAccel(rotMaxSpeed * 0.5),
                         pigeon(CANIDs::PIGEON_CAN, PIGEON_CAN_BUS),
                         motorLocations(wpi::empty_array),
@@ -363,7 +363,7 @@ void Drivetrain::addVisionMeasurement(frc::Pose2d visionPose, double doubt=1){
         estimator->AddVisionMeasurement(
             visionPose,  
             frc::Timer::GetFPGATimestamp(),
-            {doubt, doubt, doubt}
+            {doubt, 999999, 999999}
         ); 
 }
 
@@ -464,19 +464,33 @@ void Drivetrain::adas(LimelightPipes pipe){
     }
 }
 
+void Drivetrain::setLimelightPipeline(LimelightPipes pipeline){
+    limeTable->PutNumber("pipeline", pipeline);
+}
+
 frc2::FunctionalCommand* Drivetrain::getResetOdom() {
     return new frc2::FunctionalCommand(
-        [&]{
+        [&]{ // onBegin
             limeTable->PutNumber("pipeline", 0);
+            state.startTimestamp = frc::Timer::GetFPGATimestamp();
         },
-        [&]{
-            
+        [&]{ // continuously running
+            frc::Pose2d visionPose = getVisionPose();
+            table->PutNumber("resetting maybe", true);
+            if (limeTable->GetNumber("tv", 0.0) == 1.0 && (visionPose.X() > 0_m && visionPose.Y() > 0_m)){
+                table->PutNumber("resetting odom", table->GetNumber("resetting odom", 0) + 1);
+                addVisionMeasurement(visionPose, 1.0);
+                table->PutBoolean("resetting", true);
+            }
+            else {
+                table->PutBoolean("resetting", false);
+            }
         },
-        [&](bool){
-            resetOdometry(state.visionPose);
+        [&](bool){ // onEnd
+                
         },
-        [&]{
-            return limeTable->GetNumber("tv", 0.0) == 1.0;
+        [&]{ // isFinished
+            return (frc::Timer::GetFPGATimestamp() - state.startTimestamp) > 1.0_s;
         },
         {}
     );
@@ -498,7 +512,7 @@ frc2::FunctionalCommand* Drivetrain::getVisionAutoLevel(){
                 state.prevPose = getPose_m();
                 state.xSpeed = -0.5;
             } else
-                state.xSpeed = -0.2;
+                state.xSpeed = -0.3;
                 
 
             frc::Pose2d visionPose = getVisionPose();
@@ -510,7 +524,7 @@ frc2::FunctionalCommand* Drivetrain::getVisionAutoLevel(){
             state.xPose = true;
         }, // onEnd
         [&](){
-            return (state.prevPose.X() < 3.85_m) || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) < 10);
+            return (state.prevPose.X() < 3.90_m) || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) < 10);
         },//isFinished
         {}
     );
@@ -752,11 +766,11 @@ ValorPIDF Drivetrain::getThetaPIDF() {
 }
 
 void Drivetrain::setAutoMaxAcceleration(double acceleration, double multiplier)  {
-    autoMaxAccel = multiplier * (acceleration == NULL ? AUTO_MAX_ACCEL : acceleration);
-    if (config == NULL) {
-        delete config;
-    }
-    config = new frc::TrajectoryConfig(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel});
+    // autoMaxAccel = multiplier * (acceleration == NULL ? AUTO_MAX_ACCEL_SECONDS : acceleration);
+    // if (config == NULL) {
+    //     delete config;
+    // }
+    // config = new frc::TrajectoryConfig(units::velocity::meters_per_second_t{autoMaxSpeed}, units::acceleration::meters_per_second_squared_t{autoMaxAccel});
 }
 
 void Drivetrain::setXMode(){

@@ -147,6 +147,8 @@ public:
           units::angular_velocity::radians_per_second_t rotRPS;
 
           frc::Pose2d prevPose;
+
+          units::second_t startTimestamp; // generic
      } state;
      
      
@@ -222,6 +224,7 @@ public:
      void limelightHoming(LimelightPipes pipe);
      void angleLock();
      void adas(LimelightPipes pipe);
+     void setLimelightPipeline(LimelightPipes pipe);
 
      frc2::FunctionalCommand* getResetOdom();
      

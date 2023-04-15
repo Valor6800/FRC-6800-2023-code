@@ -73,6 +73,8 @@ void Robot::AutonomousInit() {
     }
 
     outfile.open("/home/lvuser/poseLog" + std::to_string(time(0)) + ".csv");
+
+    drivetrain.setLimelightPipeline(Drivetrain::LimelightPipes::APRIL_TAGS);
 }
 
 void Robot::AutonomousExit() {
