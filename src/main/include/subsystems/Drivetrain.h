@@ -108,9 +108,10 @@ public:
      void InitSendable(wpi::SendableBuilder& builder);
 
      enum LimelightPipes{
-          APRIL_TAGS,
-          TAPE_MID,
-          TAPE_HIGH
+          APRIL_TAGS = 0,
+          TAPE_MID = 1,
+          TAPE_HIGH = 2,
+          PRECISION_TAGS = 3 // April tags but with max resolution
      };
 
      struct x

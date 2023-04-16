@@ -335,8 +335,6 @@ frc::Pose2d Drivetrain::getPose_m()
 }
 
 frc::Pose2d Drivetrain::getVisionPose(){
-    limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
-
     if (limeTable->GetNumber("tv", 0) != 1.0)
         return frc::Pose2d{0_m, 0_m, 0_deg};
 
@@ -464,16 +462,17 @@ void Drivetrain::adas(LimelightPipes pipe){
 frc2::FunctionalCommand* Drivetrain::getResetOdom() {
     return new frc2::FunctionalCommand(
         [&]{
-            limeTable->PutNumber("pipeline", 0);
+            limeTable->PutNumber("pipeline", LimelightPipes::PRECISION_TAGS);
         },
         [&]{
-            
         },
         [&](bool){
-            resetOdometry(state.visionPose);
+            resetOdometry(getVisionPose());
         },
         [&]{
-            return limeTable->GetNumber("tv", 0.0) == 1.0;
+            frc::Pose2d visionPose = getVisionPose();
+            return limeTable->GetNumber("tv", 0.0) == 1.0 &&
+                   (visionPose.X() > 0_m && visionPose.Y() > 0_m); // because that can happen i guess
         },
         {}
     );
@@ -483,11 +482,10 @@ frc2::FunctionalCommand* Drivetrain::getVisionAutoLevel(){
     return new frc2::FunctionalCommand(
         [&](){
             state.abovePitchThreshold = false;
-            limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
             state.prevPose = getPose_m();
+            limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
         },
         [&](){
-            limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
             if (!state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) > 20)
                 state.abovePitchThreshold = true;
 
