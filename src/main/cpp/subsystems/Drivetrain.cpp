@@ -336,8 +336,6 @@ frc::Pose2d Drivetrain::getPose_m()
 }
 
 frc::Pose2d Drivetrain::getVisionPose(){
-    limeTable->PutNumber("pipeline", LimelightPipes::APRIL_TAGS);
-
     if (limeTable->GetNumber("tv", 0) != 1.0)
         return frc::Pose2d{0_m, 0_m, 0_deg};
 
@@ -524,7 +522,7 @@ frc2::FunctionalCommand* Drivetrain::getVisionAutoLevel(){
             state.xPose = true;
         }, // onEnd
         [&](){
-            return (state.prevPose.X() < 3.90_m) || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && std::fabs(getGlobalPitch().to<double>()) < 10);
+            return (state.prevPose.X() < 4.00_m) || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && getGlobalPitch().to<double>() > 0);
         },//isFinished
         {}
     );
@@ -645,11 +643,11 @@ frc2::FunctionalCommand* Drivetrain::getAutoClimbOver(){
                         state.stage = 3;
                     break;
                 case 3: // Reached flat ground
-                    state.xSpeed = 0.0;
+                    state.xSpeed = 0.05;
             }
         },
         [&](bool){
-            state.xSpeed = 0.0;
+            state.xSpeed = 0.05;
         }, // onEnd
         [&](){
             return state.stage == 3;

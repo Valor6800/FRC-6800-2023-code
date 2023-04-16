@@ -273,7 +273,7 @@ void Elevarm::init()
     carriageMotors.setEncoderPosition(0.0);
     wristMotor.setEncoderPosition((wristCANcoder.GetAbsolutePosition() - WRIST_CANCODER_OFFSET) / WRIST_CANCODER_GEAR_RATIO);
     wristCANcoder.SetStatusFramePeriod(CANCoderStatusFrame_SensorData, 50, 1000); // changes the period of the sensor data frame to 50ms
-    //armCANcoder.SetStatusFramePeriod(CANCoderStatusFrame_SensorData, 50); // changes the period of the sensor data frame to 50ms
+    armCANcoder.SetStatusFramePeriod(CANCoderStatusFrame_SensorData, 50); // changes the period of the sensor data frame to 50ms
 
 }
 
