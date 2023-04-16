@@ -1,0 +1,13 @@
+reset_odom,1.80,0,180
+intake,spiked,cone
+elevarm,cone,front,mid
+time,250
+intake,outtake,cone
+time,350
+intake,disabled
+elevarm,cube,front,stow
+time,2000
+climb_over
+time,1000
+reset_odom,5.50,0,180
+balance,normal,vision

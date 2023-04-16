@@ -51,41 +51,16 @@
     },
     {
       "anchorPoint": {
-        "x": 2.36,
-        "y": 4.405784811569624
+        "x": 1.74,
+        "y": 4.432424130853036
       },
       "prevControl": {
-        "x": 3.4368895725401662,
-        "y": 4.873997669195783
+        "x": 2.616105252576716,
+        "y": 4.651913101867653
       },
       "nextControl": {
-        "x": 2.0696474192948386,
-        "y": 4.279544559089119
-      },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": 1.25,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 1.7,
-        "y": 3.75
-      },
-      "prevControl": {
-        "x": 1.8908679417358836,
-        "y": 3.9901841803683604
-      },
-      "nextControl": {
-        "x": 1.8908679417358836,
-        "y": 3.9901841803683604
+        "x": 2.616105252576716,
+        "y": 4.651913101867653
       },
       "holonomicAngle": 180.0,
       "isReversal": true,
@@ -105,12 +80,12 @@
         "y": 4.15
       },
       "prevControl": {
-        "x": 3.8773131519787345,
-        "y": 6.0472344223632675
+        "x": 4.652680174582355,
+        "y": 5.547408532669714
       },
       "nextControl": {
-        "x": 6.211957967402095,
-        "y": 3.9605542735970367
+        "x": 6.197316013560475,
+        "y": 3.945348457151732
       },
       "holonomicAngle": 135.0,
       "isReversal": false,
@@ -130,39 +105,14 @@
         "y": 3.65
       },
       "prevControl": {
-        "x": 6.376341642470791,
-        "y": 3.7736583575292086
+        "x": 6.37634164247079,
+        "y": 3.77365835752921
       },
       "nextControl": {
-        "x": 6.376341642470791,
-        "y": 3.7736583575292086
+        "x": 6.806189609177858,
+        "y": 3.3438103908221413
       },
       "holonomicAngle": 135.0,
-      "isReversal": true,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 3.687735375470751,
-        "y": 4.670889341778684
-      },
-      "prevControl": {
-        "x": 5.586637467307973,
-        "y": 4.894289587877181
-      },
-      "nextControl": {
-        "x": 2.721997443994888,
-        "y": 4.55727311454623
-      },
-      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -176,12 +126,12 @@
     },
     {
       "anchorPoint": {
-        "x": 1.58,
-        "y": 4.22
+        "x": 5.348159717261275,
+        "y": 3.3885211931122643
       },
       "prevControl": {
-        "x": 1.882976605953212,
-        "y": 4.295744151488303
+        "x": 5.802379603175364,
+        "y": 3.3885211931122643
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -191,7 +141,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "stow_high_cone"
+          "balance_vision"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
@@ -206,38 +156,31 @@
     {
       "position": 0.02,
       "names": [
-        "pickup_back_cone"
+        "pickup_back_cube"
       ]
     },
     {
-      "position": 1.2727272727272552,
-      "names": [
-        "stage_mid_cone"
-      ]
-    },
-    {
-      "position": 2.99,
-      "names": [
-        "outtake_cone",
-        "stow_high_cone"
-      ]
-    },
-    {
-      "position": 3.55,
+      "position": 2.3,
       "names": [
         "pickup_back_cube"
       ]
     },
     {
-      "position": 5.25,
+      "position": 1.1227278275923303,
       "names": [
         "stage_mid_cube"
       ]
     },
     {
-      "position": 6.85,
+      "position": 2.0,
       "names": [
-        "score_final_cube"
+        "outtake_cube"
+      ]
+    },
+    {
+      "position": 4.285181218927562,
+      "names": [
+        "stow_low"
       ]
     }
   ]
