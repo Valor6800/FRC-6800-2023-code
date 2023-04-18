@@ -59,7 +59,7 @@
 
 #define MODULE_DIFF 0.206375f
 
-#define X_TIME 14.85f
+#define X_TIME 214.85f
 
 #define MODULE_DIFF_XS {1, 1, -1, -1}
 #define MODULE_DIFF_YS {1, -1, -1, 1}
@@ -522,7 +522,7 @@ frc2::FunctionalCommand* Drivetrain::getVisionAutoLevel(){
             state.xPose = true;
         }, // onEnd
         [&](){
-            return (state.prevPose.X() < 4.00_m) || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && getGlobalPitch().to<double>() > 0);
+            return (state.prevPose.X() < 4.3_m) || (frc::Timer::GetFPGATimestamp().to<double>() - state.matchStart > X_TIME) || (state.abovePitchThreshold && getGlobalPitch().to<double>() > 0);
         },//isFinished
         {}
     );
