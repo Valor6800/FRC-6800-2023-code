@@ -152,7 +152,8 @@ public:
         {"high_auto", Position::HIGH_AUTO},
         {"manual", Position::MANUAL},
         {"ground_score", Position::GROUND_SCORE},
-        {"snake", Position::SNAKE}
+        {"snake", Position::SNAKE},
+        {"toppled", Position::GROUND_TOPPLE}
     };
     Position stringToPositionState(std::string name){
         if (!stringToPositionMap.contains(name))

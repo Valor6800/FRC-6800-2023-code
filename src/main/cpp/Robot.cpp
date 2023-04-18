@@ -81,6 +81,8 @@ void Robot::AutonomousExit() {
     outfile.close();
     drivetrain.state.xPose = true;
     intake.setConeHoldSpeed(false);
+    elevarm.futureState.highStow = true;
+
 }
 
 std::string makePoseLog(frc::Pose2d pose){

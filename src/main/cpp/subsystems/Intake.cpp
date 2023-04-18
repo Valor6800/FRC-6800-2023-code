@@ -20,7 +20,7 @@
 #define DEFAULT_INTAKE_CUBE_SPD -0.7f
 #define DEFAULT_INTAKE_CONE_SPD 1.0f
 //since intaking with cone vs cube is different, outtaking follows the same rule
-#define DEFAULT_OUTTAKE_CUBE_SPD 0.4f
+#define DEFAULT_OUTTAKE_CUBE_SPD 0.55f
 #define DEFAULT_OUTTAKE_CONE_SPD -0.8f
 #define GROUND_OUTTAKE_GROUND_CUBE_SPD 0.3f
 

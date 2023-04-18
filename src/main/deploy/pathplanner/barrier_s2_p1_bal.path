@@ -27,15 +27,15 @@
     {
       "anchorPoint": {
         "x": 6.8500537001074,
-        "y": 4.58
+        "y": 4.65
       },
       "prevControl": {
-        "x": 5.903251806503613,
-        "y": 4.641809783619568
+        "x": 6.395588791177582,
+        "y": 4.664577329154659
       },
       "nextControl": {
-        "x": 5.903251806503613,
-        "y": 4.641809783619568
+        "x": 6.395588791177582,
+        "y": 4.664577329154659
       },
       "holonomicAngle": 180.0,
       "isReversal": true,
@@ -51,18 +51,18 @@
     },
     {
       "anchorPoint": {
-        "x": 2.8671737343474692,
-        "y": 4.645641291282583
+        "x": 2.4,
+        "y": 4.432424130853036
       },
       "prevControl": {
-        "x": 3.6729881185928046,
-        "y": 4.645641291282583
+        "x": 3.47745455490911,
+        "y": 4.6393292786585585
       },
       "nextControl": {
-        "x": 3.6729881185928046,
-        "y": 4.645641291282583
+        "x": 3.47745455490911,
+        "y": 4.6393292786585585
       },
-      "holonomicAngle": -0.5,
+      "holonomicAngle": 180.0,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
@@ -76,18 +76,18 @@
     },
     {
       "anchorPoint": {
-        "x": 6.168356336712673,
-        "y": 4.17224034448069
+        "x": 6.7,
+        "y": 4.15
       },
       "prevControl": {
-        "x": 5.284302689711386,
-        "y": 5.056293991481977
+        "x": 5.352680174582355,
+        "y": 5.547408532669714
       },
       "nextControl": {
-        "x": 6.4181797043599165,
-        "y": 3.9224169768334463
+        "x": 6.897316013560475,
+        "y": 3.945348457151732
       },
-      "holonomicAngle": -45.0,
+      "holonomicAngle": 135.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -101,18 +101,18 @@
     },
     {
       "anchorPoint": {
-        "x": 6.954549522271789,
-        "y": 3.4
+        "x": 7.2,
+        "y": 3.65
       },
       "prevControl": {
-        "x": 6.803061219295183,
-        "y": 3.551488302976605
+        "x": 7.076341642470791,
+        "y": 3.77365835752921
       },
       "nextControl": {
-        "x": 6.803061219295183,
-        "y": 3.551488302976605
+        "x": 7.076341642470791,
+        "y": 3.77365835752921
       },
-      "holonomicAngle": -45.0,
+      "holonomicAngle": 135.0,
       "isReversal": true,
       "velOverride": null,
       "isLocked": false,
@@ -126,31 +126,31 @@
     },
     {
       "anchorPoint": {
-        "x": 5.8969397938795876,
-        "y": 3.0423900847801706
+        "x": 5.682331364662729,
+        "y": 3.2191264382528777
       },
       "prevControl": {
-        "x": 6.61019722039444,
-        "y": 2.998205996411994
+        "x": 6.120095720440765,
+        "y": 3.2191264382528777
       },
       "nextControl": null,
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": 0.4,
+      "velOverride": 0.5,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "balance"
+          "balance_vision"
         ],
-        "executionBehavior": "sequential",
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
   "maxVelocity": 10.0,
-  "maxAcceleration": 1.875,
+  "maxAcceleration": 1.88,
   "isReversed": null,
   "markers": [
     {
@@ -160,25 +160,25 @@
       ]
     },
     {
-      "position": 1.131313131313122,
+      "position": 2.25,
       "names": [
-        "stow_low"
+        "pickup_back_cube"
       ]
     },
     {
-      "position": 1.876978093927557,
+      "position": 1.1227278275923303,
+      "names": [
+        "stage_mid_cube"
+      ]
+    },
+    {
+      "position": 1.95,
       "names": [
         "outtake_cube"
       ]
     },
     {
-      "position": 2.4848484848485644,
-      "names": [
-        "pickup_front_cube"
-      ]
-    },
-    {
-      "position": 4.363636363636468,
+      "position": 4.285181218927562,
       "names": [
         "stow_low"
       ]
