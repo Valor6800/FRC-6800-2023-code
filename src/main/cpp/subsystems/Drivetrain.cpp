@@ -186,7 +186,7 @@ void Drivetrain::init()
     table->PutNumber("Vision Std", 3.0);
     table->PutBoolean("Load Swerve Mag Encoder", false);
 
-    table->PutNumber("KPLIMELIGHT", 0.325);
+    table->PutNumber("KPLIMELIGHT", KP_LIMELIGHT);
 
     limeTable->PutNumber("pipeline", LimelightPipes::TAPE_HIGH);    
     limeTable->PutNumber("ledMode", 1);
@@ -456,7 +456,7 @@ void Drivetrain::adas(LimelightPipes pipe){
         if (limeTable->GetNumber("tv",0) == 1){
             double tx = limeTable->GetNumber("tx",0);
             double normalizedTx = tx / KLIMELIGHT;
-            double kPlimeLight = KP_LIMELIGHT;
+            double kPlimeLight = table->GetNumber("KPLIMELIGHT", KP_LIMELIGHT);
             state.ySpeedMPS = units::velocity::meters_per_second_t(((std::fabs(normalizedTx) <= 1 ? normalizedTx : std::copysignf(1.0, normalizedTx) ) * kPlimeLight * -driveMaxSpeed));
         }
     }
