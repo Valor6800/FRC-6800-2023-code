@@ -1,7 +1,7 @@
 #include "subsystems/Leds.h"
 #include <iostream>
 
-#define LED_COUNT 284
+#define LED_COUNT 288
 
 #define CARRIAGE_UPPER_LIMIT 0.89f 
 #define CARRIAGE_LOWER_LIMIT 0.0f

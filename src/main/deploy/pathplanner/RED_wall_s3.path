@@ -143,7 +143,9 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
+        "names": [
+          "stow_low"
+        ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
@@ -151,22 +153,22 @@
     },
     {
       "anchorPoint": {
-        "x": 5.89659084588894,
-        "y": 2.2339228578739276
+        "x": 4.905953811907624,
+        "y": 0.7069454138908294
       },
       "prevControl": {
-        "x": 6.596548260213148,
-        "y": 2.2339228578739276
+        "x": 5.972683945367891,
+        "y": 0.7195694391388789
       },
       "nextControl": null,
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 0,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 1.0,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "balance_vision"
+          "outtake_cube"
         ],
         "executionBehavior": "parallel",
         "waitBehavior": "none",
@@ -203,7 +205,7 @@
       ]
     },
     {
-      "position": 5.31068115234375,
+      "position": 5.236363636363004,
       "names": [
         "stow_low"
       ]
