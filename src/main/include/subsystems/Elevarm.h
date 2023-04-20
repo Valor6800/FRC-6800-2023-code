@@ -119,6 +119,7 @@ public:
     double heightDeadband, rotationDeadband;
     
     bool zeroArm;
+    bool zeroWrist;
     bool coastMode;
 
     double teleopStart;

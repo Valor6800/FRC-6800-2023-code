@@ -137,6 +137,7 @@ void Elevarm::resetState()
     futureState.highStow = true;
 
     zeroArm = false;
+    zeroWrist = false;
     coastMode = false;
     previousState = futureState;
     setPrevPiece(intake->getFuturePiece());
@@ -265,6 +266,7 @@ void Elevarm::init()
     table->PutNumber("Carriage Offset", INITIAL_HEIGHT_OFFSET);
     table->PutBoolean("Arm In Range", false);
     table->PutBoolean("Zero Arm", zeroArm);
+    table->PutBoolean("Zero Wrist", zeroWrist);
     table->PutBoolean("Coast Mode", coastMode);
 
     resetState();
@@ -346,10 +348,15 @@ void Elevarm::analyzeDashboard()
     futureState.pitModeEnabled = table->GetBoolean("Pit Mode", false);
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
     zeroArm = table->GetBoolean("Zero Arm", false);
+    zeroWrist = table->GetBoolean("Zero Wrist", false);
     coastMode = table->GetBoolean("Coast Mode", false);
 
     if (zeroArm) {
         armRotateMotor.setEncoderPosition(180.0);
+    }
+
+    if (zeroWrist) {
+        wristMotor.setEncoderPosition(0.0);
     }
 
     if(coastMode && armRotateMotor.getNeutralMode() == ValorNeutralMode::Brake){
@@ -382,8 +389,8 @@ void Elevarm::analyzeDashboard()
                       armCANcoder.GetAbsolutePosition() < (ARM_CANCODER_OFFSET + 8);
     table->PutBoolean("Arm In Range", futureState.armInRange);
 
-    futureState.wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 50) &&
-                        wristCANcoder.GetAbsolutePosition() < (WRIST_CANCODER_OFFSET + 50);
+    futureState.wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 42) &&
+                        wristCANcoder.GetAbsolutePosition() < (WRIST_CANCODER_OFFSET + 14);
     table->PutBoolean("Wrist In Range", futureState.wristInRange);
 
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
