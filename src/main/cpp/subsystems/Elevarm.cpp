@@ -79,7 +79,7 @@
 #define WRIST_K_ACC_MUL 0.425f
 #define WRIST_S_CURVE_STRENGTH 3
 
-#define PREVIOUS_WRIST_DEADBAND 1.5f
+#define PREVIOUS_WRIST_DEADBAND 2.5f
 #define PREVIOUS_HEIGHT_DEADBAND 0.03f
 #define PREVIOUS_ROTATION_DEADBAND 3.5f
 
@@ -240,7 +240,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-1.027_m, 0.5931_m, -247.3_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(-0.9229_m, 0.2195_m, -192.67_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5725_m, 40.7_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5925_m, 40.7_deg);
     posMap[Piece::CONE][Direction::BACK][Position::BIRD] =frc::Pose2d(-0.4899_m, 0.4529_m, -82.81_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
@@ -713,6 +713,10 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
     Piece eaPieceState = stringToPieceState(pieceState);
     Direction eaDirectionState = stringToDirectionState(directionState);
     Position eaPositionState = stringToPositionState(positionState);
+    /*double startTime = frc::Timer::GetFPGATimestamp().to<double>();
+    double lastWrist = std::fabs(wristMotor.getPosition());
+    double lastArm = std::fabs(armRotateMotor.getPosition());
+    double lastCarriage = std::fabs(carriageMotors.getPosition());*/
     return new frc2::FunctionalCommand(
         // OnInit
         [&, eaPieceState, eaDirectionState, eaPositionState](){
@@ -724,8 +728,8 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
             table->PutNumber("pos", futureState.positionState);
         },
         //onExecute
-        [](){
-           
+        [/*&, lastWrist, lastArm, lastCarriage*/](){
+           //if (std::fabs(wristMotor.getPosition()) - lastWrist > PREVIOUS_WRIST_DEADBAND || ) 
         }, 
         [&](bool){
             previousState = futureState;
