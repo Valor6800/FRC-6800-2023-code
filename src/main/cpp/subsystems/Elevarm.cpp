@@ -240,7 +240,7 @@ void Elevarm::init()
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-1.027_m, 0.5931_m, -247.3_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(-0.9229_m, 0.2195_m, -192.67_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5925_m, 40.7_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.6125_m, 40.7_deg);
     posMap[Piece::CONE][Direction::BACK][Position::BIRD] =frc::Pose2d(-0.4899_m, 0.4529_m, -82.81_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
@@ -394,6 +394,7 @@ void Elevarm::analyzeDashboard()
     table->PutBoolean("Wrist In Range", futureState.wristInRange);
 
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
+    intake->state.elevarmPoopFull = futureState.positionState == Position::STOW;
 }
 
 void Elevarm::assignOutputs()
