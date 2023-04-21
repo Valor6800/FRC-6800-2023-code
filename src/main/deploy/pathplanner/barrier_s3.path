@@ -216,10 +216,9 @@
       ]
     },
     {
-      "position": 2.99,
+      "position": 3.02,
       "names": [
-        "outtake_cone",
-        "stow_high_cone"
+        "outtake_cone"
       ]
     },
     {
@@ -238,6 +237,12 @@
       "position": 6.85,
       "names": [
         "score_final_cube"
+      ]
+    },
+    {
+      "position": 3.15,
+      "names": [
+        "stow_high_cone"
       ]
     }
   ]
