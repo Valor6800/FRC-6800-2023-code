@@ -714,10 +714,6 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
     Piece eaPieceState = stringToPieceState(pieceState);
     Direction eaDirectionState = stringToDirectionState(directionState);
     Position eaPositionState = stringToPositionState(positionState);
-    /*double startTime = frc::Timer::GetFPGATimestamp().to<double>();
-    double lastWrist = std::fabs(wristMotor.getPosition());
-    double lastArm = std::fabs(armRotateMotor.getPosition());
-    double lastCarriage = std::fabs(carriageMotors.getPosition());*/
     return new frc2::FunctionalCommand(
         // OnInit
         [&, eaPieceState, eaDirectionState, eaPositionState](){
@@ -729,8 +725,8 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
             table->PutNumber("pos", futureState.positionState);
         },
         //onExecute
-        [/*&, lastWrist, lastArm, lastCarriage*/](){
-           //if (std::fabs(wristMotor.getPosition()) - lastWrist > PREVIOUS_WRIST_DEADBAND || ) 
+        [](){
+        
         }, 
         [&](bool){
             previousState = futureState;
