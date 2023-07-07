@@ -13,7 +13,7 @@
 #define ROTATE_GEAR_RATIO 101.25f
 #define WRIST_GEAR_RATIO 24.3f
 
-#define ARM_CANCODER_OFFSET  281.95f
+#define ARM_CANCODER_OFFSET  57.39f
 #define WRIST_CANCODER_OFFSET 168.31f
 #else
 #define ROTATE_GEAR_RATIO 101.25f
@@ -352,7 +352,7 @@ void Elevarm::analyzeDashboard()
     coastMode = table->GetBoolean("Coast Mode", false);
 
     if (zeroArm) {
-        armRotateMotor.setEncoderPosition(180.0);
+        armRotateMotor.setEncoderPosition(-180.0);
     }
 
     if (zeroWrist) {
