@@ -13,8 +13,8 @@
 #define ROTATE_GEAR_RATIO 101.25f
 #define WRIST_GEAR_RATIO 24.3f
 
-#define ARM_CANCODER_OFFSET  279.2f
-#define WRIST_CANCODER_OFFSET 70.72f
+#define ARM_CANCODER_OFFSET  57.39f
+#define WRIST_CANCODER_OFFSET 168.31f
 #else
 #define ROTATE_GEAR_RATIO 101.25f
 #define WRIST_GEAR_RATIO 24.3f
@@ -79,7 +79,7 @@
 #define WRIST_K_ACC_MUL 0.425f
 #define WRIST_S_CURVE_STRENGTH 3
 
-#define PREVIOUS_WRIST_DEADBAND 1.5f
+#define PREVIOUS_WRIST_DEADBAND 2.5f
 #define PREVIOUS_HEIGHT_DEADBAND 0.03f
 #define PREVIOUS_ROTATION_DEADBAND 3.5f
 
@@ -137,6 +137,7 @@ void Elevarm::resetState()
     futureState.highStow = true;
 
     zeroArm = false;
+    zeroWrist = false;
     coastMode = false;
     previousState = futureState;
     setPrevPiece(intake->getFuturePiece());
@@ -235,12 +236,11 @@ void Elevarm::init()
     posMap[Piece::CUBE][Direction::FRONT][Position::SNAKE] =frc::Pose2d(-0.33_m, 1.2376_m, 0.0_deg);
     posMap[Piece::CUBE][Direction::FRONT][Position::VERTICAL] =frc::Pose2d(-0.288_m, 1.25_m, 0.0_deg);
 
-
     // BACK CONE   
     posMap[Piece::CONE][Direction::BACK][Position::GROUND] =frc::Pose2d(-1.027_m, 0.5931_m, -247.3_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_TOPPLE] =frc::Pose2d(-0.9229_m, 0.2195_m, -192.67_deg);
     posMap[Piece::CONE][Direction::BACK][Position::GROUND_SCORE] =frc::Pose2d(-0.888_m, 0.541_m, -165.0_deg);
-    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.5825_m, 40.7_deg);
+    posMap[Piece::CONE][Direction::BACK][Position::PLAYER] =frc::Pose2d(-0.8605_m, 1.62_m, 40.7_deg);
     posMap[Piece::CONE][Direction::BACK][Position::BIRD] =frc::Pose2d(-0.4899_m, 0.4529_m, -82.81_deg);
     posMap[Piece::CONE][Direction::BACK][Position::MID] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
     posMap[Piece::CONE][Direction::BACK][Position::HIGH] =frc::Pose2d(-0.904_m, 1.03_m, -180.0_deg);
@@ -266,6 +266,7 @@ void Elevarm::init()
     table->PutNumber("Carriage Offset", INITIAL_HEIGHT_OFFSET);
     table->PutBoolean("Arm In Range", false);
     table->PutBoolean("Zero Arm", zeroArm);
+    table->PutBoolean("Zero Wrist", zeroWrist);
     table->PutBoolean("Coast Mode", coastMode);
 
     resetState();
@@ -347,10 +348,15 @@ void Elevarm::analyzeDashboard()
     futureState.pitModeEnabled = table->GetBoolean("Pit Mode", false);
     carriageStallPower = table->GetNumber("Carriage Stall Power", P_MIN_CARRIAGE);
     zeroArm = table->GetBoolean("Zero Arm", false);
+    zeroWrist = table->GetBoolean("Zero Wrist", false);
     coastMode = table->GetBoolean("Coast Mode", false);
 
     if (zeroArm) {
-        armRotateMotor.setEncoderPosition(180.0);
+        armRotateMotor.setEncoderPosition(-180.0);
+    }
+
+    if (zeroWrist) {
+        wristMotor.setEncoderPosition(0.0);
     }
 
     if(coastMode && armRotateMotor.getNeutralMode() == ValorNeutralMode::Brake){
@@ -383,11 +389,12 @@ void Elevarm::analyzeDashboard()
                       armCANcoder.GetAbsolutePosition() < (ARM_CANCODER_OFFSET + 8);
     table->PutBoolean("Arm In Range", futureState.armInRange);
 
-    futureState.wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 50) &&
-                        wristCANcoder.GetAbsolutePosition() < (WRIST_CANCODER_OFFSET + 50);
+    futureState.wristInRange = wristCANcoder.GetAbsolutePosition() > (WRIST_CANCODER_OFFSET - 42) &&
+                        wristCANcoder.GetAbsolutePosition() < (WRIST_CANCODER_OFFSET + 14);
     table->PutBoolean("Wrist In Range", futureState.wristInRange);
 
     intake->state.elevarmGround = futureState.positionState == Position::GROUND_SCORE;
+    intake->state.elevarmPoopFull = futureState.positionState == Position::STOW;
 }
 
 void Elevarm::assignOutputs()
@@ -719,7 +726,7 @@ frc2::FunctionalCommand * Elevarm::getAutoCommand(std::string pieceState, std::s
         },
         //onExecute
         [](){
-           
+        
         }, 
         [&](bool){
             previousState = futureState;

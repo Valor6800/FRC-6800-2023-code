@@ -116,7 +116,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "balance"
+          "balance_vision"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
